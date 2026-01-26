@@ -1,0 +1,56 @@
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@vite-pwa/nuxt',
+    '@pinia/nuxt',
+    '@nuxt/icon' 
+  ],
+
+  // CSS Global
+  css: ['~/assets/css/main.css'],
+
+  // Configuration des Icônes (Optionnel mais pratique)
+  icon: {
+    serverBundle: {
+      collections: ['fluent'] 
+    }
+  },
+
+  // Configuration PWA
+  pwa: {
+    manifest: {
+      name: 'LiveStreamApp FSG',
+      short_name: 'LiveStream',
+      theme_color: '#0B1120',
+      background_color: '#0B1120',
+      display: 'standalone',
+      orientation: 'portrait',
+      icons: [
+        {
+          src: 'icons/icon-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: 'icons/icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png'
+        }
+      ]
+    },
+    client: {
+      installPrompt: true,
+    }
+  },
+
+  // Variables d'environnement
+  runtimeConfig: {
+    mongodbUri: process.env.MONGODB_URI,
+    public: {
+      apiBase: '/api'
+    }
+  },
+
+  devtools: { enabled: true }
+})

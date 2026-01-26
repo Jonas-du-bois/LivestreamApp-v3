@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   LiveStreamApp - Liquid Glassmorphism Theme
+   ============================================ */
+
+:root {
+  --font-size: 16px;
+  --background: #0B1120;
+  --foreground: #ffffff;
+  --card: rgba(255, 255, 255, 0.1);
+  --card-foreground: #ffffff;
+  --primary: #06B6D4;
+  --primary-foreground: #0B1120;
+  --secondary: #8B5CF6;
+  --secondary-foreground: #ffffff;
+  --muted: rgba(255, 255, 255, 0.6);
+  --muted-foreground: rgba(255, 255, 255, 0.4);
+  --accent: #22d3ee;
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.15);
+  --ring: rgba(6, 182, 212, 0.5);
+  --radius: 16px;
+}
+
+/* Base Styles */
+html {
+  font-size: var(--font-size);
+}
+
+body {
+  @apply bg-[#0B1120] text-white;
+  font-family: 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glass Card - Primary glassmorphism effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+}
+
+/* Glass Panel - Stronger glassmorphism for modals/overlays */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+}
+
+/* Glow Effects */
+.glow-cyan {
+  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
+}
+
+.glow-purple {
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+}
+
+.glow-red {
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8));
+}
+
+/* Gradient Backgrounds */
+.gradient-cyan-purple {
+  background: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%);
+}
+
+.gradient-overlay {
+  background: linear-gradient(180deg, rgba(11, 17, 32, 0) 0%, rgba(11, 17, 32, 0.8) 100%);
+}
+
+/* Pulse Glow Animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Hide Scrollbars */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Global scrollbar hide */
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tabular Numbers for timers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
