@@ -169,6 +169,19 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    // F. DEMO FINISHED (5 Forced)
+    for (let i = 0; i < 5; i++) {
+        passagesData.push({
+            group: String(getGroup(passageCounter++)._id),
+            apparatus: String(getAppId(appCodes[i % 5]!)),
+            startTime: new Date(now.getTime() - 60 * 60000), // 1 hour ago
+            endTime: new Date(now.getTime() - 50 * 60000),
+            location: 'Salle Omnisport 1',
+            status: 'FINISHED',
+            scores: generateScore()
+        });
+    }
+
     const insertedPassages = await PassageModel.insertMany(passagesData);
     console.log(`[seed] Created ${insertedPassages.length} Passages`);
 

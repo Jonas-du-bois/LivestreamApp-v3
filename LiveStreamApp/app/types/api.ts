@@ -55,6 +55,7 @@ export interface Stream {
 export interface EnrichedGroup {
   _id: string;
   name: string;
+  category?: string;
 }
 
 export interface EnrichedApparatus {
