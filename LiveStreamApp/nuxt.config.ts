@@ -47,8 +47,10 @@ export default defineNuxtConfig({
   // Variables d'environnement
   runtimeConfig: {
     mongodbUri: process.env.MONGODB_URI,
+    vapidPrivateKey: process.env.NUXT_VAPID_PRIVATE_KEY,
     public: {
-      apiBase: '/api'
+      apiBase: '/api',
+      vapidPublicKey: process.env.NUXT_PUBLIC_VAPID_PUBLIC_KEY
     }
   },
 
