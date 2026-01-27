@@ -67,13 +67,13 @@ const toggleFavorite = (id: string, event: Event) => {
   favoritesStore.toggleFavorite(id)
 }
 
-const handleGroupClick = (groupName: string) => {
-  openGroupDetails?.(groupName)
+const handleGroupClick = (groupId: string) => {
+  openGroupDetails?.(groupId)
 }
 
-const handleInfoClick = (groupName: string, event: Event) => {
+const handleInfoClick = (groupId: string, event: Event) => {
   event.stopPropagation()
-  openGroupDetails?.(groupName)
+  openGroupDetails?.(groupId)
 }
 </script>
 
@@ -115,7 +115,7 @@ const handleInfoClick = (groupName: string, event: Event) => {
         v-for="item in filteredSchedule"
         :key="item._id || 'unknown'"
         class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-        @click="handleGroupClick(item.group.name)"
+        @click="handleGroupClick(item.group._id)"
       >
         <div class="flex items-start gap-4">
           <!-- Time & Location -->
