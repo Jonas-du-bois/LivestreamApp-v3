@@ -46,7 +46,7 @@ const filters = computed(() => {
   if (scheduleResponse.value?.meta?.availableApparatus) {
      return ['Tout', ...scheduleResponse.value.meta.availableApparatus]
   }
-  return ['Tout', 'Sol', 'Barres', 'Poutre', 'Saut']
+  return ['Tout', 'Sol', 'Barres', 'Reck', 'Saut']
 })
 
 const filteredSchedule = computed(() => {
@@ -110,10 +110,10 @@ const handleInfoClick = (groupName: string, event: Event) => {
       <div 
         v-for="item in filteredSchedule"
         :key="item._id || 'unknown'"
-        class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+        class="glass-card p-4 flex items-center gap-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
         @click="handleGroupClick(item.group.name)"
       >
-        <div class="text-center min-w-[60px]">
+        <div class="text-left min-w-[60px]">
           <div class="text-cyan-400 font-bold text-lg">{{ formatTime(item.startTime) }}</div>
           <div class="text-white/50 text-xs">{{ item.location }}</div>
         </div>
@@ -129,12 +129,6 @@ const handleInfoClick = (groupName: string, event: Event) => {
         </div>
 
         <div class="flex items-center gap-2">
-          <button 
-            class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-            @click="handleInfoClick(item.group.name, $event)"
-          >
-            <Icon name="fluent:info-24-regular" class="w-5 h-5 text-white/60" />
-          </button>
           <button 
             @click="item._id && toggleFavorite(item._id, $event)"
             class="p-2 hover:bg-white/10 rounded-lg transition-colors"

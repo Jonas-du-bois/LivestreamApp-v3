@@ -70,7 +70,7 @@ provide('openGroupDetails', openGroupDetails)
     <div class="relative z-10">
       <!-- Glass Header -->
       <header class="fixed top-0 left-0 right-0 z-50 px-2 pt-4">
-        <div class="glass-card backdrop-blur-2xl rounded-3xl px-4 py-2">
+        <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-4 py-2">
           <div class="flex items-center justify-between">
             <h1 class="text-white text-xl font-bold">{{ currentPageTitle }}</h1>
             
@@ -112,7 +112,7 @@ provide('openGroupDetails', openGroupDetails)
 
       <!-- Bottom Navigation Dock - Fixed -->
       <nav class="fixed bottom-0 left-0 right-0 z-50 px-2 pb-4">
-        <div class="glass-card backdrop-blur-2xl rounded-[9999999px] px-3 py-2 flex items-center justify-around">
+        <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-3 py-2 flex items-center justify-around">
           <NuxtLink
             v-for="item in navItems"
             :key="item.id"
