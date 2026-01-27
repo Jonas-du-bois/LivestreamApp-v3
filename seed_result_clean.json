@@ -1,0 +1,7 @@
+{
+  "error": true,
+  "url": "http://localhost:3000/api/seed",
+  "statusCode": 500,
+  "statusMessage": "Operation `apparatus.deleteMany()` buffering timed out after 10000ms",
+  "message": "Operation `apparatus.deleteMany()` buffering timed out after 10000ms"
+}
