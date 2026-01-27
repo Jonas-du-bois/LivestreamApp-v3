@@ -1,50 +1,32 @@
 <script setup lang="ts">
-interface Result {
-  rank: number
-  groupName: string
-  score: number
-  category: string
-}
+import { PublicService } from '~/services/public.service'
+import type { PassageEnriched } from '~/types/api'
+import { io, type Socket } from 'socket.io-client'
+
+// Extended type including rank
+type PassageResult = PassageEnriched & { rank: number }
 
 const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 
-const selectedApparatus = ref('Sol')
-const apparatus = ['Sol', 'Barres', 'Poutre', 'Saut']
+// Fetch data
+const { data: resultsMap, refresh } = await PublicService.getResults()
 
-const resultsData: Record<string, Result[]> = {
-  Sol: [
-    { rank: 1, groupName: 'FSG Yverdon', score: 9.88, category: 'Actifs/Actives' },
-    { rank: 2, groupName: 'FSG Lausanne', score: 9.76, category: 'Actifs/Actives' },
-    { rank: 3, groupName: 'FSG Genève', score: 9.65, category: 'Actifs/Actives' },
-    { rank: 4, groupName: 'FSG Morges', score: 9.52, category: 'Mixtes' },
-    { rank: 5, groupName: 'FSG Neuchâtel', score: 9.41, category: 'Mixtes' }
-  ],
-  Barres: [
-    { rank: 1, groupName: 'FSG Fribourg', score: 9.92, category: 'Actifs/Actives' },
-    { rank: 2, groupName: 'FSG Berne', score: 9.81, category: 'Mixtes' },
-    { rank: 3, groupName: 'FSG Sion', score: 9.73, category: 'Actifs/Actives' },
-    { rank: 4, groupName: 'FSG Lausanne', score: 9.58, category: 'Actifs/Actives' },
-    { rank: 5, groupName: 'FSG Genève', score: 9.45, category: 'Actifs/Actives' }
-  ],
-  Poutre: [
-    { rank: 1, groupName: 'FSG Morges', score: 9.85, category: 'Mixtes' },
-    { rank: 2, groupName: 'FSG Yverdon', score: 9.72, category: 'Actifs/Actives' },
-    { rank: 3, groupName: 'FSG Neuchâtel', score: 9.68, category: 'Mixtes' },
-    { rank: 4, groupName: 'FSG Fribourg', score: 9.53, category: 'Actifs/Actives' },
-    { rank: 5, groupName: 'FSG Berne', score: 9.47, category: 'Mixtes' }
-  ],
-  Saut: [
-    { rank: 1, groupName: 'FSG Genève', score: 9.95, category: 'Actifs/Actives' },
-    { rank: 2, groupName: 'FSG Lausanne', score: 9.89, category: 'Actifs/Actives' },
-    { rank: 3, groupName: 'FSG Yverdon', score: 9.77, category: 'Actifs/Actives' },
-    { rank: 4, groupName: 'FSG Sion', score: 9.61, category: 'Actifs/Actives' },
-    { rank: 5, groupName: 'FSG Morges', score: 9.55, category: 'Mixtes' }
-  ]
-}
+// Computed properties
+const resultsSections = computed(() => {
+  const map = resultsMap.value
+  if (!map) return []
 
-const results = computed(() => resultsData[selectedApparatus.value] || [])
-const podium = computed(() => results.value.slice(0, 3))
-const otherResults = computed(() => results.value.slice(3))
+  return Object.keys(map).map(code => {
+    const list = map[code] || []
+    const first = list[0]
+    return {
+      code,
+      name: first?.apparatus?.name || code,
+      icon: first?.apparatus?.icon,
+      results: list
+    }
+  })
+})
 
 const getMedalIcon = (rank: number) => {
   switch (rank) {
@@ -59,8 +41,8 @@ const getMedalIcon = (rank: number) => {
   }
 }
 
-const getPodiumBorderColor = (rank: number) => {
-  switch (rank) {
+const getRankClass = (rank: number) => {
+    switch (rank) {
     case 1:
       return 'ring-2 ring-yellow-400 glow-cyan'
     case 2:
@@ -75,81 +57,100 @@ const getPodiumBorderColor = (rank: number) => {
 const handleGroupClick = (groupName: string) => {
   openGroupDetails?.(groupName)
 }
+
+let socket: Socket | null = null
+
+onMounted(() => {
+  socket = io({ path: '/socket.io' })
+
+  socket.on('score-update', (updatedPassage: any) => {
+    if (!resultsMap.value) return
+
+    if (updatedPassage.status !== 'FINISHED') return
+
+    const code = updatedPassage.apparatus?.code
+    if (!code) return
+
+    if (!resultsMap.value[code]) {
+      resultsMap.value[code] = []
+    }
+
+    const list = resultsMap.value[code] as PassageResult[]
+
+    if (!updatedPassage.group?.name || !updatedPassage.apparatus?.name) {
+       refresh()
+       return
+    }
+
+    const index = list.findIndex(p => p._id === updatedPassage._id)
+    const newEntry = { ...updatedPassage, rank: 0 } as PassageResult
+
+    if (index !== -1) {
+      list[index] = newEntry
+    } else {
+      list.push(newEntry)
+    }
+
+    list.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0))
+    list.forEach((p, i) => {
+      p.rank = i + 1
+    })
+  })
+})
+
+onUnmounted(() => {
+  if (socket) {
+    socket.disconnect()
+    socket = null
+  }
+})
 </script>
 
 <template>
-  <div class="px-4 space-y-6 pb-6">
-    <!-- Apparatus Tabs -->
-    <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-      <button
-        v-for="app in apparatus"
-        :key="app"
-        @click="selectedApparatus = app"
-        class="px-5 py-2.5 rounded-full text-sm font-medium flex-shrink-0 transition-all"
-        :class="selectedApparatus === app
-          ? 'gradient-cyan-purple text-white'
-          : 'glass-card text-white/80'"
-      >
-        {{ app }}
-      </button>
+  <div class="px-4 space-y-8 pb-8">
+    <!-- Empty State -->
+    <div v-if="!resultsSections.length" class="text-center py-10 text-white/50">
+      <p>Aucun résultat disponible pour le moment.</p>
     </div>
 
-    <!-- Podium -->
-    <div>
-      <h3 class="text-white text-lg font-bold mb-4 px-1">Podium</h3>
-      <div class="space-y-3">
-        <div 
-          v-for="result in podium"
-          :key="result.rank"
-          class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-          :class="getPodiumBorderColor(result.rank)"
-          @click="handleGroupClick(result.groupName)"
-        >
-          <div class="flex items-center justify-center w-12">
-            <Icon 
-              v-if="getMedalIcon(result.rank)"
-              :name="getMedalIcon(result.rank)!.name" 
-              class="w-6 h-6"
-              :class="getMedalIcon(result.rank)!.class"
-            />
-          </div>
+    <!-- Sections -->
+    <div v-for="section in resultsSections" :key="section.code">
+        <h3 class="text-white text-xl font-bold mb-4 flex items-center gap-2">
+            <Icon v-if="section.icon" :name="section.icon" class="w-6 h-6 text-cyan-400" />
+            {{ section.name }}
+        </h3>
 
-          <div class="flex-1 min-w-0">
-            <h4 class="text-white font-bold text-lg mb-1">{{ result.groupName }}</h4>
-            <p class="text-white/60 text-sm">{{ result.category }}</p>
-          </div>
+        <div class="space-y-3">
+          <div
+            v-for="result in section.results"
+            :key="result._id"
+            class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+            :class="getRankClass(result.rank)"
+            @click="handleGroupClick(result.group.name)"
+          >
+            <!-- Rank / Medal -->
+            <div class="flex items-center justify-center w-12">
+              <Icon
+                v-if="getMedalIcon(result.rank)"
+                :name="getMedalIcon(result.rank)!.name"
+                class="w-6 h-6"
+                :class="getMedalIcon(result.rank)!.class"
+              />
+              <span v-else class="text-white/40 font-bold text-lg">#{{ result.rank }}</span>
+            </div>
 
-          <div class="text-right">
-            <div class="text-cyan-400 font-bold text-2xl">{{ result.score.toFixed(2) }}</div>
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <h4 class="text-white font-bold text-lg mb-1">{{ result.group.name }}</h4>
+              <p class="text-white/60 text-sm">{{ result.group.category || '-' }}</p>
+            </div>
+
+            <!-- Score -->
+            <div class="text-right">
+              <div class="text-cyan-400 font-bold text-2xl">{{ result.scores?.total?.toFixed(2) || '0.00' }}</div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Other Results -->
-    <div v-if="otherResults.length > 0">
-      <h3 class="text-white text-lg font-bold mb-4 px-1">Classement complet</h3>
-      <div class="space-y-2">
-        <div 
-          v-for="result in otherResults"
-          :key="result.rank"
-          class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-          @click="handleGroupClick(result.groupName)"
-        >
-          <div class="flex items-center justify-center w-8">
-            <span class="text-white/40 font-bold">#{{ result.rank }}</span>
-          </div>
-
-          <div class="flex-1 min-w-0">
-            <h4 class="text-white font-bold mb-1">{{ result.groupName }}</h4>
-            <p class="text-white/60 text-sm">{{ result.category }}</p>
-          </div>
-
-          <div class="text-right">
-            <div class="text-white font-bold text-xl">{{ result.score.toFixed(2) }}</div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>

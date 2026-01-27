@@ -8,7 +8,7 @@ export const PublicService = {
   },
 
   getResults() {
-    return useApiClient<PassageEnriched[]>('/results')
+    return useApiClient<Record<string, (PassageEnriched & { rank: number })[]>>('/results')
   },
 
   getStreams(filters?: { isLive?: boolean }) {

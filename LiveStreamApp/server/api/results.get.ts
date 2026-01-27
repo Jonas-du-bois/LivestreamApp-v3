@@ -2,7 +2,7 @@ import PassageModel from '../models/Passage';
 
 export default defineEventHandler(async (event) => {
   try {
-    const passages = await PassageModel.find({ status: 'FINISHED', 'scores.isPublished': true })
+    const passages = await PassageModel.find({ status: 'FINISHED' })
       .populate('group', 'name category')
       .populate('apparatus', 'name code icon')
       .sort({ 'scores.total': -1 })
@@ -33,9 +33,8 @@ export default defineEventHandler(async (event) => {
     });
 
     // Compute ranks
-    // Use Object.values to avoid index signature issues with keys
     Object.values(grouped).forEach(groupList => {
-        // Optional chaining and default values to prevent undefined errors
+        // Sort descending by total score
         groupList.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0));
         groupList.forEach((p, index) => {
             p.rank = index + 1;
