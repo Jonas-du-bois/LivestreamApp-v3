@@ -61,7 +61,21 @@ const handleGroupClick = (groupName: string) => {
 let socket: Socket | null = null
 
 onMounted(() => {
-  socket = io({ path: '/socket.io' })
+  // Force websocket transport to avoid polling requests being routed to the SPA router
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  socket = io(origin, { path: '/socket.io', transports: ['websocket'] })
+
+  socket.on('connect', () => {
+    console.log('[socket] connected', socket?.id)
+  })
+
+  socket.on('connect_error', (err: any) => {
+    console.error('[socket] connect_error', err)
+  })
+
+  socket.on('disconnect', (reason: any) => {
+    console.warn('[socket] disconnected', reason)
+  })
 
   socket.on('score-update', (updatedPassage: any) => {
     if (!resultsMap.value) return
