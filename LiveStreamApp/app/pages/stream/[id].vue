@@ -21,14 +21,53 @@ if (error.value) {
 }
 
 // Computeds for safe access
+import { ref, watch, onBeforeUnmount } from 'vue'
+
 const streamUrl = computed(() => stream.value?.url)
 const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl.value?.includes('vimeo'))
 const currentGroup = computed(() => stream.value?.currentPassage?.group)
 const currentApparatus = computed(() => stream.value?.currentPassage?.apparatus)
+
+// Detect iframe load failures (e.g., blocked by extensions) and show fallback
+const playerLoaded = ref(false)
+const playerFailed = ref(false)
+let playerTimeout: ReturnType<typeof setTimeout> | null = null
+
+const onIframeLoad = () => {
+  playerLoaded.value = true
+  playerFailed.value = false
+  if (playerTimeout) {
+    clearTimeout(playerTimeout)
+    playerTimeout = null
+  }
+}
+
+watch(streamUrl, (url) => {
+  playerLoaded.value = false
+  playerFailed.value = false
+  if (playerTimeout) {
+    clearTimeout(playerTimeout)
+    playerTimeout = null
+  }
+  if (url && isEmbed.value) {
+    // If iframe hasn't fired load in 4s, consider it blocked/failed
+    playerTimeout = setTimeout(() => {
+      if (!playerLoaded.value) {
+        playerFailed.value = true
+        // Helpful console message for debugging in dev
+        console.warn('[stream] iframe did not finish loading (possible blocked requests or adblocker)')
+      }
+    }, 4000)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (playerTimeout) clearTimeout(playerTimeout)
+})
 </script>
 
 <template>
-  <div class="pb-24 pt-20 px-4 min-h-screen relative z-10">
+  <div class=" px-4 min-h-screen relative z-10">
     <!-- Header -->
     <div class="flex items-center gap-4 mb-6">
       <NuxtLink
@@ -55,15 +94,31 @@ const currentApparatus = computed(() => stream.value?.currentPassage?.apparatus)
             :src="streamUrl"
             class="w-full h-full"
             frameborder="0"
+            @load="onIframeLoad"
+            loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
           ></iframe>
 
-          <div v-else class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+          <!-- If iframe failed to load (e.g., blocked by adblocker), show fallback with external link -->
+          <div v-if="playerFailed" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-center p-4">
+            <p class="text-white mb-3">Le lecteur intégré n'a pas pu se charger (une extension peut bloquer les requêtes). Ouvrir le flux en externe :</p>
+            <a
+              :href="streamUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-block bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg"
+            >
+              Ouvrir le flux
+            </a>
+          </div>
+
+          <div v-else-if="!isEmbed || !streamUrl" class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black">
             <div class="w-20 h-20 rounded-full glass-panel flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Icon name="fluent:play-24-filled" class="w-10 h-10 text-white ml-1" />
             </div>
             <a
+              v-if="streamUrl"
               :href="streamUrl"
               target="_blank"
               rel="noopener noreferrer"
@@ -71,6 +126,7 @@ const currentApparatus = computed(() => stream.value?.currentPassage?.apparatus)
             >
               Ouvrir le lien externe
             </a>
+            <p v-else class="text-white/60">Aucun lien disponible pour ce flux.</p>
           </div>
         </div>
       </div>
