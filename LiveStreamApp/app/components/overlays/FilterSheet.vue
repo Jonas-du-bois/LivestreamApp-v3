@@ -8,14 +8,22 @@ const emit = defineEmits<{
   close: []
 }>()
 
+// Access shared metadata from schedule.vue
+const meta = useState<any>('scheduleMeta')
+const availableApparatus = computed(() => meta.value?.availableApparatus || [])
+
 const selectedDivision = ref<string[]>([])
 const selectedSalle = ref<string[]>([])
+const selectedApparatus = ref<string[]>([])
 
 const divisions = ['Actifs/Actives', 'Mixtes']
 const salles = ['Salle 1', 'Salle 2', 'Salle 3']
 
-const toggleSelection = (value: string, arrayName: 'division' | 'salle') => {
-  const array = arrayName === 'division' ? selectedDivision : selectedSalle
+const toggleSelection = (value: string, arrayName: 'division' | 'salle' | 'apparatus') => {
+  const array = arrayName === 'division' ? selectedDivision
+              : arrayName === 'salle' ? selectedSalle
+              : selectedApparatus
+
   const index = array.value.indexOf(value)
   if (index > -1) {
     array.value.splice(index, 1)
@@ -27,6 +35,7 @@ const toggleSelection = (value: string, arrayName: 'division' | 'salle') => {
 const clearFilters = () => {
   selectedDivision.value = []
   selectedSalle.value = []
+  selectedApparatus.value = []
 }
 
 const applyFilters = () => {
@@ -68,6 +77,25 @@ const applyFilters = () => {
 
         <!-- Content -->
         <div class="overflow-y-auto p-6 space-y-6 max-h-[calc(80vh-180px)]">
+
+          <!-- Apparatus Filter (Dynamic) -->
+          <div v-if="availableApparatus.length > 0">
+            <h3 class="text-white font-bold mb-3">Engin</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                v-for="app in availableApparatus"
+                :key="app"
+                @click="toggleSelection(app, 'apparatus')"
+                class="py-3 px-4 rounded-lg text-sm font-medium transition-all"
+                :class="selectedApparatus.includes(app)
+                  ? 'bg-cyan-400 text-[#0B1120]'
+                  : 'glass-card text-white/80'"
+              >
+                {{ app }}
+              </button>
+            </div>
+          </div>
+
           <!-- Division Filter -->
           <div>
             <h3 class="text-white font-bold mb-3">Division</h3>
