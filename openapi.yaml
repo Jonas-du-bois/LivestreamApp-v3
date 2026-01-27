@@ -1,0 +1,392 @@
+openapi: 3.0.0
+info:
+  title: LiveStreamApp API
+  version: 1.0.0
+  description: API for Swiss Gymnastics Society Competitions (FSG/STV) LiveStreamApp.
+servers:
+  - url: /api
+    description: Internal API
+
+components:
+  schemas:
+    # --- Mongoose Models ---
+    Apparatus:
+      type: object
+      properties:
+        _id:
+          type: string
+        code:
+          type: string
+          description: Unique apparatus code (e.g., SS, BA)
+        name:
+          type: string
+        icon:
+          type: string
+          description: Icon name (e.g., fluent:box-24-regular)
+        isActive:
+          type: boolean
+      required:
+        - code
+        - name
+
+    HistoryEntry:
+      type: object
+      properties:
+        year:
+          type: number
+        competition:
+          type: string
+        apparatusCode:
+          type: string
+        score:
+          type: number
+      required:
+        - year
+        - competition
+        - apparatusCode
+        - score
+
+    Group:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        canton:
+          type: string
+        logo:
+          type: string
+        gymnastsCount:
+          type: number
+        monitors:
+          type: array
+          items:
+            type: string
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoryEntry'
+      required:
+        - name
+
+    Scores:
+      type: object
+      properties:
+        program:
+          type: number
+          description: Note P
+        technical:
+          type: number
+          description: Note E
+        total:
+          type: number
+        isPublished:
+          type: boolean
+          default: false
+
+    Passage:
+      type: object
+      properties:
+        _id:
+          type: string
+        group:
+          oneOf:
+            - type: string
+              description: ObjectId reference
+            - $ref: '#/components/schemas/Group'
+        apparatus:
+          oneOf:
+            - type: string
+              description: ObjectId reference
+            - $ref: '#/components/schemas/Apparatus'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        location:
+          type: string
+        scores:
+          $ref: '#/components/schemas/Scores'
+        status:
+          type: string
+          enum: [SCHEDULED, LIVE, FINISHED]
+      required:
+        - group
+        - apparatus
+        - startTime
+        - endTime
+
+    Stream:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        url:
+          type: string
+        location:
+          type: string
+        isLive:
+          type: boolean
+        currentPassage:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/Passage'
+
+    # --- API Specific Responses ---
+    PassageEnriched:
+      allOf:
+        - $ref: '#/components/schemas/Passage'
+        - type: object
+          properties:
+            group:
+              type: object
+              properties:
+                _id:
+                  type: string
+                name:
+                  type: string
+            apparatus:
+              type: object
+              properties:
+                _id:
+                  type: string
+                name:
+                  type: string
+                code:
+                  type: string
+                icon:
+                  type: string
+
+    ScheduleResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            availableApparatus:
+              type: array
+              items:
+                type: string
+                description: List of apparatus codes available in the schedule
+            availableDays:
+              type: array
+              items:
+                type: string
+                description: List of dates available
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassageEnriched'
+
+    Subscription:
+      type: object
+      description: WebPush Subscription Object
+      properties:
+        endpoint:
+          type: string
+        keys:
+          type: object
+          properties:
+            p256dh:
+              type: string
+            auth:
+              type: string
+
+paths:
+  # --- Existing Endpoints ---
+  /results:
+    get:
+      summary: Get Results
+      description: Returns finished passages sorted by score, grouped by apparatus (implicitly via frontend logic) or flat list.
+      responses:
+        '200':
+          description: List of results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PassageEnriched'
+
+  /seed:
+    get:
+      summary: Initialize Database
+      description: Clears and reseeds the database with initial data.
+      responses:
+        '200':
+          description: Seed summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  summary:
+                    type: object
+
+  /admin/score:
+    put:
+      summary: Update Score (Admin)
+      description: Update scores for a passage and marks it as FINISHED/Published.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passageId:
+                  type: string
+                programScore:
+                  type: number
+                techScore:
+                  type: number
+                totalScore:
+                  type: number
+              required:
+                - passageId
+      responses:
+        '200':
+          description: Score updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  payload:
+                    type: object
+
+  /admin/status:
+    put:
+      summary: Update Status (Admin)
+      description: Update status of a passage (SCHEDULED, LIVE, FINISHED).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passageId:
+                  type: string
+                status:
+                  type: string
+                  enum: [SCHEDULED, LIVE, FINISHED]
+              required:
+                - passageId
+                - status
+      responses:
+        '200':
+          description: Status updated
+
+  /admin/stream:
+    put:
+      summary: Update Stream (Admin)
+      description: Update stream URL or status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                streamId:
+                  type: string
+                type:
+                  type: string
+                url:
+                  type: string
+                isLive:
+                  type: boolean
+                currentPassageId:
+                  type: string
+                  nullable: true
+              required:
+                - streamId
+      responses:
+        '200':
+          description: Stream updated
+
+  # --- Missing / Requested Endpoints (Specs) ---
+  /schedule:
+    get:
+      summary: Get Schedule (With Metadata)
+      description: Returns all passages enriched with group/apparatus data, plus metadata for filtering.
+      parameters:
+        - in: query
+          name: day
+          schema:
+            type: string
+          description: Filter by day
+        - in: query
+          name: apparatus
+          schema:
+            type: string
+          description: Filter by apparatus code
+      responses:
+        '200':
+          description: Schedule data with metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+
+  /streams:
+    get:
+      summary: Get Active Streams
+      description: Returns a list of all configured streams.
+      responses:
+        '200':
+          description: List of streams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stream'
+
+  /notifications/subscribe:
+    post:
+      summary: Subscribe to Notifications
+      description: Register a WebPush subscription.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subscription'
+      responses:
+        '200':
+          description: Subscription registered
+        '201':
+          description: Subscription created
+
+  /notifications/sync:
+    put:
+      summary: Sync Favorites
+      description: Update the list of favorite groups for the current user/subscription.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                favorites:
+                  type: array
+                  items:
+                    type: string
+                    description: List of Group IDs
+              required:
+                - favorites
+      responses:
+        '200':
+          description: Favorites synced
