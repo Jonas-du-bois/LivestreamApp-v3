@@ -9,12 +9,62 @@ interface Group {
 
 const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 
-const happeningNow: Group[] = [
-  { id: '1', name: 'FSG Yverdon', apparatus: 'Sol', salle: 'Salle 1', category: 'Actifs/Actives' },
-  { id: '2', name: 'FSG Morges', apparatus: 'Barres', salle: 'Salle 2', category: 'Mixtes' },
-  { id: '3', name: 'FSG Lausanne', apparatus: 'Poutre', salle: 'Salle 1', category: 'Actifs/Actives' },
-  { id: '4', name: 'FSG Genève', apparatus: 'Saut', salle: 'Salle 3', category: 'Actifs/Actives' }
-]
+import { PublicService } from '../services/public.service'
+
+interface Group {
+  id: string
+  name: string
+  apparatus: string
+  salle: string
+  category?: string
+}
+
+// Fetch live passages to populate "En piste maintenant"
+const { data: liveResp } = await PublicService.getLive()
+
+const happeningNow = computed<Group[]>(() => {
+  return (liveResp.value?.passages || []).map((p: any) => ({
+    id: p._id,
+    name: p.group?.name || 'Inconnu',
+    apparatus: p.apparatus?.name || '',
+    salle: p.location || '',
+    category: ''
+  }))
+})
+
+// First live passage (used for hero)
+const firstLivePassage = computed<any>(() => {
+  return (liveResp.value?.passages && liveResp.value.passages.length > 0) ? liveResp.value.passages[0] : null
+})
+
+const heroTitle = computed(() => firstLivePassage.value?.group?.name || 'FSG Yverdon')
+const heroSubtitle = computed(() => {
+  if (!firstLivePassage.value) return 'Salle 1 • Sol'
+  const loc = firstLivePassage.value.location || '—'
+  const app = firstLivePassage.value.apparatus?.name || ''
+  return `${loc} • ${app}`
+})
+
+const heroImage = computed(() => {
+  const defaultImg = 'https://images.unsplash.com/photo-1752297725917-ada2cb5d3409?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW1uYXN0aWNzJTIwY29tcGV0aXRpb24lMjBhY3Rpb258ZW58MXx8fHwxNzY5NDQwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080'
+  const p = firstLivePassage.value
+  if (!p) return defaultImg
+
+  const streams = liveResp.value?.streams || []
+  const s = streams.find((st: any) => {
+    if (!st.currentPassage) return false
+    if (typeof st.currentPassage === 'string') return st.currentPassage === p._id
+    return st.currentPassage?._id === p._id
+  })
+
+  // Try to extract YouTube id if present to use a thumbnail
+  if (s?.url && s.url.includes('youtube')) {
+    const m = s.url.match(/embed\/([a-zA-Z0-9_-]{11})/)
+    if (m && m[1]) return `https://img.youtube.com/vi/${m[1]}/maxresdefault.jpg`
+  }
+
+  return defaultImg
+})
 
 const handleGroupClick = (groupName: string) => {
   openGroupDetails?.(groupName)
@@ -26,25 +76,25 @@ const handleGroupClick = (groupName: string) => {
     <!-- Hero Live Card -->
     <div 
       class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform"
-      @click="handleGroupClick('FSG Yverdon')"
+      @click="firstLivePassage?.group?.name ? handleGroupClick(firstLivePassage.group.name) : handleGroupClick('FSG Yverdon')"
     >
       <ImageWithFallback 
-        src="https://images.unsplash.com/photo-1752297725917-ada2cb5d3409?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW1uYXN0aWNzJTIwY29tcGV0aXRpb24lMjBhY3Rpb258ZW58MXx8fHwxNzY5NDQwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080"
-        alt="Gymnastics competition"
+        :src="heroImage"
+        :alt="heroTitle"
         class="w-full h-full object-cover"
       />
       <div class="absolute inset-0 gradient-overlay" />
       
       <div class="absolute bottom-0 left-0 right-0 p-6">
         <div class="flex items-center gap-2 mb-3">
-          <div class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
+          <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
             <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
             <span class="text-white text-sm font-medium">EN DIRECT</span>
           </div>
         </div>
         
-        <h2 class="text-white text-2xl font-bold mb-1">FSG Yverdon</h2>
-        <p class="text-white/80">Salle 1 • Sol</p>
+        <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
+        <p class="text-white/80">{{ heroSubtitle }}</p>
       </div>
     </div>
 

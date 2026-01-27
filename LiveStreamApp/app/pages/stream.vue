@@ -1,47 +1,72 @@
 <script setup lang="ts">
+import { PublicService } from '../services/public.service'
+
 interface Stream {
   id: string
   title: string
-  thumbnail: string
+  thumbnail?: string
   isLive: boolean
-  salle: string
-  currentGroup: string
+  salle?: string
+  currentGroup?: string
 }
 
-const streams: Stream[] = [
-  {
-    id: '1',
-    title: 'Salle 1',
-    thumbnail: 'https://images.unsplash.com/photo-1752297725917-ada2cb5d3409?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW1uYXN0aWNzJTIwY29tcGV0aXRpb24lMjBhY3Rpb258ZW58MXx8fHwxNzY5NDQwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080',
-    isLive: true,
-    salle: 'Salle 1',
-    currentGroup: 'FSG Yverdon'
-  },
-  {
-    id: '2',
-    title: 'Salle 2',
-    thumbnail: 'https://images.unsplash.com/photo-1752297725917-ada2cb5d3409?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW1uYXN0aWNzJTIwY29tcGV0aXRpb24lMjBhY3Rpb258ZW58MXx8fHwxNzY5NDQwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080',
-    isLive: true,
-    salle: 'Salle 2',
-    currentGroup: 'FSG Morges'
-  },
-  {
-    id: '3',
-    title: 'Salle 3',
-    thumbnail: 'https://images.unsplash.com/photo-1752297725917-ada2cb5d3409?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW1uYXN0aWNzJTIwY29tcGV0aXRpb24lMjBhY3Rpb258ZW58MXx8fHwxNzY5NDQwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080',
-    isLive: false,
-    salle: 'Salle 3',
-    currentGroup: 'Pause'
-  },
-  {
-    id: '4',
-    title: 'Vue générale',
-    thumbnail: 'https://images.unsplash.com/photo-1752297725917-ada2cb5d3409?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW1uYXN0aWNzJTIwY29tcGV0aXRpb24lMjBhY3Rpb258ZW58MXx8fHwxNzY5NDQwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080',
-    isLive: true,
-    salle: 'Multi-vue',
-    currentGroup: 'Toutes les salles'
-  }
-]
+// Fetch live streams (and passages) in one call
+const { data: liveResp } = await PublicService.getLive()
+
+const livePassagesMap = computed(() => {
+  const map = new Map<string, any>()
+  (liveResp.value?.passages || []).forEach((p: any) => map.set(p._id, p))
+  return map
+})
+
+const streams = computed<Stream[]>(() => {
+  return (liveResp.value?.streams || []).map((s: any) => {
+    let currentGroupName = '—'
+    const cp = s.currentPassage
+    if (cp) {
+      if (typeof cp === 'string') {
+        currentGroupName = livePassagesMap.value.get(cp)?.group?.name || '—'
+      } else {
+        currentGroupName = cp.group?.name || '—'
+      }
+    }
+
+    // Determine thumbnail: use provided one, else try YouTube/Twitch, else fallback
+    const defaultImg = 'https://images.unsplash.com/photo-1752297725917-ada2cb5d3409?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxneW1uYXN0aWNzJTIwY29tcGV0aXRpb24lMjBhY3Rpb258ZW58MXx8fHwxNzY5NDQwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080'
+
+    let thumb = s.thumbnail || ''
+    if (!thumb && s.url) {
+      const url: string = s.url
+      // YouTube embed URL: /embed/VIDEO_ID
+      const embedMatch = url.match(/embed\/([a-zA-Z0-9_-]{11})/)
+      const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/)
+      const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
+
+      const ytId = embedMatch?.[1] || watchMatch?.[1] || shortMatch?.[1]
+      if (ytId) {
+        thumb = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`
+      } else if (url.includes('twitch.tv')) {
+        // Try to extract channel name and use Twitch preview URL
+        const twMatch = url.match(/twitch\.tv\/(.+?)(?:$|\/|\?)/)
+        const channel = twMatch?.[1]
+        if (channel) {
+          thumb = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel}-1280x720.jpg`
+        }
+      }
+    }
+
+    if (!thumb) thumb = defaultImg
+
+    return {
+      id: s._id,
+      title: s.name || s.title || 'Stream',
+      thumbnail: thumb,
+      isLive: !!s.isLive,
+      salle: s.location || '',
+      currentGroup: currentGroupName
+    }
+  })
+})
 </script>
 
 <template>

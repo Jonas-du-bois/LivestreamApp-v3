@@ -7,7 +7,7 @@ const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
 
-const selectedDay = ref<string>('samedi')
+const selectedDay = ref<string>('')
 const selectedFilter = ref('Tout')
 
 // Fetch data from API using the Service
@@ -22,6 +22,10 @@ const meta = useState('scheduleMeta', () => scheduleResponse.value?.meta || { av
 watchEffect(() => {
   if (scheduleResponse.value?.meta) {
     meta.value = scheduleResponse.value.meta
+    // If no day selected yet, pick the first available day from meta
+    if (!selectedDay.value && meta.value.availableDays?.length) {
+      selectedDay.value = meta.value.availableDays[0] ?? ''
+    }
   }
 })
 
@@ -46,7 +50,7 @@ const filters = computed(() => {
   if (scheduleResponse.value?.meta?.availableApparatus) {
      return ['Tout', ...scheduleResponse.value.meta.availableApparatus]
   }
-  return ['Tout', 'Sol', 'Barres', 'Reck', 'Saut']
+  return ['Tout', 'Sol', 'Barres', 'Saut']
 })
 
 const filteredSchedule = computed(() => {

@@ -11,8 +11,15 @@ export const PublicService = {
     return useApiClient<PassageEnriched[]>('/results')
   },
 
-  getStreams() {
-    return useApiClient<Stream[]>('/streams')
+  getStreams(filters?: { isLive?: boolean }) {
+    return useApiClient<Stream[]>('/streams', {
+      query: filters
+    })
+  },
+
+  getLive() {
+    // Returns both live passages and live streams in one call to reduce multiple requests
+    return useApiClient<{ passages: PassageEnriched[]; streams: Stream[] }>('/live')
   },
 
   seedDatabase() {

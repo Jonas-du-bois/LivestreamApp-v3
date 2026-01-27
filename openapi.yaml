@@ -341,8 +341,14 @@ paths:
 
   /streams:
     get:
-      summary: Get Active Streams
-      description: Returns a list of all configured streams.
+      summary: Get Streams
+      description: Returns a list of all configured streams. Optional query `isLive=true` filters to currently live streams only.
+      parameters:
+        - in: query
+          name: isLive
+          schema:
+            type: boolean
+          description: Filter for only live streams (true)
       responses:
         '200':
           description: List of streams
@@ -352,6 +358,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Stream'
+
+  /live:
+    get:
+      summary: Get Live Data (passages + streams)
+      description: Returns current live passages and currently live streams in a single response, to reduce multiple API calls from the client.
+      responses:
+        '200':
+          description: Live passages and streams
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  passages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PassageEnriched'
+                  streams:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Stream'
 
   /notifications/subscribe:
     post:
