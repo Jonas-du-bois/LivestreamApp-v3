@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { PublicService } from '../services/public.service'
+import { PublicService } from '../../services/public.service'
 
-interface Stream {
+interface StreamDisplay {
   id: string
   title: string
   thumbnail?: string
@@ -13,21 +13,30 @@ interface Stream {
 // Fetch live streams (and passages) in one call
 const { data: liveResp } = await PublicService.getLive()
 
+// Helper to access passages by ID
 const livePassagesMap = computed(() => {
   const map = new Map<string, any>()
-  (liveResp.value?.passages || []).forEach((p: any) => map.set(p._id, p))
+  if (liveResp.value?.passages) {
+    liveResp.value.passages.forEach((p: any) => map.set(p._id, p))
+  }
   return map
 })
 
-const streams = computed<Stream[]>(() => {
-  return (liveResp.value?.streams || []).map((s: any) => {
+const streams = computed<StreamDisplay[]>(() => {
+  if (!liveResp.value?.streams) return []
+
+  return liveResp.value.streams.map((s: any) => {
     let currentGroupName = '—'
     const cp = s.currentPassage
     if (cp) {
       if (typeof cp === 'string') {
-        currentGroupName = livePassagesMap.value.get(cp)?.group?.name || '—'
-      } else {
-        currentGroupName = cp.group?.name || '—'
+        const passage = livePassagesMap.value.get(cp)
+        if (passage && passage.group) {
+             currentGroupName = passage.group.name
+        }
+      } else if (cp.group) {
+         // If populated
+        currentGroupName = (cp.group as any).name || '—'
       }
     }
 
@@ -76,10 +85,11 @@ const streams = computed<Stream[]>(() => {
     </p>
 
     <div class="grid grid-cols-1 gap-4">
-      <div 
+      <NuxtLink
         v-for="stream in streams" 
         :key="stream.id" 
-        class="glass-card overflow-hidden cursor-pointer"
+        :to="`/stream/${stream.id}`"
+        class="glass-card overflow-hidden cursor-pointer block hover:border-cyan-400/50 transition-colors"
       >
         <div class="relative aspect-video">
           <ImageWithFallback 
@@ -114,7 +124,7 @@ const streams = computed<Stream[]>(() => {
             En piste: <span class="text-cyan-400">{{ stream.currentGroup }}</span>
           </p>
         </div>
-      </div>
+      </NuxtLink>
     </div>
   </div>
 </template>

@@ -1,14 +1,4 @@
 <script setup lang="ts">
-interface Group {
-  id: string
-  name: string
-  apparatus: string
-  salle: string
-  category: string
-}
-
-const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
-
 import { PublicService } from '../services/public.service'
 
 interface Group {
@@ -17,19 +7,32 @@ interface Group {
   apparatus: string
   salle: string
   category?: string
+  streamId?: string
 }
+
+const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 
 // Fetch live passages to populate "En piste maintenant"
 const { data: liveResp } = await PublicService.getLive()
 
 const happeningNow = computed<Group[]>(() => {
-  return (liveResp.value?.passages || []).map((p: any) => ({
-    id: p._id,
-    name: p.group?.name || 'Inconnu',
-    apparatus: p.apparatus?.name || '',
-    salle: p.location || '',
-    category: ''
-  }))
+  return (liveResp.value?.passages || []).map((p: any) => {
+    // Find stream for this passage
+    const stream = (liveResp.value?.streams || []).find((s: any) => {
+      if (!s.currentPassage) return false
+      if (typeof s.currentPassage === 'string') return s.currentPassage === p._id
+      return s.currentPassage?._id === p._id
+    })
+
+    return {
+      id: p._id,
+      name: p.group?.name || 'Inconnu',
+      apparatus: p.apparatus?.name || '',
+      salle: p.location || '',
+      category: '',
+      streamId: stream?._id
+    }
+  })
 })
 
 // First live passage (used for hero)
@@ -112,10 +115,15 @@ const handleGroupClick = (groupName: string) => {
           <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>
           <p class="text-white/60 text-sm">{{ group.apparatus }}</p>
           
-          <button class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors">
+          <NuxtLink
+            v-if="group.streamId"
+            :to="`/stream/${group.streamId}`"
+            @click.stop
+            class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+          >
             <Icon name="fluent:play-24-filled" class="w-4 h-4" />
             <span class="text-sm">Regarder</span>
-          </button>
+          </NuxtLink>
         </div>
       </div>
     </div>
