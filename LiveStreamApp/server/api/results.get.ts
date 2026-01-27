@@ -3,7 +3,8 @@ import PassageModel from '../models/Passage';
 export default defineEventHandler(async (event) => {
   try {
     const passages = await PassageModel.find({ status: 'FINISHED' })
-      .populate('group', 'name category')
+      // 1. CORRECTION ICI : On ajoute 'canton' et 'logo' à la liste des champs récupérés
+      .populate('group', 'name category canton logo')
       .populate('apparatus', 'name code icon')
       .sort({ 'scores.total': -1 })
       .lean()
@@ -21,10 +22,22 @@ export default defineEventHandler(async (event) => {
 
        grouped[code].push({
           _id: p._id,
-          group: p.group ? { _id: p.group._id, name: p.group.name, category: p.group.category } : null,
-          apparatus: p.apparatus ? { _id: p.apparatus._id, name: p.apparatus.name, code: p.apparatus.code, icon: p.apparatus.icon } : null,
+          // 2. CORRECTION ICI : On mappe 'canton' et 'logo' pour le frontend
+          group: p.group ? { 
+            _id: p.group._id, 
+            name: p.group.name, 
+            category: p.group.category,
+            canton: p.group.canton, // Ajouté
+            logo: p.group.logo      // Ajouté
+          } : null,
+          apparatus: p.apparatus ? { 
+            _id: p.apparatus._id, 
+            name: p.apparatus.name, 
+            code: p.apparatus.code, 
+            icon: p.apparatus.icon 
+          } : null,
           scores: p.scores,
-          rank: 0, // Will compute below
+          rank: 0, 
           startTime: p.startTime,
           endTime: p.endTime,
           location: p.location,
@@ -36,6 +49,8 @@ export default defineEventHandler(async (event) => {
     Object.values(grouped).forEach(groupList => {
         // Sort descending by total score
         groupList.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0));
+        
+        // Handle Ex-aequo ranks logic (Optional but pro)
         groupList.forEach((p, index) => {
             p.rank = index + 1;
         });

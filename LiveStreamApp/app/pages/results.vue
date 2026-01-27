@@ -11,6 +11,9 @@ const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 // Fetch data
 const { data: resultsMap, refresh } = await PublicService.getResults()
 
+// Active tab state
+const activeTab = ref<string | null>(null)
+
 // Computed properties
 const resultsSections = computed(() => {
   const map = resultsMap.value
@@ -28,6 +31,31 @@ const resultsSections = computed(() => {
   })
 })
 
+// Initialize active tab to first section
+watch(resultsSections, (sections) => {
+  if (sections.length > 0 && !activeTab.value) {
+    // Ensure sections[0] is defined before accessing code to avoid "object possibly undefined"
+    activeTab.value = sections[0]?.code ?? null
+  }
+}, { immediate: true })
+
+// Get current active section
+const activeSection = computed(() => {
+  return resultsSections.value.find(s => s.code === activeTab.value)
+})
+
+// Get podium (top 3)
+const podiumResults = computed(() => {
+  if (!activeSection.value) return []
+  return activeSection.value.results.slice(0, 3)
+})
+
+// Get full ranking (from rank 4 onwards)
+const fullRanking = computed(() => {
+  if (!activeSection.value) return []
+  return activeSection.value.results.slice(3)
+})
+
 const getMedalIcon = (rank: number) => {
   switch (rank) {
     case 1:
@@ -41,16 +69,16 @@ const getMedalIcon = (rank: number) => {
   }
 }
 
-const getRankClass = (rank: number) => {
-    switch (rank) {
+const getPodiumBorderClass = (rank: number) => {
+  switch (rank) {
     case 1:
-      return 'ring-2 ring-yellow-400 glow-cyan'
+      return 'border-yellow-400'
     case 2:
-      return 'ring-2 ring-gray-300'
+      return 'border-gray-300'
     case 3:
-      return 'ring-2 ring-amber-600'
+      return 'border-amber-600'
     default:
-      return ''
+      return 'border-white/10'
   }
 }
 
@@ -121,50 +149,116 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="px-4 space-y-8 pb-8">
+  <div class="min-h-screen">
+    
+
     <!-- Empty State -->
-    <div v-if="!resultsSections.length" class="text-center py-10 text-white/50">
+    <div v-if="!resultsSections.length" class="text-center py-10 text-white/50 px-4">
       <p>Aucun résultat disponible pour le moment.</p>
     </div>
 
-    <!-- Sections -->
-    <div v-for="section in resultsSections" :key="section.code">
-        <h3 class="text-white text-xl font-bold mb-4 flex items-center gap-2">
-            <Icon v-if="section.icon" :name="section.icon" class="w-6 h-6 text-cyan-400" />
-            {{ section.name }}
-        </h3>
+    <!-- Tabs Navigation -->
+    <div v-if="resultsSections.length" class="px-4">
+      <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
+        <button
+          v-for="section in resultsSections"
+          :key="section.code"
+          @click="activeTab = section.code"
+          class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all"
+          :class="activeTab === section.code 
+            ? 'bg-cyan-400 text-[#0B1120]' 
+            : 'glass-card text-white/80'"
+        >
+          {{ section.name }}
+        </button>
+      </div>
+    </div>
 
+    <!-- Content for active tab -->
+    <div v-if="activeSection" class="px-4 mt-6 space-y-6">
+      <!-- Podium Section -->
+      <div v-if="podiumResults.length > 0">
+        <h2 class="text-white text-xl font-bold mb-4">Podium</h2>
         <div class="space-y-3">
           <div
-            v-for="result in section.results"
+            v-for="result in podiumResults"
             :key="result._id"
-            class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-            :class="getRankClass(result.rank)"
+            class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+            :class="getPodiumBorderClass(result.rank)"
             @click="handleGroupClick(result.group.name)"
           >
-            <!-- Rank / Medal -->
-            <div class="flex items-center justify-center w-12">
-              <Icon
-                v-if="getMedalIcon(result.rank)"
-                :name="getMedalIcon(result.rank)!.name"
-                class="w-6 h-6"
-                :class="getMedalIcon(result.rank)!.class"
-              />
-              <span v-else class="text-white/40 font-bold text-lg">#{{ result.rank }}</span>
-            </div>
+            <div class="flex items-center gap-4">
+              <!-- Medal Icon -->
+              <div class="flex items-center justify-center w-12 h-12">
+                <Icon
+                  v-if="getMedalIcon(result.rank)"
+                  :name="getMedalIcon(result.rank)!.name"
+                  class="w-8 h-8"
+                  :class="getMedalIcon(result.rank)!.class"
+                />
+              </div>
 
-            <!-- Info -->
-            <div class="flex-1 min-w-0">
-              <h4 class="text-white font-bold text-lg mb-1">{{ result.group.name }}</h4>
-              <p class="text-white/60 text-sm">{{ result.group.category || '-' }}</p>
-            </div>
+              <!-- Group Info -->
+              <div class="flex-1 min-w-0">
+                <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
+                <p class="text-white/60 text-sm">{{ result.group.category || 'Actifs/Actives' }}</p>
+              </div>
 
-            <!-- Score -->
-            <div class="text-right">
-              <div class="text-cyan-400 font-bold text-2xl">{{ result.scores?.total?.toFixed(2) || '0.00' }}</div>
+              <!-- Score -->
+              <div class="text-cyan-400 font-bold text-3xl">
+                {{ result.scores?.total?.toFixed(2) || '0.00' }}
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Full Ranking Section -->
+      <div v-if="fullRanking.length > 0">
+        <h2 class="text-white text-xl font-bold mb-4">Classement complet</h2>
+        <div class="space-y-3">
+          <div
+            v-for="result in fullRanking"
+            :key="result._id"
+            class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+            @click="handleGroupClick(result.group.name)"
+          >
+            <div class="flex items-center gap-4">
+              <!-- Rank Number -->
+              <div class="flex items-center justify-center w-12">
+                <span class="text-white/40 font-bold text-xl">#{{ result.rank }}</span>
+              </div>
+
+              <!-- Group Info -->
+              <div class="flex-1 min-w-0">
+                <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
+                <p class="text-white/60 text-sm">{{ result.group.category || 'Mixtes' }}</p>
+              </div>
+
+              <!-- Score -->
+              <div class="text-white font-bold text-2xl">
+                {{ result.scores?.total?.toFixed(2) || '0.00' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No results for this apparatus -->
+      <div v-if="activeSection.results.length === 0" class="text-center py-10 text-white/50">
+        <p>Aucun résultat pour cet agrès.</p>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
