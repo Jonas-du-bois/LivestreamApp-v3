@@ -22,6 +22,11 @@ export const PublicService = {
     return useApiClient<{ passages: PassageEnriched[]; streams: Stream[] }>('/live')
   },
 
+  getWeather() {
+    // Returns current temperature for Yverdon-les-Bains (proxy to external weather API)
+    return useApiClient<{ temperature: number; raw?: any }>('/weather')
+  },
+
   seedDatabase() {
     return useApiClient<{ success: boolean; summary: any }>('/seed')
   }

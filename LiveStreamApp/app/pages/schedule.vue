@@ -114,35 +114,39 @@ const handleInfoClick = (groupName: string, event: Event) => {
       <div 
         v-for="item in filteredSchedule"
         :key="item._id || 'unknown'"
-        class="glass-card p-4 flex items-center gap-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+        class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
         @click="handleGroupClick(item.group.name)"
       >
-        <div class="text-left min-w-[60px]">
-          <div class="text-cyan-400 font-bold text-lg">{{ formatTime(item.startTime) }}</div>
-          <div class="text-white/50 text-xs">{{ item.location }}</div>
-        </div>
-
-        <div class="flex-1 min-w-0">
-          <h4 class="text-white font-bold mb-1">{{ item.group.name }}</h4>
-          <div class="flex items-center gap-2 text-sm">
-            <!-- Fallback for category since it's not in the API currently -->
-            <span class="text-white/60">Groupe</span>
-            <span class="text-white/40">•</span>
-            <span class="text-purple-400">{{ item.apparatus.name }}</span>
+        <div class="flex items-start gap-4">
+          <!-- Time & Location -->
+          <div class="text-left min-w-[70px] flex-shrink-0">
+            <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
+            <div class="text-white/50 text-xs mt-0.5">{{ item.location }}</div>
           </div>
-        </div>
 
-        <div class="flex items-center gap-2">
-          <button 
-            @click="item._id && toggleFavorite(item._id, $event)"
-            class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-          >
-            <Icon 
-              :name="(item._id && favorites.includes(item._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
-              class="w-5 h-5"
-              :class="(item._id && favorites.includes(item._id)) ? 'text-red-400' : 'text-white/60'"
-            />
-          </button>
+          <!-- Group Info -->
+          <div class="flex-1 min-w-0 pt-0.5">
+            <h4 class="text-white font-bold text-base leading-tight mb-1.5">{{ item.group.name }}</h4>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-white/60">Groupe</span>
+              <span class="text-white/40">•</span>
+              <span class="text-purple-400">{{ item.apparatus.name }}</span>
+            </div>
+          </div>
+
+          <!-- Favorite Button -->
+          <div class="flex items-start pt-0.5 flex-shrink-0">
+            <button 
+              @click="item._id && toggleFavorite(item._id, $event)"
+              class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            >
+              <Icon 
+                :name="(item._id && favorites.includes(item._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
+                class="w-6 h-6"
+                :class="(item._id && favorites.includes(item._id)) ? 'text-red-400' : 'text-white/60'"
+              />
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -9,7 +9,15 @@ export default defineNuxtConfig({
   ],
 
   // CSS Global
-  css: ['~/assets/css/main.css'],
+  css: [
+    '~/assets/css/main.css',
+    '~/assets/css/transition.css'
+  ],
+
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'fade', mode: 'in-out' }
+  },
 
   // Configuration des Icônes (Optionnel mais pratique)
   icon: {

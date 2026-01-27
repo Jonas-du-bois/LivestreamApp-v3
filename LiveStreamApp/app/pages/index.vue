@@ -69,6 +69,9 @@ const heroImage = computed(() => {
   return defaultImg
 })
 
+// Weather (Yverdon-les-Bains)
+const { data: weatherResp, pending: weatherPending, refresh: refreshWeather } = await PublicService.getWeather()
+
 const handleGroupClick = (groupName: string) => {
   openGroupDetails?.(groupName)
 }
@@ -135,7 +138,11 @@ const handleGroupClick = (groupName: string) => {
           <Icon name="fluent:weather-partly-cloudy-day-24-regular" class="w-6 h-6 text-cyan-400" />
         </div>
         <span class="text-white/80 text-sm">Météo</span>
-        <span class="text-white font-bold mt-1">23°C</span>
+        <span class="text-white font-bold mt-1">
+          <template v-if="weatherPending">--</template>
+          <template v-else-if="weatherResp && typeof weatherResp.temperature === 'number'">{{ Math.round(weatherResp.temperature) }}°C</template>
+          <template v-else>—</template>
+        </span>
       </div>
       
       <div class="glass-card p-4 flex flex-col items-center text-center">
