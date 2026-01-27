@@ -70,8 +70,8 @@ const toggleFavorite = (id: string, event: Event) => {
   favoritesStore.toggleFavorite(id)
 }
 
-const handleGroupClick = (groupName: string) => {
-  openGroupDetails?.(groupName)
+const handleGroupClick = (groupId: string) => {
+  openGroupDetails?.(groupId)
 }
 </script>
 
@@ -107,7 +107,7 @@ const handleGroupClick = (groupName: string) => {
           v-for="passage in favoritePassages"
           :key="passage._id"
           class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-          @click="handleGroupClick(passage.group?.name || '')"
+          @click="handleGroupClick(passage.group?._id || '')"
         >
           <div class="text-center min-w-[60px]">
              <div class="text-cyan-400 font-bold text-lg">{{ formatTime(passage.startTime) }}</div>

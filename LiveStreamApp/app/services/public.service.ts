@@ -29,5 +29,9 @@ export const PublicService = {
 
   seedDatabase() {
     return useApiClient<{ success: boolean; summary: any }>('/seed')
+  },
+
+  getGroupDetails(groupId: string) {
+    return useApiClient<any>(`/groups/${groupId}/details`)
   }
 }

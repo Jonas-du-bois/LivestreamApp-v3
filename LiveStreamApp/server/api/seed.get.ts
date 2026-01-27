@@ -83,6 +83,22 @@ export default defineEventHandler(async (event) => {
       };
     };
 
+    const monitorNames = [
+      'Jean Dupont', 'Marie Curie', 'Paul Scherrer', 'Albert Einstein',
+      'Sarah Connor', 'Ellen Ripley', 'John Wick', 'James Bond',
+      'Lara Croft', 'Indiana Jones', 'Han Solo', 'Leia Organa'
+    ];
+
+    const generateMonitors = () => {
+      // Pick 1-3 random monitors
+      const count = 1 + Math.floor(Math.random() * 3);
+      const selected = [];
+      for (let i = 0; i < count; i++) {
+        selected.push(monitorNames[Math.floor(Math.random() * monitorNames.length)]);
+      }
+      return [...new Set(selected)]; // Unique
+    };
+
     let passageCounter = 0;
     const appCodes = ['SS', 'BA', 'AB', 'SA', 'RE'];
 
@@ -96,7 +112,8 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? 'Salle Omnisport 1' : 'Salle 2',
         status: 'FINISHED',
-        scores: generateScore()
+        scores: generateScore(),
+        monitors: generateMonitors()
       });
     }
 
@@ -110,7 +127,8 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? 'Salle Omnisport 1' : 'Salle 2',
         status: 'FINISHED',
-        scores: generateScore()
+        scores: generateScore(),
+        monitors: generateMonitors()
       });
     }
 
@@ -124,7 +142,8 @@ export default defineEventHandler(async (event) => {
       endTime: new Date(liveStartTime.getTime() + 15 * 60000),
       location: 'Salle Omnisport 1',
       status: 'LIVE',
-      scores: {}
+      scores: {},
+      monitors: generateMonitors()
     };
     passagesData.push(live1);
 
@@ -135,7 +154,8 @@ export default defineEventHandler(async (event) => {
       endTime: new Date(liveStartTime.getTime() + 15 * 60000),
       location: 'Salle 2',
       status: 'LIVE',
-      scores: {}
+      scores: {},
+      monitors: generateMonitors()
     };
     passagesData.push(live2);
 
@@ -151,7 +171,8 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? 'Salle Omnisport 1' : 'Salle 2',
         status: 'SCHEDULED',
-        scores: {}
+        scores: {},
+        monitors: generateMonitors()
       });
     }
 
@@ -165,7 +186,8 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? 'Salle Omnisport 1' : 'Salle 2',
         status: 'SCHEDULED',
-        scores: {}
+        scores: {},
+        monitors: generateMonitors()
       });
     }
 
@@ -178,7 +200,8 @@ export default defineEventHandler(async (event) => {
             endTime: new Date(now.getTime() - 50 * 60000),
             location: 'Salle Omnisport 1',
             status: 'FINISHED',
-            scores: generateScore()
+            scores: generateScore(),
+            monitors: generateMonitors()
         });
     }
 

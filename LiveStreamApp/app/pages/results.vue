@@ -82,8 +82,8 @@ const getPodiumBorderClass = (rank: number) => {
   }
 }
 
-const handleGroupClick = (groupName: string) => {
-  openGroupDetails?.(groupName)
+const handleGroupClick = (groupId: string) => {
+  openGroupDetails?.(groupId)
 }
 
 let socket: Socket | null = null
@@ -185,7 +185,7 @@ onUnmounted(() => {
             :key="result._id"
             class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
             :class="getPodiumBorderClass(result.rank)"
-            @click="handleGroupClick(result.group.name)"
+            @click="handleGroupClick(result.group._id)"
           >
             <div class="flex items-center gap-4">
               <!-- Medal Icon -->
@@ -221,7 +221,7 @@ onUnmounted(() => {
             v-for="result in fullRanking"
             :key="result._id"
             class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-            @click="handleGroupClick(result.group.name)"
+            @click="handleGroupClick(result.group._id)"
           >
             <div class="flex items-center gap-4">
               <!-- Rank Number -->

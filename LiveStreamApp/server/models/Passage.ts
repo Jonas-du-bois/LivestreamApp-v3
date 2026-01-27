@@ -18,6 +18,7 @@ export interface IPassage extends Document {
   location?: string;
   scores?: IScores;
   status?: PassageStatus;
+  monitors?: string[];
 }
 
 const ScoresSchema = new Schema<IScores>(
@@ -39,6 +40,7 @@ const PassageSchema = new Schema<IPassage>(
     location: { type: String },
     scores: { type: ScoresSchema, default: {} },
     status: { type: String, enum: [...PASSAGE_STATUS], default: 'SCHEDULED' },
+    monitors: { type: [String], default: [] },
   },
   { timestamps: true }
 );
