@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: LiveStreamApp
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: "npm ci && npm run build"
+    startCommand: "npm run start"
+    healthCheckPath: "/api/socket-status"
+    autoDeploy: true
+    envVars:
+      - key: MONGODB_URI
+        value: ""
+        generateValue: false
+      - key: NUXT_VAPID_PRIVATE_KEY
+        value: ""
+        generateValue: false
+      - key: NUXT_PUBLIC_VAPID_PUBLIC_KEY
+        value: ""
+        generateValue: false
+      - key: NODE_ENV
+        value: production
+        generateValue: false
+      - key: NUXT_PUBLIC_API_BASE
+        value: "/api"
+        generateValue: false
+    shell: bash
+    disk: 512
+    httpPort: 3000

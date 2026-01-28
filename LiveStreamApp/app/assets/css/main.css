@@ -115,3 +115,26 @@ body {
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/* Safe area handling for devices with notches (iPhone, etc.) */
+/* Adds safe inset on top of header and bottom of footer/nav when present */
+@supports (padding: env(safe-area-inset-top)) {
+  header.fixed {
+    /* Base top padding is 1rem (tailwind pt-4). Add the safe area inset on top */
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
+    /* Fallback for older WebKit */
+    padding-top: calc(constant(safe-area-inset-top) + 1rem);
+  }
+
+  nav.fixed {
+    /* Base bottom padding is 1rem (tailwind pb-4 is 1rem). Add the safe area inset at bottom */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    padding-bottom: calc(constant(safe-area-inset-bottom) + 1rem);
+  }
+
+  /* Ensure main content also respects bottom safe area to avoid content being under the nav */
+   /*main {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 7.5rem); 
+    padding-bottom: calc(constant(safe-area-inset-bottom) + 7.5rem);
+  } */
+}
