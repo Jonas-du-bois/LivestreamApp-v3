@@ -169,7 +169,7 @@ const historyByYear = computed(() => {
     </div>
 
     <!-- Footer Action -->
-    <div class="p-6 border-t border-white/10 flex-shrink-0">
+    <!-- <div class="p-6 border-t border-white/10 flex-shrink-0">
       <button
         @click="toggleFavorite"
         class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
@@ -180,6 +180,6 @@ const historyByYear = computed(() => {
         />
         {{ isFavorite ? 'Retirer des Favoris' : 'Ajouter aux Favoris' }}
       </button>
-    </div>
+    </div> -->
   </div>
 </template>

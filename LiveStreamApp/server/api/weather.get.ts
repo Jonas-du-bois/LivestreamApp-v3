@@ -14,13 +14,27 @@ export default defineEventHandler(async (event) => {
     const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`
 
     console.log('[weather] Fetching', url)
-    const r = await fetch(url)
-    if (!r.ok) {
-      console.error('[weather] upstream fetch failed', r.status, await r.text())
-      throw new Error('Upstream fetch failed')
+
+    // Try twice before failing to be a bit more resilient to transient network issues
+    let resp: any = null
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const r = await fetch(url)
+        if (!r.ok) {
+          const txt = await r.text().catch(() => '<no-body>')
+          console.error(`[weather] upstream fetch failed (attempt ${attempt})`, r.status, txt)
+          if (attempt === 2) throw new Error('Upstream fetch failed')
+          // otherwise retry
+          continue
+        }
+        resp = await r.json()
+        break
+      } catch (e: any) {
+        console.error(`[weather] fetch error (attempt ${attempt})`, e?.stack || e)
+        if (attempt === 2) throw e
+      }
     }
 
-    const resp = await r.json()
     const temperature = resp?.current_weather?.temperature ?? null
 
     return {
@@ -28,7 +42,11 @@ export default defineEventHandler(async (event) => {
       raw: resp
     }
   } catch (err) {
+    // Log full error for debugging but return a safe fallback to avoid crashing SSR
     console.error('[weather] Error fetching weather', err)
-    throw createError({ statusCode: 500, statusMessage: 'Failed to fetch weather' })
+    return {
+      temperature: null,
+      raw: null
+    }
   }
 })

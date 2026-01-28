@@ -36,7 +36,8 @@ export default defineNitroPlugin(async (nitroApp) => {
   }
 
   try {
-    console.log('[db] Connecting to MongoDB...', uri);
+    const maskedUri = typeof uri === 'string' ? (uri.length > 10 ? `${uri.slice(0, 10)}...` : uri) : String(uri);
+    console.log('[db] Connecting to MongoDB (masked):', maskedUri);
     mongoose.connection.on('connected', () => console.log('[db] mongoose connected, readyState=', mongoose.connection.readyState));
     mongoose.connection.on('error', (e) => console.error('[db] mongoose connection error', e));
     // Use a short server selection timeout to fail fast when DB is unreachable
