@@ -8,6 +8,10 @@ servers:
     description: Internal API
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
   schemas:
     # --- Mongoose Models ---
     Apparatus:
@@ -234,6 +238,8 @@ paths:
     put:
       summary: Update Score (Admin)
       description: Update scores for a passage and marks it as FINISHED/Published.
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -245,10 +251,16 @@ paths:
                   type: string
                 programScore:
                   type: number
+                  minimum: 0
+                  maximum: 20
                 techScore:
                   type: number
+                  minimum: 0
+                  maximum: 20
                 totalScore:
                   type: number
+                  minimum: 0
+                  maximum: 20
               required:
                 - passageId
       responses:
@@ -263,11 +275,17 @@ paths:
                     type: boolean
                   payload:
                     type: object
+        '400':
+          description: Validation Error
+        '401':
+          description: Unauthorized
 
   /admin/status:
     put:
       summary: Update Status (Admin)
       description: Update status of a passage (SCHEDULED, LIVE, FINISHED).
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -286,11 +304,17 @@ paths:
       responses:
         '200':
           description: Status updated
+        '400':
+          description: Validation Error
+        '401':
+          description: Unauthorized
 
   /admin/stream:
     put:
       summary: Update Stream (Admin)
       description: Update stream URL or status.
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -314,6 +338,10 @@ paths:
       responses:
         '200':
           description: Stream updated
+        '400':
+          description: Validation Error
+        '401':
+          description: Unauthorized
 
   # --- Missing / Requested Endpoints (Specs) ---
   /schedule:

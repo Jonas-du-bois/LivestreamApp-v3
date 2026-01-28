@@ -1,22 +1,23 @@
 import { Server as IOServer } from 'socket.io';
+import { z } from 'zod';
+import { useSafeValidatedBody } from 'h3-zod';
 import PassageModel from '../../models/Passage';
 import GroupModel from '../../models/Group';
 import ApparatusModel from '../../models/Apparatus';
 
-interface ScoreUpdateBody {
-  passageId: string;
-  programScore?: number;
-  techScore?: number;
-  totalScore?: number;
-}
+const schema = z.object({
+  passageId: z.string(),
+  programScore: z.number().min(0).max(20).optional(),
+  techScore: z.number().min(0).max(20).optional(),
+  totalScore: z.number().min(0).max(20).optional(),
+});
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<ScoreUpdateBody>(event);
-  const { passageId, programScore, techScore, totalScore } = body || {};
-
-  if (!passageId) {
-    throw createError({ statusCode: 400, statusMessage: 'passageId is required' });
+  const result = await useSafeValidatedBody(event, schema);
+  if (!result.success) {
+    throw createError({ statusCode: 400, statusMessage: 'Validation Failed', data: result.error });
   }
+  const { passageId, programScore, techScore, totalScore } = result.data;
 
   try {
     const passage = await PassageModel.findById(passageId).populate('group', 'name').populate('apparatus', 'code').exec();

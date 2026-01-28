@@ -1,0 +1,49 @@
+
+> dev
+> nuxt dev
+
+│
+●  Nuxt 4.3.0 (with Nitro 2.13.1, Vite 7.3.1 and Vue 3.5.27)
+[get-port] Unable to find an available port (tried 3000 on host "localhost"). Using alternative port 3001.
+
+  ➜ Local:    http://localhost:3001/
+  ➜ Network:  use --host to expose
+
+[nuxt:tailwindcss] ℹ Using default Tailwind CSS file
+  ➜ DevTools: press Shift + Alt + D in the browser (v3.1.1)
+
+✔ Vite client built in 106ms
+✔ Vite server built in 183ms
+[nitro] ✔ Nuxt Nitro server built in 3225ms
+ℹ Vite server warmed up in 2ms
+ℹ Vite client warmed up in 7ms
+[db] Connecting to MongoDB... mongodb+srv://livestreamAppAdmin:ueCaxYXLe4EOUUhy@livestreamappv3.galrzy3.mongodb.net/?appName=livestreamAppv3
+[Scheduler] WebPush initialized
+[db] mongoose connected, readyState= 1
+[db] Connected to MongoDB
+[nitro] ✔ Nuxt Nitro server built in 1272ms
+[db] Connecting to MongoDB... mongodb+srv://livestreamAppAdmin:ueCaxYXLe4EOUUhy@livestreamappv3.galrzy3.mongodb.net/?appName=livestreamAppv3
+[Scheduler] WebPush initialized
+[db] mongoose connected, readyState= 1
+[db] Connected to MongoDB
+[nitro] ✔ Nuxt Nitro server built in 1166ms
+[db] Connecting to MongoDB... mongodb+srv://livestreamAppAdmin:ueCaxYXLe4EOUUhy@livestreamappv3.galrzy3.mongodb.net/?appName=livestreamAppv3
+[Scheduler] WebPush initialized
+[db] mongoose connected, readyState= 1
+[db] Connected to MongoDB
+[nitro] ✔ Nuxt Nitro server built in 803ms
+[db] Connecting to MongoDB... mongodb+srv://livestreamAppAdmin:ueCaxYXLe4EOUUhy@livestreamappv3.galrzy3.mongodb.net/?appName=livestreamAppv3
+[Scheduler] WebPush initialized
+[db] mongoose connected, readyState= 1
+[db] Connected to MongoDB
+[nitro] ✔ Nuxt Nitro server built in 823ms
+[db] Connecting to MongoDB... mongodb+srv://livestreamAppAdmin:ueCaxYXLe4EOUUhy@livestreamappv3.galrzy3.mongodb.net/?appName=livestreamAppv3
+[Scheduler] WebPush initialized
+[db] mongoose connected, readyState= 1
+[db] Connected to MongoDB
+[nitro] ✔ Nuxt Nitro server built in 868ms
+[db] Connecting to MongoDB... mongodb+srv://livestreamAppAdmin:ueCaxYXLe4EOUUhy@livestreamappv3.galrzy3.mongodb.net/?appName=livestreamAppv3
+[Scheduler] WebPush initialized
+[db] mongoose connected, readyState= 1
+[db] Connected to MongoDB
+[Scheduler] Found 1 passages starting soon.
