@@ -1,4 +1,9 @@
 import mongoose from 'mongoose';
+import '../models/Group';
+import '../models/Apparatus';
+import '../models/Passage';
+import '../models/Stream';
+import '../models/Subscription';
 
 export default defineNitroPlugin(async (nitroApp) => {
   const config = useRuntimeConfig();
