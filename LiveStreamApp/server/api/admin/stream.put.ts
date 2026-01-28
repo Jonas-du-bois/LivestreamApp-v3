@@ -1,19 +1,22 @@
 import { Server as IOServer } from 'socket.io';
+import { z } from 'zod';
+import { useSafeValidatedBody } from 'h3-zod';
 import StreamModel from '../../models/Stream';
 
-interface StreamUpdateBody {
-  streamId: string;
-  type?: string;
-  url?: string;
-  isLive?: boolean;
-  currentPassageId?: string | null;
-}
+const schema = z.object({
+  streamId: z.string(),
+  type: z.string().optional(),
+  url: z.string().optional(),
+  isLive: z.boolean().optional(),
+  currentPassageId: z.string().nullable().optional(),
+});
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<StreamUpdateBody>(event);
-  const { streamId, url, isLive, currentPassageId } = body || {};
-
-  if (!streamId) throw createError({ statusCode: 400, statusMessage: 'streamId is required' });
+  const result = await useSafeValidatedBody(event, schema);
+  if (!result.success) {
+    throw createError({ statusCode: 400, statusMessage: 'Validation Failed', data: result.error });
+  }
+  const { streamId, url, isLive, currentPassageId } = result.data;
 
   try {
     const stream = await StreamModel.findById(streamId).exec();
@@ -21,8 +24,10 @@ export default defineEventHandler(async (event) => {
 
     if (typeof url === 'string') stream.url = url;
     if (typeof isLive === 'boolean') stream.isLive = isLive;
-    if (typeof currentPassageId === 'string') stream.currentPassage = currentPassageId as any;
-    if (currentPassageId === null) stream.currentPassage = undefined as any;
+    // Handle currentPassageId logic: string -> ObjectId, null -> undefined/null
+    if (currentPassageId !== undefined) {
+      stream.currentPassage = currentPassageId === null ? (undefined as any) : (currentPassageId as any);
+    }
 
     await stream.save();
 

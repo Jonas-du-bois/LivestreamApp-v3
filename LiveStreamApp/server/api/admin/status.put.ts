@@ -1,16 +1,19 @@
 import { Server as IOServer } from 'socket.io';
+import { z } from 'zod';
+import { useSafeValidatedBody } from 'h3-zod';
 import PassageModel from '../../models/Passage';
 
-interface StatusUpdateBody {
-  passageId: string;
-  status: 'SCHEDULED' | 'LIVE' | 'FINISHED';
-}
+const schema = z.object({
+  passageId: z.string(),
+  status: z.enum(['SCHEDULED', 'LIVE', 'FINISHED']),
+});
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<StatusUpdateBody>(event);
-  const { passageId, status } = body || {};
-
-  if (!passageId || !status) throw createError({ statusCode: 400, statusMessage: 'passageId and status are required' });
+  const result = await useSafeValidatedBody(event, schema);
+  if (!result.success) {
+    throw createError({ statusCode: 400, statusMessage: 'Validation Failed', data: result.error });
+  }
+  const { passageId, status } = result.data;
 
   try {
     const passage = await PassageModel.findById(passageId).populate('group', 'name').exec();
