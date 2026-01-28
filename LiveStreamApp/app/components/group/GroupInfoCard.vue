@@ -29,6 +29,15 @@ const averageScore = computed(() => {
 
 const monitors = computed(() => props.group.monitors ?? [])
 
+// Category display
+const categoryLabel = computed(() => {
+  return props.group.category === 'MIXTE' ? 'Groupe Mixte' : 'Groupe Actif'
+})
+
+const categoryColor = computed(() => {
+  return props.group.category === 'MIXTE' ? 'bg-purple-500/20 text-purple-400' : 'bg-cyan-500/20 text-cyan-400'
+})
+
 // Group history by year for the timeline
 const historyByYear = computed(() => {
   if (!props.group.history) return []
@@ -69,13 +78,18 @@ const historyByYear = computed(() => {
       </svg>
 
       <div class="absolute bottom-6 left-6 right-6 z-10">
-        <h2 class="text-white font-bold text-2xl mb-1">{{ group.name }}</h2>
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <h2 class="text-white font-bold text-2xl">{{ group.name }}</h2>
+          <div :class="['px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0', categoryColor]">
+            {{ categoryLabel }}
+          </div>
+        </div>
         <p class="text-white/80">{{ group.canton }}</p>
       </div>
     </div>
 
     <!-- Content -->
-    <div class="flex-1 p-6 space-y-6">
+    <div class="flex-1 p-6 space-y-6 overflow-y-auto">
       <!-- Stats Grid -->
       <div class="grid grid-cols-3 gap-3">
         <div class="glass-card p-4 text-center">
@@ -92,6 +106,19 @@ const historyByYear = computed(() => {
           <Icon name="fluent:arrow-trending-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
           <div class="text-white font-bold text-xl">{{ averageScore }}</div>
           <div class="text-white/60 text-xs">Moyenne</div>
+        </div>
+      </div>
+
+      <!-- Category Info (optional additional details) -->
+      <div v-if="group.category === 'MIXTE'" class="glass-card p-4">
+        <div class="flex items-start gap-3">
+          <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <h4 class="text-white font-semibold text-sm mb-1">Groupe Mixte</h4>
+            <p class="text-white/60 text-xs">
+              Ce groupe participe dans la catégorie mixte, combinant gymnastes féminins et masculins.
+            </p>
+          </div>
         </div>
       </div>
 

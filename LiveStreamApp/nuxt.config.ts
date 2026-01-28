@@ -8,6 +8,12 @@ export default defineNuxtConfig({
     '@nuxt/icon' 
   ],
 
+  nitro: {
+    rollupConfig: {
+      external: ['@nuxt/nitro-server/dist/runtime/utils/cache-driver.js']
+    }
+  },
+
   // CSS Global
   css: [
     '~/assets/css/main.css',

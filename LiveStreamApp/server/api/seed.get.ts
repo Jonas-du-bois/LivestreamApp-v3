@@ -1,13 +1,13 @@
-import ApparatusModel from '../models/Apparatus';
-import GroupModel from '../models/Group';
-import PassageModel from '../models/Passage';
-import StreamModel from '../models/Stream';
-import SubscriptionModel from '../models/Subscription';
-import { Types } from 'mongoose';
+import ApparatusModel from "../models/Apparatus";
+import GroupModel from "../models/Group";
+import PassageModel from "../models/Passage";
+import StreamModel from "../models/Stream";
+import SubscriptionModel from "../models/Subscription";
+import { Types } from "mongoose";
 
 export default defineEventHandler(async (event) => {
   try {
-    console.log('[seed] Starting DB seed — clearing collections...');
+    console.log("[seed] Starting DB seed — clearing collections...");
 
     await Promise.all([
       ApparatusModel.deleteMany({}),
@@ -17,15 +17,54 @@ export default defineEventHandler(async (event) => {
       SubscriptionModel.deleteMany({}),
     ]);
 
-    console.log('[seed] Collections cleared');
+    console.log("[seed] Collections cleared");
 
     // 1. APPARATUS
     const apparatusList = [
-      { code: 'SS', name: 'Sol', icon: 'fluent:grid-dots-24-regular' },
-      { code: 'BA', name: 'Barres Parallèles', icon: 'fluent:table-simple-24-regular' },
-      { code: 'AB', name: 'Anneaux Balançants', icon: 'fluent:circle-24-regular' },
-      { code: 'SA', name: 'Saut', icon: 'fluent:arrow-up-24-regular' },
-      { code: 'RE', name: 'Reck', icon: 'fluent:arrow-rotate-clockwise-24-regular' },
+      // --- Engins existants ---
+      { code: "SS", 
+        name: "Sol", 
+        icon: "fluent:grid-dots-24-regular" 
+      },
+      {
+        code: "BA",
+        name: "Barres Parallèles",
+        icon: "fluent:table-simple-24-regular",
+      },
+      {
+        code: "AB",
+        name: "Anneaux Balançants",
+        icon: "fluent:circle-24-regular",
+      }, 
+      { code: "SA", 
+        name: "Saut", 
+        icon: "fluent:arrow-up-24-regular" 
+      },
+      {
+        code: "RE",
+        name: "Reck",
+        icon: "fluent:arrow-rotate-clockwise-24-regular",
+      },
+      {
+        code: "BAS",
+        name: "Barres Asymétriques",
+        icon: "fluent:align-space-evenly-vertical-20-regular", 
+      },
+      {
+        code: "CE",
+        name: "Combinaison d'engins",
+        icon: "fluent:puzzle-piece-24-regular",
+      },
+      {
+        code: "GY",
+        name: "Gymnastique",
+        icon: "fluent:music-note-2-24-regular", 
+      },
+      {
+        code: "TR",
+        name: "Trampoline",
+        icon: "fluent:arrow-bounce-24-regular", 
+      },
     ];
 
     const insertedApparatus = await ApparatusModel.insertMany(apparatusList);
@@ -37,24 +76,122 @@ export default defineEventHandler(async (event) => {
 
     console.log(`[seed] Created ${insertedApparatus.length} Apparatus`);
 
-    // 2. GROUPS
-    const groupNames = [
-      'FSG Yverdon Amis-Gym', 'TV Wetzikon', 'FSG Aigle-Alliance', 'FSG Morges',
-      'BTV Luzern', 'STV Wangen', 'TV Mels', 'FSG Lausanne-Ville',
-      'FSG Genève', 'TV Schaffhausen', 'FSG Neuchâtel', 'FSG Fribourg',
-      'TV Bern', 'FSG Sion', 'FSG Vevey Jeunes-Patriotes'
+    // 2. GROUPS - AVEC CATÉGORIES ACTIF/MIXTE
+    const groupsData = [
+      // GROUPES ACTIFS (10 groupes)
+      {
+        name: "FSG Yverdon Amis-Gym Actifs",
+        canton: "VD",
+        gymnastsCount: 22,
+        category: "ACTIVE",
+      },
+      {
+        name: "TV Wetzikon Aktive",
+        canton: "ZH",
+        gymnastsCount: 25,
+        category: "ACTIVE",
+      },
+      {
+        name: "FSG Aigle-Alliance Actives",
+        canton: "VD",
+        gymnastsCount: 20,
+        category: "ACTIVE",
+      },
+      {
+        name: "FSG Morges Actives",
+        canton: "VD",
+        gymnastsCount: 23,
+        category: "ACTIVE",
+      },
+      {
+        name: "BTV Luzern Aktive",
+        canton: "LU",
+        gymnastsCount: 28,
+        category: "ACTIVE",
+      },
+      {
+        name: "STV Wangen Aktive",
+        canton: "SO",
+        gymnastsCount: 24,
+        category: "ACTIVE",
+      },
+      {
+        name: "TV Mels Aktive",
+        canton: "SG",
+        gymnastsCount: 21,
+        category: "ACTIVE",
+      },
+      {
+        name: "FSG Lausanne-Ville Actives",
+        canton: "VD",
+        gymnastsCount: 26,
+        category: "ACTIVE",
+      },
+      {
+        name: "FSG Genève Actives",
+        canton: "GE",
+        gymnastsCount: 22,
+        category: "ACTIVE",
+      },
+      {
+        name: "TV Schaffhausen Aktive",
+        canton: "SH",
+        gymnastsCount: 27,
+        category: "ACTIVE",
+      },
+
+      // GROUPES MIXTES (5 groupes)
+      {
+        name: "FSG Neuchâtel Mixte",
+        canton: "NE",
+        gymnastsCount: 30,
+        category: "MIXTE",
+      },
+      {
+        name: "FSG Fribourg Mixte",
+        canton: "FR",
+        gymnastsCount: 32,
+        category: "MIXTE",
+      },
+      {
+        name: "TV Bern Gemischt",
+        canton: "BE",
+        gymnastsCount: 28,
+        category: "MIXTE",
+      },
+      {
+        name: "FSG Sion Mixte",
+        canton: "VS",
+        gymnastsCount: 29,
+        category: "MIXTE",
+      },
+      {
+        name: "FSG Vevey Jeunes-Patriotes Mixte",
+        canton: "VD",
+        gymnastsCount: 31,
+        category: "MIXTE",
+      },
     ];
 
-    const groupsData = groupNames.map(name => ({
-      name,
-      canton: 'CH',
-      gymnastsCount: 20 + Math.floor(Math.random() * 30),
-    }));
-
     const insertedGroups = await GroupModel.insertMany(groupsData);
-    const getGroup = (index: number) => (insertedGroups[index % insertedGroups.length] as any);
+    
+    // Les 10 premiers groupes sont actifs, les 5 suivants sont mixtes
+    const activeGroups = insertedGroups.slice(0, 10);
+    const mixedGroups = insertedGroups.slice(10, 15);
+    
+    // Helper pour récupérer des groupes par catégorie
+    const getGroupByCategory = (category: "ACTIVE" | "MIXTE", index: number) => {
+      const groups = category === "ACTIVE" ? activeGroups : mixedGroups;
+      if (groups.length === 0) {
+        throw new Error(`No groups found for category ${category}`);
+      }
+      return groups[index % groups.length] as any;
+    };
+    
+    const getGroup = (index: number) =>
+      insertedGroups[index % insertedGroups.length] as any;
 
-    console.log(`[seed] Created ${insertedGroups.length} Groups`);
+    console.log(`[seed] Created ${insertedGroups.length} Groups (${activeGroups.length} actifs, ${mixedGroups.length} mixtes)`);
 
     // 3. TIMELINE & PASSAGES
     const passagesData: any[] = [];
@@ -79,14 +216,23 @@ export default defineEventHandler(async (event) => {
         program: parseFloat(p.toFixed(2)),
         technical: parseFloat(t.toFixed(2)),
         total: parseFloat((p + t).toFixed(2)),
-        isPublished: true
+        isPublished: true,
       };
     };
 
     const monitorNames = [
-      'Jean Dupont', 'Marie Curie', 'Paul Scherrer', 'Albert Einstein',
-      'Sarah Connor', 'Ellen Ripley', 'John Wick', 'James Bond',
-      'Lara Croft', 'Indiana Jones', 'Han Solo', 'Leia Organa'
+      "Jean Dupont",
+      "Marie Curie",
+      "Paul Scherrer",
+      "Albert Einstein",
+      "Sarah Connor",
+      "Ellen Ripley",
+      "John Wick",
+      "James Bond",
+      "Lara Croft",
+      "Indiana Jones",
+      "Han Solo",
+      "Leia Organa",
     ];
 
     const generateMonitors = () => {
@@ -94,115 +240,162 @@ export default defineEventHandler(async (event) => {
       const count = 1 + Math.floor(Math.random() * 3);
       const selected = [];
       for (let i = 0; i < count; i++) {
-        selected.push(monitorNames[Math.floor(Math.random() * monitorNames.length)]);
+        selected.push(
+          monitorNames[Math.floor(Math.random() * monitorNames.length)],
+        );
       }
       return [...new Set(selected)]; // Unique
     };
 
     let passageCounter = 0;
-    const appCodes = ['SS', 'BA', 'AB', 'SA', 'RE'];
+    let activeCounter = 0;
+    let mixteCounter = 0;
+    
+    // Tous les engins disponibles pour tous les groupes
+    const appCodes = ["SS", "BA", "AB", "SA", "RE", "BAS", "CE", "GY", "TR"];
 
-    // A. YESTERDAY (20 Finished)
-    for (let i = 0; i < 20; i++) {
+    // A. YESTERDAY (15 Actifs Finished + 5 Mixtes Finished)
+    for (let i = 0; i < 15; i++) {
       const startTime = new Date(yesterday.getTime() + i * 15 * 60000);
       passagesData.push({
-        group: String(getGroup(passageCounter++)._id),
-        apparatus: String(getAppId(appCodes[i % 5]!)), // Non-null assertion
+        group: String(getGroupByCategory("ACTIVE", activeCounter++)._id),
+        apparatus: String(getAppId(appCodes[i % appCodes.length]!)),
         startTime: startTime,
         endTime: new Date(startTime.getTime() + 10 * 60000),
-        location: i % 2 === 0 ? 'Salle Omnisport 1' : 'Salle 2',
-        status: 'FINISHED',
+        location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
+        status: "FINISHED",
         scores: generateScore(),
-        monitors: generateMonitors()
+        monitors: generateMonitors(),
+      });
+    }
+    
+    for (let i = 0; i < 5; i++) {
+      const startTime = new Date(yesterday.getTime() + (15 + i) * 15 * 60000);
+      passagesData.push({
+        group: String(getGroupByCategory("MIXTE", mixteCounter++)._id),
+        apparatus: String(getAppId(appCodes[i % appCodes.length]!)),
+        startTime: startTime,
+        endTime: new Date(startTime.getTime() + 10 * 60000),
+        location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
+        status: "FINISHED",
+        scores: generateScore(),
+        monitors: generateMonitors(),
       });
     }
 
-    // B. TODAY AM (10 Finished)
-    for (let i = 0; i < 10; i++) {
+    // B. TODAY AM (7 Actifs Finished + 3 Mixtes Finished)
+    for (let i = 0; i < 7; i++) {
       const startTime = new Date(todayStart.getTime() + i * 15 * 60000);
       passagesData.push({
-        group: String(getGroup(passageCounter++)._id),
-        apparatus: String(getAppId(appCodes[i % 5]!)),
+        group: String(getGroupByCategory("ACTIVE", activeCounter++)._id),
+        apparatus: String(getAppId(appCodes[i % appCodes.length]!)),
         startTime: startTime,
         endTime: new Date(startTime.getTime() + 10 * 60000),
-        location: i % 2 === 0 ? 'Salle Omnisport 1' : 'Salle 2',
-        status: 'FINISHED',
+        location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
+        status: "FINISHED",
         scores: generateScore(),
-        monitors: generateMonitors()
+        monitors: generateMonitors(),
+      });
+    }
+    
+    for (let i = 0; i < 3; i++) {
+      const startTime = new Date(todayStart.getTime() + (7 + i) * 15 * 60000);
+      passagesData.push({
+        group: String(getGroupByCategory("MIXTE", mixteCounter++)._id),
+        apparatus: String(getAppId(appCodes[i % appCodes.length]!)),
+        startTime: startTime,
+        endTime: new Date(startTime.getTime() + 10 * 60000),
+        location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
+        status: "FINISHED",
+        scores: generateScore(),
+        monitors: generateMonitors(),
       });
     }
 
-    // C. TODAY NOW (2 LIVE)
+    // C. TODAY NOW (1 ACTIF LIVE + 1 MIXTE LIVE)
     const liveStartTime = new Date(now.getTime() - 5 * 60000);
 
     const live1 = {
-      group: String(getGroup(passageCounter++)._id),
-      apparatus: String(getAppId('SS')),
+      group: String(getGroupByCategory("ACTIVE", activeCounter++)._id),
+      apparatus: String(getAppId("SS")),
       startTime: liveStartTime,
       endTime: new Date(liveStartTime.getTime() + 15 * 60000),
-      location: 'Salle Omnisport 1',
-      status: 'LIVE',
+      location: "Isles 1",
+      status: "LIVE",
       scores: {},
-      monitors: generateMonitors()
+      monitors: generateMonitors(),
     };
     passagesData.push(live1);
 
     const live2 = {
-      group: String(getGroup(passageCounter++)._id),
-      apparatus: String(getAppId('AB')),
+      group: String(getGroupByCategory("MIXTE", mixteCounter++)._id),
+      apparatus: String(getAppId("BA")),
       startTime: liveStartTime,
       endTime: new Date(liveStartTime.getTime() + 15 * 60000),
-      location: 'Salle 2',
-      status: 'LIVE',
+      location: "Léon Michaud 1",
+      status: "LIVE",
       scores: {},
-      monitors: generateMonitors()
+      monitors: generateMonitors(),
     };
     passagesData.push(live2);
 
-
-    // D. TODAY PM (10 Scheduled)
+    // D. TODAY PM (7 Actifs Scheduled + 3 Mixtes Scheduled)
     const todayPMStart = new Date(now.getTime() + 30 * 60000);
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 7; i++) {
       const startTime = new Date(todayPMStart.getTime() + i * 15 * 60000);
       passagesData.push({
-        group: String(getGroup(passageCounter++)._id),
-        apparatus: String(getAppId(appCodes[i % 5]!)),
+        group: String(getGroupByCategory("ACTIVE", activeCounter++)._id),
+        apparatus: String(getAppId(appCodes[i % appCodes.length]!)),
         startTime: startTime,
         endTime: new Date(startTime.getTime() + 10 * 60000),
-        location: i % 2 === 0 ? 'Salle Omnisport 1' : 'Salle 2',
-        status: 'SCHEDULED',
+        location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
+        status: "SCHEDULED",
         scores: {},
-        monitors: generateMonitors()
+        monitors: generateMonitors(),
+      });
+    }
+    
+    for (let i = 0; i < 3; i++) {
+      const startTime = new Date(todayPMStart.getTime() + (7 + i) * 15 * 60000);
+      passagesData.push({
+        group: String(getGroupByCategory("MIXTE", mixteCounter++)._id),
+        apparatus: String(getAppId(appCodes[i % appCodes.length]!)),
+        startTime: startTime,
+        endTime: new Date(startTime.getTime() + 10 * 60000),
+        location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
+        status: "SCHEDULED",
+        scores: {},
+        monitors: generateMonitors(),
       });
     }
 
-    // E. TOMORROW (15 Scheduled)
-    for (let i = 0; i < 15; i++) {
+    // E. TOMORROW (10 Actifs Scheduled + 5 Mixtes Scheduled)
+    for (let i = 0; i < 10; i++) {
       const startTime = new Date(tomorrow.getTime() + i * 15 * 60000);
       passagesData.push({
-        group: String(getGroup(passageCounter++)._id),
-        apparatus: String(getAppId(appCodes[i % 5]!)),
+        group: String(getGroupByCategory("ACTIVE", activeCounter++)._id),
+        apparatus: String(getAppId(appCodes[i % appCodes.length]!)),
         startTime: startTime,
         endTime: new Date(startTime.getTime() + 10 * 60000),
-        location: i % 2 === 0 ? 'Salle Omnisport 1' : 'Salle 2',
-        status: 'SCHEDULED',
+        location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
+        status: "SCHEDULED",
         scores: {},
-        monitors: generateMonitors()
+        monitors: generateMonitors(),
       });
     }
-
-    // F. DEMO FINISHED (5 Forced)
+    
     for (let i = 0; i < 5; i++) {
-        passagesData.push({
-            group: String(getGroup(passageCounter++)._id),
-            apparatus: String(getAppId(appCodes[i % 5]!)),
-            startTime: new Date(now.getTime() - 60 * 60000), // 1 hour ago
-            endTime: new Date(now.getTime() - 50 * 60000),
-            location: 'Salle Omnisport 1',
-            status: 'FINISHED',
-            scores: generateScore(),
-            monitors: generateMonitors()
-        });
+      const startTime = new Date(tomorrow.getTime() + (10 + i) * 15 * 60000);
+      passagesData.push({
+        group: String(getGroupByCategory("MIXTE", mixteCounter++)._id),
+        apparatus: String(getAppId(appCodes[i % appCodes.length]!)),
+        startTime: startTime,
+        endTime: new Date(startTime.getTime() + 10 * 60000),
+        location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
+        status: "SCHEDULED",
+        scores: {},
+        monitors: generateMonitors(),
+      });
     }
 
     const insertedPassages = await PassageModel.insertMany(passagesData);
@@ -210,29 +403,29 @@ export default defineEventHandler(async (event) => {
 
     // 4. STREAMS
     // Safe fetching of live passages
-    const livePassages = await PassageModel.find({ status: 'LIVE' });
+    const livePassages = await PassageModel.find({ status: "LIVE" });
 
     const streamsData = [];
     if (livePassages.length > 0 && livePassages[0]) {
-        streamsData.push({
-            name: 'Salle Omnisport 1 - Caméra Principale',
-            type: 'EMBED',
-            url: 'https://www.youtube.com/embed/jfKfPfyJRdk',
-            location: 'Salle Omnisport 1',
-            isLive: true,
-            currentPassage: String(livePassages[0]._id)
-        });
+      streamsData.push({
+        name: "Isles 1 - Caméra Principale",
+        type: "EMBED",
+        url: "https://www.youtube.com/embed/jfKfPfyJRdk",
+        location: "Isles 1",
+        isLive: true,
+        currentPassage: String(livePassages[0]._id),
+      });
     }
 
     if (livePassages.length > 1 && livePassages[1]) {
-        streamsData.push({
-            name: 'Salle 2 - Vue Gymnastes',
-            type: 'LINK',
-            url: 'https://twitch.tv/swissgymnastics',
-            location: 'Salle 2',
-            isLive: true,
-            currentPassage: String(livePassages[1]._id)
-        });
+      streamsData.push({
+        name: "Léon Michaud 1 - Vue Gymnastes",
+        type: "LINK",
+        url: "https://twitch.tv/swissgymnastics",
+        location: "Léon Michaud 1",
+        isLive: true,
+        currentPassage: String(livePassages[1]._id),
+      });
     }
 
     const insertedStreams = await StreamModel.insertMany(streamsData);
@@ -244,15 +437,18 @@ export default defineEventHandler(async (event) => {
         apparatus: insertedApparatus.length,
         groups: insertedGroups.length,
         passages: insertedPassages.length,
-        streams: insertedStreams.length
-      }
+        streams: insertedStreams.length,
+        breakdown: {
+          activeGroups: activeGroups.length,
+          mixedGroups: mixedGroups.length,
+        }
+      },
     };
-
   } catch (err: any) {
-    console.error('[seed] Error:', err);
+    console.error("[seed] Error:", err);
     throw createError({
       statusCode: 500,
-      statusMessage: err.message || 'Seeding failed'
+      statusMessage: err.message || "Seeding failed",
     });
   }
 });

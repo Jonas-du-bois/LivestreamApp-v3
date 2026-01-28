@@ -28,11 +28,20 @@ export default defineEventHandler(async (event) => {
     let finishedCount = 0
     let totalPassages = passages.length
 
+    // Collect unique monitors
+    const monitorsSet = new Set<string>()
+
     const timeline = passages.map((p: any) => {
       if (p.status === 'FINISHED' && p.scores?.total) {
         totalScore += p.scores.total
         finishedCount++
       }
+      
+      // Add monitors to set
+      if (p.monitors && Array.isArray(p.monitors)) {
+        p.monitors.forEach((monitor: string) => monitorsSet.add(monitor))
+      }
+
       return {
         _id: p._id,
         apparatus: p.apparatus,
@@ -47,19 +56,48 @@ export default defineEventHandler(async (event) => {
 
     const averageScore = finishedCount > 0 ? (totalScore / finishedCount).toFixed(2) : '0.00'
 
+    // 4. Build history by year (for the timeline chart)
+    const historyByYear: { year: number; score: number }[] = []
+    const yearMap = new Map<number, { total: number; count: number }>()
+
+    passages.forEach((p: any) => {
+      if (p.status === 'FINISHED' && p.scores?.total) {
+        const year = new Date(p.startTime).getFullYear()
+        if (!yearMap.has(year)) {
+          yearMap.set(year, { total: 0, count: 0 })
+        }
+        const yearData = yearMap.get(year)!
+        yearData.total += p.scores.total
+        yearData.count++
+      }
+    })
+
+    yearMap.forEach((data, year) => {
+      historyByYear.push({
+        year,
+        score: data.total / data.count
+      })
+    })
+
+    historyByYear.sort((a, b) => a.year - b.year)
+
     return {
       info: {
         _id: group._id,
         name: group.name,
         canton: group.canton,
+        category: group.category || 'ACTIVE', // ACTIVE ou MIXTE
         logo: group.logo,
-        description: group.description
+        description: group.description,
+        gymnastsCount: group.gymnastsCount || 0
       },
       stats: {
         completedPassages: finishedCount,
         totalPassages: totalPassages,
         currentTotalScore: Number(averageScore)
       },
+      monitors: Array.from(monitorsSet),
+      history: historyByYear,
       timeline
     }
 

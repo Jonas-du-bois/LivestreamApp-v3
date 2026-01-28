@@ -10,7 +10,9 @@ export interface HistoryEntry {
 export interface IGroup extends Document {
   name: string;
   canton?: string;
+  category?: 'ACTIVE' | 'MIXTE';
   logo?: string;
+  description?: string;
   gymnastsCount?: number;
   monitors?: string[];
   history?: HistoryEntry[];
@@ -29,11 +31,13 @@ const HistorySchema = new Schema<HistoryEntry>(
 const GroupSchema = new Schema<IGroup>(
   {
     name: { type: String, required: true },
+    description: { type: String },
     canton: { type: String },
     logo: { type: String },
     gymnastsCount: { type: Number },
     monitors: { type: [String], default: [] },
     history: { type: [HistorySchema], default: [] },
+    category: { type: String, enum: ['ACTIVE', 'MIXTE'] },
   },
   { timestamps: true }
 );

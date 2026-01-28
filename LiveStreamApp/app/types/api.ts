@@ -18,6 +18,8 @@ export interface Group {
   name: string;
   canton?: string;
   logo?: string;
+  description?: string;
+  category?: string;
   gymnastsCount?: number;
   monitors?: string[];
   history?: HistoryEntry[];

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { PublicService } from '../../services/public.service'
 import { useSocket } from '../../composables/useSocket'
-import type { PassageEnriched } from '../../types/api'
+import type { PassageEnriched, HistoryEntry } from '../../types/api'
 
 interface Props {
   isOpen: boolean
   groupId?: string
-  // Fallback or display only if ID not available immediately
   groupName?: string
 }
 
@@ -19,6 +18,8 @@ const socket = useSocket()
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 const details = ref<any>(null)
+const isFavorite = ref(false)
+const activeTab = ref<'timeline' | 'stats'>('timeline')
 
 const fetchData = async () => {
   if (!props.groupId) return
@@ -39,9 +40,7 @@ const fetchData = async () => {
 watch(() => props.isOpen, (newVal) => {
   if (newVal && props.groupId) {
     fetchData()
-  } else {
-    // Reset state on close if needed?
-    // details.value = null
+    activeTab.value = 'timeline' // Reset to timeline on open
   }
 })
 
@@ -53,7 +52,6 @@ watch(() => props.groupId, (newId) => {
 
 // Real-time updates
 const handleScoreUpdate = (payload: any) => {
-  // Payload: { passageId, scores: { ... } }
   if (!details.value || !details.value.timeline) return
 
   const passage = details.value.timeline.find((p: any) => p._id === payload.passageId)
@@ -61,8 +59,6 @@ const handleScoreUpdate = (payload: any) => {
     passage.scores = payload.scores
     if (passage.status !== 'FINISHED' && payload.scores.isPublished) {
         passage.status = 'FINISHED'
-        // Trigger re-fetch of stats? Or compute locally?
-        // Simple local update for stats
         recomputeStats()
     } else if (passage.status === 'SCHEDULED' && !payload.scores.isPublished) {
         passage.status = 'LIVE'
@@ -89,6 +85,43 @@ onUnmounted(() => {
 })
 
 const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+const toggleFavorite = () => {
+  isFavorite.value = !isFavorite.value
+}
+
+const getInitials = (name: string) => {
+  if (!name) return ''
+  return name.split(' ').map((n: string) => n[0]).join('')
+}
+
+// Computed properties
+const categoryLabel = computed(() => {
+  if (!details.value?.info) return 'Groupe Actif'
+  return details.value.info.category === 'MIXTE' ? 'Groupe Mixte' : 'Groupe Actif'
+})
+
+const categoryColor = computed(() => {
+  if (!details.value?.info) return 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
+  return details.value.info.category === 'MIXTE' 
+    ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' 
+    : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
+})
+
+const gymnastsCount = computed(() => details.value?.info?.gymnastsCount ?? 0)
+const monitorsCount = computed(() => details.value?.monitors?.length ?? 0)
+const monitors = computed(() => details.value?.monitors ?? [])
+
+const historyByYear = computed(() => {
+  if (!details.value?.history) return []
+  return details.value.history.sort((a: any, b: any) => a.year - b.year)
+})
+
+const averageHistoryScore = computed(() => {
+  if (!historyByYear.value.length) return '0.00'
+  const sum = historyByYear.value.reduce((acc: number, curr: any) => acc + curr.score, 0)
+  return (sum / historyByYear.value.length).toFixed(2)
+})
 </script>
 
 <template>
@@ -104,7 +137,7 @@ const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour:
     <Transition name="scale">
       <div
         v-if="isOpen"
-        class="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90%] md:max-w-lg glass-panel z-[90] overflow-hidden flex flex-col max-h-[90vh]"
+        class="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90%] md:max-w-2xl glass-panel z-[90] overflow-hidden flex flex-col max-h-[90vh]"
       >
         <div v-if="isLoading && !details" class="p-12 text-center text-white/60">
            <Icon name="fluent:spinner-ios-20-filled" class="w-8 h-8 animate-spin mx-auto mb-4" />
@@ -117,120 +150,370 @@ const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour:
         </div>
 
         <template v-else-if="details">
-            <!-- Header -->
-            <div class="relative h-48 overflow-hidden flex-shrink-0">
-            <!-- Background Image/Placeholder -->
-            <div class="absolute inset-0 bg-gradient-to-br from-cyan-900/40 to-purple-900/40" />
-             <ImageWithFallback
-                src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2340&auto=format&fit=crop"
-                class="w-full h-full object-cover opacity-60"
-                alt="Gymnastics"
-            />
+            <!-- Header with Image -->
+            <div class="relative h-52 overflow-hidden flex-shrink-0">
+              <ImageWithFallback
+                :src="details.info.logo || 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2340&auto=format&fit=crop'"
+                :alt="details.info.name"
+                class="w-full h-full object-cover"
+              />
+              <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#0B1120]" />
+              
+              <!-- Wave SVG -->
+              <svg
+                class="absolute bottom-0 w-full"
+                viewBox="0 0 1440 120"
+                preserveAspectRatio="none"
+                style="height: 60px"
+              >
+                <path
+                  d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"
+                  fill="#0B1120"
+                />
+              </svg>
 
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0B1120]" />
-
-            <button
+              <!-- Close button -->
+              <button
                 @click="emit('close')"
                 class="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-lg transition-colors"
-            >
+              >
                 <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white" />
-            </button>
+              </button>
 
-            <div class="absolute bottom-6 left-6 right-6 z-10">
-                <div class="flex items-end justify-between">
-                    <div>
-                        <h2 class="text-white font-bold text-2xl mb-1 leading-tight">{{ details.info.name }}</h2>
-                        <div class="flex items-center gap-2">
-                             <span class="px-2 py-0.5 rounded-md bg-white/10 text-xs font-bold text-white border border-white/10">{{ details.info.canton }}</span>
-                             <span class="text-white/60 text-sm">{{ details.info.description || 'Société de gymnastique' }}</span>
-                        </div>
+              <!-- Title & Category -->
+              <div class="absolute bottom-6 left-6 right-6 z-10">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                  <h2 class="text-white font-bold text-2xl md:text-3xl leading-tight">{{ details.info.name }}</h2>
+                  
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2 py-0.5 rounded-md bg-white/10 text-xs font-bold text-white border border-white/20">
+                    {{ details.info.canton }}
+                  </span>
+                  <div :class="['px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0 border', categoryColor]">
+                    {{ categoryLabel }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-white/10 bg-[#0B1120]/80 backdrop-blur-sm flex-shrink-0">
+              <button
+                @click="activeTab = 'timeline'"
+                :class="[
+                  'flex-1 py-4 px-6 font-semibold transition-colors relative',
+                  activeTab === 'timeline' ? 'text-cyan-400' : 'text-white/60 hover:text-white/80'
+                ]"
+              >
+                <Icon name="fluent:timeline-24-regular" class="w-5 h-5 inline-block mr-2" />
+                Timeline
+                <div v-if="activeTab === 'timeline'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400" />
+              </button>
+              <button
+                @click="activeTab = 'stats'"
+                :class="[
+                  'flex-1 py-4 px-6 font-semibold transition-colors relative',
+                  activeTab === 'stats' ? 'text-cyan-400' : 'text-white/60 hover:text-white/80'
+                ]"
+              >
+                <Icon name="fluent:data-bar-vertical-24-regular" class="w-5 h-5 inline-block mr-2" />
+                Statistiques
+                <div v-if="activeTab === 'stats'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400" />
+              </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto">
+              <!-- TIMELINE TAB -->
+              <div v-show="activeTab === 'timeline'" class="p-6">
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                  <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
+                    <Icon name="fluent:checkmark-circle-24-regular" class="w-6 h-6 text-cyan-400 mb-2" />
+                    <div class="text-2xl font-bold text-white leading-none mb-1">
+                      {{ details.stats.completedPassages }} <span class="text-sm text-white/40 font-normal">/ {{ details.stats.totalPassages }}</span>
                     </div>
+                    <div class="text-xs text-white/50">Passages terminés</div>
+                  </div>
+                  <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
+                    <Icon name="fluent:arrow-trending-24-regular" class="w-6 h-6 text-purple-400 mb-2" />
+                    <div class="text-2xl font-bold text-white leading-none mb-1">{{ details.stats.currentTotalScore }}</div>
+                    <div class="text-xs text-white/50">Note Moyenne</div>
+                  </div>
                 </div>
-            </div>
-            </div>
 
-            <!-- Stats -->
-            <div class="px-6 py-4 grid grid-cols-2 gap-4 border-b border-white/5">
-                <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
-                     <Icon name="fluent:checkmark-circle-24-regular" class="w-6 h-6 text-cyan-400 mb-2" />
-                     <div class="text-2xl font-bold text-white leading-none mb-1">
-                        {{ details.stats.completedPassages }} <span class="text-sm text-white/40 font-normal">/ {{ details.stats.totalPassages }}</span>
-                     </div>
-                     <div class="text-xs text-white/50">Passages terminés</div>
-                </div>
-                <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
-                     <Icon name="fluent:arrow-trending-24-regular" class="w-6 h-6 text-purple-400 mb-2" />
-                     <div class="text-2xl font-bold text-white leading-none mb-1">{{ details.stats.currentTotalScore }}</div>
-                     <div class="text-xs text-white/50">Note Moyenne</div>
-                </div>
-            </div>
-
-            <!-- Timeline -->
-            <div class="flex-1 overflow-y-auto p-6">
-                <h3 class="text-white font-bold mb-4">Déroulement de la journée</h3>
+                <!-- Timeline -->
+                <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                  <Icon name="fluent:calendar-clock-24-regular" class="w-5 h-5 text-cyan-400" />
+                  Déroulement de la journée
+                </h3>
                 <div class="space-y-4 relative">
-                    <!-- Vertical Line -->
-                    <div class="absolute left-[19px] top-2 bottom-2 w-0.5 bg-white/10" />
+                  <!-- Vertical Line -->
+                  <div class="absolute left-[19px] top-2 bottom-2 w-0.5 bg-white/10" />
 
-                    <div 
-                        v-for="item in details.timeline"
-                        :key="item._id"
-                        class="relative pl-12"
+                  <div 
+                    v-for="item in details.timeline"
+                    :key="item._id"
+                    class="relative pl-12"
+                  >
+                    <!-- Icon Bubble -->
+                    <div
+                      class="absolute left-0 top-0 w-10 h-10 rounded-full flex items-center justify-center border-2 z-10 bg-[#0B1120]"
+                      :class="item.status === 'LIVE' ? 'border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' :
+                              item.status === 'FINISHED' ? 'border-cyan-400 text-cyan-400' : 'border-white/20 text-white/40'"
                     >
-                        <!-- Icon Bubble -->
-                        <div
-                            class="absolute left-0 top-0 w-10 h-10 rounded-full flex items-center justify-center border-2 z-10 bg-[#0B1120]"
-                            :class="item.status === 'LIVE' ? 'border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' :
-                                    item.status === 'FINISHED' ? 'border-cyan-400 text-cyan-400' : 'border-white/20 text-white/40'"
-                        >
-                            <Icon :name="item.apparatus.icon || 'fluent:circle-24-regular'" class="w-5 h-5" />
-                        </div>
-
-                        <!-- Content Card -->
-                        <div class="glass-card p-4 hover:bg-white/10 transition-colors">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <div class="font-bold text-white text-lg leading-tight mb-0.5">{{ item.apparatus.name }}</div>
-                                    <div class="text-xs text-white/50 flex items-center gap-1.5">
-                                        <span>{{ formatTime(item.startTime) }}</span>
-                                        <span>•</span>
-                                        <span>{{ item.location || 'Salle 1' }}</span>
-                                    </div>
-                                </div>
-                                <div v-if="item.status === 'FINISHED'" class="text-right">
-                                    <div class="text-2xl font-bold text-cyan-400 leading-none">{{ item.scores?.total?.toFixed(2) || '0.00' }}</div>
-                                </div>
-                                <div v-else-if="item.status === 'LIVE'" class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/20 animate-pulse">
-                                    🔴 EN COURS
-                                </div>
-                                <div v-else class="text-white/40 text-sm italic">
-                                    À venir
-                                </div>
-                            </div>
-
-                            <!-- Monitors -->
-                            <div v-if="item.monitors && item.monitors.length > 0" class="flex flex-wrap gap-2 mt-3">
-                                <span
-                                    v-for="monitor in item.monitors"
-                                    :key="monitor"
-                                    class="px-2 py-1 rounded-md bg-white/5 text-white/60 text-xs border border-white/5"
-                                >
-                                    {{ monitor }}
-                                </span>
-                            </div>
-                        </div>
+                      <Icon :name="item.apparatus.icon || 'fluent:circle-24-regular'" class="w-5 h-5" />
                     </div>
+
+                    <!-- Content Card -->
+                    <div class="glass-card p-4 hover:bg-white/10 transition-colors">
+                      <div class="flex justify-between items-start mb-2">
+                        <div>
+                          <div class="font-bold text-white text-lg leading-tight mb-0.5">{{ item.apparatus.name }}</div>
+                          <div class="text-xs text-white/50 flex items-center gap-1.5">
+                            <Icon name="fluent:clock-24-regular" class="w-3.5 h-3.5" />
+                            <span>{{ formatTime(item.startTime) }}</span>
+                            <span>•</span>
+                            <Icon name="fluent:location-24-regular" class="w-3.5 h-3.5" />
+                            <span>{{ item.location || 'Salle 1' }}</span>
+                          </div>
+                        </div>
+                        <div v-if="item.status === 'FINISHED'" class="text-right">
+                          <div class="text-2xl font-bold text-cyan-400 leading-none">{{ item.scores?.total?.toFixed(2) || '0.00' }}</div>
+                        </div>
+                        <div v-else-if="item.status === 'LIVE'" class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/20 animate-pulse">
+                          🔴 EN COURS
+                        </div>
+                        <div v-else class="text-white/40 text-sm italic">
+                          À venir
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              <!-- STATS TAB -->
+              <div v-show="activeTab === 'stats'" class="p-6 space-y-6">
+                <!-- Stats Grid -->
+                <div>
+                  <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                    <Icon name="fluent:data-bar-vertical-24-regular" class="w-5 h-5 text-cyan-400" />
+                    Vue d'ensemble
+                  </h3>
+                  <div class="grid grid-cols-3 gap-3">
+                    <div class="glass-card p-4 text-center bg-white/5">
+                      <Icon name="fluent:people-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
+                      <div class="text-white font-bold text-xl">{{ gymnastsCount }}</div>
+                      <div class="text-white/60 text-xs">Gymnastes</div>
+                    </div>
+                    <div class="glass-card p-4 text-center bg-white/5">
+                      <Icon name="fluent:person-24-regular" class="w-6 h-6 text-purple-400 mx-auto mb-2" />
+                      <div class="text-white font-bold text-xl">{{ monitorsCount }}</div>
+                      <div class="text-white/60 text-xs">Moniteurs</div>
+                    </div>
+                    <div class="glass-card p-4 text-center bg-white/5">
+                      <Icon name="fluent:trophy-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
+                      <div class="text-white font-bold text-xl">{{ averageHistoryScore }}</div>
+                      <div class="text-white/60 text-xs">Moy. Hist.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Category Info for MIXTE -->
+                <div v-if="details.info.category === 'MIXTE'" class="glass-card p-4 bg-purple-500/5 border border-purple-500/20">
+                  <div class="flex items-start gap-3">
+                    <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 class="text-white font-semibold text-sm mb-1">Groupe Mixte</h4>
+                      <p class="text-white/60 text-xs">
+                        Ce groupe participe dans la catégorie mixte, combinant gymnastes féminins et masculins.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Monitors List -->
+                <div v-if="monitors.length > 0">
+                  <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+                    <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-cyan-400" />
+                    Équipe d'encadrement
+                  </h3>
+                  <div class="glass-card p-4 space-y-3 bg-white/5">
+                    <div
+                      v-for="coach in monitors"
+                      :key="coach"
+                      class="flex items-center gap-3"
+                    >
+                      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-purple-400 flex items-center justify-center flex-shrink-0">
+                        <span class="text-white text-sm font-bold">
+                          {{ getInitials(coach) }}
+                        </span>
+                      </div>
+                      <span class="text-white">{{ coach }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Historical Performance -->
+                <div v-if="historyByYear.length > 0">
+                  <div class="flex items-center gap-2 mb-3">
+                    <Icon name="fluent:history-24-regular" class="w-5 h-5 text-cyan-400" />
+                    <h3 class="text-white font-bold">Historique des performances</h3>
+                  </div>
+                  <div class="glass-card p-5 bg-white/5">
+                    <!-- Chart Container -->
+                    <div class="relative h-48 mb-4">
+                      <!-- Y-axis labels -->
+                      <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-white/40 pr-2">
+                        <span>10.0</span>
+                        <span>7.5</span>
+                        <span>5.0</span>
+                        <span>2.5</span>
+                        <span>0.0</span>
+                      </div>
+
+                      <!-- Chart area -->
+                      <div class="ml-8 h-full relative">
+                        <!-- Grid lines -->
+                        <div class="absolute inset-0 flex flex-col justify-between">
+                          <div class="border-t border-white/5"></div>
+                          <div class="border-t border-white/5"></div>
+                          <div class="border-t border-white/5"></div>
+                          <div class="border-t border-white/5"></div>
+                          <div class="border-t border-white/10"></div>
+                        </div>
+
+                        <!-- SVG Line Chart -->
+                        <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                          <!-- Define gradient for the line -->
+                          <defs>
+                            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:1" />
+                              <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:0.2" />
+                              <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.05" />
+                            </linearGradient>
+                          </defs>
+
+                          <!-- Area under the curve -->
+                          <path
+                            v-if="historyByYear.length > 0"
+                            :d="`M 0,100 ${historyByYear.map((d, i) => {
+                              const x = (i / Math.max(historyByYear.length - 1, 1)) * 100
+                              const y = 100 - (d.score / 10 * 100)
+                              return `L ${x},${y}`
+                            }).join(' ')} L 100,100 Z`"
+                            fill="url(#areaGradient)"
+                            vector-effect="non-scaling-stroke"
+                          />
+
+                          <!-- Line -->
+                          <polyline
+                            v-if="historyByYear.length > 0"
+                            :points="historyByYear.map((d, i) => {
+                              const x = (i / Math.max(historyByYear.length - 1, 1)) * 100
+                              const y = 100 - (d.score / 10 * 100)
+                              return `${x},${y}`
+                            }).join(' ')"
+                            fill="none"
+                            stroke="url(#lineGradient)"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            vector-effect="non-scaling-stroke"
+                          />
+
+                          <!-- Data points -->
+                          <circle
+                            v-for="(data, index) in historyByYear"
+                            :key="data.year"
+                            :cx="(index / Math.max(historyByYear.length - 1, 1)) * 100 + '%'"
+                            :cy="(100 - (data.score / 10 * 100)) + '%'"
+                            r="4"
+                            fill="#0B1120"
+                            stroke="url(#lineGradient)"
+                            stroke-width="2.5"
+                            class="cursor-pointer hover:r-6 transition-all"
+                          >
+                            <title>{{ data.year }}: {{ data.score.toFixed(2) }}</title>
+                          </circle>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <!-- X-axis labels (years) -->
+                    <div class="ml-8 flex justify-between text-xs text-white/60 font-semibold">
+                      <span v-for="data in historyByYear" :key="data.year">
+                        {{ data.year }}
+                      </span>
+                    </div>
+
+                    <!-- Stats summary -->
+                    <div class="mt-4 pt-4 border-t border-white/10 grid grid-cols-3 gap-3 text-center">
+                      <div>
+                        <div class="text-xs text-white/40 mb-1">Meilleur</div>
+                        <div class="text-cyan-400 font-bold">
+                          {{ Math.max(...historyByYear.map(d => d.score)).toFixed(2) }}
+                        </div>
+                      </div>
+                      <div>
+                        <div class="text-xs text-white/40 mb-1">Moyenne</div>
+                        <div class="text-white font-bold">
+                          {{ averageHistoryScore }}
+                        </div>
+                      </div>
+                      <div>
+                        <div class="text-xs text-white/40 mb-1">Évolution</div>
+                        <div 
+                          :class="[
+                            'font-bold flex items-center justify-center gap-1',
+                            historyByYear.length > 1 && historyByYear[historyByYear.length - 1].score > historyByYear[0].score 
+                              ? 'text-green-400' 
+                              : historyByYear.length > 1 && historyByYear[historyByYear.length - 1].score < historyByYear[0].score
+                                ? 'text-red-400'
+                                : 'text-white/60'
+                          ]"
+                        >
+                          <Icon 
+                            v-if="historyByYear.length > 1 && historyByYear[historyByYear.length - 1].score > historyByYear[0].score"
+                            name="fluent:arrow-trending-up-24-filled" 
+                            class="w-4 h-4" 
+                          />
+                          <Icon 
+                            v-else-if="historyByYear.length > 1 && historyByYear[historyByYear.length - 1].score < historyByYear[0].score"
+                            name="fluent:arrow-trending-down-24-filled" 
+                            class="w-4 h-4" 
+                          />
+                          <Icon 
+                            v-else
+                            name="fluent:arrow-right-24-filled" 
+                            class="w-4 h-4" 
+                          />
+                          {{ historyByYear.length > 1 ? Math.abs(historyByYear[historyByYear.length - 1].score - historyByYear[0].score).toFixed(2) : '0.00' }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Footer Action -->
             <div class="p-6 border-t border-white/10 flex-shrink-0 bg-[#0B1120]/50 backdrop-blur-xl">
-                <button
-                    class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-                >
-                    <Icon name="fluent:heart-24-regular" class="w-5 h-5" />
-                    Ajouter aux Favoris
-                </button>
+              <button
+                @click="toggleFavorite"
+                class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              >
+                <Icon
+                  :name="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
+                  class="w-5 h-5"
+                />
+                {{ isFavorite ? 'Retirer des Favoris' : 'Ajouter aux Favoris' }}
+              </button>
             </div>
         </template>
       </div>
@@ -258,7 +541,7 @@ const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour:
   transform: scale(0.9) translateY(20px);
 }
 
-/* Custom Scrollbar for Timeline */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
