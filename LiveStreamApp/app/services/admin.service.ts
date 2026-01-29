@@ -2,23 +2,35 @@ import type { PassageStatus } from '../types/api'
 
 export const AdminService = {
   updateScore(payload: { passageId: string; programScore?: number; techScore?: number; totalScore?: number }) {
-    return useApiClient<{ ok: boolean; payload: any }>('/admin/score', {
+    const { authHeader } = useAdminAuth()
+    const config = useRuntimeConfig()
+    return $fetch<{ ok: boolean; payload: any }>('/admin/score', {
+      baseURL: config.public.apiBase,
       method: 'PUT',
-      body: payload
+      body: payload,
+      headers: authHeader.value
     })
   },
 
   updateStatus(payload: { passageId: string; status: PassageStatus }) {
-    return useApiClient<void>('/admin/status', {
+    const { authHeader } = useAdminAuth()
+    const config = useRuntimeConfig()
+    return $fetch<void>('/admin/status', {
+      baseURL: config.public.apiBase,
       method: 'PUT',
-      body: payload
+      body: payload,
+      headers: authHeader.value
     })
   },
 
   updateStream(payload: { streamId: string; type?: string; url?: string; isLive?: boolean; currentPassageId?: string | null }) {
-    return useApiClient<void>('/admin/stream', {
+    const { authHeader } = useAdminAuth()
+    const config = useRuntimeConfig()
+    return $fetch<void>('/admin/stream', {
+      baseURL: config.public.apiBase,
       method: 'PUT',
-      body: payload
+      body: payload,
+      headers: authHeader.value
     })
   }
 }
