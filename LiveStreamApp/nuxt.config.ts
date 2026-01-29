@@ -21,6 +21,12 @@ export default defineNuxtConfig({
   ],
 
   app: {
+    head: {
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' }
+      ]
+    },
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'fade', mode: 'in-out' }
   },
@@ -39,6 +45,9 @@ export default defineNuxtConfig({
     strategies: 'generateSW',
     filename: 'sw.js',
     includeAssets: ['/icons/logo_livestreamappv3-192.png', '/icons/logo_livestreamappv3-512.png', '/robots.txt'],
+    workbox: {
+      navigateFallback: '/'
+    },
     devOptions: {
       enabled: true,
       suppressWarnings: true,
