@@ -41,6 +41,7 @@ export default defineNuxtConfig({
     includeAssets: ['/icons/logo_livestreamappv3-192.png', '/icons/logo_livestreamappv3-512.png', '/robots.txt'],
     devOptions: {
       enabled: true,
+      suppressWarnings: true,
     },
     manifest: {
       name: 'LiveStreamApp FSG',

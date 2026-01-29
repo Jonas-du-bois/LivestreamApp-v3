@@ -16,9 +16,9 @@ const availableApparatus = computed(() => meta.value?.availableApparatus || [])
 const filtersStore = useScheduleFilters()
 
 // Local State (for editing)
-const selectedDivision = ref<string[]>([])
-const selectedSalle = ref<string[]>([])
-const selectedApparatus = ref<string[]>([])
+const selectedDivision = useState<string[]>('filter-sheet-division', () => [])
+const selectedSalle = useState<string[]>('filter-sheet-salle', () => [])
+const selectedApparatus = useState<string[]>('filter-sheet-apparatus', () => [])
 
 // Sync local state with global state when opening
 watch(() => props.isOpen, (isOpen) => {

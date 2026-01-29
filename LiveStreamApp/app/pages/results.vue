@@ -12,7 +12,7 @@ const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 const { data: resultsMap, refresh } = await PublicService.getResults()
 
 // Active tab state
-const activeTab = ref<string | null>(null)
+const activeTab = useState<string | null>('results-active-tab', () => null)
 
 // Computed properties
 const resultsSections = computed(() => {
