@@ -44,8 +44,10 @@ export default defineEventHandler(async (event) => {
     const io = socketAny?.server?.io as IOServer | undefined;
     const room = `stream-${streamId}`;
 
-    if (io) io.to(room).emit('stream-update', sanitized);
-    else console.warn('[stream] io instance not found, skipping emit');
+    if (io) {
+      io.to(room).emit('stream-update', sanitized);
+      io.to('streams').emit('stream-update', sanitized); // Broadcast to list view
+    } else console.warn('[stream] io instance not found, skipping emit');
 
     return { ok: true, stream: sanitized };
   } catch (err) {

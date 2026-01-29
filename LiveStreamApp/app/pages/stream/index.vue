@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { onMounted, onBeforeUnmount } from 'vue'
+import { useSocket } from '../../composables/useSocket'
+import type { Stream } from '../../types/api'
 import { PublicService } from '../../services/public.service'
 
 interface StreamDisplay {
@@ -20,6 +23,37 @@ const livePassagesMap = computed(() => {
     liveResp.value.passages.forEach((p: any) => map.set(p._id, p))
   }
   return map
+})
+
+const handleStreamUpdate = (updatedStream: Partial<Stream>) => {
+  if (liveResp.value?.streams) {
+    const idx = liveResp.value.streams.findIndex((s: any) => s._id === updatedStream._id)
+    if (idx !== -1) {
+      const s = liveResp.value.streams[idx]
+      if (!s) return
+      // Apply updates
+      if (updatedStream.url !== undefined) s.url = updatedStream.url
+      if (updatedStream.isLive !== undefined) s.isLive = updatedStream.isLive
+      if (updatedStream.currentPassage !== undefined) s.currentPassage = updatedStream.currentPassage
+    }
+  }
+}
+
+onMounted(() => {
+  const socket = useSocket()
+  if (socket.connected) {
+    socket.emit('join-room', 'streams')
+  } else {
+    socket.on('connect', () => socket.emit('join-room', 'streams'))
+  }
+
+  socket.on('stream-update', handleStreamUpdate)
+})
+
+onBeforeUnmount(() => {
+  const socket = useSocket()
+  socket.emit('leave-room', 'streams')
+  socket.off('stream-update', handleStreamUpdate)
 })
 
 const streams = computed<StreamDisplay[]>(() => {
