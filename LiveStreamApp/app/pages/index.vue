@@ -144,20 +144,21 @@ const handleGroupClick = (groupName: string) => {
           <template v-else>—</template>
         </span>
       </div>
-      
-      <div class="glass-card p-4 flex flex-col items-center text-center">
+
+      <!-- button quick access map and food -->
+      <NuxtLink to="/plan" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg">
         <div class="w-12 h-12 rounded-full bg-purple-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:location-24-regular" class="w-6 h-6 text-purple-400" />
         </div>
         <span class="text-white/80 text-sm">Plan</span>
-      </div>
+      </NuxtLink>
       
-      <div class="glass-card p-4 flex flex-col items-center text-center">
+      <NuxtLink to="/food" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg">
         <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:food-24-regular" class="w-6 h-6 text-cyan-400" />
         </div>
         <span class="text-white/80 text-sm">Restau</span>
-      </div>
+      </NuxtLink>
     </div>
   </div>
 </template>

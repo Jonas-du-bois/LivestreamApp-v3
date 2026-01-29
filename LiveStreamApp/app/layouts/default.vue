@@ -28,6 +28,11 @@ const pageTitles: Record<string, string> = {
 
 const currentPageTitle = computed(() => pageTitles[route.path] || 'Accueil')
 
+// Page meta-based visibility for header/footer (default: shown)
+const routeMeta = computed(() => (route.meta || {}) as Record<string, any>)
+const showHeader = computed(() => routeMeta.value.header !== false)
+const showFooter = computed(() => routeMeta.value.footer !== false)
+
 const isActive = (path: string) => {
   if (path === '/') return route.path === '/'
   return route.path.startsWith(path)
@@ -69,7 +74,7 @@ provide('openGroupDetails', openGroupDetails)
 
     <div class="relative z-10">
       <!-- Glass Header -->
-      <header class="fixed top-0 left-0 right-0 z-50 px-2 pt-4">
+      <header v-if="showHeader" class="fixed top-0 left-0 right-0 z-50 px-2 pt-4">
         <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-4 py-2">
           <div class="flex items-center justify-between">
             <h1 class="text-white text-xl font-bold">{{ currentPageTitle }}</h1>
@@ -106,12 +111,16 @@ provide('openGroupDetails', openGroupDetails)
       </header>
 
       <!-- Main Content Area - Scrollable -->
-      <main class="h-screen pt-28 pb-[120px] overflow-y-auto">
+      <main :class="[
+        'h-screen overflow-y-auto',
+        showHeader ? 'pt-28' : 'pt-0',
+        showFooter ? 'pb-[120px]' : 'pb-0'
+      ]">
         <slot />
       </main>
 
       <!-- Bottom Navigation Dock - Fixed -->
-      <nav class="fixed bottom-0 left-0 right-0 z-50 px-2 pb-4">
+      <nav v-if="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-2 pb-4">
         <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-3 py-2 flex items-center justify-around">
           <NuxtLink
             v-for="item in navItems"
