@@ -7,8 +7,8 @@ const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
 
-const selectedDay = ref<string>('')
-const selectedFilter = ref('Tout')
+const selectedDay = useState<string>('schedule-selected-day', () => '')
+const selectedFilter = useState('schedule-selected-filter', () => 'Tout')
 const filtersStore = useScheduleFilters()
 
 // 1. Paramètres réactifs (Computed) - Smart Fetching
@@ -120,7 +120,9 @@ const handleGroupClick = (groupId: string) => {
         <div class="flex items-start gap-4">
           <!-- Time & Location -->
           <div class="text-left min-w-[70px] flex-shrink-0">
-            <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
+            <ClientOnly>
+              <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
+            </ClientOnly>
             <div class="text-white/50 text-xs mt-0.5">{{ item.location }}</div>
           </div>
 
