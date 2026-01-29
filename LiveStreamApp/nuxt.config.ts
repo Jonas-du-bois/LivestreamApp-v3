@@ -20,17 +20,6 @@ export default defineNuxtConfig({
     '~/assets/css/transition.css'
   ],
 
-  app: {
-    head: {
-      meta: [
-        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover' },
-        { name: 'apple-mobile-web-app-capable', content: 'yes' }
-      ]
-    },
-    pageTransition: { name: 'page', mode: 'out-in' },
-    layoutTransition: { name: 'fade', mode: 'in-out' }
-  },
-
   // Configuration des Icônes (Optionnel mais pratique)
   icon: {
     serverBundle: {
@@ -38,23 +27,30 @@ export default defineNuxtConfig({
     }
   },
 
-  // Configuration PWA
+  app: {
+    head: {
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        // ✅ AJOUTS CRUCIAUX POUR IPHONE :
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+        { name: 'apple-mobile-web-app-title', content: 'LiveScore' },
+      ],
+      link: [
+        // ✅ L'iPhone cherche cette icône spécifiquement :
+        { rel: 'apple-touch-icon', href: '/icons/logo_livestreamappv3-192.png' }
+      ]
+    },
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'fade', mode: 'in-out' }
+  },
+
   pwa: {
-    // Force generation and registration strategy so /sw.js is produced at root
     registerType: 'autoUpdate',
-    strategies: 'generateSW',
-    filename: 'sw.js',
-    includeAssets: ['/icons/logo_livestreamappv3-192.png', '/icons/logo_livestreamappv3-512.png', '/robots.txt'],
-    workbox: {
-      navigateFallback: '/'
-    },
-    devOptions: {
-      enabled: true,
-      suppressWarnings: true,
-    },
+    strategies: 'generateSW', // Garde ça si tu veux, ou passe en 'injectManifest' si besoin avancé
     manifest: {
       name: 'LiveStreamApp FSG',
-      short_name: 'LiveStream',
+      short_name: 'LiveScore', // Important qu'il soit court pour l'écran d'accueil
       theme_color: '#0B1120',
       background_color: '#0B1120',
       display: 'standalone',
@@ -64,7 +60,7 @@ export default defineNuxtConfig({
           src: '/icons/logo_livestreamappv3-192.png',
           sizes: '192x192',
           type: 'image/png',
-          purpose: 'any'
+          purpose: 'any maskable'
         },
         {
           src: '/icons/logo_livestreamappv3-512.png',
@@ -74,10 +70,41 @@ export default defineNuxtConfig({
         }
       ]
     },
+    workbox: {
+      navigateFallback: '/',
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      // ✅ LA PARTIE MANQUANTE POUR TES ERREURS CONSOLE :
+      runtimeCaching: [
+        {
+          urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
+          handler: 'NetworkFirst', // Priorité au réseau pour les scores
+          options: {
+            cacheName: 'api-data',
+            networkTimeoutSeconds: 5,
+            expiration: { maxEntries: 50, maxAgeSeconds: 86400 },
+            cacheableResponse: { statuses: [0, 200] }
+          }
+        },
+        {
+          // Pour les icônes Nuxt et images externes (YouTube, Twitch)
+          urlPattern: ({ url }) => url.pathname.includes('_nuxt_icon') || url.hostname.includes('img.youtube.com') || url.hostname.includes('static-cdn.jtvnw.net'),
+          handler: 'StaleWhileRevalidate', // Affiche le cache tout de suite, met à jour en fond
+          options: {
+            cacheName: 'external-assets',
+            expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 } // 30 jours
+          }
+        }
+      ]
+    },
     client: {
       installPrompt: true,
+    },
+    devOptions: {
+      enabled: true,
+      suppressWarnings: true,
     }
   },
+    
 
   // Variables d'environnement
   runtimeConfig: {
