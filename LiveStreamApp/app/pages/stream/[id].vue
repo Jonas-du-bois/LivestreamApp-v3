@@ -68,6 +68,7 @@ onBeforeUnmount(() => {
   if (playerTimeout) clearTimeout(playerTimeout)
   const socket = useSocket()
   if (socket) {
+    socket.emit('leave-room', `stream-${route.params.id}`)
     socket.off('stream-update')
   }
 })
