@@ -21,7 +21,8 @@ if (error.value) {
 }
 
 // Computeds for safe access
-import { ref, watch, onBeforeUnmount } from 'vue'
+import { ref, watch, onBeforeUnmount, onMounted } from 'vue'
+import { useSocket } from '../../composables/useSocket'
 
 const streamUrl = computed(() => stream.value?.url)
 const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl.value?.includes('vimeo'))
@@ -65,6 +66,25 @@ watch(streamUrl, (url) => {
 
 onBeforeUnmount(() => {
   if (playerTimeout) clearTimeout(playerTimeout)
+  const socket = useSocket()
+  if (socket) {
+    socket.off('stream-update')
+  }
+})
+
+onMounted(() => {
+  const socket = useSocket()
+  if (socket) {
+    socket.on('stream-update', (updatedStream: Partial<Stream>) => {
+      if (stream.value && updatedStream._id === stream.value._id) {
+        if (updatedStream.url !== undefined) stream.value.url = updatedStream.url
+        if (updatedStream.isLive !== undefined) stream.value.isLive = updatedStream.isLive
+        // If other fields need updating, add them here.
+        // Note: currentPassage might be an ID in the update, but we have a populated object.
+        // We avoid overwriting the populated object unless we re-fetch.
+      }
+    })
+  }
 })
 </script>
 

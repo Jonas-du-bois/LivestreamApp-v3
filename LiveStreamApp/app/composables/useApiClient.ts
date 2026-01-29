@@ -19,7 +19,7 @@ export const useApiClient = <T>(
       pending.value = true
       error.value = null
       try {
-        const res = await (nuxt.$fetch as unknown as <R>(url: string, opts?: any) => Promise<R>)<T>(url, { baseURL: apiBase, ...options })
+        const res = await $fetch<T>(url, { baseURL: apiBase, ...options })
         data.value = res
         return res
       } catch (err: any) {
