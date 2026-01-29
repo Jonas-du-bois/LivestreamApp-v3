@@ -11,8 +11,8 @@ const selectedDay = ref<string>('')
 const selectedFilter = ref('Tout')
 const filtersStore = useScheduleFilters()
 
-// 1. Générateur de params courant
-const buildQueryParams = () => ({
+// 1. Paramètres réactifs (Computed) - Smart Fetching
+const apiParams = computed(() => ({
   day: selectedDay.value,
   // On priorise le filtre local "Agrès", sinon on prend ceux du FilterSheet
   apparatus: selectedFilter.value !== 'Tout'
@@ -20,10 +20,10 @@ const buildQueryParams = () => ({
     : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus.join(',') : undefined),
   division: filtersStore.value.division.length ? filtersStore.value.division.join(',') : undefined,
   salle: filtersStore.value.salle.length ? filtersStore.value.salle.join(',') : undefined
-})
+}))
 
-// 2. Appel initial (au chargement de la page)
-const { data: scheduleResponse } = await PublicService.getSchedule(buildQueryParams())
+// 2. Appel Réactif (useFetch surveille apiParams)
+const { data: scheduleResponse } = await PublicService.getSchedule(apiParams)
 
 // Share metadata globally (for FilterSheet)
 const meta = useState('scheduleMeta', () => scheduleResponse.value?.meta || { availableApparatus: [], availableDays: [] })
@@ -44,19 +44,6 @@ const availableDays = computed(() => {
   // Capitalize days for display
   return days.length > 0 ? days : ['samedi', 'dimanche']
 })
-
-// 3. Le Watcher "Intelligent"
-// On surveille TOUT ce qui peut changer l'horaire
-watch([filtersStore, selectedDay, selectedFilter], async () => {
-  console.log('🔄 Filtres modifiés, rechargement avec :', buildQueryParams())
-  
-  // ⚠️ ON N'UTILISE PAS refresh() ICI
-  // On refait l'appel manuellement pour être sûr d'envoyer les NOUVEAUX params
-  const { data } = await PublicService.getSchedule(buildQueryParams())
-  
-  // On met à jour la donnée locale
-  scheduleResponse.value = data.value
-}, { deep: true })
 
 const filters = computed(() => {
   // Use metadata from API if available, else fallback

@@ -14,7 +14,7 @@ interface PopulatedStream extends Omit<Stream, 'currentPassage'> {
   currentPassage?: PopulatedPassage;
 }
 
-const { data: stream, pending, error } = await useFetch<PopulatedStream>(`/api/streams/${route.params.id}`)
+const { data: stream, pending, error } = await useFetch<PopulatedStream>(() => `/api/streams/${route.params.id}`)
 
 if (error.value) {
   console.error('Error loading stream:', error.value)
