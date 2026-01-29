@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "h3-zod": "^0.5.3",
+    "leaflet": "^1.9.4",
     "mongoose": "^9.1.5",
     "nitro": "^3.0.1-alpha.2",
     "nuxt": "^4.3.0",
@@ -27,6 +28,7 @@
     "@nuxt/icon": "^2.2.1",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@pinia/nuxt": "^0.11.3",
+    "@types/leaflet": "^1.9.21",
     "@types/web-push": "^3.6.4",
     "@vite-pwa/nuxt": "^1.1.0",
     "mongodb-memory-server": "^11.0.1",
