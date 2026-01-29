@@ -76,12 +76,20 @@ const recomputeStats = () => {
    details.value.stats.currentTotalScore = count > 0 ? (total / count).toFixed(2) : '0.00'
 }
 
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && props.isOpen) {
+    emit('close')
+  }
+}
+
 onMounted(() => {
   socket.on('score-update', handleScoreUpdate)
+  window.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
   socket.off('score-update', handleScoreUpdate)
+  window.removeEventListener('keydown', handleKeydown)
 })
 
 const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -138,6 +146,9 @@ const averageHistoryScore = computed(() => {
       <div
         v-if="isOpen"
         class="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90%] md:max-w-2xl glass-panel z-[90] overflow-hidden flex flex-col max-h-[90vh]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="group-details-title"
       >
         <div v-if="isLoading && !details" class="p-12 text-center text-white/60">
            <Icon name="fluent:spinner-ios-20-filled" class="w-8 h-8 animate-spin mx-auto mb-4" />
@@ -176,6 +187,7 @@ const averageHistoryScore = computed(() => {
               <button
                 @click="emit('close')"
                 class="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-lg transition-colors"
+                aria-label="Fermer"
               >
                 <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white" />
               </button>
@@ -183,7 +195,7 @@ const averageHistoryScore = computed(() => {
               <!-- Title & Category -->
               <div class="absolute bottom-6 left-6 right-6 z-10">
                 <div class="flex items-start justify-between gap-3 mb-2">
-                  <h2 class="text-white font-bold text-2xl md:text-3xl leading-tight">{{ details.info.name }}</h2>
+                  <h2 id="group-details-title" class="text-white font-bold text-2xl md:text-3xl leading-tight">{{ details.info.name }}</h2>
                   
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
@@ -198,13 +210,16 @@ const averageHistoryScore = computed(() => {
             </div>
 
             <!-- Tab Navigation -->
-            <div class="flex border-b border-white/10 bg-[#0B1120]/80 backdrop-blur-sm flex-shrink-0">
+            <div class="flex border-b border-white/10 bg-[#0B1120]/80 backdrop-blur-sm flex-shrink-0" role="tablist">
               <button
                 @click="activeTab = 'timeline'"
                 :class="[
                   'flex-1 py-4 px-6 font-semibold transition-colors relative',
                   activeTab === 'timeline' ? 'text-cyan-400' : 'text-white/60 hover:text-white/80'
                 ]"
+                role="tab"
+                :aria-selected="activeTab === 'timeline'"
+                aria-controls="panel-timeline"
               >
                 <Icon name="fluent:timeline-24-regular" class="w-5 h-5 inline-block mr-2" />
                 Timeline
@@ -216,6 +231,9 @@ const averageHistoryScore = computed(() => {
                   'flex-1 py-4 px-6 font-semibold transition-colors relative',
                   activeTab === 'stats' ? 'text-cyan-400' : 'text-white/60 hover:text-white/80'
                 ]"
+                role="tab"
+                :aria-selected="activeTab === 'stats'"
+                aria-controls="panel-stats"
               >
                 <Icon name="fluent:data-bar-vertical-24-regular" class="w-5 h-5 inline-block mr-2" />
                 Statistiques
@@ -226,7 +244,7 @@ const averageHistoryScore = computed(() => {
             <!-- Content Area -->
             <div class="flex-1 overflow-y-auto">
               <!-- TIMELINE TAB -->
-              <div v-show="activeTab === 'timeline'" class="p-6">
+              <div v-show="activeTab === 'timeline'" class="p-6" id="panel-timeline" role="tabpanel">
                 <!-- Quick Stats -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
                   <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
@@ -295,7 +313,7 @@ const averageHistoryScore = computed(() => {
               </div>
 
               <!-- STATS TAB -->
-              <div v-show="activeTab === 'stats'" class="p-6 space-y-6">
+              <div v-show="activeTab === 'stats'" class="p-6 space-y-6" id="panel-stats" role="tabpanel">
                 <!-- Stats Grid -->
                 <div>
                   <h3 class="text-white font-bold mb-4 flex items-center gap-2">
