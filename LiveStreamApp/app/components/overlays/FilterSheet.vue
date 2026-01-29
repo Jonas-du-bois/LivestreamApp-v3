@@ -72,7 +72,7 @@ const applyFilters = () => {
     <Transition name="slide-up">
       <div
         v-if="isOpen"
-        class="fixed bottom-0 left-0 right-0 glass-panel rounded-t-3xl z-[70] max-h-[80vh] overflow-hidden"
+        class="fixed bottom-0 left-0 right-0 glass-panel rounded-t-3xl z-[70] max-h-[80vh] overflow-hidden mb-4"
       >
         <!-- Header -->
         <div class="p-6 border-b border-white/10">

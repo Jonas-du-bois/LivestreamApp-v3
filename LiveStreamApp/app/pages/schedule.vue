@@ -11,13 +11,19 @@ const selectedDay = ref<string>('')
 const selectedFilter = ref('Tout')
 const filtersStore = useScheduleFilters()
 
-// Fetch data from API using the Service
-const { data: scheduleResponse, refresh } = await PublicService.getSchedule({
+// 1. Générateur de params courant
+const buildQueryParams = () => ({
   day: selectedDay.value,
-  apparatus: selectedFilter.value !== 'Tout' ? selectedFilter.value : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus : undefined),
-  division: filtersStore.value.division.length ? filtersStore.value.division : undefined,
-  salle: filtersStore.value.salle.length ? filtersStore.value.salle : undefined
+  // On priorise le filtre local "Agrès", sinon on prend ceux du FilterSheet
+  apparatus: selectedFilter.value !== 'Tout'
+    ? selectedFilter.value
+    : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus.join(',') : undefined),
+  division: filtersStore.value.division.length ? filtersStore.value.division.join(',') : undefined,
+  salle: filtersStore.value.salle.length ? filtersStore.value.salle.join(',') : undefined
 })
+
+// 2. Appel initial (au chargement de la page)
+const { data: scheduleResponse } = await PublicService.getSchedule(buildQueryParams())
 
 // Share metadata globally (for FilterSheet)
 const meta = useState('scheduleMeta', () => scheduleResponse.value?.meta || { availableApparatus: [], availableDays: [] })
@@ -39,15 +45,17 @@ const availableDays = computed(() => {
   return days.length > 0 ? days : ['samedi', 'dimanche']
 })
 
-// Watcher to refresh data when filters change
-watch([selectedDay, selectedFilter, filtersStore], async () => {
-  const { data: newData } = await PublicService.getSchedule({
-    day: selectedDay.value,
-    apparatus: selectedFilter.value !== 'Tout' ? selectedFilter.value : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus : undefined),
-    division: filtersStore.value.division.length ? filtersStore.value.division : undefined,
-    salle: filtersStore.value.salle.length ? filtersStore.value.salle : undefined
-  })
-  scheduleResponse.value = newData.value
+// 3. Le Watcher "Intelligent"
+// On surveille TOUT ce qui peut changer l'horaire
+watch([filtersStore, selectedDay, selectedFilter], async () => {
+  console.log('🔄 Filtres modifiés, rechargement avec :', buildQueryParams())
+  
+  // ⚠️ ON N'UTILISE PAS refresh() ICI
+  // On refait l'appel manuellement pour être sûr d'envoyer les NOUVEAUX params
+  const { data } = await PublicService.getSchedule(buildQueryParams())
+  
+  // On met à jour la donnée locale
+  scheduleResponse.value = data.value
 }, { deep: true })
 
 const filters = computed(() => {
@@ -76,10 +84,10 @@ const handleGroupClick = (groupId: string) => {
   openGroupDetails?.(groupId)
 }
 
-const handleInfoClick = (groupId: string, event: Event) => {
+/* const handleInfoClick = (groupId: string, event: Event) => {
   event.stopPropagation()
   openGroupDetails?.(groupId)
-}
+} */
 </script>
 
 <template>
