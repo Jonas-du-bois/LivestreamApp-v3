@@ -95,6 +95,7 @@ onMounted(() => {
 
   socket.on('connect', () => {
     console.log('[socket] connected', socket?.id)
+    socket?.emit('join-room', 'live-scores')
   })
 
   socket.on('connect_error', (err: any) => {
@@ -105,38 +106,65 @@ onMounted(() => {
     console.warn('[socket] disconnected', reason)
   })
 
-  socket.on('score-update', (updatedPassage: any) => {
+  socket.on('score-update', (data: any) => {
+    // Data payload: { passageId, totalScore, rank, apparatusCode }
+    // If mismatch, try to find passage locally
     if (!resultsMap.value) return
 
-    if (updatedPassage.status !== 'FINISHED') return
+    // We search through all lists because we might not know the apparatus code from the summary payload easily
+    // Or if we have apparatusCode, we can narrow it down.
+    const keys = Object.keys(resultsMap.value)
 
-    const code = updatedPassage.apparatus?.code
-    if (!code) return
+    let found = false
+    let targetList: PassageResult[] | null = null
 
-    if (!resultsMap.value[code]) {
-      resultsMap.value[code] = []
+    for (const key of keys) {
+      const list = resultsMap.value[key] as PassageResult[]
+      const passage = list.find(p => p._id === data.passageId)
+      if (passage) {
+        // Update properties
+        passage.scores = passage.scores || {}
+        if (data.totalScore !== undefined) passage.scores.total = data.totalScore
+        if (data.rank !== undefined) passage.rank = data.rank
+
+        // Mark as finished if not already (implied by score update)
+        if (passage.status !== 'FINISHED') passage.status = 'FINISHED'
+
+        // Trigger Flash Effect
+        const el = document.getElementById(`result-${data.passageId}`)
+        if (el) {
+          el.classList.add('flash-green')
+          setTimeout(() => el.classList.remove('flash-green'), 2000)
+        }
+
+        targetList = list
+        found = true
+        break
+      }
     }
 
-    const list = resultsMap.value[code] as PassageResult[]
-
-    if (!updatedPassage.group?.name || !updatedPassage.apparatus?.name) {
-       refresh()
-       return
+    // If not found, or full payload was sent, try legacy logic or refresh
+    if (!found && data.group && data.apparatus) {
+       // It's a full object, use original logic (fallback)
+       const code = data.apparatus.code
+       if (code) {
+         if (!resultsMap.value[code]) resultsMap.value[code] = []
+         const list = resultsMap.value[code] as PassageResult[]
+         const index = list.findIndex(p => p._id === data._id)
+         const newEntry = { ...data, rank: 0 } as PassageResult
+         if (index !== -1) list[index] = newEntry
+         else list.push(newEntry)
+         targetList = list
+       }
     }
 
-    const index = list.findIndex(p => p._id === updatedPassage._id)
-    const newEntry = { ...updatedPassage, rank: 0 } as PassageResult
-
-    if (index !== -1) {
-      list[index] = newEntry
-    } else {
-      list.push(newEntry)
+    // Re-sort and re-rank the specific list if needed
+    if (targetList) {
+      targetList.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0))
+      targetList.forEach((p, i) => {
+        p.rank = i + 1
+      })
     }
-
-    list.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0))
-    list.forEach((p, i) => {
-      p.rank = i + 1
-    })
   })
 })
 
@@ -183,6 +211,7 @@ onUnmounted(() => {
           <div
             v-for="result in podiumResults"
             :key="result._id"
+            :id="'result-' + result._id"
             class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
             :class="getPodiumBorderClass(result.rank)"
             @click="handleGroupClick(result.group._id)"
@@ -220,6 +249,7 @@ onUnmounted(() => {
           <div
             v-for="result in fullRanking"
             :key="result._id"
+            :id="'result-' + result._id"
             class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
             @click="handleGroupClick(result.group._id)"
           >
@@ -260,5 +290,20 @@ onUnmounted(() => {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.flash-green {
+  animation: flash 2s ease-out;
+}
+
+@keyframes flash {
+  0% {
+    background-color: rgba(74, 222, 128, 0.5); /* green-400 */
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
 }
 </style>

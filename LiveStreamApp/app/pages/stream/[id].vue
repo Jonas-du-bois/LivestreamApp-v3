@@ -75,6 +75,7 @@ onBeforeUnmount(() => {
 onMounted(() => {
   const socket = useSocket()
   if (socket) {
+    socket.emit('join-room', `stream-${route.params.id}`)
     socket.on('stream-update', (updatedStream: Partial<Stream>) => {
       if (stream.value && updatedStream._id === stream.value._id) {
         if (updatedStream.url !== undefined) stream.value.url = updatedStream.url
@@ -175,7 +176,7 @@ onMounted(() => {
       <!-- Context Section -->
       <div v-if="currentGroup">
         <h3 class="text-white/60 font-medium mb-3 ml-1">Sur le praticable :</h3>
-        <div @click="openGroupDetails && openGroupDetails(currentGroup._id)" class="cursor-pointer active:scale-[0.98] transition-transform">
+        <div @click="openGroupDetails && currentGroup._id && openGroupDetails(currentGroup._id)" class="cursor-pointer active:scale-[0.98] transition-transform">
            <GroupInfoCard :group="currentGroup" />
         </div>
       </div>

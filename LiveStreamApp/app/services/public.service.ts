@@ -1,7 +1,7 @@
 import type { ScheduleResponse, PassageEnriched, Stream } from '../types/api'
 
 export const PublicService = {
-  getSchedule(filters?: { day?: string; apparatus?: string }) {
+  getSchedule(filters?: { day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[] }) {
     return useApiClient<ScheduleResponse>('/schedule', {
       query: filters
     })

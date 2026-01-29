@@ -28,10 +28,13 @@ const fetchData = async () => {
     const streamsRes = await PublicService.getStreams()
 
     // Wait for the actual data
-    const [scheduleData, streamsData] = await Promise.all([
+    await Promise.all([
       scheduleRes.refresh(),
       streamsRes.refresh()
-    ]) as [any, any]
+    ])
+
+    const scheduleData = scheduleRes.data.value
+    const streamsData = streamsRes.data.value
 
     // Ensure scores object exists for editing
     if (scheduleData && scheduleData.data) {

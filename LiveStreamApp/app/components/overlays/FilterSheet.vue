@@ -3,7 +3,7 @@ interface Props {
   isOpen: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 const emit = defineEmits<{
   close: []
 }>()
@@ -12,9 +12,22 @@ const emit = defineEmits<{
 const meta = useState<any>('scheduleMeta')
 const availableApparatus = computed(() => meta.value?.availableApparatus || [])
 
+// Global Filter State
+const filtersStore = useScheduleFilters()
+
+// Local State (for editing)
 const selectedDivision = ref<string[]>([])
 const selectedSalle = ref<string[]>([])
 const selectedApparatus = ref<string[]>([])
+
+// Sync local state with global state when opening
+watch(() => props.isOpen, (isOpen) => {
+  if (isOpen) {
+    selectedDivision.value = [...filtersStore.value.division]
+    selectedSalle.value = [...filtersStore.value.salle]
+    selectedApparatus.value = [...filtersStore.value.apparatus]
+  }
+})
 
 const divisions = ['Actifs/Actives', 'Mixtes']
 const salles = ['Salle 1', 'Salle 2', 'Salle 3']
@@ -39,7 +52,9 @@ const clearFilters = () => {
 }
 
 const applyFilters = () => {
-  // Could emit filter values here
+  filtersStore.value.division = [...selectedDivision.value]
+  filtersStore.value.salle = [...selectedSalle.value]
+  filtersStore.value.apparatus = [...selectedApparatus.value]
   emit('close')
 }
 </script>
