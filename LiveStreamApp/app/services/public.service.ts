@@ -1,7 +1,8 @@
 import type { ScheduleResponse, PassageEnriched, Stream } from '../types/api'
+import type { MaybeRef } from 'vue'
 
 export const PublicService = {
-  getSchedule(filters?: { day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[] }) {
+  getSchedule(filters?: MaybeRef<{ day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[] }>) {
     return useApiClient<ScheduleResponse>('/schedule', {
       query: filters
     })
@@ -11,7 +12,7 @@ export const PublicService = {
     return useApiClient<Record<string, (PassageEnriched & { rank: number })[]>>('/results')
   },
 
-  getStreams(filters?: { isLive?: boolean }) {
+  getStreams(filters?: MaybeRef<{ isLive?: boolean }>) {
     return useApiClient<Stream[]>('/streams', {
       query: filters
     })

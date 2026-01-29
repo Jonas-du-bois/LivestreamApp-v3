@@ -7,12 +7,17 @@ export default defineNitroPlugin((nitroApp) => {
 
   // Initialize WebPush
   if (config.vapidPrivateKey && config.public.vapidPublicKey) {
-    webPush.setVapidDetails(
-      'mailto:admin@example.com',
-      config.public.vapidPublicKey,
-      config.vapidPrivateKey
-    );
-    console.log('[Scheduler] WebPush initialized');
+    try {
+      webPush.setVapidDetails(
+        'mailto:admin@example.com',
+        config.public.vapidPublicKey,
+        config.vapidPrivateKey
+      );
+      console.log('[Scheduler] WebPush initialized');
+    } catch (e) {
+      console.warn('[Scheduler] WebPush init failed (invalid keys) - Notifications disabled', e);
+      return;
+    }
   } else {
     console.warn('[Scheduler] WebPush keys missing - Notifications disabled');
     return;

@@ -16,60 +16,39 @@ const handleLogin = () => {
   }
 }
 
-// Data
+// Data Fetching (Smart Fetching Pattern)
+const { data: scheduleData, refresh: refreshSchedule } = await PublicService.getSchedule()
+const { data: streamsData, refresh: refreshStreams } = await PublicService.getStreams()
+
+// Mutable State for editing
 const passages = ref<PassageEnriched[]>([])
 const streams = ref<Stream[]>([])
-const loading = ref(false)
 
-const fetchData = async () => {
-  loading.value = true
-  try {
-    const scheduleRes = await PublicService.getSchedule()
-    const streamsRes = await PublicService.getStreams()
-
-    // Wait for the actual data
-    await Promise.all([
-      scheduleRes.refresh(),
-      streamsRes.refresh()
-    ])
-
-    const scheduleData = scheduleRes.data.value
-    const streamsData = streamsRes.data.value
-
-    // Ensure scores object exists for editing
-    if (scheduleData && scheduleData.data) {
-      passages.value = scheduleData.data.map((p: any) => ({
-        ...p,
-        scores: p.scores || { program: undefined, technical: undefined, total: undefined }
-      }))
-    }
-
-    if (streamsData) {
-      streams.value = streamsData
-    }
-  } catch (e) {
-    console.error('Error fetching data:', e)
-  } finally {
-    loading.value = false
+// Populate local state when API data changes
+watch(scheduleData, (data) => {
+  if (data?.data) {
+    passages.value = data.data.map((p: any) => ({
+      ...p,
+      scores: p.scores || { program: undefined, technical: undefined, total: undefined }
+    }))
   }
+}, { immediate: true })
+
+watch(streamsData, (data) => {
+  if (data) {
+    streams.value = data
+  }
+}, { immediate: true })
+
+const refreshAll = async () => {
+  await Promise.all([refreshSchedule(), refreshStreams()])
 }
-
-// Fetch data on mount if authenticated, or watch authentication
-onMounted(() => {
-  if (isAuthenticated.value) {
-    fetchData()
-  }
-})
-
-watch(isAuthenticated, (val) => {
-  if (val) fetchData()
-})
 
 // Helper to find stream for passage
 const getStreamForPassage = (passage: PassageEnriched): Stream | undefined => {
   // Logic: Match stream location to apparatus name, or fallback to first stream
   // Ideally, stream.location matches passage.apparatus.name
-  return streams.value.find(s => s.location === passage.apparatus.name) || streams.value[0]
+  return streams.value.find(s => s.location === passage.apparatus.name) || (streams.value.length ? streams.value[0] : undefined)
 }
 
 // Actions
@@ -137,7 +116,7 @@ const updateStreamUrl = async (stream: Stream) => {
       <header class="flex justify-between items-center mb-8 sticky top-0 bg-[#0B1120]/80 backdrop-blur-md z-50 p-4 -mx-4 rounded-b-2xl">
         <h1 class="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
         <div class="flex gap-2">
-           <button @click="fetchData" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">Refresh</button>
+           <button @click="refreshAll" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">Refresh</button>
         </div>
       </header>
 
