@@ -61,7 +61,7 @@ export default defineNuxtConfig({
 
   // Variables d'environnement
   runtimeConfig: {
-    adminSecret: process.env.NUXT_ADMIN_SECRET,
+    adminPassword: process.env.NUXT_ADMIN_PASSWORD || 'admin123',
     mongodbUri: process.env.MONGODB_URI,
     vapidPrivateKey: process.env.NUXT_VAPID_PRIVATE_KEY,
     public: {

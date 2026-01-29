@@ -118,7 +118,7 @@ const updateStreamUrl = async (stream: Stream) => {
       <input
         v-model="passwordInput"
         type="password"
-        placeholder="Enter Admin Token"
+        placeholder="Mot de passe Administrateur"
         class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white mb-4 focus:outline-none focus:border-cyan-400"
         @keyup.enter="handleLogin"
       />
