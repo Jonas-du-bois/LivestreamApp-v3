@@ -34,5 +34,12 @@ export const PublicService = {
 
   getGroupDetails(groupId: string) {
     return useApiClient<any>(`/groups/${groupId}/details`)
+  },
+
+  fetchGroupDetails(groupId: string) {
+    const config = useRuntimeConfig()
+    return $fetch<any>(`/groups/${groupId}/details`, {
+      baseURL: config.public.apiBase as string
+    })
   }
 }

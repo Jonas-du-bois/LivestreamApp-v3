@@ -27,8 +27,8 @@ const fetchData = async () => {
   isLoading.value = true
   error.value = null
   try {
-    const { data } = await PublicService.getGroupDetails(props.groupId)
-    details.value = data.value
+    const data = await PublicService.fetchGroupDetails(props.groupId)
+    details.value = data
   } catch (err) {
     console.error(err)
     error.value = "Impossible de charger les détails du groupe."
