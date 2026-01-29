@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { PublicService } from '~/services/public.service'
 import type { PassageEnriched } from '~/types/api'
-import { io, type Socket } from 'socket.io-client'
 
 // Extended type including rank
 type PassageResult = PassageEnriched & { rank: number }
@@ -86,27 +85,11 @@ const handleGroupClick = (groupId: string) => {
   openGroupDetails?.(groupId)
 }
 
-let socket: Socket | null = null
-
 onMounted(() => {
-  // Force websocket transport to avoid polling requests being routed to the SPA router
-  const origin = typeof window !== 'undefined' ? window.location.origin : ''
-  socket = io(origin, { path: '/socket.io', transports: ['websocket'] })
-
-  socket.on('connect', () => {
-    console.log('[socket] connected', socket?.id)
-    socket?.emit('join-room', 'live-scores')
-  })
-
-  socket.on('connect_error', (err: any) => {
-    console.error('[socket] connect_error', err)
-  })
-
-  socket.on('disconnect', (reason: any) => {
-    console.warn('[socket] disconnected', reason)
-  })
-
-  socket.on('score-update', (data: any) => {
+  const socket = useSocket()
+  if (socket) {
+    socket.emit('join-room', 'live-scores')
+    socket.on('score-update', (data: any) => {
     // Data payload: { passageId, totalScore, rank, apparatusCode }
     // If mismatch, try to find passage locally
     if (!resultsMap.value) return
@@ -167,12 +150,14 @@ onMounted(() => {
       })
     }
   })
+  }
 })
 
 onUnmounted(() => {
+  const socket = useSocket()
   if (socket) {
-    socket.disconnect()
-    socket = null
+    socket.emit('leave-room', 'live-scores')
+    socket.off('score-update')
   }
 })
 </script>
