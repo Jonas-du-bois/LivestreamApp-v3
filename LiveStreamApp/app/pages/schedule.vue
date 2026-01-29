@@ -9,11 +9,14 @@ const { favorites } = storeToRefs(favoritesStore)
 
 const selectedDay = ref<string>('')
 const selectedFilter = ref('Tout')
+const filtersStore = useScheduleFilters()
 
 // Fetch data from API using the Service
 const { data: scheduleResponse, refresh } = await PublicService.getSchedule({
   day: selectedDay.value,
-  apparatus: selectedFilter.value !== 'Tout' ? selectedFilter.value : undefined
+  apparatus: selectedFilter.value !== 'Tout' ? selectedFilter.value : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus : undefined),
+  division: filtersStore.value.division.length ? filtersStore.value.division : undefined,
+  salle: filtersStore.value.salle.length ? filtersStore.value.salle : undefined
 })
 
 // Share metadata globally (for FilterSheet)
@@ -37,13 +40,15 @@ const availableDays = computed(() => {
 })
 
 // Watcher to refresh data when filters change
-watch([selectedDay, selectedFilter], async () => {
+watch([selectedDay, selectedFilter, filtersStore], async () => {
   const { data: newData } = await PublicService.getSchedule({
     day: selectedDay.value,
-    apparatus: selectedFilter.value !== 'Tout' ? selectedFilter.value : undefined
+    apparatus: selectedFilter.value !== 'Tout' ? selectedFilter.value : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus : undefined),
+    division: filtersStore.value.division.length ? filtersStore.value.division : undefined,
+    salle: filtersStore.value.salle.length ? filtersStore.value.salle : undefined
   })
   scheduleResponse.value = newData.value
-})
+}, { deep: true })
 
 const filters = computed(() => {
   // Use metadata from API if available, else fallback
