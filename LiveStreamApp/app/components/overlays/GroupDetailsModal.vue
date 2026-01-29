@@ -1,3 +1,8 @@
+<script lang="ts">
+// Static cache to persist across component instances
+const detailsCache = new Map<string, any>()
+</script>
+
 <script setup lang="ts">
 import { PublicService } from '../../services/public.service'
 import { useSocket } from '../../composables/useSocket'
@@ -24,11 +29,18 @@ const activeTab = ref<'timeline' | 'stats'>('timeline')
 const fetchData = async () => {
   if (!props.groupId) return
 
+  // Check cache first
+  if (detailsCache.has(props.groupId)) {
+    details.value = detailsCache.get(props.groupId)
+    return
+  }
+
   isLoading.value = true
   error.value = null
   try {
     const data = await PublicService.fetchGroupDetails(props.groupId)
     details.value = data
+    detailsCache.set(props.groupId, data)
   } catch (err) {
     console.error(err)
     error.value = "Impossible de charger les détails du groupe."
@@ -420,7 +432,7 @@ const averageHistoryScore = computed(() => {
                           <!-- Area under the curve -->
                           <path
                             v-if="historyByYear.length > 0"
-                            :d="`M 0,100 ${historyByYear.map((d, i) => {
+                            :d="`M 0,100 ${historyByYear.map((d: any, i: number) => {
                               const x = (i / Math.max(historyByYear.length - 1, 1)) * 100
                               const y = 100 - (d.score / 10 * 100)
                               return `L ${x},${y}`
@@ -432,7 +444,7 @@ const averageHistoryScore = computed(() => {
                           <!-- Line -->
                           <polyline
                             v-if="historyByYear.length > 0"
-                            :points="historyByYear.map((d, i) => {
+                            :points="historyByYear.map((d: any, i: number) => {
                               const x = (i / Math.max(historyByYear.length - 1, 1)) * 100
                               const y = 100 - (d.score / 10 * 100)
                               return `${x},${y}`
@@ -475,7 +487,7 @@ const averageHistoryScore = computed(() => {
                       <div>
                         <div class="text-xs text-white/40 mb-1">Meilleur</div>
                         <div class="text-cyan-400 font-bold">
-                          {{ Math.max(...historyByYear.map(d => d.score)).toFixed(2) }}
+                          {{ Math.max(...historyByYear.map((d: any) => d.score)).toFixed(2) }}
                         </div>
                       </div>
                       <div>

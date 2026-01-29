@@ -9,7 +9,7 @@ type PassageResult = PassageEnriched & { rank: number }
 const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 
 // Fetch data
-const { data: resultsMap, refresh } = await PublicService.getResults()
+const { data: resultsMap } = await PublicService.getResults()
 
 // Active tab state
 const activeTab = ref<string | null>(null)
@@ -143,7 +143,8 @@ onMounted(() => {
       }
     }
 
-    // If not found, or full payload was sent, try legacy logic or refresh
+    // If not found, or full payload was sent, try legacy logic (direct mutation)
+    // STRICTLY NO REFRESH CALLS HERE
     if (!found && data.group && data.apparatus) {
        // It's a full object, use original logic (fallback)
        const code = data.apparatus.code

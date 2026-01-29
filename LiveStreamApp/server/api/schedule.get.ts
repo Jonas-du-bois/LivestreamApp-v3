@@ -2,7 +2,7 @@ import PassageModel from '../models/Passage';
 import ApparatusModel from '../models/Apparatus';
 import GroupModel from '../models/Group';
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event);
   const dayFilter = query.day as string | undefined;
   const apparatusFilter = query.apparatus as string | string[] | undefined;
@@ -102,4 +102,7 @@ export default defineEventHandler(async (event) => {
     console.error('[schedule] Error:', err);
     throw createError({ statusCode: 500, statusMessage: 'Failed to fetch schedule' });
   }
+}, {
+  swr: true,
+  maxAge: 10
 });
