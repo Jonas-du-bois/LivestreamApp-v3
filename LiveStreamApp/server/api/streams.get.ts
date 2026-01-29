@@ -1,6 +1,6 @@
 import StreamModel from '../models/Stream';
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   try {
     const query = getQuery(event);
     const { isLive } = query;
@@ -21,4 +21,7 @@ export default defineEventHandler(async (event) => {
     console.error('[streams] Error fetching streams', err);
     throw createError({ statusCode: 500, statusMessage: 'Failed to fetch streams' });
   }
+}, {
+  swr: true,
+  maxAge: 10
 });

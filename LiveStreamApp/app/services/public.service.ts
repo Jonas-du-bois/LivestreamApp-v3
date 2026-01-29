@@ -1,31 +1,39 @@
 import type { ScheduleResponse, PassageEnriched, Stream } from '../types/api'
-import type { MaybeRef } from 'vue'
+import { type MaybeRef, toValue } from 'vue'
 
 export const PublicService = {
   getSchedule(filters?: MaybeRef<{ day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[] }>) {
     return useApiClient<ScheduleResponse>('/schedule', {
-      query: filters
+      query: filters,
+      key: 'schedule-' + JSON.stringify(toValue(filters) || {})
     })
   },
 
   getResults() {
-    return useApiClient<Record<string, (PassageEnriched & { rank: number })[]>>('/results')
+    return useApiClient<Record<string, (PassageEnriched & { rank: number })[]>>('/results', {
+      key: 'results'
+    })
   },
 
   getStreams(filters?: MaybeRef<{ isLive?: boolean }>) {
     return useApiClient<Stream[]>('/streams', {
-      query: filters
+      query: filters,
+      key: 'streams-' + JSON.stringify(toValue(filters) || {})
     })
   },
 
   getLive() {
     // Returns both live passages and live streams in one call to reduce multiple requests
-    return useApiClient<{ passages: PassageEnriched[]; streams: Stream[] }>('/live')
+    return useApiClient<{ passages: PassageEnriched[]; streams: Stream[] }>('/live', {
+      key: 'live'
+    })
   },
 
   getWeather() {
     // Returns current temperature for Yverdon-les-Bains (proxy to external weather API)
-    return useApiClient<{ temperature: number; raw?: any }>('/weather')
+    return useApiClient<{ temperature: number; raw?: any }>('/weather', {
+      key: 'weather'
+    })
   },
 
   seedDatabase() {

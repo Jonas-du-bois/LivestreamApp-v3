@@ -1,6 +1,6 @@
 import PassageModel from '../models/Passage';
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   try {
     const passages = await PassageModel.find({ status: 'FINISHED' })
       // 1. CORRECTION ICI : On ajoute 'canton' et 'logo' à la liste des champs récupérés
@@ -62,4 +62,7 @@ export default defineEventHandler(async (event) => {
     console.error('[results] Error fetching results', err);
     throw createError({ statusCode: 500, statusMessage: 'Failed to fetch results' });
   }
+}, {
+  swr: true,
+  maxAge: 10
 });
