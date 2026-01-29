@@ -64,29 +64,34 @@ watch(streamUrl, (url) => {
   }
 })
 
+const handleStreamUpdate = (updatedStream: Partial<Stream>) => {
+  if (stream.value && updatedStream._id === stream.value._id) {
+    if (updatedStream.url !== undefined) stream.value.url = updatedStream.url
+    if (updatedStream.isLive !== undefined) stream.value.isLive = updatedStream.isLive
+  }
+}
+
 onBeforeUnmount(() => {
   if (playerTimeout) clearTimeout(playerTimeout)
   const socket = useSocket()
-  if (socket) {
-    socket.emit('leave-room', `stream-${route.params.id}`)
-    socket.off('stream-update')
-  }
+  // No need to check if socket exists, useSocket returns the singleton
+  socket.emit('leave-room', `stream-${route.params.id}`)
+  socket.off('stream-update', handleStreamUpdate)
 })
 
 onMounted(() => {
   const socket = useSocket()
-  if (socket) {
+
+  // Robust connection handling
+  if (socket.connected) {
     socket.emit('join-room', `stream-${route.params.id}`)
-    socket.on('stream-update', (updatedStream: Partial<Stream>) => {
-      if (stream.value && updatedStream._id === stream.value._id) {
-        if (updatedStream.url !== undefined) stream.value.url = updatedStream.url
-        if (updatedStream.isLive !== undefined) stream.value.isLive = updatedStream.isLive
-        // If other fields need updating, add them here.
-        // Note: currentPassage might be an ID in the update, but we have a populated object.
-        // We avoid overwriting the populated object unless we re-fetch.
-      }
+  } else {
+    socket.on('connect', () => {
+      socket.emit('join-room', `stream-${route.params.id}`)
     })
   }
+
+  socket.on('stream-update', handleStreamUpdate)
 })
 </script>
 

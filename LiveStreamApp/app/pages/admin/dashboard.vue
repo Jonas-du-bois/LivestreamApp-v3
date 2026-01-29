@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { AdminService } from '../../services/admin.service'
 import { PublicService } from '../../services/public.service'
 import type { PassageEnriched, Stream, PassageStatus } from '../../types/api'
 import { useAdminAuth } from '../../composables/useAdminAuth'
+import { useSocket } from '../../composables/useSocket'
 
 const { token: adminToken, login } = useAdminAuth()
 const passwordInput = ref('')
@@ -91,6 +92,51 @@ const updateStreamUrl = async (stream: Stream) => {
     alert('Error updating stream')
   }
 }
+
+const handleStreamUpdate = (updatedStream: Partial<Stream>) => {
+  const idx = streams.value.findIndex(s => s._id === updatedStream._id)
+  if (idx !== -1) {
+      const s = streams.value[idx]
+      if (!s) return
+      if (updatedStream.url !== undefined) s.url = updatedStream.url
+      if (updatedStream.isLive !== undefined) s.isLive = updatedStream.isLive
+      if (updatedStream.currentPassage !== undefined) s.currentPassage = updatedStream.currentPassage
+  }
+}
+
+const handleScoreUpdate = (payload: any) => {
+  // payload: { passageId, groupName, apparatusCode, totalScore, rank }
+  const p = passages.value.find(p => p._id === payload.passageId)
+  if (p) {
+      if (!p.scores) p.scores = { program: 0, technical: 0, total: 0 }
+      if (payload.totalScore !== undefined) p.scores.total = payload.totalScore
+      p.status = 'FINISHED'
+  }
+}
+
+onMounted(() => {
+  const socket = useSocket()
+  if (socket.connected) {
+    socket.emit('join-room', 'streams')
+    socket.emit('join-room', 'live-scores')
+  } else {
+    socket.on('connect', () => {
+      socket.emit('join-room', 'streams')
+      socket.emit('join-room', 'live-scores')
+    })
+  }
+
+  socket.on('stream-update', handleStreamUpdate)
+  socket.on('score-update', handleScoreUpdate)
+})
+
+onBeforeUnmount(() => {
+  const socket = useSocket()
+  socket.emit('leave-room', 'streams')
+  socket.emit('leave-room', 'live-scores')
+  socket.off('stream-update', handleStreamUpdate)
+  socket.off('score-update', handleScoreUpdate)
+})
 </script>
 
 <template>

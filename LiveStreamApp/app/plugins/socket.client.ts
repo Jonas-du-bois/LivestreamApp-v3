@@ -2,10 +2,8 @@ import { defineNuxtPlugin } from '#app'
 import { io, Socket } from 'socket.io-client'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  // Use full origin to avoid ambiguous host resolution
-  const origin = window.location.origin
-
-  const socket: Socket = io(origin, {
+  // Use relative path to let Socket.io auto-detect host (works for localhost and production)
+  const socket: Socket = io({
     path: '/socket.io',
     transports: ['websocket', 'polling'],
     reconnectionAttempts: 5,
