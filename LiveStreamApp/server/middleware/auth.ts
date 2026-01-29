@@ -5,9 +5,13 @@ export default defineEventHandler((event) => {
   if (isProtectedPath || isProtectedMethod) {
     const config = useRuntimeConfig();
     const authHeader = getHeader(event, 'Authorization');
-    const token = authHeader?.split(' ')[1];
 
-    if (!config.adminSecret || token !== config.adminSecret) {
+    let token = authHeader || '';
+    if (token.startsWith('Bearer ')) {
+      token = token.slice(7);
+    }
+
+    if (token !== config.adminPassword) {
       throw createError({
         statusCode: 401,
         statusMessage: 'Unauthorized',
