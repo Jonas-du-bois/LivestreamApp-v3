@@ -34,6 +34,14 @@ export default defineNuxtConfig({
 
   // Configuration PWA
   pwa: {
+    // Force generation and registration strategy so /sw.js is produced at root
+    registerType: 'autoUpdate',
+    strategies: 'generateSW',
+    filename: 'sw.js',
+    includeAssets: ['/icons/logo_livestreamappv3-192.png', '/icons/logo_livestreamappv3-512.png', '/robots.txt'],
+    devOptions: {
+      enabled: true,
+    },
     manifest: {
       name: 'LiveStreamApp FSG',
       short_name: 'LiveStream',
@@ -43,14 +51,16 @@ export default defineNuxtConfig({
       orientation: 'portrait',
       icons: [
         {
-          src: 'icons/icon-192x192.png',
+          src: '/icons/logo_livestreamappv3-192.png',
           sizes: '192x192',
-          type: 'image/png'
+          type: 'image/png',
+          purpose: 'any'
         },
         {
-          src: 'icons/icon-512x512.png',
+          src: '/icons/logo_livestreamappv3-512.png',
           sizes: '512x512',
-          type: 'image/png'
+          type: 'image/png',
+          purpose: 'any maskable'
         }
       ]
     },
