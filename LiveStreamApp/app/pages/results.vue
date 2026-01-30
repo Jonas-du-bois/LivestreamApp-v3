@@ -90,67 +90,72 @@ onMounted(() => {
   if (socket) {
     socket.emit('join-room', 'live-scores')
     socket.on('score-update', (data: any) => {
-    // Data payload: { passageId, score, rank, apparatusCode }
-    if (!resultsMap.value) return
+      // Data payload: { passageId, score, rank, apparatusCode, ... }
+      if (!resultsMap.value) return
 
-    const keys = Object.keys(resultsMap.value)
-    let found = false
-    let targetList: PassageResult[] | null = null
+      const keys = Object.keys(resultsMap.value)
+      let found = false
+      let targetList: PassageResult[] | null = null
 
-    for (const key of keys) {
-      const list = resultsMap.value[key] as PassageResult[]
-      const passage = list.find(p => p._id === data.passageId)
+      for (const key of keys) {
+        const list = resultsMap.value[key] as PassageResult[]
+        const passage = list.find(p => p._id === data.passageId)
 
-      if (passage) {
-        // Update properties
-        if (data.score !== undefined) passage.score = data.score
-        if (data.rank !== undefined) passage.rank = data.rank
+        if (passage) {
+          // Update properties (Direct Mutation for Reactivity)
+          if (data.score !== undefined) passage.score = data.score
 
-        // Mark as finished if not already
-        if (passage.status !== 'FINISHED') passage.status = 'FINISHED'
+          // Force status to FINISHED
+          passage.status = 'FINISHED'
 
-        // Trigger Flash Effect
-        const el = document.getElementById(`result-${data.passageId}`)
-        if (el) {
-          el.classList.add('flash-green')
-          setTimeout(() => el.classList.remove('flash-green'), 2000)
+          // Trigger Flash Effect
+          nextTick(() => {
+             const el = document.getElementById(`result-${data.passageId}`)
+             if (el) {
+               el.classList.remove('flash-green') // Reset animation
+               void el.offsetWidth // Trigger reflow
+               el.classList.add('flash-green')
+             }
+          })
+
+          targetList = list
+          found = true
+          break
         }
-
-        targetList = list
-        found = true
-        break
       }
-    }
 
-    // Handle new entry dynamically if full object provided
-    if (!found && data.group && data.apparatus) {
-       const code = data.apparatus.code
-       if (code) {
-         if (!resultsMap.value[code]) resultsMap.value[code] = []
-         const list = resultsMap.value[code] as PassageResult[]
-         const index = list.findIndex(p => p._id === data.passageId) // Fix: use passageId
+      // Handle new entry dynamically (e.g. first score for an apparatus)
+      if (!found && data.group && data.apparatus) {
+         const code = data.apparatus.code
+         if (code) {
+           if (!resultsMap.value[code]) resultsMap.value[code] = []
+           const list = resultsMap.value[code] as PassageResult[]
 
-         const newEntry = {
-            ...data,
-            _id: data.passageId,
-            rank: 0
-         } as PassageResult
+           // Check again in case of race condition
+           const index = list.findIndex(p => p._id === data.passageId)
 
-         if (index !== -1) list[index] = newEntry
-         else list.push(newEntry)
+           const newEntry = {
+              ...data,
+              _id: data.passageId,
+              rank: 0,
+              status: 'FINISHED'
+           } as PassageResult
 
-         targetList = list
-       }
-    }
+           if (index !== -1) list[index] = newEntry
+           else list.push(newEntry)
 
-    // Re-sort and re-rank
-    if (targetList) {
-      targetList.sort((a, b) => (b.score || 0) - (a.score || 0))
-      targetList.forEach((p, i) => {
-        p.rank = i + 1
-      })
-    }
-  })
+           targetList = list
+         }
+      }
+
+      // Re-sort and re-rank the specific apparatus list
+      if (targetList) {
+        targetList.sort((a, b) => (b.score || 0) - (a.score || 0))
+        targetList.forEach((p, i) => {
+          p.rank = i + 1
+        })
+      }
+    })
   }
 })
 

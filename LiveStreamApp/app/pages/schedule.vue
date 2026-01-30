@@ -28,7 +28,7 @@ watch(apiParams, (newParams) => {
 }, { immediate: true, deep: true })
 
 // 2. Appel Réactif (useFetch surveille apiParams)
-const { data: scheduleResponse } = await PublicService.getSchedule(apiParams)
+const { data: scheduleResponse, refresh } = await PublicService.getSchedule(apiParams)
 
 // Share metadata globally (for FilterSheet)
 const meta = useState('scheduleMeta', () => scheduleResponse.value?.meta || {
@@ -80,6 +80,22 @@ const toggleFavorite = (id: string, event: Event) => {
 const handleGroupClick = (groupId: string) => {
   openGroupDetails?.(groupId)
 }
+
+onMounted(() => {
+  const socket = useSocket()
+  if (socket) {
+      socket.on('schedule-update', () => {
+          refresh()
+      })
+  }
+})
+
+onUnmounted(() => {
+  const socket = useSocket()
+  if (socket) {
+      socket.off('schedule-update')
+  }
+})
 
 /* const handleInfoClick = (groupId: string, event: Event) => {
   event.stopPropagation()

@@ -27,6 +27,51 @@ export default defineNitroPlugin((nitroApp) => {
   setInterval(async () => {
     try {
       const now = new Date();
+
+      // --- 1. STATUS UPDATE LOGIC (AUTO-PILOT) ---
+      let scheduleChanged = false;
+
+      // A. Promote SCHEDULED -> LIVE (if startTime is reached/passed)
+      const toLive = await PassageModel.find({
+        status: 'SCHEDULED',
+        startTime: { $lte: now }
+      });
+
+      if (toLive.length > 0) {
+        await PassageModel.updateMany(
+          { _id: { $in: toLive.map(p => p._id) } },
+          { $set: { status: 'LIVE' } }
+        );
+        console.log(`[Scheduler] Promoted ${toLive.length} passages to LIVE`);
+        scheduleChanged = true;
+      }
+
+      // B. Promote LIVE -> FINISHED (if endTime is passed)
+      const toFinished = await PassageModel.find({
+        status: 'LIVE',
+        endTime: { $lte: now }
+      });
+
+      if (toFinished.length > 0) {
+        await PassageModel.updateMany(
+          { _id: { $in: toFinished.map(p => p._id) } },
+          { $set: { status: 'FINISHED' } }
+        );
+        console.log(`[Scheduler] Promoted ${toFinished.length} passages to FINISHED`);
+        scheduleChanged = true;
+      }
+
+      // Emit event if schedule changed
+      if (scheduleChanged) {
+        const io = (globalThis as any).io;
+        if (io) {
+            io.emit('schedule-update');
+            console.log('[Scheduler] Emitted schedule-update');
+        }
+      }
+
+
+      // --- 2. NOTIFICATIONS LOGIC ---
       // Look for passages starting in ~15 minutes (between 14.5 and 15.5 mins from now)
       const startWindow = new Date(now.getTime() + 14.5 * 60000);
       const endWindow = new Date(now.getTime() + 15.5 * 60000);
@@ -79,5 +124,5 @@ export default defineNitroPlugin((nitroApp) => {
     } catch (err) {
       console.error('[Scheduler] Error in job:', err);
     }
-  }, 60000);
+  }, 30000); // Check every 30s for better precision
 });

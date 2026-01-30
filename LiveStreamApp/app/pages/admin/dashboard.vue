@@ -126,6 +126,7 @@ onMounted(() => {
 
   socket.on('stream-update', handleStreamUpdate)
   socket.on('score-update', handleScoreUpdate)
+  socket.on('schedule-update', refreshAll)
 })
 
 onBeforeUnmount(() => {
@@ -134,6 +135,7 @@ onBeforeUnmount(() => {
   socket.emit('leave-room', 'live-scores')
   socket.off('stream-update', handleStreamUpdate)
   socket.off('score-update', handleScoreUpdate)
+  socket.off('schedule-update', refreshAll)
 })
 </script>
 
