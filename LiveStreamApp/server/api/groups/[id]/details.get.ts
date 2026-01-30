@@ -32,8 +32,8 @@ export default defineEventHandler(async (event) => {
     const monitorsSet = new Set<string>()
 
     const timeline = passages.map((p: any) => {
-      if (p.status === 'FINISHED' && p.scores?.total) {
-        totalScore += p.scores.total
+      if (p.status === 'FINISHED' && typeof p.score === 'number') {
+        totalScore += p.score
         finishedCount++
       }
       
@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
         startTime: p.startTime,
         endTime: p.endTime,
         status: p.status,
-        scores: p.scores,
+        score: p.score,
         monitors: p.monitors || [],
         location: p.location
       }
@@ -61,13 +61,13 @@ export default defineEventHandler(async (event) => {
     const yearMap = new Map<number, { total: number; count: number }>()
 
     passages.forEach((p: any) => {
-      if (p.status === 'FINISHED' && p.scores?.total) {
+      if (p.status === 'FINISHED' && typeof p.score === 'number') {
         const year = new Date(p.startTime).getFullYear()
         if (!yearMap.has(year)) {
           yearMap.set(year, { total: 0, count: 0 })
         }
         const yearData = yearMap.get(year)!
-        yearData.total += p.scores.total
+        yearData.total += p.score
         yearData.count++
       }
     })

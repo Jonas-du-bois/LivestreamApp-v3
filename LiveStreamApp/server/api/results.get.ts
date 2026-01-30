@@ -6,7 +6,7 @@ export default defineCachedEventHandler(async (event) => {
       // 1. CORRECTION ICI : On ajoute 'canton' et 'logo' à la liste des champs récupérés
       .populate('group', 'name category canton logo')
       .populate('apparatus', 'name code icon')
-      .sort({ 'scores.total': -1 })
+      .sort({ 'score': -1 })
       .lean()
       .exec();
 
@@ -36,7 +36,7 @@ export default defineCachedEventHandler(async (event) => {
             code: p.apparatus.code, 
             icon: p.apparatus.icon 
           } : null,
-          scores: p.scores,
+          score: p.score,
           rank: 0, 
           startTime: p.startTime,
           endTime: p.endTime,
@@ -48,7 +48,7 @@ export default defineCachedEventHandler(async (event) => {
     // Compute ranks
     Object.values(grouped).forEach(groupList => {
         // Sort descending by total score
-        groupList.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0));
+        groupList.sort((a, b) => (b.score || 0) - (a.score || 0));
         
         // Handle Ex-aequo ranks logic (Optional but pro)
         groupList.forEach((p, index) => {

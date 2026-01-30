@@ -91,25 +91,22 @@ onMounted(() => {
     socket.emit('join-room', 'live-scores')
     socket.on('score-update', (data: any) => {
     // Data payload: { passageId, score, rank, apparatusCode }
-    // If mismatch, try to find passage locally
     if (!resultsMap.value) return
 
-    // We search through all lists because we might not know the apparatus code from the summary payload easily
-    // Or if we have apparatusCode, we can narrow it down.
     const keys = Object.keys(resultsMap.value)
-
     let found = false
     let targetList: PassageResult[] | null = null
 
     for (const key of keys) {
       const list = resultsMap.value[key] as PassageResult[]
       const passage = list.find(p => p._id === data.passageId)
+
       if (passage) {
         // Update properties
         if (data.score !== undefined) passage.score = data.score
         if (data.rank !== undefined) passage.rank = data.rank
 
-        // Mark as finished if not already (implied by score update)
+        // Mark as finished if not already
         if (passage.status !== 'FINISHED') passage.status = 'FINISHED'
 
         // Trigger Flash Effect
@@ -125,23 +122,28 @@ onMounted(() => {
       }
     }
 
-    // If not found, or full payload was sent, try legacy logic (direct mutation)
-    // STRICTLY NO REFRESH CALLS HERE
+    // Handle new entry dynamically if full object provided
     if (!found && data.group && data.apparatus) {
-       // It's a full object, use original logic (fallback)
        const code = data.apparatus.code
        if (code) {
          if (!resultsMap.value[code]) resultsMap.value[code] = []
          const list = resultsMap.value[code] as PassageResult[]
-         const index = list.findIndex(p => p._id === data._id)
-         const newEntry = { ...data, rank: 0 } as PassageResult
+         const index = list.findIndex(p => p._id === data.passageId) // Fix: use passageId
+
+         const newEntry = {
+            ...data,
+            _id: data.passageId,
+            rank: 0
+         } as PassageResult
+
          if (index !== -1) list[index] = newEntry
          else list.push(newEntry)
+
          targetList = list
        }
     }
 
-    // Re-sort and re-rank the specific list if needed
+    // Re-sort and re-rank
     if (targetList) {
       targetList.sort((a, b) => (b.score || 0) - (a.score || 0))
       targetList.forEach((p, i) => {

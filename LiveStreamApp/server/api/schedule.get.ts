@@ -97,7 +97,7 @@ export default defineCachedEventHandler(async (event) => {
 
     // 4. Fetch Data
     const passages = await PassageModel.find(dbQuery)
-      .select('startTime endTime location status scores group apparatus')
+      .select('startTime endTime location status score group apparatus')
       .populate('group', 'name')
       .populate('apparatus', 'name code icon')
       .sort({ startTime: 1 }) // Sorting at DB level
@@ -118,7 +118,7 @@ export default defineCachedEventHandler(async (event) => {
       endTime: p.endTime,
       location: p.location,
       status: p.status,
-      scores: p.scores
+      score: p.score
     }));
 
     return {
