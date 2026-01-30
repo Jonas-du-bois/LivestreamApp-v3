@@ -220,7 +220,7 @@ onUnmounted(() => {
 
               <!-- Score -->
               <div class="text-cyan-400 font-bold text-3xl">
-                {{ result.score?.toFixed(2) || '0.00' }}
+                {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
               </div>
             </div>
           </div>
@@ -252,7 +252,7 @@ onUnmounted(() => {
 
               <!-- Score -->
               <div class="text-white font-bold text-2xl">
-                {{ result.score?.toFixed(2) || '0.00' }}
+                {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
               </div>
             </div>
           </div>
