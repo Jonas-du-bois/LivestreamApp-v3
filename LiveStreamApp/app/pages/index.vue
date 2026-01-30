@@ -48,17 +48,20 @@ const heroSubtitle = computed(() => {
   return `${loc} • ${app}`
 })
 
+const firstLiveStream = computed(() => {
+  const p = firstLivePassage.value
+  if (!p) return null
+  const streams = liveResp.value?.streams || []
+  return streams.find((s: any) => {
+    if (!s.currentPassage) return false
+    if (typeof s.currentPassage === 'string') return s.currentPassage === p._id
+    return s.currentPassage?._id === p._id
+  })
+})
+
 const heroImage = computed(() => {
   const defaultImg = 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  const p = firstLivePassage.value
-  if (!p) return defaultImg
-
-  const streams = liveResp.value?.streams || []
-  const s = streams.find((st: any) => {
-    if (!st.currentPassage) return false
-    if (typeof st.currentPassage === 'string') return st.currentPassage === p._id
-    return st.currentPassage?._id === p._id
-  })
+  const s = firstLiveStream.value
 
   // Try to extract YouTube id if present to use a thumbnail
   if (s?.url && s.url.includes('youtube')) {
@@ -80,8 +83,34 @@ const handleGroupClick = (groupName: string) => {
 <template>
   <div class="px-4 space-y-6 pb-6">
     <!-- Hero Live Card -->
+    <NuxtLink
+      v-if="firstLiveStream"
+      :to="'/stream/' + firstLiveStream._id"
+      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block"
+    >
+      <ImageWithFallback
+        :src="heroImage"
+        :alt="heroTitle"
+        class="w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 gradient-overlay" />
+
+      <div class="absolute bottom-0 left-0 right-0 p-6">
+        <div class="flex items-center gap-2 mb-3">
+          <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
+            <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
+            <span class="text-white text-sm font-medium">EN DIRECT</span>
+          </div>
+        </div>
+
+        <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
+        <p class="text-white/80">{{ heroSubtitle }}</p>
+      </div>
+    </NuxtLink>
+
     <div 
-      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform"
+      v-else
+      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block"
       @click="firstLivePassage?.group?.name ? handleGroupClick(firstLivePassage.group.name) : handleGroupClick('FSG Yverdon')"
     >
       <ImageWithFallback 
