@@ -57,6 +57,20 @@ const applyFilters = () => {
   filtersStore.value.apparatus = [...selectedApparatus.value]
   emit('close')
 }
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && props.isOpen) {
+    emit('close')
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
@@ -73,17 +87,21 @@ const applyFilters = () => {
       <div
         v-if="isOpen"
         class="fixed bottom-0 left-0 right-0 glass-panel rounded-t-3xl z-[70] max-h-[80vh] overflow-hidden mb-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="filter-sheet-title"
       >
         <!-- Header -->
         <div class="p-6 border-b border-white/10">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-3">
               <Icon name="fluent:options-24-regular" class="w-6 h-6 text-cyan-400" />
-              <h2 class="text-white font-bold text-xl">Filtres</h2>
+              <h2 id="filter-sheet-title" class="text-white font-bold text-xl">Filtres</h2>
             </div>
             <button
               @click="emit('close')"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              aria-label="Fermer"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/80" />
             </button>
@@ -105,6 +123,7 @@ const applyFilters = () => {
                 :class="selectedApparatus.includes(app)
                   ? 'bg-cyan-400 text-[#0B1120]'
                   : 'glass-card text-white/80'"
+                :aria-pressed="selectedApparatus.includes(app)"
               >
                 {{ app }}
               </button>
@@ -123,6 +142,7 @@ const applyFilters = () => {
                 :class="selectedDivision.includes(division)
                   ? 'bg-cyan-400 text-[#0B1120]'
                   : 'glass-card text-white/80'"
+                :aria-pressed="selectedDivision.includes(division)"
               >
                 {{ division }}
               </button>
@@ -141,6 +161,7 @@ const applyFilters = () => {
                 :class="selectedSalle.includes(salle)
                   ? 'gradient-cyan-purple text-white'
                   : 'glass-card text-white/80'"
+                :aria-pressed="selectedSalle.includes(salle)"
               >
                 {{ salle }}
               </button>
