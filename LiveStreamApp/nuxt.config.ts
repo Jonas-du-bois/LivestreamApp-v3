@@ -35,6 +35,7 @@ export default defineNuxtConfig({
         // ✅ AJOUTS CRUCIAUX POUR IPHONE :
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
         { name: 'apple-mobile-web-app-title', content: 'LiveScore' },
+        { name: 'mobile-web-app-capable', content: 'yes' },
       ],
       link: [
         // ✅ L'iPhone cherche cette icône spécifiquement :
@@ -71,7 +72,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/',
+      navigateFallback: null, // Désactive le fallback par défaut pour les SPA
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
       // ✅ LA PARTIE MANQUANTE POUR TES ERREURS CONSOLE :
       runtimeCaching: [
