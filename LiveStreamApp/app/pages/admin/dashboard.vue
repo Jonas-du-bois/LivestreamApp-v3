@@ -30,7 +30,7 @@ watch(scheduleData, (data) => {
   if (data?.data) {
     passages.value = data.data.map((p: any) => ({
       ...p,
-      scores: p.scores || { program: undefined, technical: undefined, total: undefined }
+      score: p.score ?? undefined
     }))
   }
 }, { immediate: true })
@@ -64,12 +64,11 @@ const updateStatus = async (passage: PassageEnriched, status: PassageStatus) => 
 }
 
 const updateScore = async (passage: PassageEnriched) => {
+  if (passage.score === undefined || passage.score === null) return
   try {
     await AdminService.updateScore({
       passageId: passage._id!,
-      programScore: passage.scores?.program,
-      techScore: passage.scores?.technical,
-      totalScore: passage.scores?.total
+      score: passage.score
     })
     alert('Score saved')
   } catch (e) {
@@ -105,11 +104,10 @@ const handleStreamUpdate = (updatedStream: Partial<Stream>) => {
 }
 
 const handleScoreUpdate = (payload: any) => {
-  // payload: { passageId, groupName, apparatusCode, totalScore, rank }
+  // payload: { passageId, groupName, apparatusCode, score, rank }
   const p = passages.value.find(p => p._id === payload.passageId)
   if (p) {
-      if (!p.scores) p.scores = { program: 0, technical: 0, total: 0 }
-      if (payload.totalScore !== undefined) p.scores.total = payload.totalScore
+      if (payload.score !== undefined) p.score = payload.score
       p.status = 'FINISHED'
   }
 }
@@ -228,17 +226,9 @@ onBeforeUnmount(() => {
 
             <!-- Scores -->
             <div class="flex items-center gap-2 flex-1 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
-              <div class="flex flex-col">
-                <label class="text-[10px] text-white/40 text-center">Prog</label>
-                <input v-model.number="passage.scores!.program" class="w-14 bg-black/20 border border-white/10 rounded-lg p-1.5 text-sm text-center focus:border-cyan-400" />
-              </div>
-              <div class="flex flex-col">
-                 <label class="text-[10px] text-white/40 text-center">Tech</label>
-                <input v-model.number="passage.scores!.technical" class="w-14 bg-black/20 border border-white/10 rounded-lg p-1.5 text-sm text-center focus:border-cyan-400" />
-              </div>
                <div class="flex flex-col">
-                 <label class="text-[10px] text-white/40 text-center">Total</label>
-                <input v-model.number="passage.scores!.total" class="w-16 bg-black/20 border border-white/10 rounded-lg p-1.5 text-sm text-center font-bold focus:border-cyan-400" />
+                 <label class="text-[10px] text-white/40 text-center">Note Finale</label>
+                <input v-model.number="passage.score" step="0.01" max="10" class="w-24 bg-black/20 border border-white/10 rounded-lg p-1.5 text-sm text-center font-bold focus:border-cyan-400" />
               </div>
               <button @click="updateScore(passage)" class="mt-3 bg-green-500/20 text-green-400 hover:bg-green-500/30 p-2 rounded-lg transition-colors" title="Save Score">
                 <Icon name="fluent:save-24-regular" class="w-5 h-5" />
