@@ -22,6 +22,10 @@ const apiParams = computed(() => ({
   salle: filtersStore.value.salle.length ? filtersStore.value.salle.join(',') : undefined
 }))
 
+watch(apiParams, (newParams) => {
+  console.log('📡 API Params:', newParams)
+}, { immediate: true, deep: true })
+
 // 2. Appel Réactif (useFetch surveille apiParams)
 const { data: scheduleResponse } = await PublicService.getSchedule(apiParams)
 
