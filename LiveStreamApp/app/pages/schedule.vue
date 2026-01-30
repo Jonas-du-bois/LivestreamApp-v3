@@ -18,6 +18,7 @@ const apiParams = computed(() => ({
   apparatus: selectedFilter.value !== 'Tout'
     ? selectedFilter.value
     : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus.join(',') : undefined),
+  // Filtres dynamiques provenant du store (FilterSheet)
   division: filtersStore.value.division.length ? filtersStore.value.division.join(',') : undefined,
   salle: filtersStore.value.salle.length ? filtersStore.value.salle.join(',') : undefined
 }))
@@ -26,7 +27,12 @@ const apiParams = computed(() => ({
 const { data: scheduleResponse } = await PublicService.getSchedule(apiParams)
 
 // Share metadata globally (for FilterSheet)
-const meta = useState('scheduleMeta', () => scheduleResponse.value?.meta || { availableApparatus: [], availableDays: [] })
+const meta = useState('scheduleMeta', () => scheduleResponse.value?.meta || {
+  availableApparatus: [],
+  availableDays: [],
+  availableCategories: [],
+  availableLocations: []
+})
 
 watchEffect(() => {
   if (scheduleResponse.value?.meta) {
