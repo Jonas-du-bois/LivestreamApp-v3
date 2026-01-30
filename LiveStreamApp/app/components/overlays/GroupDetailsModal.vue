@@ -78,7 +78,7 @@ const handleScoreUpdate = (payload: any) => {
 
 const recomputeStats = () => {
    if (!details.value) return
-   const finished = details.value.timeline.filter((p: any) => p.status === 'FINISHED' && p.score !== undefined)
+   const finished = details.value.timeline.filter((p: any) => p.status === 'FINISHED' && typeof p.score === 'number')
    const total = finished.reduce((acc: number, curr: any) => acc + (curr.score || 0), 0)
    const count = finished.length
 
