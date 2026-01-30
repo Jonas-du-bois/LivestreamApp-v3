@@ -25,13 +25,6 @@ export interface Group {
   history?: HistoryEntry[];
 }
 
-export interface Scores {
-  program?: number;
-  technical?: number;
-  total?: number;
-  isPublished?: boolean;
-}
-
 export type PassageStatus = 'SCHEDULED' | 'LIVE' | 'FINISHED';
 
 export interface Passage {
@@ -41,7 +34,8 @@ export interface Passage {
   startTime: string;
   endTime: string;
   location?: string;
-  scores?: Scores;
+  score?: number;
+  isPublished?: boolean;
   status?: PassageStatus;
 }
 

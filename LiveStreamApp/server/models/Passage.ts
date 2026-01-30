@@ -3,33 +3,17 @@ import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 export const PASSAGE_STATUS = ['SCHEDULED', 'LIVE', 'FINISHED'] as const;
 export type PassageStatus = typeof PASSAGE_STATUS[number];
 
-export interface IScores {
-  program?: number; // Note P
-  technical?: number; // Note E
-  total?: number;
-  isPublished?: boolean;
-}
-
 export interface IPassage extends Document {
   group: Types.ObjectId;
   apparatus: Types.ObjectId;
   startTime: Date;
   endTime: Date;
   location?: string;
-  scores?: IScores;
+  score?: number;
+  isPublished?: boolean;
   status?: PassageStatus;
   monitors?: string[];
 }
-
-const ScoresSchema = new Schema<IScores>(
-  {
-    program: { type: Number },
-    technical: { type: Number },
-    total: { type: Number },
-    isPublished: { type: Boolean, default: false },
-  },
-  { _id: false }
-);
 
 const PassageSchema = new Schema<IPassage>(
   {
@@ -38,7 +22,8 @@ const PassageSchema = new Schema<IPassage>(
     startTime: { type: Date, required: true, index: true },
     endTime: { type: Date, required: true },
     location: { type: String },
-    scores: { type: ScoresSchema, default: {} },
+    score: { type: Number, min: 0, max: 10 },
+    isPublished: { type: Boolean, default: false },
     status: { type: String, enum: [...PASSAGE_STATUS], default: 'SCHEDULED' },
     monitors: { type: [String], default: [] },
   },

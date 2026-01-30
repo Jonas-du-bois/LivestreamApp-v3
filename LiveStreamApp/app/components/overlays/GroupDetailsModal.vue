@@ -68,20 +68,18 @@ const handleScoreUpdate = (payload: any) => {
 
   const passage = details.value.timeline.find((p: any) => p._id === payload.passageId)
   if (passage) {
-    passage.scores = payload.scores
-    if (passage.status !== 'FINISHED' && payload.scores.isPublished) {
-        passage.status = 'FINISHED'
-        recomputeStats()
-    } else if (passage.status === 'SCHEDULED' && !payload.scores.isPublished) {
-        passage.status = 'LIVE'
+    if (payload.score !== undefined) {
+      passage.score = payload.score;
+      passage.status = 'FINISHED';
+      recomputeStats();
     }
   }
 }
 
 const recomputeStats = () => {
    if (!details.value) return
-   const finished = details.value.timeline.filter((p: any) => p.status === 'FINISHED' && p.scores?.total)
-   const total = finished.reduce((acc: number, curr: any) => acc + (curr.scores?.total || 0), 0)
+   const finished = details.value.timeline.filter((p: any) => p.status === 'FINISHED' && p.score !== undefined)
+   const total = finished.reduce((acc: number, curr: any) => acc + (curr.score || 0), 0)
    const count = finished.length
 
    details.value.stats.completedPassages = count
@@ -134,13 +132,14 @@ const monitors = computed(() => details.value?.monitors ?? [])
 
 const historyByYear = computed(() => {
   if (!details.value?.history) return []
-  return details.value.history.sort((a: any, b: any) => a.year - b.year)
+  return (details.value.history as any[]).slice().sort((a: any, b: any) => Number(a.year) - Number(b.year))
 })
 
 const averageHistoryScore = computed(() => {
-  if (!historyByYear.value.length) return '0.00'
-  const sum = historyByYear.value.reduce((acc: number, curr: any) => acc + curr.score, 0)
-  return (sum / historyByYear.value.length).toFixed(2)
+  const list = historyByYear.value
+  if (!list.length) return '0.00'
+  const sum = list.reduce((acc: number, curr: any) => acc + (Number(curr.score) || 0), 0)
+  return (sum / list.length).toFixed(2)
 })
 </script>
 
@@ -310,7 +309,7 @@ const averageHistoryScore = computed(() => {
                           </div>
                         </div>
                         <div v-if="item.status === 'FINISHED'" class="text-right">
-                          <div class="text-2xl font-bold text-cyan-400 leading-none">{{ item.scores?.total?.toFixed(2) || '0.00' }}</div>
+                          <div class="text-2xl font-bold text-cyan-400 leading-none">{{ item.score?.toFixed(2) || '0.00' }}</div>
                         </div>
                         <div v-else-if="item.status === 'LIVE'" class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/20 animate-pulse">
                           🔴 EN COURS
@@ -550,39 +549,3 @@ const averageHistoryScore = computed(() => {
     </Transition>
   </Teleport>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.scale-enter-active,
-.scale-leave-active {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.scale-enter-from,
-.scale-leave-to {
-  opacity: 0;
-  transform: scale(0.9) translateY(20px);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-</style>

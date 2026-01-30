@@ -210,12 +210,9 @@ export default defineEventHandler(async (event) => {
     tomorrow.setHours(8, 0, 0, 0);
 
     const generateScore = () => {
-      const p = 4.5 + Math.random() * 0.5; // 4.5 - 5.0
-      const t = 4.5 + Math.random() * 0.5; // 4.5 - 5.0
+      const s = 8.0 + Math.random() * 2.0; // 8.00 - 10.00
       return {
-        program: parseFloat(p.toFixed(2)),
-        technical: parseFloat(t.toFixed(2)),
-        total: parseFloat((p + t).toFixed(2)),
+        score: parseFloat(s.toFixed(2)),
         isPublished: true,
       };
     };
@@ -264,7 +261,7 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
         status: "FINISHED",
-        scores: generateScore(),
+        ...generateScore(),
         monitors: generateMonitors(),
       });
     }
@@ -278,7 +275,7 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
         status: "FINISHED",
-        scores: generateScore(),
+        ...generateScore(),
         monitors: generateMonitors(),
       });
     }
@@ -293,7 +290,7 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
         status: "FINISHED",
-        scores: generateScore(),
+        ...generateScore(),
         monitors: generateMonitors(),
       });
     }
@@ -307,7 +304,7 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
         status: "FINISHED",
-        scores: generateScore(),
+        ...generateScore(),
         monitors: generateMonitors(),
       });
     }
@@ -322,7 +319,6 @@ export default defineEventHandler(async (event) => {
       endTime: new Date(liveStartTime.getTime() + 15 * 60000),
       location: "Isles 1",
       status: "LIVE",
-      scores: {},
       monitors: generateMonitors(),
     };
     passagesData.push(live1);
@@ -334,7 +330,6 @@ export default defineEventHandler(async (event) => {
       endTime: new Date(liveStartTime.getTime() + 15 * 60000),
       location: "Léon Michaud 1",
       status: "LIVE",
-      scores: {},
       monitors: generateMonitors(),
     };
     passagesData.push(live2);
@@ -350,7 +345,6 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
         status: "SCHEDULED",
-        scores: {},
         monitors: generateMonitors(),
       });
     }
@@ -364,7 +358,6 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
         status: "SCHEDULED",
-        scores: {},
         monitors: generateMonitors(),
       });
     }
@@ -379,7 +372,6 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
         status: "SCHEDULED",
-        scores: {},
         monitors: generateMonitors(),
       });
     }
@@ -393,7 +385,6 @@ export default defineEventHandler(async (event) => {
         endTime: new Date(startTime.getTime() + 10 * 60000),
         location: i % 2 === 0 ? "Isles 1" : "Léon Michaud 1",
         status: "SCHEDULED",
-        scores: {},
         monitors: generateMonitors(),
       });
     }

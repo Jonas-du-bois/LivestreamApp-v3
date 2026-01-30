@@ -90,7 +90,7 @@ onMounted(() => {
   if (socket) {
     socket.emit('join-room', 'live-scores')
     socket.on('score-update', (data: any) => {
-    // Data payload: { passageId, totalScore, rank, apparatusCode }
+    // Data payload: { passageId, score, rank, apparatusCode }
     // If mismatch, try to find passage locally
     if (!resultsMap.value) return
 
@@ -106,8 +106,7 @@ onMounted(() => {
       const passage = list.find(p => p._id === data.passageId)
       if (passage) {
         // Update properties
-        passage.scores = passage.scores || {}
-        if (data.totalScore !== undefined) passage.scores.total = data.totalScore
+        if (data.score !== undefined) passage.score = data.score
         if (data.rank !== undefined) passage.rank = data.rank
 
         // Mark as finished if not already (implied by score update)
@@ -144,7 +143,7 @@ onMounted(() => {
 
     // Re-sort and re-rank the specific list if needed
     if (targetList) {
-      targetList.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0))
+      targetList.sort((a, b) => (b.score || 0) - (a.score || 0))
       targetList.forEach((p, i) => {
         p.rank = i + 1
       })
@@ -221,7 +220,7 @@ onUnmounted(() => {
 
               <!-- Score -->
               <div class="text-cyan-400 font-bold text-3xl">
-                {{ result.scores?.total?.toFixed(2) || '0.00' }}
+                {{ result.score?.toFixed(2) || '0.00' }}
               </div>
             </div>
           </div>
@@ -253,7 +252,7 @@ onUnmounted(() => {
 
               <!-- Score -->
               <div class="text-white font-bold text-2xl">
-                {{ result.scores?.total?.toFixed(2) || '0.00' }}
+                {{ result.score?.toFixed(2) || '0.00' }}
               </div>
             </div>
           </div>

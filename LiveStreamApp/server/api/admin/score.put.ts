@@ -7,9 +7,7 @@ import ApparatusModel from '../../models/Apparatus';
 
 const schema = z.object({
   passageId: z.string(),
-  programScore: z.number().min(0).max(20).optional(),
-  techScore: z.number().min(0).max(20).optional(),
-  totalScore: z.number().min(0).max(20).optional(),
+  score: z.number().min(0).max(10),
 });
 
 export default defineEventHandler(async (event) => {
@@ -17,7 +15,7 @@ export default defineEventHandler(async (event) => {
   if (!result.success) {
     throw createError({ statusCode: 400, statusMessage: 'Validation Failed', data: result.error });
   }
-  const { passageId, programScore, techScore, totalScore } = result.data;
+  const { passageId, score } = result.data;
 
   try {
     const passage = await PassageModel.findById(passageId).populate('group', 'name').populate('apparatus', 'code').exec();
@@ -25,18 +23,15 @@ export default defineEventHandler(async (event) => {
     if (!passage) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
     // Update scores
-    const scores = passage.scores = (passage.scores || { isPublished: false } as any) as any;
-    if (typeof programScore === 'number') scores.program = programScore;
-    if (typeof techScore === 'number') scores.technical = techScore;
-    if (typeof totalScore === 'number') scores.total = totalScore;
+    passage.score = score;
+    passage.isPublished = true;
     passage.status = 'FINISHED';
-    scores.isPublished = true;
 
     await passage.save();
 
     // Compute rank among published finished passages
-    const finished = await PassageModel.find({ status: 'FINISHED', 'scores.isPublished': true })
-      .sort({ 'scores.total': -1 })
+    const finished = await PassageModel.find({ status: 'FINISHED', isPublished: true })
+      .sort({ score: -1 })
       .select('_id')
       .lean()
       .exec();
@@ -47,7 +42,7 @@ export default defineEventHandler(async (event) => {
       passageId: passage._id,
       groupName: (passage.group as any)?.name || null,
       apparatusCode: (passage.apparatus as any)?.code || null,
-      totalScore: scores?.total ?? null,
+      score: passage.score,
       rank,
     };
 

@@ -1,14 +1,14 @@
 import type { PassageStatus } from '../types/api'
 
 export const AdminService = {
-  updateScore(payload: { passageId: string; programScore?: number; techScore?: number; totalScore?: number }) {
+  updateScore(payload: { passageId: string; score?: number }) {
     const { authHeader } = useAdminAuth()
     const config = useRuntimeConfig()
     return $fetch<{ ok: boolean; payload: any }>('/admin/score', {
       baseURL: config.public.apiBase,
       method: 'PUT',
       body: payload,
-      headers: authHeader.value
+      headers: authHeader.value as HeadersInit
     })
   },
 
@@ -19,7 +19,7 @@ export const AdminService = {
       baseURL: config.public.apiBase,
       method: 'PUT',
       body: payload,
-      headers: authHeader.value
+      headers: authHeader.value as HeadersInit
     })
   },
 
@@ -30,7 +30,7 @@ export const AdminService = {
       baseURL: config.public.apiBase,
       method: 'PUT',
       body: payload,
-      headers: authHeader.value
+      headers: authHeader.value as HeadersInit
     })
   }
 }
