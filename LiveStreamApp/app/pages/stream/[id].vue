@@ -14,10 +14,12 @@ interface PopulatedStream extends Omit<Stream, 'currentPassage'> {
   currentPassage?: PopulatedPassage;
 }
 
-const { data: stream, pending, error } = await useFetch<PopulatedStream>(() => `/api/streams/${route.params.id}`)
+const { data: stream, pending, error, refresh } = await useFetch<PopulatedStream>(() => `/api/streams/${route.params.id}`)
 
 if (error.value) {
   console.error('Error loading stream:', error.value)
+  clearError()
+  await navigateTo('/stream')
 }
 
 // Computeds for safe access
@@ -71,12 +73,29 @@ const handleStreamUpdate = (updatedStream: Partial<Stream>) => {
   }
 }
 
+const handleStatusUpdate = (payload: any) => {
+  // Check if update is relevant to current stream
+  if (stream.value) {
+    // If the finished passage was the one displayed
+    if (stream.value.currentPassage?._id === payload.passageId ||
+       (typeof stream.value.currentPassage === 'string' && stream.value.currentPassage === payload.passageId)) {
+        refresh()
+    }
+    // Or if we are just notified of a status update on this location
+    else if (stream.value.location && payload.location === stream.value.location) {
+        refresh()
+    }
+  }
+}
+
 onBeforeUnmount(() => {
   if (playerTimeout) clearTimeout(playerTimeout)
   const socket = useSocket()
   // No need to check if socket exists, useSocket returns the singleton
   socket.emit('leave-room', `stream-${route.params.id}`)
+  socket.emit('leave-room', 'schedule-updates')
   socket.off('stream-update', handleStreamUpdate)
+  socket.off('status-update', handleStatusUpdate)
 })
 
 onMounted(() => {
@@ -85,13 +104,16 @@ onMounted(() => {
   // Robust connection handling
   if (socket.connected) {
     socket.emit('join-room', `stream-${route.params.id}`)
+    socket.emit('join-room', 'schedule-updates')
   } else {
     socket.on('connect', () => {
       socket.emit('join-room', `stream-${route.params.id}`)
+      socket.emit('join-room', 'schedule-updates')
     })
   }
 
   socket.on('stream-update', handleStreamUpdate)
+  socket.on('status-update', handleStatusUpdate)
 })
 </script>
 
