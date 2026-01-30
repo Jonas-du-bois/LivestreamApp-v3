@@ -14,7 +14,7 @@ interface StreamDisplay {
 }
 
 // Fetch live streams (and passages) in one call
-const { data: liveResp } = await PublicService.getLive()
+const { data: liveResp, refresh: refreshLive } = await PublicService.getLive()
 
 // Helper to access passages by ID
 const livePassagesMap = computed(() => {
@@ -48,12 +48,18 @@ onMounted(() => {
   }
 
   socket.on('stream-update', handleStreamUpdate)
+
+  // Refresh list when schedule changes (e.g. passage promoted to LIVE)
+  socket.on('schedule-update', () => {
+    refreshLive()
+  })
 })
 
 onBeforeUnmount(() => {
   const socket = useSocket()
   socket.emit('leave-room', 'streams')
   socket.off('stream-update', handleStreamUpdate)
+  socket.off('schedule-update')
 })
 
 const streams = computed<StreamDisplay[]>(() => {
