@@ -22,6 +22,35 @@ export default defineEventHandler(async (event) => {
       .exec();
     if (!passage) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
+    const io = ((event.node.res as any)?.socket?.server as any)?.io || (globalThis as any).io as IOServer | undefined;
+
+    // Check for conflicting LIVE passages in the same location
+    if (status === 'LIVE' && passage.location) {
+      const conflictingPassages = await PassageModel.find({
+        status: 'LIVE',
+        location: passage.location,
+        _id: { $ne: passage._id }
+      }).populate('group', 'name');
+
+      if (conflictingPassages.length > 0) {
+        const now = new Date();
+        for (const conflict of conflictingPassages) {
+          conflict.status = 'FINISHED';
+          conflict.endTime = now;
+          await conflict.save();
+
+          if (io) {
+            io.to('schedule-updates').emit('status-update', {
+              passageId: conflict._id,
+              status: 'FINISHED',
+              location: conflict.location!,
+              groupName: (conflict.group as any)?.name || null,
+            });
+          }
+        }
+      }
+    }
+
     passage.status = status;
     await passage.save();
 
@@ -34,7 +63,6 @@ export default defineEventHandler(async (event) => {
       groupName: (passage.group as any)?.name || null,
     };
 
-    const io = ((event.node.res as any)?.socket?.server as any)?.io || (globalThis as any).io as IOServer | undefined;
     if (io) io.to('schedule-updates').emit('status-update', payload);
     else console.warn('[status] io instance not found, skipping emit');
 
