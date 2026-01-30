@@ -43,8 +43,12 @@ onMounted(() => {
   const socket = useSocket()
   if (socket.connected) {
     socket.emit('join-room', 'streams')
+    socket.emit('join-room', 'schedule-updates')
   } else {
-    socket.on('connect', () => socket.emit('join-room', 'streams'))
+    socket.on('connect', () => {
+      socket.emit('join-room', 'streams')
+      socket.emit('join-room', 'schedule-updates')
+    })
   }
 
   socket.on('stream-update', handleStreamUpdate)
@@ -53,13 +57,22 @@ onMounted(() => {
   socket.on('schedule-update', () => {
     refreshLive()
   })
+
+  // Also refresh if a passage finishes (status-update)
+  socket.on('status-update', (data: any) => {
+    if (data.status === 'FINISHED') {
+      refreshLive()
+    }
+  })
 })
 
 onBeforeUnmount(() => {
   const socket = useSocket()
   socket.emit('leave-room', 'streams')
+  socket.emit('leave-room', 'schedule-updates')
   socket.off('stream-update', handleStreamUpdate)
   socket.off('schedule-update')
+  socket.off('status-update')
 })
 
 const streams = computed<StreamDisplay[]>(() => {

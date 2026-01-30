@@ -16,20 +16,26 @@ export default defineEventHandler(async (event) => {
   const { passageId, status } = result.data;
 
   try {
-    const passage = await PassageModel.findById(passageId).populate('group', 'name').exec();
+    const passage = await PassageModel.findById(passageId)
+      .populate('group', 'name')
+      .populate('apparatus', 'name')
+      .exec();
     if (!passage) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
     passage.status = status;
     await passage.save();
 
+    const location = passage.location || (passage.apparatus as any)?.name || 'Unknown';
+
     const payload = {
       passageId: passage._id,
       status: passage.status,
+      location,
       groupName: (passage.group as any)?.name || null,
     };
 
-    const io = ((event.node.res as any)?.socket?.server as any)?.io as IOServer | undefined;
-    if (io) io.to('schedule-updates').emit('status-change', payload);
+    const io = ((event.node.res as any)?.socket?.server as any)?.io || (globalThis as any).io as IOServer | undefined;
+    if (io) io.to('schedule-updates').emit('status-update', payload);
     else console.warn('[status] io instance not found, skipping emit');
 
     return { ok: true, payload };
