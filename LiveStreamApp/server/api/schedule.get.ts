@@ -6,6 +6,8 @@ export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event);
   const dayFilter = query.day as string | undefined;
   const apparatusFilter = query.apparatus as string | string[] | undefined;
+  const divisionFilter = query.division as string | string[] | undefined;
+  const salleFilter = query.salle as string | string[] | undefined;
 
   try {
     // 1. Metadata: Available Days
@@ -55,14 +57,43 @@ export default defineCachedEventHandler(async (event) => {
       dbQuery.apparatus = { $in: appIds };
     }
 
-    // 3. Metadata: Available Apparatus (Dynamic)
-    // "If no group is passing at 'Saut' today..." -> Depend on Day filter
-    const metaQuery = { ...dbQuery };
-    delete metaQuery.apparatus; // Don't restrict by apparatus selection itself
+    // Filter by Division (Category)
+    if (divisionFilter && divisionFilter !== 'Tout') {
+      const categories = Array.isArray(divisionFilter) ? divisionFilter : [divisionFilter];
+      const groups = await GroupModel.find({ category: { $in: categories } }).select('_id').lean();
+      const groupIds = groups.map((g: any) => g._id);
+      dbQuery.group = { $in: groupIds };
+    }
 
-    const usedApparatusIds = await PassageModel.distinct('apparatus', metaQuery).exec();
+    // Filter by Salle (Location)
+    if (salleFilter && salleFilter !== 'Tout') {
+      const locations = Array.isArray(salleFilter) ? salleFilter : [salleFilter];
+      dbQuery.location = { $in: locations };
+    }
+
+    // 3. Metadata: Available Lists (Dynamic)
+
+    // Available Apparatus: Remove apparatus filter from current dbQuery
+    const metaQueryApparatus = { ...dbQuery };
+    delete metaQueryApparatus.apparatus;
+
+    const usedApparatusIds = await PassageModel.distinct('apparatus', metaQueryApparatus).exec();
     const usedApparatusDocs = await ApparatusModel.find({ _id: { $in: usedApparatusIds } }).select('name').lean();
     const availableApparatus = usedApparatusDocs.map((a: any) => a.name);
+
+    // Available Categories: Remove group filter from dbQuery
+    const metaQueryCategories = { ...dbQuery };
+    delete metaQueryCategories.group;
+
+    const usedGroupIds = await PassageModel.distinct('group', metaQueryCategories).exec();
+    const usedGroups = await GroupModel.find({ _id: { $in: usedGroupIds } }).select('category').lean();
+    const availableCategories = [...new Set(usedGroups.map((g: any) => g.category).filter(Boolean))];
+
+    // Available Locations: Remove location filter from dbQuery
+    const metaQueryLocations = { ...dbQuery };
+    delete metaQueryLocations.location;
+
+    const availableLocations = await PassageModel.distinct('location', metaQueryLocations).exec();
 
     // 4. Fetch Data
     const passages = await PassageModel.find(dbQuery)
@@ -93,7 +124,9 @@ export default defineCachedEventHandler(async (event) => {
     return {
       meta: {
         availableApparatus,
-        availableDays
+        availableDays,
+        availableCategories,
+        availableLocations
       },
       data: formattedData
     };
