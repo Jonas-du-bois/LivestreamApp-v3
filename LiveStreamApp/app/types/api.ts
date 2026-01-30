@@ -34,7 +34,7 @@ export interface Passage {
   startTime: string;
   endTime: string;
   location?: string;
-  score?: number;
+  score: number | null;
   isPublished?: boolean;
   status?: PassageStatus;
 }

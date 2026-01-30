@@ -161,7 +161,7 @@ const historyByYear = computed(() => {
                   :style="{ width: `${(data.score / 10) * 100}%` }"
                 />
               </div>
-              <span class="text-cyan-400 font-bold text-sm w-10">{{ data.score.toFixed(2) }}</span>
+              <span class="text-cyan-400 font-bold text-sm w-10">{{ typeof data.score === 'number' ? data.score.toFixed(2) : '0.00' }}</span>
             </div>
           </div>
         </div>

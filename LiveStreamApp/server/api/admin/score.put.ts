@@ -18,16 +18,20 @@ export default defineEventHandler(async (event) => {
   const { passageId, score } = result.data;
 
   try {
-    const passage = await PassageModel.findById(passageId).populate('group', 'name').populate('apparatus', 'code').exec();
+    // Use explicit $set to avoid object merging issues
+    const updated = await PassageModel.findByIdAndUpdate(
+      passageId,
+      {
+        $set: {
+          score: typeof score === 'string' ? parseFloat(score) : score,
+          isPublished: true,
+          status: 'FINISHED'
+        }
+      },
+      { new: true }
+    ).populate('group', 'name').populate('apparatus', 'code').exec();
 
-    if (!passage) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
-
-    // Update scores
-    passage.score = score;
-    passage.isPublished = true;
-    passage.status = 'FINISHED';
-
-    await passage.save();
+    if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
     // Compute rank among published finished passages
     const finished = await PassageModel.find({ status: 'FINISHED', isPublished: true })
@@ -36,13 +40,13 @@ export default defineEventHandler(async (event) => {
       .lean()
       .exec();
 
-    const rank = finished.findIndex((f: any) => f._id.toString() === passage._id.toString()) + 1;
+    const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
 
     const payload = {
-      passageId: passage._id,
-      groupName: (passage.group as any)?.name || null,
-      apparatusCode: (passage.apparatus as any)?.code || null,
-      score: passage.score,
+      passageId: updated._id,
+      groupName: (updated.group as any)?.name || null,
+      apparatusCode: (updated.apparatus as any)?.code || null,
+      score: updated.score,
       rank,
     };
 

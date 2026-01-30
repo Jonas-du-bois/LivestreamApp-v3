@@ -22,7 +22,7 @@ const PassageSchema = new Schema<IPassage>(
     startTime: { type: Date, required: true, index: true },
     endTime: { type: Date, required: true },
     location: { type: String },
-    score: { type: Number, min: 0, max: 10 },
+    score: { type: Number, min: 0, max: 10, default: null },
     isPublished: { type: Boolean, default: false },
     status: { type: String, enum: [...PASSAGE_STATUS], default: 'SCHEDULED' },
     monitors: { type: [String], default: [] },
