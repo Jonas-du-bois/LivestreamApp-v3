@@ -54,6 +54,8 @@ export default defineNuxtConfig({
       short_name: 'LiveScore', // Important qu'il soit court pour l'écran d'accueil
       theme_color: '#0B1120',
       background_color: '#0B1120',
+      start_url: '/?standalone=true', // Permet de toujours démarrer à la racine
+      scope: '/',                     // Définit que TOUTES les pages font partie de l'app
       display: 'standalone',
       orientation: 'portrait',
       icons: [
