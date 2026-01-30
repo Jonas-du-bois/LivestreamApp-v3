@@ -11,6 +11,8 @@ const emit = defineEmits<{
 // Access shared metadata from schedule.vue
 const meta = useState<any>('scheduleMeta')
 const availableApparatus = computed(() => meta.value?.availableApparatus || [])
+const availableCategories = computed(() => meta.value?.availableCategories || [])
+const availableLocations = computed(() => meta.value?.availableLocations || [])
 
 // Global Filter State
 const filtersStore = useScheduleFilters()
@@ -28,9 +30,6 @@ watch(() => props.isOpen, (isOpen) => {
     selectedApparatus.value = [...filtersStore.value.apparatus]
   }
 })
-
-const divisions = ['Actifs/Actives', 'Mixtes']
-const salles = ['Salle 1', 'Salle 2', 'Salle 3']
 
 const toggleSelection = (value: string, arrayName: 'division' | 'salle' | 'apparatus') => {
   const array = arrayName === 'division' ? selectedDivision
@@ -131,11 +130,11 @@ onUnmounted(() => {
           </div>
 
           <!-- Division Filter -->
-          <div>
+          <div v-if="availableCategories.length > 0">
             <h3 class="text-white font-bold mb-3">Division</h3>
             <div class="grid grid-cols-2 gap-2">
               <button
-                v-for="division in divisions"
+                v-for="division in availableCategories"
                 :key="division"
                 @click="toggleSelection(division, 'division')"
                 class="py-3 px-4 rounded-lg text-sm font-medium transition-all"
@@ -150,11 +149,11 @@ onUnmounted(() => {
           </div>
 
           <!-- Salle Filter -->
-          <div>
+          <div v-if="availableLocations.length > 0">
             <h3 class="text-white font-bold mb-3">Salle</h3>
             <div class="grid grid-cols-3 gap-2">
               <button
-                v-for="salle in salles"
+                v-for="salle in availableLocations"
                 :key="salle"
                 @click="toggleSelection(salle, 'salle')"
                 class="py-3 px-4 rounded-lg text-sm font-medium transition-all"
