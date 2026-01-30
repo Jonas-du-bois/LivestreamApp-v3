@@ -89,6 +89,7 @@ onMounted(() => {
   const socket = useSocket()
   if (socket) {
     socket.emit('join-room', 'live-scores')
+    socket.emit('join-room', 'schedule-updates')
     socket.on('score-update', (data: any) => {
       // Data payload: { passageId, score, rank, apparatusCode, ... }
       if (!resultsMap.value) return
@@ -156,6 +157,19 @@ onMounted(() => {
         })
       }
     })
+
+    socket.on('status-update', (data: any) => {
+      if (!resultsMap.value) return
+      const keys = Object.keys(resultsMap.value)
+      for (const key of keys) {
+        const list = resultsMap.value[key] as PassageResult[]
+        const passage = list.find(p => p._id === data.passageId)
+        if (passage) {
+          if (data.status) passage.status = data.status
+          break
+        }
+      }
+    })
   }
 })
 
@@ -163,7 +177,9 @@ onUnmounted(() => {
   const socket = useSocket()
   if (socket) {
     socket.emit('leave-room', 'live-scores')
+    socket.emit('leave-room', 'schedule-updates')
     socket.off('score-update')
+    socket.off('status-update')
   }
 })
 </script>

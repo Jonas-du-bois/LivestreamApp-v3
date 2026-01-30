@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
         }
       },
       { new: true }
-    ).populate('group', 'name').populate('apparatus', 'code').exec();
+    ).populate('group').populate('apparatus').exec();
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
@@ -44,14 +44,18 @@ export default defineEventHandler(async (event) => {
 
     const payload = {
       passageId: updated._id,
-      groupName: (updated.group as any)?.name || null,
-      apparatusCode: (updated.apparatus as any)?.code || null,
       score: updated.score,
       rank,
+      status: 'FINISHED',
+      group: updated.group,
+      apparatus: updated.apparatus,
+      // Keep flat props for legacy/simplified consumers if needed
+      groupName: (updated.group as any)?.name,
+      apparatusCode: (updated.apparatus as any)?.code,
     };
 
     // Emit to room
-    const io = ((event.node.res as any)?.socket?.server as any)?.io as IOServer | undefined;
+    const io = ((event.node.res as any)?.socket?.server as any)?.io || (globalThis as any).io as IOServer | undefined;
 
     if (io) {
       io.to('live-scores').emit('score-update', payload);
