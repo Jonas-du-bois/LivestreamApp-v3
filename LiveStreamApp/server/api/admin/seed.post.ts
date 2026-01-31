@@ -1,8 +1,8 @@
-import ApparatusModel from "../models/Apparatus";
-import GroupModel from "../models/Group";
-import PassageModel from "../models/Passage";
-import StreamModel from "../models/Stream";
-import SubscriptionModel from "../models/Subscription";
+import ApparatusModel from "../../models/Apparatus";
+import GroupModel from "../../models/Group";
+import PassageModel from "../../models/Passage";
+import StreamModel from "../../models/Stream";
+import SubscriptionModel from "../../models/Subscription";
 import { Types } from "mongoose";
 
 export default defineEventHandler(async (event) => {
