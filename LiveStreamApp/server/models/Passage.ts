@@ -17,8 +17,8 @@ export interface IPassage extends Document {
 
 const PassageSchema = new Schema<IPassage>(
   {
-    group: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
-    apparatus: { type: Schema.Types.ObjectId, ref: 'Apparatus', required: true },
+    group: { type: Schema.Types.ObjectId, ref: 'Group', required: true, index: true },
+    apparatus: { type: Schema.Types.ObjectId, ref: 'Apparatus', required: true, index: true },
     startTime: { type: Date, required: true, index: true },
     endTime: { type: Date, required: true },
     location: { type: String },
@@ -29,6 +29,10 @@ const PassageSchema = new Schema<IPassage>(
   },
   { timestamps: true }
 );
+
+// Compound indexes for frequent queries
+PassageSchema.index({ status: 1, isPublished: 1 });
+PassageSchema.index({ apparatus: 1, status: 1, isPublished: 1 });
 
 const PassageModel: Model<IPassage> = (mongoose.models.Passage as Model<IPassage>) || mongoose.model<IPassage>('Passage', PassageSchema);
 
