@@ -6,7 +6,7 @@ import type { PassageEnriched, Stream, PassageStatus } from '../../types/api'
 import { useAdminAuth } from '../../composables/useAdminAuth'
 import { useSocket } from '../../composables/useSocket'
 
-const { token: adminToken, login } = useAdminAuth()
+const { token: adminToken, login, logout } = useAdminAuth()
 const passwordInput = ref('')
 
 const isAuthenticated = computed(() => !!adminToken.value)
@@ -14,6 +14,7 @@ const isAuthenticated = computed(() => !!adminToken.value)
 const handleLogin = () => {
   if (passwordInput.value) {
     login(passwordInput.value)
+    passwordInput.value = '' // Clear password after login attempt
   }
 }
 
@@ -52,14 +53,24 @@ const getStreamForPassage = (passage: PassageEnriched): Stream | undefined => {
   return streams.value.find(s => s.location === passage.apparatus.name) || (streams.value.length ? streams.value[0] : undefined)
 }
 
+// Common Error Handler
+const handleAuthError = (e: any) => {
+  console.error('Operation failed:', e)
+  if (e.statusCode === 401 || e.response?.status === 401) {
+    alert('Session expired. Please log in again.')
+    logout()
+  } else {
+    alert('An error occurred: ' + (e.message || 'Unknown error'))
+  }
+}
+
 // Actions
 const updateStatus = async (passage: PassageEnriched, status: PassageStatus) => {
   try {
     await AdminService.updateStatus({ passageId: passage._id!, status })
     passage.status = status
   } catch (e) {
-    console.error('Error updating status:', e)
-    alert('Error updating status')
+    handleAuthError(e)
   }
 }
 
@@ -72,8 +83,7 @@ const updateScore = async (passage: PassageEnriched) => {
     })
     alert('Score saved')
   } catch (e) {
-    console.error('Error updating score:', e)
-    alert('Error updating score')
+    handleAuthError(e)
   }
 }
 
@@ -87,8 +97,7 @@ const updateStreamUrl = async (stream: Stream) => {
     })
     alert('Stream updated')
   } catch (e) {
-    console.error('Error updating stream:', e)
-    alert('Error updating stream')
+    handleAuthError(e)
   }
 }
 
@@ -163,6 +172,7 @@ onBeforeUnmount(() => {
         <h1 class="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
         <div class="flex gap-2">
            <button @click="refreshAll" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">Refresh</button>
+           <button @click="logout" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors">Logout</button>
         </div>
       </header>
 

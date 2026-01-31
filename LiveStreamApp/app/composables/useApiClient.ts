@@ -1,5 +1,28 @@
 import { getCurrentInstance, ref } from 'vue'
 
+// Helper to inject auth header
+const getAuthHeaders = (headers: any = {}) => {
+  const token = useCookie('auth_token').value
+  if (token) {
+    return {
+      ...headers,
+      Authorization: `Bearer ${token}`
+    }
+  }
+  return headers
+}
+
+export const apiClient = <T>(url: string, options: any = {}) => {
+  const config = useRuntimeConfig()
+  const apiBase = config.public.apiBase as string
+
+  return $fetch<T>(url, {
+    baseURL: apiBase,
+    ...options,
+    headers: getAuthHeaders(options.headers)
+  })
+}
+
 export const useApiClient = <T>(
   url: string,
   options: any = {}
@@ -7,10 +30,12 @@ export const useApiClient = <T>(
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
 
+  // Inject Headers
+  options.headers = getAuthHeaders(options.headers)
+
   // If the component is already mounted (client-side calls after mount), use $fetch
   const vm = getCurrentInstance?.()
   if (vm && (vm as any).isMounted) {
-    const nuxt = useNuxtApp()
     const data = ref<T | null>(null)
     const pending = ref(false)
     const error = ref<any>(null)
