@@ -15,7 +15,7 @@ const { data: scheduleData } = await PublicService.getSchedule()
 const favoritePassages = computed<PassageEnriched[]>(() => {
   if (!scheduleData.value?.data) return []
   return scheduleData.value.data
-    .filter((p: any) => p._id && favorites.value.includes(p._id))
+    .filter((p: any) => p.group?._id && favorites.value.includes(p.group._id))
     .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
 })
 
@@ -140,7 +140,7 @@ const handleGroupClick = (groupId: string) => {
             </div>
 
             <button
-              @click="passage._id && toggleFavorite(passage._id, $event)"
+              @click="passage.group?._id && toggleFavorite(passage.group._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
             >
               <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />
@@ -176,7 +176,7 @@ const handleGroupClick = (groupId: string) => {
             </div>
 
             <button
-              @click="passage._id && toggleFavorite(passage._id, $event)"
+              @click="passage.group?._id && toggleFavorite(passage.group._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
             >
               <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />

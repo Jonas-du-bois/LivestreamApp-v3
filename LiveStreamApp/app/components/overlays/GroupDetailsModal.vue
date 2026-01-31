@@ -12,6 +12,7 @@ interface Props {
   isOpen: boolean
   groupId?: string
   groupName?: string
+  apparatusCode?: string
 }
 
 const props = defineProps<Props>()
@@ -132,7 +133,30 @@ const monitors = computed(() => details.value?.monitors ?? [])
 
 const historyByYear = computed(() => {
   if (!details.value?.history) return []
-  return (details.value.history as any[]).slice().sort((a: any, b: any) => Number(a.year) - Number(b.year))
+
+  let rawHistory = details.value.history as any[]
+
+  // Filter by apparatus if provided
+  if (props.apparatusCode) {
+    rawHistory = rawHistory.filter(h => h.apparatus === props.apparatusCode)
+  }
+
+  // Aggregate by year
+  const yearMap = new Map<number, { total: number; count: number }>()
+  rawHistory.forEach(h => {
+     if (!yearMap.has(h.year)) yearMap.set(h.year, { total: 0, count: 0 })
+     const entry = yearMap.get(h.year)!
+     entry.total += h.score
+     entry.count++
+  })
+
+  // Convert to array
+  const aggregated = Array.from(yearMap.entries()).map(([year, data]) => ({
+    year,
+    score: data.total / data.count
+  }))
+
+  return aggregated.sort((a, b) => a.year - b.year)
 })
 
 const averageHistoryScore = computed(() => {

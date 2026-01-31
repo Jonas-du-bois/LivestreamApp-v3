@@ -44,6 +44,7 @@ const isSearchOpen = ref(false)
 const isFilterOpen = ref(false)
 const isGroupDetailsOpen = ref(false)
 const selectedGroupId = ref('')
+const selectedApparatusCode = ref<string | undefined>(undefined)
 const hasUnreadNotifications = ref(true)
 
 const openSearch = () => {
@@ -58,8 +59,9 @@ const openNotifications = () => {
   isNotificationsOpen.value = true
 }
 
-const openGroupDetails = (groupId: string) => {
+const openGroupDetails = (groupId: string, apparatusCode?: string) => {
   selectedGroupId.value = groupId
+  selectedApparatusCode.value = apparatusCode
   isGroupDetailsOpen.value = true
 }
 
@@ -167,6 +169,7 @@ provide('openGroupDetails', openGroupDetails)
     <OverlaysGroupDetailsModal
       :is-open="isGroupDetailsOpen"
       :group-id="selectedGroupId"
+      :apparatus-code="selectedApparatusCode"
       @close="isGroupDetailsOpen = false"
     />
   </div>

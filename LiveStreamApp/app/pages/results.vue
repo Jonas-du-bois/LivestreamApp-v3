@@ -81,8 +81,8 @@ const getPodiumBorderClass = (rank: number) => {
   }
 }
 
-const handleGroupClick = (groupId: string) => {
-  openGroupDetails?.(groupId)
+const handleGroupClick = (groupId: string, apparatusCode?: string) => {
+  openGroupDetails?.(groupId, apparatusCode)
 }
 
 const handleScoreUpdate = (data: any) => {
@@ -225,7 +225,7 @@ onUnmounted(() => {
             :id="'result-' + result._id"
             class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
             :class="getPodiumBorderClass(result.rank)"
-            @click="handleGroupClick(result.group._id)"
+            @click="handleGroupClick(result.group._id, activeSection.code)"
           >
             <div class="flex items-center gap-4">
               <!-- Medal Icon -->
@@ -262,7 +262,7 @@ onUnmounted(() => {
             :key="result._id"
             :id="'result-' + result._id"
             class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-            @click="handleGroupClick(result.group._id)"
+            @click="handleGroupClick(result.group._id, activeSection.code)"
           >
             <div class="flex items-center gap-4">
               <!-- Rank Number -->
