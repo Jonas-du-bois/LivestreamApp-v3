@@ -57,10 +57,12 @@ onMounted(() => {
               type="text"
               placeholder="Rechercher un groupe, une salle..."
               class="flex-1 bg-transparent text-white placeholder-white/40 outline-none text-lg"
+              aria-label="Rechercher"
             />
             <button
               @click="emit('close')"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+              aria-label="Fermer la recherche"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/80" />
             </button>
@@ -68,7 +70,7 @@ onMounted(() => {
         </div>
 
         <!-- Search Results / Suggestions -->
-        <div class="p-4 max-h-[60vh] overflow-y-auto">
+        <div class="p-4 max-h-[60vh] overflow-y-auto" aria-live="polite">
           <template v-if="!searchQuery">
             <h3 class="text-white/60 text-sm font-medium mb-3 flex items-center gap-2">
               <Icon name="fluent:arrow-trending-24-regular" class="w-4 h-4" />
@@ -86,8 +88,12 @@ onMounted(() => {
             </div>
           </template>
           <template v-else>
-            <div class="text-white/60 text-center py-8">
-              Aucun résultat pour "{{ searchQuery }}"
+            <div class="flex flex-col items-center justify-center py-12 text-center text-white/60">
+              <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                <Icon name="fluent:search-info-24-regular" class="w-8 h-8 opacity-50" />
+              </div>
+              <p class="text-lg font-medium text-white/80">Aucun résultat</p>
+              <p class="text-sm mt-1">Nous n'avons rien trouvé pour "{{ searchQuery }}"</p>
             </div>
           </template>
         </div>

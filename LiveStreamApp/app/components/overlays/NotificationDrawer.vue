@@ -73,6 +73,7 @@ const unreadCount = computed(() => notifications.filter(n => n.isUnread).length)
             <button
               @click="emit('close')"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              aria-label="Fermer les notifications"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/80" />
             </button>
