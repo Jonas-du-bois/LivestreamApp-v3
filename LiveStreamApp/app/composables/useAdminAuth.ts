@@ -1,8 +1,19 @@
 export const useAdminAuth = () => {
-  const token = useState<string | null>('adminToken', () => null)
+  // Use cookie for persistence (24 hours)
+  const token = useCookie<string | null>('auth_token', {
+    maxAge: 60 * 60 * 24, // 1 day
+    sameSite: 'lax',
+    path: '/',
+    secure: false, // Ensure it works on localhost HTTP
+    httpOnly: false // Accessible to JS (needed for client-side API calls if we read it there, though useCookie handles it)
+  })
 
   const login = (newToken: string) => {
     token.value = newToken
+  }
+
+  const logout = () => {
+    token.value = null
   }
 
   const authHeader = computed(() => {
@@ -15,6 +26,7 @@ export const useAdminAuth = () => {
   return {
     token,
     login,
+    logout,
     authHeader
   }
 }
