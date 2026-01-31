@@ -58,7 +58,7 @@ export interface EnrichedApparatus {
   _id: string;
   name: string;
   code: string;
-  icon: string;
+  icon?: string;
 }
 
 export interface PassageEnriched extends Omit<Passage, 'group' | 'apparatus'> {

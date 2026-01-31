@@ -2,7 +2,7 @@ import PassageModel from '../models/Passage';
 
 export default defineEventHandler(async (event) => {
   try {
-    const passages = await PassageModel.find({ status: 'FINISHED' })
+    const passages = await PassageModel.find({ status: 'FINISHED', isPublished: true })
       // 1. CORRECTION ICI : On ajoute 'canton' et 'logo' à la liste des champs récupérés
       .populate('group', 'name category canton logo')
       .populate('apparatus', 'name code icon')

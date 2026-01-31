@@ -165,13 +165,13 @@ onUnmounted(() => {
           <!-- Favorite Button -->
           <div class="flex items-start pt-0.5 flex-shrink-0">
             <button 
-              @click="item._id && toggleFavorite(item._id, $event)"
+              @click="item.group && toggleFavorite(item.group._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
             >
               <Icon 
-                :name="(item._id && favorites.includes(item._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
+                :name="(item.group && favorites.includes(item.group._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
                 class="w-6 h-6"
-                :class="(item._id && favorites.includes(item._id)) ? 'text-red-400' : 'text-white/60'"
+                :class="(item.group && favorites.includes(item.group._id)) ? 'text-red-400' : 'text-white/60'"
               />
             </button>
           </div>

@@ -52,27 +52,27 @@ onMounted(() => {
   }
 
   socket.on('stream-update', handleStreamUpdate)
-
-  // Refresh list when schedule changes (e.g. passage promoted to LIVE)
-  socket.on('schedule-update', () => {
-    refreshLive()
-  })
-
-  // Also refresh if a passage finishes (status-update)
-  socket.on('status-update', (data: any) => {
-    if (data.status === 'FINISHED') {
-      refreshLive()
-    }
-  })
+  socket.on('schedule-update', handleScheduleUpdate)
+  socket.on('status-update', handleStatusUpdate)
 })
+
+const handleScheduleUpdate = () => {
+  refreshLive()
+}
+
+const handleStatusUpdate = (data: any) => {
+  if (data.status === 'FINISHED') {
+    refreshLive()
+  }
+}
 
 onBeforeUnmount(() => {
   const socket = useSocket()
   socket.emit('leave-room', 'streams')
   socket.emit('leave-room', 'schedule-updates')
   socket.off('stream-update', handleStreamUpdate)
-  socket.off('schedule-update')
-  socket.off('status-update')
+  socket.off('schedule-update', handleScheduleUpdate)
+  socket.off('status-update', handleStatusUpdate)
 })
 
 const streams = computed<StreamDisplay[]>(() => {
