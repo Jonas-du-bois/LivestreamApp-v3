@@ -33,8 +33,12 @@ export default defineEventHandler(async (event) => {
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
-    // Compute rank among published finished passages
-    const finished = await PassageModel.find({ status: 'FINISHED', isPublished: true })
+    // Compute rank among published finished passages (per apparatus)
+    const finished = await PassageModel.find({
+      status: 'FINISHED',
+      isPublished: true,
+      apparatus: updated.apparatus._id
+    })
       .sort({ score: -1 })
       .select('_id')
       .lean()
