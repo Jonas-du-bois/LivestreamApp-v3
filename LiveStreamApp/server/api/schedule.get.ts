@@ -72,28 +72,67 @@ export default defineCachedEventHandler(async (event) => {
     }
 
     // 3. Metadata: Available Lists (Dynamic)
+    // OPTIMIZATION: Use Aggregation Facets to fetch all metadata in a single DB round trip
 
-    // Available Apparatus: Remove apparatus filter from current dbQuery
+    // Available Apparatus: Remove apparatus filter
     const metaQueryApparatus = { ...dbQuery };
     delete metaQueryApparatus.apparatus;
 
-    const usedApparatusIds = await PassageModel.distinct('apparatus', metaQueryApparatus).exec();
-    const usedApparatusDocs = await ApparatusModel.find({ _id: { $in: usedApparatusIds } }).select('name').lean();
-    const availableApparatus = usedApparatusDocs.map((a: any) => a.name);
-
-    // Available Categories: Remove group filter from dbQuery
+    // Available Categories: Remove group filter
     const metaQueryCategories = { ...dbQuery };
     delete metaQueryCategories.group;
 
-    const usedGroupIds = await PassageModel.distinct('group', metaQueryCategories).exec();
-    const usedGroups = await GroupModel.find({ _id: { $in: usedGroupIds } }).select('category').lean();
-    const availableCategories = [...new Set(usedGroups.map((g: any) => g.category).filter(Boolean))];
-
-    // Available Locations: Remove location filter from dbQuery
+    // Available Locations: Remove location filter
     const metaQueryLocations = { ...dbQuery };
     delete metaQueryLocations.location;
 
-    const availableLocations = await PassageModel.distinct('location', metaQueryLocations).exec();
+    const [facets] = await PassageModel.aggregate([
+      {
+        $facet: {
+          apparatus: [
+            { $match: metaQueryApparatus },
+            { $group: { _id: "$apparatus" } },
+            {
+              $lookup: {
+                from: ApparatusModel.collection.name,
+                localField: "_id",
+                foreignField: "_id",
+                as: "info"
+              }
+            },
+            { $unwind: "$info" },
+            { $replaceRoot: { newRoot: "$info" } },
+            { $project: { name: 1 } }
+          ],
+          categories: [
+            { $match: metaQueryCategories },
+            { $group: { _id: "$group" } },
+            {
+              $lookup: {
+                from: GroupModel.collection.name,
+                localField: "_id",
+                foreignField: "_id",
+                as: "info"
+              }
+            },
+            { $unwind: "$info" },
+            { $replaceRoot: { newRoot: "$info" } },
+            { $project: { category: 1 } }
+          ],
+          locations: [
+            { $match: metaQueryLocations },
+            { $group: { _id: "$location" } },
+            { $sort: { _id: 1 } } // Optional: sort locations
+          ]
+        }
+      }
+    ]);
+
+    const availableApparatus = facets?.apparatus ? facets.apparatus.map((a: any) => a.name) : [];
+    const availableCategories = facets?.categories
+      ? [...new Set(facets.categories.map((c: any) => c.category).filter(Boolean))]
+      : [];
+    const availableLocations = facets?.locations ? facets.locations.map((l: any) => l._id).filter(Boolean) : [];
 
     // 4. Fetch Data
     const passages = await PassageModel.find(dbQuery)
