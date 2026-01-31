@@ -31,7 +31,7 @@ const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl
 const currentGroup = computed(() => stream.value?.currentPassage?.group)
 const currentApparatus = computed(() => stream.value?.currentPassage?.apparatus)
 
-const openGroupDetails = inject<(groupId: string) => void>('openGroupDetails')
+const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
 // Detect iframe load failures (e.g., blocked by extensions) and show fallback
 const playerLoaded = ref(false)
@@ -204,7 +204,7 @@ onMounted(() => {
       <!-- Context Section -->
       <div v-if="currentGroup">
         <h3 class="text-white/60 font-medium mb-3 ml-1">Sur le praticable :</h3>
-        <div @click="openGroupDetails && currentGroup._id && openGroupDetails(currentGroup._id)" class="cursor-pointer active:scale-[0.98] transition-transform">
+        <div @click="openGroupDetails && currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
            <GroupInfoCard :group="currentGroup" />
         </div>
       </div>

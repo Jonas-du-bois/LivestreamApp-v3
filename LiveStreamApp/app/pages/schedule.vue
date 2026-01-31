@@ -77,8 +77,8 @@ const toggleFavorite = (id: string, event: Event) => {
   favoritesStore.toggleFavorite(id)
 }
 
-const handleGroupClick = (groupId: string) => {
-  openGroupDetails?.(groupId)
+const handleGroupClick = (groupId: string, apparatusCode?: string) => {
+  openGroupDetails?.(groupId, apparatusCode)
 }
 
 onMounted(() => {
@@ -141,7 +141,7 @@ onUnmounted(() => {
         v-for="item in filteredSchedule"
         :key="item._id || 'unknown'"
         class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-        @click="handleGroupClick(item.group._id)"
+        @click="handleGroupClick(item.group._id, item.apparatus.code)"
       >
         <div class="flex items-start gap-4">
           <!-- Time & Location -->

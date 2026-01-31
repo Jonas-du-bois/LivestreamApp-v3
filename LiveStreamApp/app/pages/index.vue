@@ -5,12 +5,13 @@ interface Group {
   id: string
   name: string
   apparatus: string
+  apparatusCode?: string
   salle: string
   category?: string
   streamId?: string
 }
 
-const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
+const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
 // Fetch live passages to populate "En piste maintenant"
 const { data: liveResp } = await PublicService.getLive()
@@ -25,9 +26,10 @@ const happeningNow = computed<Group[]>(() => {
     })
 
     return {
-      id: p._id,
+      id: p.group?._id,
       name: p.group?.name || 'Inconnu',
       apparatus: p.apparatus?.name || '',
+      apparatusCode: p.apparatus?.code,
       salle: p.location || '',
       category: '',
       streamId: stream?._id
@@ -75,8 +77,8 @@ const heroImage = computed(() => {
 // Weather (Yverdon-les-Bains)
 const { data: weatherResp, pending: weatherPending, refresh: refreshWeather } = await PublicService.getWeather()
 
-const handleGroupClick = (groupName: string) => {
-  openGroupDetails?.(groupName)
+const handleGroupClick = (groupId: string, apparatusCode?: string) => {
+  openGroupDetails?.(groupId, apparatusCode)
 }
 </script>
 
@@ -111,7 +113,7 @@ const handleGroupClick = (groupName: string) => {
     <div 
       v-else
       class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block"
-      @click="firstLivePassage?.group?.name ? handleGroupClick(firstLivePassage.group.name) : handleGroupClick('FSG Yverdon')"
+      @click="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
     >
       <ImageWithFallback 
         :src="heroImage"
@@ -141,7 +143,7 @@ const handleGroupClick = (groupName: string) => {
           v-for="group in happeningNow"
           :key="group.id"
           class="glass-card p-4 min-w-[200px] flex-shrink-0 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-          @click="handleGroupClick(group.name)"
+          @click="handleGroupClick(group.id, group.apparatusCode)"
         >
           <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
           <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>

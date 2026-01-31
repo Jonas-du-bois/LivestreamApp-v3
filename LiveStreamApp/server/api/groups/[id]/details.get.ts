@@ -56,30 +56,33 @@ export default defineEventHandler(async (event) => {
 
     const averageScore = finishedCount > 0 ? (totalScore / finishedCount).toFixed(2) : '0.00'
 
-    // 4. Build history by year (for the timeline chart)
-    const historyByYear: { year: number; score: number }[] = []
-    const yearMap = new Map<number, { total: number; count: number }>()
+    // 4. Build raw history (combining current passages and archived history)
+    const rawHistory: { year: number; score: number; apparatus: string }[] = []
 
+    // From current passages
     passages.forEach((p: any) => {
       if (p.status === 'FINISHED' && typeof p.score === 'number') {
-        const year = new Date(p.startTime).getFullYear()
-        if (!yearMap.has(year)) {
-          yearMap.set(year, { total: 0, count: 0 })
-        }
-        const yearData = yearMap.get(year)!
-        yearData.total += p.score
-        yearData.count++
+        rawHistory.push({
+          year: new Date(p.startTime).getFullYear(),
+          score: p.score,
+          apparatus: p.apparatus?.code || 'UNK'
+        })
       }
     })
 
-    yearMap.forEach((data, year) => {
-      historyByYear.push({
-        year,
-        score: data.total / data.count
+    // From group archives
+    if (group.history && Array.isArray(group.history)) {
+      group.history.forEach((h: any) => {
+        rawHistory.push({
+          year: h.year,
+          score: h.score,
+          apparatus: h.apparatusCode
+        })
       })
-    })
+    }
 
-    historyByYear.sort((a, b) => a.year - b.year)
+    // Sort by year
+    rawHistory.sort((a, b) => a.year - b.year)
 
     return {
       info: {
@@ -97,7 +100,7 @@ export default defineEventHandler(async (event) => {
         currentTotalScore: Number(averageScore)
       },
       monitors: Array.from(monitorsSet),
-      history: historyByYear,
+      history: rawHistory,
       timeline
     }
 
