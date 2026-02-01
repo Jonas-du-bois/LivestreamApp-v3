@@ -52,6 +52,9 @@ export default defineEventHandler(async (event) => {
     }
 
     passage.status = status;
+    if (status === 'FINISHED') {
+      passage.endTime = new Date();
+    }
     await passage.save();
 
     const location = passage.location || (passage.apparatus as any)?.name || 'Unknown';
