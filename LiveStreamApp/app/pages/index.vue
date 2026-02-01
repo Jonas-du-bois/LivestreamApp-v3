@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { PublicService } from '../services/public.service'
+import { useSocket } from '../composables/useSocket'
 
 interface Group {
   id: string
@@ -14,7 +15,7 @@ interface Group {
 const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
 // Fetch live passages to populate "En piste maintenant"
-const { data: liveResp } = await PublicService.getLive()
+const { data: liveResp, refresh: refreshLive } = await PublicService.getLive()
 
 const happeningNow = computed<Group[]>(() => {
   return (liveResp.value?.passages || []).map((p: any) => {
@@ -80,6 +81,26 @@ const { data: weatherResp, pending: weatherPending, refresh: refreshWeather } = 
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails?.(groupId, apparatusCode)
 }
+
+onMounted(() => {
+  const socket = useSocket()
+  if (socket.connected) {
+    socket.emit('join-room', 'schedule-updates')
+  } else {
+    socket.on('connect', () => {
+      socket.emit('join-room', 'schedule-updates')
+    })
+  }
+  socket.on('schedule-update', () => refreshLive())
+  socket.on('status-update', () => refreshLive())
+})
+
+onUnmounted(() => {
+  const socket = useSocket()
+  socket.emit('leave-room', 'schedule-updates')
+  socket.off('schedule-update')
+  socket.off('status-update')
+})
 </script>
 
 <template>

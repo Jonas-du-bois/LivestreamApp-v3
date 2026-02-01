@@ -25,7 +25,6 @@ export default defineEventHandler(async (event) => {
         $set: {
           score: typeof score === 'string' ? parseFloat(score) : score,
           isPublished: true,
-          status: 'FINISHED'
         }
       },
       { new: true }
@@ -33,9 +32,8 @@ export default defineEventHandler(async (event) => {
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
-    // Compute rank among published finished passages (per apparatus)
+    // Compute rank among published passages (per apparatus) - Decoupled from status
     const finished = await PassageModel.find({
-      status: 'FINISHED',
       isPublished: true,
       apparatus: updated.apparatus._id
     })
@@ -50,7 +48,7 @@ export default defineEventHandler(async (event) => {
       passageId: updated._id,
       score: updated.score,
       rank,
-      status: 'FINISHED',
+      status: updated.status,
       group: updated.group,
       apparatus: updated.apparatus,
       // Keep flat props for legacy/simplified consumers if needed

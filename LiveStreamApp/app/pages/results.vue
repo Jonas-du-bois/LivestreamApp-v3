@@ -100,9 +100,7 @@ const handleScoreUpdate = (data: any) => {
     if (passage) {
       // Update properties (Direct Mutation for Reactivity)
       if (data.score !== undefined) passage.score = data.score
-
-      // Force status to FINISHED
-      passage.status = 'FINISHED'
+      if (data.status) passage.status = data.status
 
       // Trigger Flash Effect
       nextTick(() => {
@@ -134,7 +132,7 @@ const handleScoreUpdate = (data: any) => {
           ...data,
           _id: data.passageId,
           rank: 0,
-          status: 'FINISHED'
+          status: data.status || 'FINISHED'
         } as PassageResult
 
         if (index !== -1) list[index] = newEntry

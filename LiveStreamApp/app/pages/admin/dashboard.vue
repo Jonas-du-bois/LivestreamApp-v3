@@ -25,6 +25,7 @@ const { data: streamsData, refresh: refreshStreams } = await PublicService.getSt
 // Mutable State for editing
 const passages = ref<PassageEnriched[]>([])
 const streams = ref<Stream[]>([])
+const selectedLocation = ref<string>('Tout')
 
 // Populate local state when API data changes
 watch(scheduleData, (data) => {
@@ -41,6 +42,15 @@ watch(streamsData, (data) => {
     streams.value = data
   }
 }, { immediate: true })
+
+const locations = computed(() => {
+  return ['Tout', ...(scheduleData.value?.meta?.availableLocations || [])]
+})
+
+const filteredPassages = computed(() => {
+  if (selectedLocation.value === 'Tout') return passages.value
+  return passages.value.filter(p => p.location === selectedLocation.value)
+})
 
 const refreshAll = async () => {
   await Promise.all([refreshSchedule(), refreshStreams()])
@@ -117,7 +127,7 @@ const handleScoreUpdate = (payload: any) => {
   const p = passages.value.find(p => p._id === payload.passageId)
   if (p) {
       if (payload.score !== undefined) p.score = payload.score
-      p.status = 'FINISHED'
+      if (payload.status) p.status = payload.status
   }
 }
 
@@ -170,9 +180,11 @@ onBeforeUnmount(() => {
     <div v-else>
       <header class="flex justify-between items-center mb-8 sticky top-0 bg-[#0B1120]/80 backdrop-blur-md z-50 p-4 -mx-4 rounded-b-2xl">
         <h1 class="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
-        <div class="flex gap-2">
-           <button @click="refreshAll" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">Refresh</button>
-           <button @click="logout" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors">Logout</button>
+        <div class="flex items-center gap-4">
+          <div class="flex gap-2">
+             <button @click="refreshAll" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">Refresh</button>
+             <button @click="logout" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors">Logout</button>
+          </div>
         </div>
       </header>
 
@@ -210,9 +222,17 @@ onBeforeUnmount(() => {
 
       <!-- Passages Section -->
       <section>
-        <h2 class="text-xl font-bold mb-4 text-cyan-400">Passages ({{ passages.length }})</h2>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-cyan-400">Passages ({{ filteredPassages.length }})</h2>
+          <select
+            v-model="selectedLocation"
+            class="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
+          >
+            <option v-for="loc in locations" :key="loc" :value="loc" class="bg-slate-900">{{ loc }}</option>
+          </select>
+        </div>
         <div class="space-y-4">
-          <div v-for="passage in passages" :key="passage._id" class="glass-panel p-4 rounded-2xl flex flex-col lg:flex-row items-start lg:items-center gap-4">
+          <div v-for="passage in filteredPassages" :key="passage._id" class="glass-panel p-4 rounded-2xl flex flex-col lg:flex-row items-start lg:items-center gap-4">
             <!-- Info -->
             <div class="lg:w-1/4 w-full">
               <div class="text-xs text-cyan-400 font-bold uppercase">{{ passage.startTime }} - {{ passage.endTime }}</div>
