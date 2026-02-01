@@ -2,9 +2,14 @@ export default defineEventHandler((event) => {
   // Define protected zones
   const isProtectedPath = event.path.startsWith('/api/admin');
 
-  // Currently protecting all mutations.
-  // TODO: Refine this if public POST/PUT endpoints are added later.
-  const isProtectedMethod = ['PUT', 'POST', 'DELETE'].includes(event.method);
+  // Define public mutation endpoints
+  const publicMutationPaths = [
+    '/api/notifications/subscribe',
+    '/api/notifications/sync'
+  ];
+
+  // Currently protecting all mutations except whitelisted ones.
+  const isProtectedMethod = ['PUT', 'POST', 'DELETE'].includes(event.method) && !publicMutationPaths.includes(event.path);
 
   if (isProtectedPath || isProtectedMethod) {
     const config = useRuntimeConfig();
