@@ -156,7 +156,6 @@ onMounted(() => {
             <p class="text-white mb-3">Le lecteur intégré n'a pas pu se charger (une extension peut bloquer les requêtes). Ouvrir le flux en externe :</p>
             <a
               :href="streamUrl"
-              target="_blank"
               rel="noopener noreferrer"
               class="inline-block bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg"
             >
@@ -171,7 +170,6 @@ onMounted(() => {
             <a
               v-if="streamUrl"
               :href="streamUrl"
-              target="_blank"
               rel="noopener noreferrer"
               class="text-white font-bold hover:underline"
             >
