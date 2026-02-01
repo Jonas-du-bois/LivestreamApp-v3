@@ -115,6 +115,7 @@ onUnmounted(() => {
         :class="selectedDay === day
           ? 'bg-white/20 text-white' 
           : 'text-white/60'"
+        :aria-pressed="selectedDay === day"
       >
         {{ day }}
       </button>
@@ -130,6 +131,7 @@ onUnmounted(() => {
         :class="selectedFilter === filter
           ? 'bg-cyan-400 text-[#0B1120]'
           : 'glass-card text-white/80'"
+        :aria-pressed="selectedFilter === filter"
       >
         {{ filter }}
       </button>
@@ -167,6 +169,8 @@ onUnmounted(() => {
             <button 
               @click="item.group && toggleFavorite(item.group._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              :aria-label="item.group ? (favorites.includes(item.group._id) ? `Retirer ${item.group.name} des favoris` : `Ajouter ${item.group.name} aux favoris`) : 'Gérer les favoris'"
+              :aria-pressed="item.group && favorites.includes(item.group._id)"
             >
               <Icon 
                 :name="(item.group && favorites.includes(item.group._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
