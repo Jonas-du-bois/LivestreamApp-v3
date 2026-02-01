@@ -13,6 +13,8 @@ export default defineCachedEventHandler(async (event) => {
     // 1. Metadata: Available Days
     // Get all distinct start times to determine available days and map them
     const startTimes = await PassageModel.distinct('startTime').exec();
+    // Sort timestamps to ensure consistent day order (prevents hydration mismatches)
+    startTimes.sort((a: any, b: any) => new Date(a).getTime() - new Date(b).getTime());
 
     const dayMap = new Map<string, Date[]>();
     const availableDaysSet = new Set<string>();
