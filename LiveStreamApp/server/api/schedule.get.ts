@@ -11,25 +11,39 @@ export default defineCachedEventHandler(async (event) => {
 
   try {
     // 1. Metadata: Available Days
-    // Get all distinct start times to determine available days and map them
-    const startTimes = await PassageModel.distinct('startTime').exec();
+    // OPTIMIZATION: Aggregate by day instead of fetching all timestamps
+    // This reduces payload from O(Passages) to O(Days) and allows range queries
+    const dayAggregation = await PassageModel.aggregate([
+      {
+        $project: {
+          dayISO: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
+          startTime: 1
+        }
+      },
+      {
+        $group: {
+          _id: "$dayISO",
+          sampleDate: { $first: "$startTime" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
 
-    const dayMap = new Map<string, Date[]>();
+    const dayMap = new Map<string, string[]>(); // Map 'samedi' -> ['2023-10-14']
     const availableDaysSet = new Set<string>();
 
-    startTimes.forEach((d: any) => {
-      if (!d) return;
-      const date = new Date(d);
+    dayAggregation.forEach((d: any) => {
+      if (!d.sampleDate) return;
+      const date = new Date(d.sampleDate);
       const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
       const key = dayName.toLowerCase();
 
-      availableDaysSet.add(dayName); // Keep original casing (or lowercase?) - Existing code used lowercase comparison but display might be mixed.
-      // Actually existing code: `availableDays = Array.from(daysSet)` where `daysSet.add(d)` (lowercase 'samedi' usually).
+      availableDaysSet.add(dayName);
 
       if (!dayMap.has(key)) {
         dayMap.set(key, []);
       }
-      dayMap.get(key)?.push(date);
+      dayMap.get(key)?.push(d._id);
     });
 
     const availableDays = Array.from(availableDaysSet);
@@ -39,10 +53,21 @@ export default defineCachedEventHandler(async (event) => {
 
     // Filter by Day
     if (dayFilter && dayFilter !== 'Tout') {
-      const targetDates = dayMap.get(dayFilter.toLowerCase());
-      if (targetDates && targetDates.length > 0) {
-        // Since we got exact timestamps from distinct(), we can use $in
-        dbQuery.startTime = { $in: targetDates };
+      const targetDateStrings = dayMap.get(dayFilter.toLowerCase());
+      if (targetDateStrings && targetDateStrings.length > 0) {
+        // Construct Range Query for each identified day
+        const ranges = targetDateStrings.map((ds: string) => {
+          // Assume UTC day boundaries (since we grouped by UTC date string)
+          const start = new Date(`${ds}T00:00:00.000Z`);
+          const end = new Date(`${ds}T23:59:59.999Z`);
+          return { startTime: { $gte: start, $lte: end } };
+        });
+
+        if (ranges.length === 1 && ranges[0]) {
+          dbQuery.startTime = ranges[0].startTime;
+        } else {
+          dbQuery.$or = ranges;
+        }
       } else {
         // If the day doesn't exist in map (e.g. bad input), return nothing
         dbQuery.startTime = { $exists: false, $eq: null };
