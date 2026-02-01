@@ -21,5 +21,11 @@ export const AdminService = {
       method: 'PUT',
       body: payload
     })
+  },
+
+  seedDatabase() {
+    return apiClient<{ success: boolean; summary: any }>('/admin/seed', {
+      method: 'POST'
+    })
   }
 }

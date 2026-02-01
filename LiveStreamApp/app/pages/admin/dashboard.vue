@@ -56,6 +56,22 @@ const refreshAll = async () => {
   await Promise.all([refreshSchedule(), refreshStreams()])
 }
 
+const handleReseed = async () => {
+  if (!confirm('⚠️ ATTENTION ⚠️\n\nCela va EFFACER toute la base de données et regénérer des données de test fraîches (live maintenant).\n\nÊtes-vous sûr de vouloir continuer ?')) {
+    return
+  }
+
+  try {
+    const res = await AdminService.seedDatabase()
+    if (res && res.success) {
+      alert(`Database reseeded!\nPassages: ${res.summary.passages}\nStreams: ${res.summary.streams}`)
+      await refreshAll()
+    }
+  } catch (e) {
+    handleAuthError(e)
+  }
+}
+
 // Helper to find stream for passage
 const getStreamForPassage = (passage: PassageEnriched): Stream | undefined => {
   // Logic: Match stream location to apparatus name, or fallback to first stream
@@ -182,6 +198,7 @@ onBeforeUnmount(() => {
         <h1 class="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
         <div class="flex items-center gap-4">
           <div class="flex gap-2">
+             <button @click="handleReseed" class="bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 px-4 py-2 rounded-lg transition-colors border border-yellow-500/20">Reseed DB</button>
              <button @click="refreshAll" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">Refresh</button>
              <button @click="logout" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors">Logout</button>
           </div>
