@@ -1,3 +1,5 @@
+import { createHash, timingSafeEqual } from 'node:crypto';
+
 export default defineEventHandler((event) => {
   // Define protected zones
   const isProtectedPath = event.path.startsWith('/api/admin');
@@ -26,7 +28,14 @@ export default defineEventHandler((event) => {
     // Regex matches "Bearer " (case insensitive) at start of string
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
-    if (!token || token !== config.adminPassword) {
+    // Prevent Timing Attack: Use constant-time comparison
+    const safeCompare = (a: string, b: string) => {
+      const bufA = createHash('sha256').update(a).digest();
+      const bufB = createHash('sha256').update(b).digest();
+      return timingSafeEqual(bufA, bufB);
+    };
+
+    if (!token || !safeCompare(token, config.adminPassword || '')) {
       throw createError({
         statusCode: 401,
         statusMessage: 'Unauthorized: Invalid Token',
