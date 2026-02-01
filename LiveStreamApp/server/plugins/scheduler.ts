@@ -32,32 +32,30 @@ export default defineNitroPlugin((nitroApp) => {
       let scheduleChanged = false;
 
       // A. Promote SCHEDULED -> LIVE (if startTime is reached/passed)
-      const toLive = await PassageModel.find({
-        status: 'SCHEDULED',
-        startTime: { $lte: now }
-      });
+      const liveResult = await PassageModel.updateMany(
+        {
+          status: 'SCHEDULED',
+          startTime: { $lte: now }
+        },
+        { $set: { status: 'LIVE' } }
+      );
 
-      if (toLive.length > 0) {
-        await PassageModel.updateMany(
-          { _id: { $in: toLive.map(p => p._id) } },
-          { $set: { status: 'LIVE' } }
-        );
-        console.log(`[Scheduler] Promoted ${toLive.length} passages to LIVE`);
+      if (liveResult.modifiedCount > 0) {
+        console.log(`[Scheduler] Promoted ${liveResult.modifiedCount} passages to LIVE`);
         scheduleChanged = true;
       }
 
       // B. Promote LIVE -> FINISHED (if endTime is passed)
-      const toFinished = await PassageModel.find({
-        status: 'LIVE',
-        endTime: { $lte: now }
-      });
+      const finishedResult = await PassageModel.updateMany(
+        {
+          status: 'LIVE',
+          endTime: { $lte: now }
+        },
+        { $set: { status: 'FINISHED' } }
+      );
 
-      if (toFinished.length > 0) {
-        await PassageModel.updateMany(
-          { _id: { $in: toFinished.map(p => p._id) } },
-          { $set: { status: 'FINISHED' } }
-        );
-        console.log(`[Scheduler] Promoted ${toFinished.length} passages to FINISHED`);
+      if (finishedResult.modifiedCount > 0) {
+        console.log(`[Scheduler] Promoted ${finishedResult.modifiedCount} passages to FINISHED`);
         scheduleChanged = true;
       }
 
