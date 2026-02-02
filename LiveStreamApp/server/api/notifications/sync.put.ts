@@ -1,14 +1,12 @@
 import SubscriptionModel from '../../models/Subscription';
+import { SyncFavoritesSchema } from '../../utils/validation';
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
-  const { endpoint, favorites } = body || {};
-
-  if (!endpoint || !Array.isArray(favorites)) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid sync data' });
-  }
+  // Validate input using Zod schema to prevent DoS and injection
+  const { endpoint, favorites } = await readValidatedBody(event, (body) => SyncFavoritesSchema.parse(body));
 
   try {
+    // Only update favorites for an existing subscription
     await SubscriptionModel.findOneAndUpdate(
       { endpoint },
       { favorites },

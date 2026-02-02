@@ -1,12 +1,9 @@
 import SubscriptionModel from '../../models/Subscription';
+import { SubscriptionSchema } from '../../utils/validation';
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
-  const { endpoint, keys } = body || {};
-
-  if (!endpoint || !keys || !keys.p256dh || !keys.auth) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid subscription data' });
-  }
+  // Validate input using Zod schema
+  const { endpoint, keys } = await readValidatedBody(event, (body) => SubscriptionSchema.parse(body));
 
   try {
     // Upsert subscription
