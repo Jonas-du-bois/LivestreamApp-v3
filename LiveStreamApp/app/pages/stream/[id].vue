@@ -71,8 +71,14 @@ onMounted(() => {
   fetchAll()
 })
 
-// Find the current passage by matching stream's location
+// Use current passage directly from stream (already populated by API)
+// Falls back to matching from livePassages if stream.currentPassage is not set
 const currentPassage = computed(() => {
+  // Primary: use the populated currentPassage from stream
+  if (stream.value?.currentPassage) {
+    return stream.value.currentPassage as PopulatedPassage
+  }
+  // Fallback: match by location from live passages
   if (!stream.value?.location) return null
   return livePassages.value.find(p => p.location === stream.value?.location) || null
 })

@@ -6,6 +6,8 @@ import type { PassageEnriched, Stream, PassageStatus } from '../../types/api'
 import { useAdminAuth } from '../../composables/useAdminAuth'
 import { useSocket } from '../../composables/useSocket'
 
+definePageMeta({ header: false, footer: false })
+
 const { token: adminToken, login, logout, loginError, isLoggingIn } = useAdminAuth()
 const passwordInput = ref('')
 
@@ -76,9 +78,8 @@ const handleReseed = async () => {
 
 // Helper to find stream for passage
 const getStreamForPassage = (passage: PassageEnriched): Stream | undefined => {
-  // Logic: Match stream location to apparatus name, or fallback to first stream
-  // Ideally, stream.location matches passage.apparatus.name
-  return streams.value.find(s => s.location === passage.apparatus.name) || (streams.value.length ? streams.value[0] : undefined)
+  // Match stream.location avec passage.location (ex: "Iles 1-2", "Léon-Michaud")
+  return streams.value.find(s => s.location === passage.location)
 }
 
 // Common Error Handler
@@ -181,7 +182,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
     </div>
 
     <div v-else>
-      <header class="flex justify-between items-center mb-8 sticky top-0 bg-[#0B1120]/80 backdrop-blur-md z-50 p-4 -mx-4 rounded-b-2xl">
+      <header class="flex justify-between items-center mb-8 fixed top-0 left-4 right-4 bg-[#0B1120]/80 backdrop-blur-md z-50 p-4 -mx-4 rounded-b-2xl">
         <h1 class="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
         <div class="flex items-center gap-4">
           <div class="flex gap-2">
@@ -193,7 +194,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
       </header>
 
       <!-- Streams Section -->
-      <section class="mb-12">
+      <section class="mb-12 pt-24">
         <h2 class="text-xl font-bold mb-4 text-cyan-400">Streams Management</h2>
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <div v-for="stream in streams" :key="stream._id" class="glass-panel p-6 rounded-2xl">
@@ -201,7 +202,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
               {{ stream.name || 'Unnamed Stream' }}
               <span class="text-xs text-white/50 bg-white/10 px-2 py-0.5 rounded">{{ stream.location }}</span>
             </h3>
-            <div class="space-y-3">
+            <div class="space-y-4">
               <div>
                 <label class="text-xs text-white/60 block mb-1">YouTube/Video URL</label>
                 <input
@@ -209,13 +210,130 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
                   class="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white focus:border-cyan-400"
                 />
               </div>
-              <div class="flex items-center gap-2">
-                <input type="checkbox" v-model="stream.isLive" :id="`live-${stream._id}`" class="w-4 h-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500" />
-                <label :for="`live-${stream._id}`" class="text-sm cursor-pointer select-none">Is Live</label>
+              
+              <!-- Ultra Modern Liquid Glass Toggle Switch -->
+              <div class="flex items-center justify-between py-2">
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold text-white/90 mb-0.5">Stream Live</span>
+                  <span class="text-xs text-white/40">
+                    {{ stream.isLive ? 'Broadcasting now' : 'Currently offline' }}
+                  </span>
+                </div>
+                
+                <label class="relative inline-block w-16 h-8 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    v-model="stream.isLive"
+                    :id="`live-${stream._id}`"
+                    class="peer sr-only"
+                  />
+                  
+                  <!-- Switch Background -->
+                  <span
+                    class="
+                      absolute inset-0 rounded-full
+                      bg-gradient-to-br from-white/5 to-white/10
+                      backdrop-blur-xl
+                      border border-white/20
+                      shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)]
+                      transition-all duration-500 ease-out
+                      peer-hover:border-white/30
+                      peer-hover:shadow-[inset_0_2px_12px_rgba(0,0,0,0.4)]
+                      peer-checked:bg-gradient-to-br peer-checked:from-emerald-400/30 peer-checked:to-green-500/40
+                      peer-checked:border-emerald-400/60
+                      peer-checked:shadow-[inset_0_2px_8px_rgba(16,185,129,0.2),0_0_24px_rgba(16,185,129,0.3)]
+                      peer-focus:ring-2 peer-focus:ring-cyan-400/50 peer-focus:ring-offset-2 peer-focus:ring-offset-[#0B1120]
+                    "
+                  ></span>
+                  
+                  <!-- Sliding Orb -->
+                  <span
+                    class="
+                      absolute top-1 left-1 w-6 h-6 rounded-full
+                      bg-gradient-to-br from-white via-white/95 to-white/90
+                      shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_2px_rgba(255,255,255,0.8)]
+                      transition-all duration-500 ease-out
+                      peer-checked:translate-x-8
+                      peer-checked:bg-gradient-to-br peer-checked:from-emerald-300 peer-checked:via-emerald-200 peer-checked:to-green-300
+                      peer-checked:shadow-[0_2px_12px_rgba(16,185,129,0.6),0_0_16px_rgba(16,185,129,0.4),inset_0_1px_2px_rgba(255,255,255,0.5)]
+                    "
+                  >
+                    <!-- Inner Glow Effect -->
+                    <span
+                      v-if="stream.isLive"
+                      class="
+                        absolute inset-0 rounded-full
+                        bg-gradient-to-br from-emerald-200/60 to-transparent
+                        animate-pulse-glow
+                      "
+                    ></span>
+                  </span>
+                  
+                  <!-- Background Icons/Indicators -->
+                  <span class="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
+                    <!-- OFF indicator -->
+                    <svg
+                      class="w-3 h-3 text-white/30 transition-opacity duration-300 peer-checked:opacity-0"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
+                    </svg>
+                    <!-- ON indicator -->
+                    <svg
+                      class="w-3 h-3 text-emerald-300/80 transition-opacity duration-300 opacity-0 peer-checked:opacity-100 ml-auto"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </label>
               </div>
+
+              <!-- Animated Status Badge -->
+              <div class="relative overflow-hidden rounded-xl">
+                <div
+                  class="
+                    px-4 py-2.5 text-center font-medium text-sm
+                    transition-all duration-500
+                    backdrop-blur-sm
+                  "
+                  :class="stream.isLive 
+                    ? 'bg-gradient-to-r from-emerald-500/20 via-green-500/15 to-emerald-500/20 text-emerald-200 border border-emerald-400/30' 
+                    : 'bg-white/5 text-white/50 border border-white/10'"
+                >
+                  <div class="flex items-center justify-center gap-2">
+                    <!-- Animated Live Dot -->
+                    <span
+                      v-if="stream.isLive"
+                      class="relative flex h-2.5 w-2.5"
+                    >
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+                    </span>
+                    <span v-else class="w-2.5 h-2.5 rounded-full bg-white/20"></span>
+                    
+                    <span class="font-bold tracking-wide">
+                      {{ stream.isLive ? 'LIVE STREAMING' : 'OFFLINE' }}
+                    </span>
+                  </div>
+                </div>
+                
+                <!-- Animated Background Effect for Live State -->
+                <div
+                  v-if="stream.isLive"
+                  class="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/10 to-transparent"
+                  style="
+                    animation: shimmer 2s infinite;
+                    transform: translateX(-100%);
+                  "
+                ></div>
+              </div>
+
               <button
                 @click="updateStreamUrl(stream)"
-                class="w-full bg-white/10 hover:bg-white/20 py-2 rounded-lg text-sm font-medium transition-colors"
+                class="w-full bg-white/10 hover:bg-white/20 py-2.5 rounded-lg text-sm font-medium transition-all hover:shadow-lg"
               >
                 Update Stream
               </button>
@@ -305,3 +423,14 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
     </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+</style>

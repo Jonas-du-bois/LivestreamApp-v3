@@ -120,6 +120,15 @@ body {
 /* Adds safe inset on top of header and bottom of footer/nav when present */
 /* Safe area handling for devices with notches (iPhone, etc.) */
 @supports (padding: env(safe-area-inset-top)) {
+  .header-safe-area {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1rem) !important;
+  }
+
+  .nav-safe-area {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
+  }
+  
+  /* Fallback for generic selectors */
   header {
     padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
   }
@@ -127,4 +136,13 @@ body {
   nav {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
   }
+}
+
+/* Non-supporting browsers get standard padding */
+.nav-safe-area {
+  padding-bottom: 1rem;
+}
+
+.header-safe-area {
+  padding-top: 1rem;
 }

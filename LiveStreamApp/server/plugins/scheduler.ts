@@ -6,7 +6,8 @@ import SubscriptionModel from '../models/Subscription';
 export default defineNitroPlugin((nitroApp) => {
   const config = useRuntimeConfig();
 
-  // Initialize WebPush
+  // Initialize WebPush (optional - notifications will be disabled if keys are missing)
+  let webPushEnabled = false;
   if (config.vapidPrivateKey && config.public.vapidPublicKey) {
     try {
       webPush.setVapidDetails(
@@ -14,17 +15,18 @@ export default defineNitroPlugin((nitroApp) => {
         config.public.vapidPublicKey,
         config.vapidPrivateKey
       );
+      webPushEnabled = true;
       console.log('[Scheduler] WebPush initialized');
     } catch (e) {
       console.warn('[Scheduler] WebPush init failed (invalid keys) - Notifications disabled', e);
-      return;
     }
   } else {
     console.warn('[Scheduler] WebPush keys missing - Notifications disabled');
-    return;
   }
 
-  // Schedule Job: Check every 60 seconds
+  console.log('[Scheduler] Starting scheduler for status updates...');
+
+  // Schedule Job: Check every 30 seconds
   setInterval(async () => {
     try {
       const now = new Date();
@@ -102,12 +104,16 @@ export default defineNitroPlugin((nitroApp) => {
         if (io) {
             io.to('schedule-updates').emit('schedule-update');
             io.to('streams').emit('stream-update');
-            console.log('[Scheduler] Emitted schedule-update and stream-update');
+            console.log('[Scheduler] Emitted schedule-update and stream-update to rooms');
+        } else {
+            console.warn('[Scheduler] Schedule changed but Socket.io not initialized yet');
         }
       }
 
 
-      // --- 2. NOTIFICATIONS LOGIC ---
+      // --- 2. NOTIFICATIONS LOGIC (only if webPush is enabled) ---
+      if (!webPushEnabled) return;
+      
       // Look for passages starting in ~15 minutes (between 14.5 and 15.5 mins from now)
       const startWindow = new Date(now.getTime() + 14.5 * 60000);
       const endWindow = new Date(now.getTime() + 15.5 * 60000);

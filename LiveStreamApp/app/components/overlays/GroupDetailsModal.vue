@@ -127,6 +127,16 @@ const categoryColor = computed(() => {
     : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
 })
 
+// Canton display: utilise le canton de la DB, sinon extrait du nom (partie avant ":")
+const cantonDisplay = computed(() => {
+  if (!details.value?.info) return null
+  if (details.value.info.canton) return details.value.info.canton
+  // Fallback: extraire du nom
+  const name = details.value.info.name || ''
+  if (name.includes(':')) return name.split(':')[0].trim()
+  return null
+})
+
 const gymnastsCount = computed(() => details.value?.info?.gymnastsCount ?? 0)
 const monitorsCount = computed(() => details.value?.monitors?.length ?? 0)
 const monitors = computed(() => details.value?.monitors ?? [])
@@ -234,8 +244,8 @@ const averageHistoryScore = computed(() => {
                   
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                  <span class="px-2 py-0.5 rounded-md bg-white/10 text-xs font-bold text-white border border-white/20">
-                    {{ details.info.canton }}
+                  <span v-if="cantonDisplay" class="px-2 py-0.5 rounded-md bg-white/10 text-xs font-bold text-white border border-white/20">
+                    {{ cantonDisplay }}
                   </span>
                   <div :class="['px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0 border', categoryColor]">
                     {{ categoryLabel }}

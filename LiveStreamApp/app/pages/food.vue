@@ -55,14 +55,31 @@ const foodSpots = ref([
     ]
   }
 ]);
+const router = useRouter()
+const goBack = () => {
+  try {
+    router.back()
+  } catch (e) {
+    // Fallback
+    window.history.back()
+  }
+}
 </script>
 
 <template>
   <div class="relative overflow-hidden">
+
     <LiquidBackground class="fixed inset-0 z-0 pointer-events-none" />
 
     <div class="relative z-10 p-4 max-w-3xl mx-auto space-y-4">
-      
+
+      <div class="absolute top-4 left-4 z-[1000] p-2 pointer-events-auto">
+      <button @click="goBack" class="glass-panel p-2 rounded-lg flex items-center gap-2">
+        <Icon name="fluent:chevron-left-24-regular" class="w-4 h-4 text-white" />
+        <span class="text-white text-sm">Retour</span>
+      </button>
+    </div>
+
       <header class="space-y-2">
         <h1 class="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
           <Icon name="fluent:food-pizza-24-filled" class="text-blue-400" />

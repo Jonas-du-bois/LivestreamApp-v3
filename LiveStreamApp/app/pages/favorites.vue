@@ -54,16 +54,31 @@ const updateTimer = () => {
     return
   }
 
-  const h = Math.floor(diff / (1000 * 60 * 60))
-  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  const totalSeconds = Math.floor(diff / 1000)
+  const h = Math.floor(totalSeconds / 3600)
+  const m = Math.floor((totalSeconds % 3600) / 60)
+  const s = totalSeconds % 60
 
-  timeToNext.value = `${h}h ${m}m`
+  // Si moins d'une minute, afficher les secondes
+  if (h === 0 && m === 0) {
+    timeToNext.value = `${s}s`
+  } else if (h === 0) {
+    // Moins d'une heure : afficher minutes et secondes si < 2 minutes
+    if (m < 2) {
+      timeToNext.value = `${m}m ${s}s`
+    } else {
+      timeToNext.value = `${m}m`
+    }
+  } else {
+    timeToNext.value = `${h}h ${m}m`
+  }
 }
 
 let timer: any = null
 onMounted(() => {
   updateTimer()
-  timer = setInterval(updateTimer, 60000)
+  // Mise à jour chaque seconde pour un compte à rebours précis
+  timer = setInterval(updateTimer, 1000)
 })
 
 onUnmounted(() => {

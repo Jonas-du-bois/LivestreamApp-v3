@@ -75,8 +75,8 @@ provide('openGroupDetails', openGroupDetails)
     <LiquidBackground />
 
     <div class="relative z-10">
-      <!-- Glass Header -->
-      <header v-if="showHeader" class="fixed top-0 left-0 right-0 z-50 px-2 pt-4">
+      <!-- Glass Header with safe area support -->
+      <header v-if="showHeader" class="fixed top-0 left-0 right-0 z-50 px-2 header-safe-area">
         <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-4 py-2">
           <div class="flex items-center justify-between">
             <h1 class="text-white text-xl font-bold">{{ currentPageTitle }}</h1>
@@ -121,8 +121,8 @@ provide('openGroupDetails', openGroupDetails)
         <slot />
       </main>
 
-      <!-- Bottom Navigation Dock - Fixed -->
-      <nav v-if="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-2 pb-4">
+      <!-- Bottom Navigation Dock - Fixed with safe area support -->
+      <nav v-if="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-2 nav-safe-area">
         <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-3 py-2 flex items-center justify-around">
           <NuxtLink
             v-for="item in navItems"

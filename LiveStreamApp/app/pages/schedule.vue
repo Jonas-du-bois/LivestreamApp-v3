@@ -55,12 +55,14 @@ const availableDays = computed(() => {
   return days.length > 0 ? days : ['samedi', 'dimanche']
 })
 
-const filters = computed(() => {
-  // Use metadata from API if available, else fallback
-  if (scheduleResponse.value?.meta?.availableApparatus) {
-     return ['Tout', ...scheduleResponse.value.meta.availableApparatus]
+// Filters - stored once, not recomputed on every data change
+const filters = ref<string[]>(['Tout', 'Sol', 'Barres', 'Saut'])
+
+// Initialize filters once when metadata is available
+watchEffect(() => {
+  if (scheduleResponse.value?.meta?.availableApparatus && filters.value.length <= 4) {
+    filters.value = ['Tout', ...scheduleResponse.value.meta.availableApparatus]
   }
-  return ['Tout', 'Sol', 'Barres', 'Saut']
 })
 
 const filteredSchedule = computed(() => {
@@ -120,11 +122,11 @@ useSocketRoom('schedule-updates', [
     </div>
 
     <!-- Filter Chips -->
-    <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
+    <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scroll-smooth">
       <button
         v-for="filter in filters"
         :key="filter"
-        @click="selectedFilter = filter"
+        @click.stop="selectedFilter = filter"
         class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all"
         :class="selectedFilter === filter
           ? 'bg-cyan-400 text-[#0B1120]'
