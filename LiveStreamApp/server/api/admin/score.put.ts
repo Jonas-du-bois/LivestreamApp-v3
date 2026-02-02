@@ -4,6 +4,8 @@ import { useSafeValidatedBody } from 'h3-zod';
 import PassageModel from '../../models/Passage';
 import GroupModel from '../../models/Group';
 import ApparatusModel from '../../models/Apparatus';
+import SubscriptionModel from '../../models/Subscription';
+import webPush from 'web-push';
 
 const schema = z.object({
   passageId: z.string(),
@@ -61,9 +63,50 @@ export default defineEventHandler(async (event) => {
 
     if (io) {
       io.to('live-scores').emit('score-update', payload);
+      console.log('[score] Emitted score-update to live-scores room');
     } else {
       console.warn('[score] io instance not found, skipping emit');
       // Still proceed; DB has been updated
+    }
+
+    // Send push notifications to subscribers who favorited this passage
+    try {
+      const config = useRuntimeConfig();
+      if (config.vapidPrivateKey && config.public.vapidPublicKey) {
+        // Find subscribers who have this passage in favorites
+        const subscriptions = await SubscriptionModel.find({
+          favorites: passageId
+        });
+
+        if (subscriptions.length > 0) {
+          const groupName = (updated.group as any)?.name || 'Groupe';
+          const apparatusName = (updated.apparatus as any)?.name || '';
+          
+          const pushPayload = JSON.stringify({
+            title: '🎯 Résultat disponible !',
+            body: `${groupName} - ${apparatusName}: ${updated.score?.toFixed(2)} pts (${rank}${rank === 1 ? 'er' : 'ème'})`,
+            icon: '/icons/logo_livestreamappv3-192.png',
+            url: '/results'
+          });
+
+          const notifications = subscriptions.map(sub => {
+            return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, pushPayload)
+              .catch(err => {
+                if (err.statusCode === 410 || err.statusCode === 404) {
+                  console.log(`[score] Removing expired subscription ${sub._id}`);
+                  return SubscriptionModel.findByIdAndDelete(sub._id);
+                }
+                console.error('[score] Error sending push:', err);
+              });
+          });
+
+          await Promise.all(notifications);
+          console.log(`[score] Sent ${subscriptions.length} push notifications for score update`);
+        }
+      }
+    } catch (pushErr) {
+      console.error('[score] Push notification error (non-blocking):', pushErr);
+      // Don't fail the request if push fails
     }
 
     return { ok: true, payload };

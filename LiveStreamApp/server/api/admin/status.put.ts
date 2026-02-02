@@ -2,6 +2,7 @@ import { Server as IOServer } from 'socket.io';
 import { z } from 'zod';
 import { useSafeValidatedBody } from 'h3-zod';
 import PassageModel from '../../models/Passage';
+import StreamModel from '../../models/Stream';
 
 const schema = z.object({
   passageId: z.string(),
@@ -18,11 +19,12 @@ export default defineEventHandler(async (event) => {
   try {
     const passage = await PassageModel.findById(passageId)
       .populate('group', 'name')
-      .populate('apparatus', 'name')
+      .populate('apparatus', 'name code icon')
       .exec();
     if (!passage) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
     const io = ((event.node.res as any)?.socket?.server as any)?.io || (globalThis as any).io as IOServer | undefined;
+    const location = passage.location || (passage.apparatus as any)?.name || 'Unknown';
 
     // Check for conflicting LIVE passages in the same location
     if (status === 'LIVE' && passage.location) {
@@ -57,17 +59,72 @@ export default defineEventHandler(async (event) => {
     }
     await passage.save();
 
-    const location = passage.location || (passage.apparatus as any)?.name || 'Unknown';
+    // Update stream's currentPassage when passage goes LIVE or FINISHED
+    const stream = await StreamModel.findOne({ location: passage.location }).exec();
+    if (stream) {
+      if (status === 'LIVE') {
+        // Set this passage as the current one on the stream
+        stream.currentPassage = passage._id as any;
+        await stream.save();
+        
+        // Emit stream-update with full passage info for reactivity
+        const streamPayload = {
+          _id: stream._id,
+          name: stream.name,
+          url: stream.url,
+          location: stream.location,
+          isLive: stream.isLive,
+          currentPassage: {
+            _id: passage._id,
+            group: passage.group,
+            apparatus: passage.apparatus,
+            status: passage.status,
+            location: passage.location
+          }
+        };
+        
+        if (io) {
+          console.log(`[status.put] Emitting stream-update to stream-${stream._id} and streams:`, streamPayload);
+          io.to(`stream-${stream._id}`).emit('stream-update', streamPayload);
+          io.to('streams').emit('stream-update', streamPayload);
+        }
+      } else if (status === 'FINISHED' && stream.currentPassage?.toString() === passageId) {
+        // Clear currentPassage when the current one finishes
+        stream.currentPassage = undefined;
+        await stream.save();
+        
+        const streamPayload = {
+          _id: stream._id,
+          name: stream.name,
+          url: stream.url,
+          location: stream.location,
+          isLive: stream.isLive,
+          currentPassage: null
+        };
+        
+        if (io) {
+          console.log(`[status.put] Emitting stream-update to stream-${stream._id} and streams:`, streamPayload);
+          io.to(`stream-${stream._id}`).emit('stream-update', streamPayload);
+          io.to('streams').emit('stream-update', streamPayload);
+        }
+      }
+    }
 
     const payload = {
       passageId: passage._id,
       status: passage.status,
       location,
       groupName: (passage.group as any)?.name || null,
+      group: passage.group,
+      apparatus: passage.apparatus
     };
 
-    if (io) io.to('schedule-updates').emit('status-update', payload);
-    else console.warn('[status] io instance not found, skipping emit');
+    if (io) {
+      console.log(`[status.put] Emitting status-update to schedule-updates:`, payload);
+      io.to('schedule-updates').emit('status-update', payload);
+    } else {
+      console.warn('[status] io instance not found, skipping emit');
+    }
 
     return { ok: true, payload };
   } catch (err) {

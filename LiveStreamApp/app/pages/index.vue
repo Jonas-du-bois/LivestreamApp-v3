@@ -82,25 +82,15 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails?.(groupId, apparatusCode)
 }
 
-onMounted(() => {
-  const socket = useSocket()
-  if (socket.connected) {
-    socket.emit('join-room', 'schedule-updates')
-  } else {
-    socket.on('connect', () => {
-      socket.emit('join-room', 'schedule-updates')
-    })
-  }
-  socket.on('schedule-update', () => refreshLive())
-  socket.on('status-update', () => refreshLive())
-})
+// Handle real-time updates
+const handleScheduleUpdate = () => refreshLive()
+const handleStatusUpdate = () => refreshLive()
 
-onUnmounted(() => {
-  const socket = useSocket()
-  socket.emit('leave-room', 'schedule-updates')
-  socket.off('schedule-update')
-  socket.off('status-update')
-})
+// Use the composable for proper socket room management
+useSocketRoom('schedule-updates', [
+  { event: 'schedule-update', handler: handleScheduleUpdate },
+  { event: 'status-update', handler: handleStatusUpdate }
+])
 </script>
 
 <template>

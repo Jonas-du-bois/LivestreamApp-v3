@@ -18,7 +18,8 @@ export default defineEventHandler(async (event) => {
       endTime: p.endTime,
       location: p.location,
       status: p.status,
-      score: p.score
+      score: p.score,
+      monitors: p.monitors || []
     }));
 
     // Fetch live streams and populate their currentPassage with enriched data

@@ -1,13 +1,14 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 
 export default defineEventHandler((event) => {
-  // Define protected zones
-  const isProtectedPath = event.path.startsWith('/api/admin');
+  // Define protected zones (exclude login endpoint)
+  const isProtectedPath = event.path.startsWith('/api/admin') && !event.path.endsWith('/login');
 
   // Define public mutation endpoints
   const publicMutationPaths = [
     '/api/notifications/subscribe',
-    '/api/notifications/sync'
+    '/api/notifications/sync',
+    '/api/admin/login'
   ];
 
   // Currently protecting all mutations except whitelisted ones.

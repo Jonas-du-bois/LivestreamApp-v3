@@ -3,6 +3,7 @@ import type { Group, HistoryEntry } from '../../types/api'
 
 interface Props {
   group: Group
+  passageMonitors?: string[] // Moniteurs du passage (prioritaire sur group.monitors)
 }
 
 const props = defineProps<Props>()
@@ -18,16 +19,20 @@ const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
 
-// Compute stats from props
+// Compute stats from props - prioritize passageMonitors over group.monitors
 const gymnastsCount = computed(() => props.group.gymnastsCount ?? 0)
-const monitorsCount = computed(() => props.group.monitors?.length ?? 0)
+const monitors = computed(() => props.passageMonitors ?? props.group.monitors ?? [])
+const monitorsCount = computed(() => monitors.value.length)
 const averageScore = computed(() => {
-  if (!props.group.history?.length) return 0
+  // Use pre-computed averageScore if available (from API stats)
+  if (typeof (props.group as any).averageScore === 'number') {
+    return (props.group as any).averageScore.toFixed(2)
+  }
+  // Fallback: compute from history
+  if (!props.group.history?.length) return '0.00'
   const sum = props.group.history.reduce((acc: number, curr: HistoryEntry) => acc + curr.score, 0)
   return (sum / props.group.history.length).toFixed(2)
 })
-
-const monitors = computed(() => props.group.monitors ?? [])
 
 // Category display
 const categoryLabel = computed(() => {

@@ -2,6 +2,13 @@ import type { PassageStatus } from '../types/api'
 import { apiClient } from '../composables/useApiClient'
 
 export const AdminService = {
+  login(password: string) {
+    return apiClient<{ success: boolean; token: string }>('/admin/login', {
+      method: 'POST',
+      body: { password }
+    })
+  },
+
   updateScore(payload: { passageId: string; score?: number }) {
     return apiClient<{ ok: boolean; payload: any }>('/admin/score', {
       method: 'PUT',

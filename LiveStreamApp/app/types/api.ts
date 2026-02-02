@@ -37,6 +37,7 @@ export interface Passage {
   score: number | null;
   isPublished?: boolean;
   status?: PassageStatus;
+  monitors?: string[];
 }
 
 export interface Stream {

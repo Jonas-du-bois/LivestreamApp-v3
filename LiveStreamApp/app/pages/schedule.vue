@@ -3,7 +3,7 @@ import { PublicService } from '../services/public.service'
 import { useFavoritesStore } from '../stores/favorites'
 import { storeToRefs } from 'pinia'
 
-const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
+const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
 
@@ -77,30 +77,29 @@ const toggleFavorite = (id: string, event: Event) => {
   favoritesStore.toggleFavorite(id)
 }
 
+const isFavorite = (passageId: string) => {
+  return favorites.value.includes(passageId)
+}
+
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails?.(groupId, apparatusCode)
 }
 
-onMounted(() => {
-  const socket = useSocket()
-  if (socket) {
-      socket.on('schedule-update', () => {
-          refresh()
-      })
-  }
-})
+// Handle schedule updates
+const handleScheduleUpdate = () => {
+  refresh()
+}
 
-onUnmounted(() => {
-  const socket = useSocket()
-  if (socket) {
-      socket.off('schedule-update')
-  }
-})
+// Handle status updates (when a passage goes LIVE or FINISHED)
+const handleStatusUpdate = () => {
+  refresh()
+}
 
-/* const handleInfoClick = (groupId: string, event: Event) => {
-  event.stopPropagation()
-  openGroupDetails?.(groupId)
-} */
+// Use the composable for proper socket room management
+useSocketRoom('schedule-updates', [
+  { event: 'schedule-update', handler: handleScheduleUpdate },
+  { event: 'status-update', handler: handleStatusUpdate }
+])
 </script>
 
 <template>
@@ -165,13 +164,13 @@ onUnmounted(() => {
           <!-- Favorite Button -->
           <div class="flex items-start pt-0.5 flex-shrink-0">
             <button 
-              @click="item.group && toggleFavorite(item.group._id, $event)"
+              @click="item._id && toggleFavorite(item._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
             >
               <Icon 
-                :name="(item.group && favorites.includes(item.group._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
+                :name="(item._id && isFavorite(item._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
                 class="w-6 h-6"
-                :class="(item.group && favorites.includes(item.group._id)) ? 'text-red-400' : 'text-white/60'"
+                :class="(item._id && isFavorite(item._id)) ? 'text-red-400' : 'text-white/60'"
               />
             </button>
           </div>

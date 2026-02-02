@@ -10,12 +10,12 @@ const { favorites } = storeToRefs(favoritesStore)
 
 // Fetch Schedule (we filter client-side for favorites for simplicity, or we could add an API endpoint)
 // Since we have getSchedule, we can use it.
-const { data: scheduleData } = await PublicService.getSchedule()
+const { data: scheduleData, refresh: refreshSchedule } = await PublicService.getSchedule()
 
 const favoritePassages = computed<PassageEnriched[]>(() => {
   if (!scheduleData.value?.data) return []
   return scheduleData.value.data
-    .filter((p: any) => p.group?._id && favorites.value.includes(p.group._id))
+    .filter((p: any) => p._id && favorites.value.includes(p._id))
     .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
 })
 
@@ -78,14 +78,37 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('fr-CH', { weekday: 'long', day: 'numeric' })
 }
 
-const toggleFavorite = (id: string, event: Event) => {
+const toggleFavorite = (passageId: string, event: Event) => {
   event.stopPropagation()
-  favoritesStore.toggleFavorite(id)
+  favoritesStore.toggleFavorite(passageId)
 }
 
 const handleGroupClick = (groupId: string) => {
   openGroupDetails?.(groupId)
 }
+
+// Handle score updates for favorite passages
+const handleScoreUpdate = (data: any) => {
+  if (!scheduleData.value?.data) return
+  
+  const passage = scheduleData.value.data.find((p: any) => p._id === data.passageId)
+  if (passage) {
+    if (data.score !== undefined) passage.score = data.score
+    if (data.status) passage.status = data.status
+  }
+}
+
+// Handle status updates
+const handleStatusUpdate = () => {
+  refreshSchedule()
+}
+
+// Use the composable for proper socket room management
+useSocketRoom(['live-scores', 'schedule-updates'], [
+  { event: 'score-update', handler: handleScoreUpdate },
+  { event: 'status-update', handler: handleStatusUpdate },
+  { event: 'schedule-update', handler: () => refreshSchedule() }
+])
 </script>
 
 <template>
@@ -140,7 +163,7 @@ const handleGroupClick = (groupId: string) => {
             </div>
 
             <button
-              @click="passage.group?._id && toggleFavorite(passage.group._id, $event)"
+              @click="passage._id && toggleFavorite(passage._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
             >
               <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />
@@ -176,7 +199,7 @@ const handleGroupClick = (groupId: string) => {
             </div>
 
             <button
-              @click="passage.group?._id && toggleFavorite(passage.group._id, $event)"
+              @click="passage._id && toggleFavorite(passage._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
             >
               <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />

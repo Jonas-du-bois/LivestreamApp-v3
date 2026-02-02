@@ -5,10 +5,21 @@ import type { PassageEnriched } from '~/types/api'
 // Extended type including rank
 type PassageResult = PassageEnriched & { rank: number }
 
-const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
+const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
-// Fetch data
-const { data: resultsMap } = await PublicService.getResults()
+// Fetch data from API
+const { data: apiResultsMap, refresh } = await PublicService.getResults()
+
+// Create a local reactive copy that we can mutate properly
+const resultsMap = ref<Record<string, PassageResult[]>>({})
+
+// Sync API data to local reactive state
+watch(apiResultsMap, (newData) => {
+  if (newData) {
+    // Deep clone to ensure full reactivity
+    resultsMap.value = JSON.parse(JSON.stringify(newData))
+  }
+}, { immediate: true, deep: true })
 
 // Active tab state
 const activeTab = useState<string | null>('results-active-tab', () => null)
@@ -89,100 +100,121 @@ const handleScoreUpdate = (data: any) => {
   // Data payload: { passageId, score, rank, apparatusCode, ... }
   if (!resultsMap.value) return
 
+  console.log('[results] Received score-update:', data)
+
   const keys = Object.keys(resultsMap.value)
   let found = false
-  let targetList: PassageResult[] | null = null
 
   for (const key of keys) {
-    const list = resultsMap.value[key] as PassageResult[]
-    const passage = list.find(p => p._id === data.passageId)
+    const list = resultsMap.value[key]
+    if (!list) continue
+    
+    const passageIndex = list.findIndex(p => p._id === data.passageId)
 
-    if (passage) {
-      // Update properties (Direct Mutation for Reactivity)
-      if (data.score !== undefined) passage.score = data.score
-      if (data.status) passage.status = data.status
+    if (passageIndex !== -1) {
+      // Create a new array with updated passage to trigger reactivity
+      const updatedList = list.map((p, i) => {
+        if (i !== passageIndex) return p
+        return {
+          ...p,
+          score: data.score !== undefined ? data.score : p.score,
+          status: data.status || p.status
+        }
+      })
+
+      // Re-sort and re-rank
+      updatedList.sort((a, b) => (b.score || 0) - (a.score || 0))
+      updatedList.forEach((p, i) => {
+        p.rank = i + 1
+      })
+
+      // Trigger reactivity by creating a new object reference
+      resultsMap.value = {
+        ...resultsMap.value,
+        [key]: updatedList
+      }
 
       // Trigger Flash Effect
       nextTick(() => {
           const el = document.getElementById(`result-${data.passageId}`)
           if (el) {
-            el.classList.remove('flash-green') // Reset animation
-            void el.offsetWidth // Trigger reflow
+            el.classList.remove('flash-green')
+            void el.offsetWidth
             el.classList.add('flash-green')
           }
       })
 
-      targetList = list
       found = true
+      console.log('[results] Updated passage in', key, '- new score:', data.score)
       break
     }
   }
 
   // Handle new entry dynamically (e.g. first score for an apparatus)
   if (!found && data.group && data.apparatus) {
-      const code = data.apparatus.code
-      if (code) {
-        if (!resultsMap.value[code]) resultsMap.value[code] = []
-        const list = resultsMap.value[code] as PassageResult[]
-
-        // Check again in case of race condition
-        const index = list.findIndex(p => p._id === data.passageId)
-
-        const newEntry = {
-          ...data,
-          _id: data.passageId,
-          rank: 0,
-          status: data.status || 'FINISHED'
-        } as PassageResult
-
-        if (index !== -1) list[index] = newEntry
-        else list.push(newEntry)
-
-        targetList = list
+    const code = data.apparatus.code
+    if (code) {
+      console.log('[results] Adding new entry for apparatus:', code)
+      
+      const existingList = resultsMap.value[code] || []
+      const newEntry: PassageResult = {
+        _id: data.passageId,
+        group: data.group,
+        apparatus: data.apparatus,
+        score: data.score,
+        rank: 0,
+        status: data.status || 'FINISHED',
+        startTime: data.startTime || '',
+        endTime: data.endTime || '',
+        location: data.location
       }
-  }
 
-  // Re-sort and re-rank the specific apparatus list
-  if (targetList) {
-    targetList.sort((a, b) => (b.score || 0) - (a.score || 0))
-    targetList.forEach((p, i) => {
-      p.rank = i + 1
-    })
+      const updatedList = [...existingList, newEntry]
+      updatedList.sort((a, b) => (b.score || 0) - (a.score || 0))
+      updatedList.forEach((p, i) => {
+        p.rank = i + 1
+      })
+
+      // Trigger reactivity
+      resultsMap.value = {
+        ...resultsMap.value,
+        [code]: updatedList
+      }
+    }
   }
 }
 
 const handleStatusUpdate = (data: any) => {
   if (!resultsMap.value) return
+  
   const keys = Object.keys(resultsMap.value)
   for (const key of keys) {
-    const list = resultsMap.value[key] as PassageResult[]
-    const passage = list.find(p => p._id === data.passageId)
-    if (passage) {
-      if (data.status) passage.status = data.status
+    const list = resultsMap.value[key]
+    if (!list) continue
+    
+    const passageIndex = list.findIndex(p => p._id === data.passageId)
+    
+    if (passageIndex !== -1 && data.status) {
+      // Create new array with updated status to trigger reactivity
+      const updatedList = list.map((p, i) => {
+        if (i !== passageIndex) return p
+        return { ...p, status: data.status }
+      })
+      
+      resultsMap.value = {
+        ...resultsMap.value,
+        [key]: updatedList
+      }
       break
     }
   }
 }
 
-onMounted(() => {
-  const socket = useSocket()
-  if (socket) {
-    socket.emit('join-room', 'live-scores')
-    socket.emit('join-room', 'schedule-updates')
-    socket.on('score-update', handleScoreUpdate)
-    socket.on('status-update', handleStatusUpdate)
-  }
-})
-
-onUnmounted(() => {
-  const socket = useSocket()
-  if (socket) {
-    socket.emit('leave-room', 'live-scores')
-    socket.emit('leave-room', 'schedule-updates')
-    socket.off('score-update', handleScoreUpdate)
-    socket.off('status-update', handleStatusUpdate)
-  }
-})
+// Use the new composable for proper socket room management
+useSocketRoom(['live-scores', 'schedule-updates'], [
+  { event: 'score-update', handler: handleScoreUpdate },
+  { event: 'status-update', handler: handleStatusUpdate }
+])
 </script>
 
 <template>

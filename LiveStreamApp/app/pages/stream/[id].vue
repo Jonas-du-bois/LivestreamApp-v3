@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import type { Stream, Passage, Group, Apparatus } from '../../types/api'
+import { ref, watch, onBeforeUnmount, onMounted, computed } from 'vue'
 
 const route = useRoute()
-const router = useRouter() // Use router for back navigation if needed, or simple link
+const router = useRouter()
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase as string
 
 // Define populated types for this view
 interface PopulatedPassage extends Omit<Passage, 'group' | 'apparatus'> {
@@ -11,25 +14,118 @@ interface PopulatedPassage extends Omit<Passage, 'group' | 'apparatus'> {
 }
 
 interface PopulatedStream extends Omit<Stream, 'currentPassage'> {
-  currentPassage?: PopulatedPassage;
+  currentPassage?: PopulatedPassage | null;
 }
 
-const { data: stream, pending, error, refresh } = await useFetch<PopulatedStream>(() => `/api/streams/${route.params.id}`)
+// Use refs for reactive data that updates in real-time
+const stream = ref<PopulatedStream | null>(null)
+const livePassages = ref<any[]>([])
+const groupDetails = ref<any>(null) // Full group details from API
+const pending = ref(true)
+const error = ref<any>(null)
+
+// Fetch stream
+const fetchStream = async () => {
+  try {
+    stream.value = await $fetch<PopulatedStream>(`/streams/${route.params.id}`, { baseURL: apiBase })
+    console.log('[stream/id] Stream fetched:', stream.value?.name, 'location:', stream.value?.location)
+  } catch (err: any) {
+    console.error('[stream/id] Error fetching stream:', err)
+    error.value = err
+  }
+}
+
+// Fetch live passages to get current group/apparatus info
+const fetchLivePassages = async () => {
+  try {
+    const liveData = await $fetch<{ passages: any[]; streams: any[] }>('/live', { baseURL: apiBase })
+    livePassages.value = liveData.passages || []
+    console.log('[stream/id] Live passages fetched:', livePassages.value.length)
+  } catch (err: any) {
+    console.error('[stream/id] Error fetching live passages:', err)
+  }
+}
+
+// Fetch full group details when we have a current passage
+const fetchGroupDetails = async (groupId: string) => {
+  try {
+    const details = await $fetch<any>(`/groups/${groupId}/details`, { baseURL: apiBase })
+    groupDetails.value = details
+    console.log('[stream/id] Group details fetched:', details?.info?.name)
+  } catch (err: any) {
+    console.error('[stream/id] Error fetching group details:', err)
+  }
+}
+
+// Fetch all data
+const fetchAll = async () => {
+  await Promise.all([fetchStream(), fetchLivePassages()])
+  pending.value = false
+}
+
+// Initial fetch (SSR + client)
+await fetchAll()
+
+// Also fetch on mount to ensure fresh data
+onMounted(() => {
+  fetchAll()
+})
+
+// Find the current passage by matching stream's location
+const currentPassage = computed(() => {
+  if (!stream.value?.location) return null
+  return livePassages.value.find(p => p.location === stream.value?.location) || null
+})
+
+// Watch for current passage changes to fetch group details
+watch(() => currentPassage.value?.group?._id, async (groupId) => {
+  if (groupId) {
+    await fetchGroupDetails(groupId)
+  } else {
+    groupDetails.value = null
+  }
+}, { immediate: true })
+
+// Build complete group object for GroupInfoCard
+const currentGroup = computed(() => {
+  if (!groupDetails.value?.info) {
+    // Fallback to basic info from passage
+    return currentPassage.value?.group || null
+  }
+  
+  // Merge group details with additional stats
+  return {
+    ...groupDetails.value.info,
+    monitors: groupDetails.value.monitors || [],
+    history: groupDetails.value.history || [],
+    // Add computed average from stats
+    averageScore: groupDetails.value.stats?.currentTotalScore || 0
+  }
+})
+
+// Redirect if stream is not live
+watch(() => stream.value?.isLive, (isLive) => {
+  if (stream.value && isLive === false) {
+    console.log('[stream/id] Stream went offline, redirecting...')
+    navigateTo('/stream')
+  }
+}, { immediate: true })
 
 if (error.value) {
   console.error('Error loading stream:', error.value)
-  clearError()
+  await navigateTo('/stream')
+}
+
+// Check if stream exists and is live on initial load
+if (stream.value && !stream.value.isLive) {
   await navigateTo('/stream')
 }
 
 // Computeds for safe access
-import { ref, watch, onBeforeUnmount, onMounted } from 'vue'
-import { useSocket } from '../../composables/useSocket'
-
 const streamUrl = computed(() => stream.value?.url)
 const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl.value?.includes('vimeo'))
-const currentGroup = computed(() => stream.value?.currentPassage?.group)
-const currentApparatus = computed(() => stream.value?.currentPassage?.apparatus)
+const currentApparatus = computed(() => currentPassage.value?.apparatus || null)
+const passageMonitors = computed(() => currentPassage.value?.monitors || [])
 
 const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
@@ -66,55 +162,30 @@ watch(streamUrl, (url) => {
   }
 })
 
-const handleStreamUpdate = (updatedStream: Partial<Stream>) => {
-  if (stream.value && updatedStream._id === stream.value._id) {
-    if (updatedStream.url !== undefined) stream.value.url = updatedStream.url
-    if (updatedStream.isLive !== undefined) stream.value.isLive = updatedStream.isLive
+// Refresh data on any real-time event
+const handleRefresh = async () => {
+  console.log('[stream/id] 🔄 Handling refresh event...')
+  try {
+    await fetchAll()
+    console.log('[stream/id] ✅ Data refreshed, currentGroup:', currentGroup.value?.name, 'currentApparatus:', currentApparatus.value?.name)
+  } catch (err) {
+    console.error('[stream/id] ❌ Error refreshing data:', err)
   }
 }
 
-const handleStatusUpdate = (payload: any) => {
-  // Check if update is relevant to current stream
-  if (stream.value) {
-    // If the finished passage was the one displayed
-    if (stream.value.currentPassage?._id === payload.passageId ||
-       (typeof stream.value.currentPassage === 'string' && stream.value.currentPassage === payload.passageId)) {
-        refresh()
-    }
-    // Or if we are just notified of a status update on this location
-    else if (stream.value.location && payload.location === stream.value.location) {
-        refresh()
-    }
-  }
-}
-
+// Cleanup player timeout on unmount
 onBeforeUnmount(() => {
   if (playerTimeout) clearTimeout(playerTimeout)
-  const socket = useSocket()
-  // No need to check if socket exists, useSocket returns the singleton
-  socket.emit('leave-room', `stream-${route.params.id}`)
-  socket.emit('leave-room', 'schedule-updates')
-  socket.off('stream-update', handleStreamUpdate)
-  socket.off('status-update', handleStatusUpdate)
 })
 
-onMounted(() => {
-  const socket = useSocket()
+// Use the composable for proper socket room management
+const streamRoom = `stream-${route.params.id}`
 
-  // Robust connection handling
-  if (socket.connected) {
-    socket.emit('join-room', `stream-${route.params.id}`)
-    socket.emit('join-room', 'schedule-updates')
-  } else {
-    socket.on('connect', () => {
-      socket.emit('join-room', `stream-${route.params.id}`)
-      socket.emit('join-room', 'schedule-updates')
-    })
-  }
-
-  socket.on('stream-update', handleStreamUpdate)
-  socket.on('status-update', handleStatusUpdate)
-})
+useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
+  { event: 'stream-update', handler: handleRefresh },
+  { event: 'status-update', handler: handleRefresh },
+  { event: 'schedule-update', handler: handleRefresh }
+])
 </script>
 
 <template>
@@ -203,7 +274,7 @@ onMounted(() => {
       <div v-if="currentGroup">
         <h3 class="text-white/60 font-medium mb-3 ml-1">Sur le praticable :</h3>
         <div @click="openGroupDetails && currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
-           <GroupInfoCard :group="currentGroup" />
+           <GroupInfoCard :group="currentGroup" :passage-monitors="passageMonitors" />
         </div>
       </div>
 

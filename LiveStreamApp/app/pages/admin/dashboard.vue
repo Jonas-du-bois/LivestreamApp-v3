@@ -6,15 +6,17 @@ import type { PassageEnriched, Stream, PassageStatus } from '../../types/api'
 import { useAdminAuth } from '../../composables/useAdminAuth'
 import { useSocket } from '../../composables/useSocket'
 
-const { token: adminToken, login, logout } = useAdminAuth()
+const { token: adminToken, login, logout, loginError, isLoggingIn } = useAdminAuth()
 const passwordInput = ref('')
 
 const isAuthenticated = computed(() => !!adminToken.value)
 
-const handleLogin = () => {
+const handleLogin = async () => {
   if (passwordInput.value) {
-    login(passwordInput.value)
-    passwordInput.value = '' // Clear password after login attempt
+    const success = await login(passwordInput.value)
+    if (success) {
+      passwordInput.value = '' // Clear password only on success
+    }
   }
 }
 
@@ -147,31 +149,12 @@ const handleScoreUpdate = (payload: any) => {
   }
 }
 
-onMounted(() => {
-  const socket = useSocket()
-  if (socket.connected) {
-    socket.emit('join-room', 'streams')
-    socket.emit('join-room', 'live-scores')
-  } else {
-    socket.on('connect', () => {
-      socket.emit('join-room', 'streams')
-      socket.emit('join-room', 'live-scores')
-    })
-  }
-
-  socket.on('stream-update', handleStreamUpdate)
-  socket.on('score-update', handleScoreUpdate)
-  socket.on('schedule-update', refreshAll)
-})
-
-onBeforeUnmount(() => {
-  const socket = useSocket()
-  socket.emit('leave-room', 'streams')
-  socket.emit('leave-room', 'live-scores')
-  socket.off('stream-update', handleStreamUpdate)
-  socket.off('score-update', handleScoreUpdate)
-  socket.off('schedule-update', refreshAll)
-})
+// Use the composable for proper socket room management
+useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
+  { event: 'stream-update', handler: handleStreamUpdate },
+  { event: 'score-update', handler: handleScoreUpdate },
+  { event: 'schedule-update', handler: refreshAll }
+])
 </script>
 
 <template>
@@ -183,13 +166,17 @@ onBeforeUnmount(() => {
         type="password"
         placeholder="Mot de passe Administrateur"
         class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white mb-4 focus:outline-none focus:border-cyan-400"
+        :disabled="isLoggingIn"
         @keyup.enter="handleLogin"
       />
+      <p v-if="loginError" class="text-red-400 text-sm mb-4">{{ loginError }}</p>
       <button
         @click="handleLogin"
-        class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-opacity"
+        :disabled="isLoggingIn"
+        class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Login
+        <span v-if="isLoggingIn">Connexion...</span>
+        <span v-else>Login</span>
       </button>
     </div>
 

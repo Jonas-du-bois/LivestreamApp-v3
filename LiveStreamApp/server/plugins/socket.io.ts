@@ -47,15 +47,21 @@ export default defineNitroPlugin((nitroApp: any) => {
       socket.on('join-room', (room: string) => {
         if (typeof room === 'string') {
           socket.join(room)
-          console.log(`Socket ${socket.id} a rejoint la salle : ${room}`)
+          console.log(`[Socket.io] Socket ${socket.id} a rejoint la salle : ${room}`)
+          // Log current rooms for this socket
+          console.log(`[Socket.io] Socket ${socket.id} rooms:`, Array.from(socket.rooms))
         }
       })
 
       socket.on('leave-room', (room: string) => {
         if (typeof room === 'string') {
           socket.leave(room)
-          console.log(`Socket ${socket.id} a quitté la salle : ${room}`)
+          console.log(`[Socket.io] Socket ${socket.id} a quitté la salle : ${room}`)
         }
+      })
+      
+      socket.on('disconnect', (reason) => {
+        console.log(`[Socket.io] Socket ${socket.id} déconnecté:`, reason)
       })
     })
 

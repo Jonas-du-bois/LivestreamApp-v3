@@ -18,14 +18,16 @@ export const PublicService = {
   getStreams(filters?: MaybeRef<{ isLive?: boolean }>) {
     return useApiClient<Stream[]>('/streams', {
       query: filters,
-      key: 'streams-' + JSON.stringify(toValue(filters) || {})
+      key: 'streams-' + JSON.stringify(toValue(filters) || {}),
+      getCachedData: () => undefined // Disable cache for real-time data
     })
   },
 
   getLive() {
     // Returns both live passages and live streams in one call to reduce multiple requests
     return useApiClient<{ passages: PassageEnriched[]; streams: Stream[] }>('/live', {
-      key: 'live'
+      key: 'live',
+      getCachedData: () => undefined // Disable cache for real-time data
     })
   },
 

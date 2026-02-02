@@ -1,5 +1,6 @@
 import webPush from 'web-push';
 import PassageModel from '../models/Passage';
+import StreamModel from '../models/Stream';
 import SubscriptionModel from '../models/Subscription';
 
 export default defineNitroPlugin((nitroApp) => {
@@ -32,39 +33,76 @@ export default defineNitroPlugin((nitroApp) => {
       let scheduleChanged = false;
 
       // A. Promote SCHEDULED -> LIVE (if startTime is reached/passed)
-      const liveResult = await PassageModel.updateMany(
-        {
-          status: 'SCHEDULED',
-          startTime: { $lte: now }
-        },
-        { $set: { status: 'LIVE' } }
-      );
+      // First get the passages that will be promoted so we can update streams
+      const passagesToGoLive = await PassageModel.find({
+        status: 'SCHEDULED',
+        startTime: { $lte: now }
+      });
 
-      if (liveResult.modifiedCount > 0) {
-        console.log(`[Scheduler] Promoted ${liveResult.modifiedCount} passages to LIVE`);
+      if (passagesToGoLive.length > 0) {
+        // Update passages to LIVE
+        await PassageModel.updateMany(
+          { _id: { $in: passagesToGoLive.map(p => p._id) } },
+          { $set: { status: 'LIVE' } }
+        );
+        console.log(`[Scheduler] Promoted ${passagesToGoLive.length} passages to LIVE`);
         scheduleChanged = true;
+
+        // Update corresponding streams' currentPassage
+        for (const passage of passagesToGoLive) {
+          if (passage.location) {
+            await StreamModel.findOneAndUpdate(
+              { location: passage.location },
+              { currentPassage: passage._id }
+            );
+            console.log(`[Scheduler] Updated stream for location ${passage.location} with passage ${passage._id}`);
+          }
+        }
       }
 
       // B. Promote LIVE -> FINISHED (if endTime is passed)
-      const finishedResult = await PassageModel.updateMany(
-        {
-          status: 'LIVE',
-          endTime: { $lte: now }
-        },
-        { $set: { status: 'FINISHED' } }
-      );
+      const passagesToFinish = await PassageModel.find({
+        status: 'LIVE',
+        endTime: { $lte: now }
+      });
 
-      if (finishedResult.modifiedCount > 0) {
-        console.log(`[Scheduler] Promoted ${finishedResult.modifiedCount} passages to FINISHED`);
+      if (passagesToFinish.length > 0) {
+        await PassageModel.updateMany(
+          { _id: { $in: passagesToFinish.map(p => p._id) } },
+          { $set: { status: 'FINISHED' } }
+        );
+        console.log(`[Scheduler] Promoted ${passagesToFinish.length} passages to FINISHED`);
         scheduleChanged = true;
+
+        // Clear currentPassage on streams if no other LIVE passage exists for that location
+        for (const passage of passagesToFinish) {
+          if (passage.location) {
+            // Check if there's another LIVE passage for this location
+            const anotherLive = await PassageModel.findOne({
+              location: passage.location,
+              status: 'LIVE',
+              _id: { $ne: passage._id }
+            });
+            
+            if (!anotherLive) {
+              // No other live passage, clear the currentPassage
+              await StreamModel.findOneAndUpdate(
+                { location: passage.location },
+                { currentPassage: null }
+              );
+              console.log(`[Scheduler] Cleared currentPassage for location ${passage.location}`);
+            }
+          }
+        }
       }
 
       // Emit event if schedule changed
       if (scheduleChanged) {
         const io = (globalThis as any).io;
         if (io) {
-            io.emit('schedule-update');
-            console.log('[Scheduler] Emitted schedule-update');
+            io.to('schedule-updates').emit('schedule-update');
+            io.to('streams').emit('stream-update');
+            console.log('[Scheduler] Emitted schedule-update and stream-update');
         }
       }
 
