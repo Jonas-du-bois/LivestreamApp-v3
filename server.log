@@ -1,0 +1,129 @@
+[db] Connecting to MongoDB (masked): mongodb+sr...
+[Scheduler] WebPush init failed (invalid keys) - Notifications disabled Error: Vapid private key must be a URL safe Base 64 (without "=")
+    at Object.validatePrivateKey (/app/LiveStreamApp/.output/server/node_modules/web-push/src/vapid-helper.js:126:11)
+    at WebPushLib.setVapidDetails (/app/LiveStreamApp/.output/server/node_modules/web-push/src/web-push-lib.js:61:17)
+    at file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:5168:15
+    at runNitroPlugins (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:6147:7)
+    at file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:6158:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+Listening on http://[::]:3000
+[db] Connection error: MongoServerError: bad auth : authentication failed
+    at Connection.sendCommand (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connect.js:24:9) {
+  errorLabelSet: Set(2) { 'HandshakeError', 'ResetPool' },
+  errorResponse: {
+    ok: 0,
+    errmsg: 'bad auth : authentication failed',
+    code: 8000,
+    codeName: 'AtlasError'
+  },
+  ok: 0,
+  code: 8000,
+  codeName: 'AtlasError',
+  connectionGeneration: 0
+}
+[db] mongoose connection error MongoServerError: bad auth : authentication failed
+    at Connection.sendCommand (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connect.js:24:9) {
+  errorLabelSet: Set(2) { 'HandshakeError', 'ResetPool' },
+  errorResponse: {
+    ok: 0,
+    errmsg: 'bad auth : authentication failed',
+    code: 8000,
+    codeName: 'AtlasError'
+  },
+  ok: 0,
+  code: 8000,
+  codeName: 'AtlasError',
+  connectionGeneration: 0
+}
+[unhandledRejection] MongoServerError: bad auth : authentication failed
+    at Connection.sendCommand (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (/app/LiveStreamApp/.output/server/node_modules/mongodb/lib/cmap/connect.js:24:9) {
+  errorLabelSet: Set(2) { 'HandshakeError', 'ResetPool' },
+  errorResponse: {
+    ok: 0,
+    errmsg: 'bad auth : authentication failed',
+    code: 8000,
+    codeName: 'AtlasError'
+  },
+  ok: 0,
+  code: 8000,
+  codeName: 'AtlasError',
+  connectionGeneration: 0
+}
+✅ [Socket.io] Serveur initialisé avec succès
+[request error] [unhandled] [GET] http://localhost:3000/
+ file:///app/LiveStreamApp/.output/server/chunks/build/server.mjs:1
+import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import require$$0, { defineComponent, ref, shallowRef, watch, getCurrentInstance, provide, cloneVNode, h, createElementBlock, hasInjectionContext, inject, nextTick, defineAsyncComponent, computed, unref, shallowReactive, Suspense, Fragment, createApp, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, mergeProps, getCurrentScope, toRef, withCtx, isReadonly, toRaw, useSSRContext, isRef, isShallow, isReactive } from 'vue';
+                                                                                                                                     ^^^^^^^^^^
+SyntaxError: The requested module 'vue' does not provide an export named 'default'
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+    ... 7 lines matching cause stack trace ...
+    at async Server.toNodeHandle (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:2242:7) {
+  cause: file:///app/LiveStreamApp/.output/server/chunks/build/server.mjs:1
+  import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import require$$0, { defineComponent, ref, shallowRef, watch, getCurrentInstance, provide, cloneVNode, h, createElementBlock, hasInjectionContext, inject, nextTick, defineAsyncComponent, computed, unref, shallowReactive, Suspense, Fragment, createApp, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, mergeProps, getCurrentScope, toRef, withCtx, isReadonly, toRaw, useSSRContext, isRef, isShallow, isReactive } from 'vue';
+                                                                                                                                       ^^^^^^^^^^
+  SyntaxError: The requested module 'vue' does not provide an export named 'default'
+      at ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+      at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+      at async file:///app/LiveStreamApp/.output/server/chunks/routes/renderer.mjs:104:23
+      at async Object.render (file:///app/LiveStreamApp/.output/server/chunks/routes/renderer.mjs:315:19)
+      at async Object.handler (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:5880:22)
+      at async Object.handler (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:1971:19)
+      at async Server.toNodeHandle (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:2242:7),
+  statusCode: 500,
+  fatal: false,
+  unhandled: true,
+  statusMessage: undefined,
+  data: undefined
+}
+[request error] [unhandled] [GET] http://localhost:3000/__nuxt_error?error=true&url=%2F&statusCode=500&statusMessage=Server+Error&message=Server+Error
+ file:///app/LiveStreamApp/.output/server/chunks/build/server.mjs:1
+import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import require$$0, { defineComponent, ref, shallowRef, watch, getCurrentInstance, provide, cloneVNode, h, createElementBlock, hasInjectionContext, inject, nextTick, defineAsyncComponent, computed, unref, shallowReactive, Suspense, Fragment, createApp, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, mergeProps, getCurrentScope, toRef, withCtx, isReadonly, toRaw, useSSRContext, isRef, isShallow, isReactive } from 'vue';
+                                                                                                                                     ^^^^^^^^^^
+SyntaxError: The requested module 'vue' does not provide an export named 'default'
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+    ... 7 lines matching cause stack trace ...
+    at async Server.toNodeHandle (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:2242:7) {
+  cause: file:///app/LiveStreamApp/.output/server/chunks/build/server.mjs:1
+  import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import require$$0, { defineComponent, ref, shallowRef, watch, getCurrentInstance, provide, cloneVNode, h, createElementBlock, hasInjectionContext, inject, nextTick, defineAsyncComponent, computed, unref, shallowReactive, Suspense, Fragment, createApp, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, mergeProps, getCurrentScope, toRef, withCtx, isReadonly, toRaw, useSSRContext, isRef, isShallow, isReactive } from 'vue';
+                                                                                                                                       ^^^^^^^^^^
+  SyntaxError: The requested module 'vue' does not provide an export named 'default'
+      at ModuleJob._instantiate (node:internal/modules/esm/module_job:226:21)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async ModuleJob.run (node:internal/modules/esm/module_job:335:5)
+      at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+      at async file:///app/LiveStreamApp/.output/server/chunks/routes/renderer.mjs:104:23
+      at async Object.render (file:///app/LiveStreamApp/.output/server/chunks/routes/renderer.mjs:315:19)
+      at async Object.handler (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:5880:22)
+      at async Object.handler (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:1971:19)
+      at async Server.toNodeHandle (file:///app/LiveStreamApp/.output/server/chunks/nitro/nitro.mjs:2242:7),
+  statusCode: 500,
+  fatal: false,
+  unhandled: true,
+  statusMessage: undefined,
+  data: undefined
+}

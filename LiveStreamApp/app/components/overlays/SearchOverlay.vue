@@ -3,7 +3,7 @@ interface Props {
   isOpen: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 const emit = defineEmits<{
   close: []
 }>()
@@ -24,11 +24,29 @@ watch(() => searchQuery.value, () => {
   // Could implement search logic here
 })
 
+const clearSearch = () => {
+  searchQuery.value = ''
+  nextTick(() => {
+    searchInput.value?.focus()
+  })
+}
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && props.isOpen) {
+    emit('close')
+  }
+}
+
 onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
   // Focus input when opened
   nextTick(() => {
     searchInput.value?.focus()
   })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -46,6 +64,9 @@ onMounted(() => {
       <div
         v-if="isOpen"
         class="fixed top-4 left-4 right-4 glass-panel z-[70] overflow-hidden max-w-2xl mx-auto"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Recherche"
       >
         <!-- Search Input -->
         <div class="p-4 border-b border-white/10">
@@ -59,6 +80,16 @@ onMounted(() => {
               class="flex-1 bg-transparent text-white placeholder-white/40 outline-none text-lg"
               aria-label="Rechercher"
             />
+
+            <button
+              v-if="searchQuery"
+              @click="clearSearch"
+              class="p-1 hover:text-white text-white/60 transition-colors"
+              aria-label="Effacer la recherche"
+            >
+              <Icon name="fluent:dismiss-circle-24-filled" class="w-5 h-5" />
+            </button>
+
             <button
               @click="emit('close')"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
