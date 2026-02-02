@@ -131,9 +131,9 @@ export default defineNitroPlugin((nitroApp) => {
         const apparatus = passage.apparatus as any;
         if (!group) continue;
 
-        // Find subscribers who favorited this group
+        // Find subscribers who favorited this SPECIFIC PASSAGE
         const subscriptions = await SubscriptionModel.find({
-          favorites: group._id.toString()
+          favorites: passage._id.toString()
         });
 
         if (subscriptions.length === 0) continue;
@@ -141,7 +141,7 @@ export default defineNitroPlugin((nitroApp) => {
         const payload = JSON.stringify({
           title: 'Passage imminent !',
           body: `${group.name} va passer au ${apparatus?.name || 'sol'} dans 15 minutes !`,
-          icon: '/icons/icon-192x192.png',
+          icon: '/icons/logo_livestreamappv3-192.png',
           url: '/schedule'
         });
 

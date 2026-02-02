@@ -6,7 +6,7 @@ export interface ISubscription extends Document {
     p256dh: string;
     auth: string;
   };
-  favorites: string[]; // List of Group IDs
+  favorites: string[]; // List of Passage IDs
 }
 
 const SubscriptionSchema = new Schema<ISubscription>(

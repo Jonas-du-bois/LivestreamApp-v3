@@ -48,7 +48,9 @@ export default defineNuxtConfig({
 
   pwa: {
     registerType: 'autoUpdate',
-    strategies: 'generateSW', // Garde ça si tu veux, ou passe en 'injectManifest' si besoin avancé
+    strategies: 'injectManifest',
+    srcDir: 'app',
+    filename: 'sw.ts',
     manifest: {
       name: 'LiveStreamApp FSG',
       short_name: 'LiveScore', // Important qu'il soit court pour l'écran d'accueil
@@ -73,31 +75,8 @@ export default defineNuxtConfig({
         }
       ]
     },
-    workbox: {
-      navigateFallback: null, // Désactive le fallback par défaut pour les SPA
+    injectManifest: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-      // ✅ LA PARTIE MANQUANTE POUR TES ERREURS CONSOLE :
-      runtimeCaching: [
-        {
-          urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
-          handler: 'NetworkFirst', // Priorité au réseau pour les scores
-          options: {
-            cacheName: 'api-data',
-            networkTimeoutSeconds: 5,
-            expiration: { maxEntries: 50, maxAgeSeconds: 86400 },
-            cacheableResponse: { statuses: [0, 200] }
-          }
-        },
-        {
-          // Pour les icônes Nuxt et images externes (YouTube, Twitch)
-          urlPattern: ({ url }) => url.pathname.includes('_nuxt_icon') || url.hostname.includes('img.youtube.com') || url.hostname.includes('static-cdn.jtvnw.net'),
-          handler: 'StaleWhileRevalidate', // Affiche le cache tout de suite, met à jour en fond
-          options: {
-            cacheName: 'external-assets',
-            expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 } // 30 jours
-          }
-        }
-      ]
     },
     client: {
       installPrompt: true,
@@ -105,6 +84,7 @@ export default defineNuxtConfig({
     devOptions: {
       enabled: true,
       suppressWarnings: true,
+      type: 'module',
     }
   },
     
