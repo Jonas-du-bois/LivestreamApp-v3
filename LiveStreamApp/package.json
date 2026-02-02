@@ -32,6 +32,11 @@
     "@types/web-push": "^3.6.4",
     "@vite-pwa/nuxt": "^1.1.0",
     "mongodb-memory-server": "^11.0.1",
-    "nitropack": "^2.13.1"
+    "nitropack": "^2.13.1",
+    "workbox-core": "^7.4.0",
+    "workbox-expiration": "^7.4.0",
+    "workbox-precaching": "^7.4.0",
+    "workbox-routing": "^7.4.0",
+    "workbox-strategies": "^7.4.0"
   }
 }
