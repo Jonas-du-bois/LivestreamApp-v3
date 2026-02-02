@@ -1,4 +1,5 @@
 import { defineEventHandler, getRouterParam, createError } from 'h3'
+import mongoose from 'mongoose'
 import GroupModel from '../../../models/Group'
 import PassageModel from '../../../models/Passage'
 import ApparatusModel from '../../../models/Apparatus'
@@ -8,6 +9,11 @@ export default defineEventHandler(async (event) => {
 
   if (!groupId) {
     throw createError({ statusCode: 400, message: 'Group ID is required' })
+  }
+
+  // Validate ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(groupId)) {
+    throw createError({ statusCode: 400, message: 'Invalid Group ID format' })
   }
 
   try {
@@ -56,10 +62,11 @@ export default defineEventHandler(async (event) => {
 
     const averageScore = finishedCount > 0 ? (totalScore / finishedCount).toFixed(2) : '0.00'
 
-    // 4. Build raw history (combining current passages and archived history)
+    // 4. Build raw history from passages (each passage has its own history)
+    // The history contains previous years' scores for that group on that apparatus
     const rawHistory: { year: number; score: number; apparatus: string }[] = []
 
-    // From current passages
+    // From current year finished passages
     passages.forEach((p: any) => {
       if (p.status === 'FINISHED' && typeof p.score === 'number') {
         rawHistory.push({
@@ -70,7 +77,23 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    // From group archives
+    // From passage history (previous years for each passage)
+    passages.forEach((p: any) => {
+      if (p.history && Array.isArray(p.history)) {
+        const apparatusCode = p.apparatus?.code || 'UNK'
+        p.history.forEach((h: any) => {
+          if (typeof h.year === 'number' && typeof h.score === 'number') {
+            rawHistory.push({
+              year: h.year,
+              score: h.score,
+              apparatus: apparatusCode
+            })
+          }
+        })
+      }
+    })
+
+    // Also include group-level archived history if exists
     if (group.history && Array.isArray(group.history)) {
       group.history.forEach((h: any) => {
         rawHistory.push({

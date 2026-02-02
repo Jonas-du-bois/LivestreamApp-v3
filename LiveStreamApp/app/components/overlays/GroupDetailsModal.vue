@@ -141,7 +141,12 @@ const gymnastsCount = computed(() => details.value?.info?.gymnastsCount ?? 0)
 const monitorsCount = computed(() => details.value?.monitors?.length ?? 0)
 const monitors = computed(() => details.value?.monitors ?? [])
 
-const historyByYear = computed(() => {
+interface HistoryPoint {
+  year: number
+  score: number
+}
+
+const historyByYear = computed<HistoryPoint[]>(() => {
   if (!details.value?.history) return []
 
   let rawHistory = details.value.history as any[]
@@ -161,7 +166,7 @@ const historyByYear = computed(() => {
   })
 
   // Convert to array
-  const aggregated = Array.from(yearMap.entries()).map(([year, data]) => ({
+  const aggregated: HistoryPoint[] = Array.from(yearMap.entries()).map(([year, data]) => ({
     year,
     score: data.total / data.count
   }))
@@ -174,6 +179,39 @@ const averageHistoryScore = computed(() => {
   if (!list.length) return '0.00'
   const sum = list.reduce((acc: number, curr: any) => acc + (Number(curr.score) || 0), 0)
   return (sum / list.length).toFixed(2)
+})
+
+// Helper computed properties pour éviter les erreurs TypeScript
+const firstHistoryScore = computed(() => {
+  const list = historyByYear.value
+  return list.length > 0 ? list[0]?.score ?? 0 : 0
+})
+
+const lastHistoryScore = computed(() => {
+  const list = historyByYear.value
+  return list.length > 0 ? list[list.length - 1]?.score ?? 0 : 0
+})
+
+const historyTrend = computed(() => {
+  const list = historyByYear.value
+  if (list.length <= 1) return 'stable'
+  const first = firstHistoryScore.value
+  const last = lastHistoryScore.value
+  if (last > first) return 'up'
+  if (last < first) return 'down'
+  return 'stable'
+})
+
+const historyEvolutionValue = computed(() => {
+  const list = historyByYear.value
+  if (list.length <= 1) return '0.00'
+  return Math.abs(lastHistoryScore.value - firstHistoryScore.value).toFixed(2)
+})
+
+const maxHistoryScore = computed(() => {
+  const list = historyByYear.value
+  if (!list.length) return '0.00'
+  return Math.max(...list.map((d: any) => d.score ?? 0)).toFixed(2)
 })
 </script>
 
@@ -449,7 +487,7 @@ const averageHistoryScore = computed(() => {
                         </div>
 
                         <!-- SVG Line Chart -->
-                        <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
                           <!-- Define gradient for the line -->
                           <defs>
                             <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -465,26 +503,25 @@ const averageHistoryScore = computed(() => {
                           <!-- Area under the curve -->
                           <path
                             v-if="historyByYear.length > 0"
-                            :d="`M 0,100 ${historyByYear.map((d: any, i: number) => {
+                            :d="`M 0,100 ${historyByYear.map((d, i) => {
                               const x = (i / Math.max(historyByYear.length - 1, 1)) * 100
                               const y = 100 - (d.score / 10 * 100)
                               return `L ${x},${y}`
                             }).join(' ')} L 100,100 Z`"
                             fill="url(#areaGradient)"
-                            vector-effect="non-scaling-stroke"
                           />
 
                           <!-- Line -->
                           <polyline
                             v-if="historyByYear.length > 0"
-                            :points="historyByYear.map((d: any, i: number) => {
+                            :points="historyByYear.map((d, i) => {
                               const x = (i / Math.max(historyByYear.length - 1, 1)) * 100
                               const y = 100 - (d.score / 10 * 100)
                               return `${x},${y}`
                             }).join(' ')"
                             fill="none"
                             stroke="url(#lineGradient)"
-                            stroke-width="3"
+                            stroke-width="2"
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             vector-effect="non-scaling-stroke"
@@ -494,13 +531,14 @@ const averageHistoryScore = computed(() => {
                           <circle
                             v-for="(data, index) in historyByYear"
                             :key="data.year"
-                            :cx="(index / Math.max(historyByYear.length - 1, 1)) * 100 + '%'"
-                            :cy="(100 - (data.score / 10 * 100)) + '%'"
-                            r="4"
+                            :cx="(index / Math.max(historyByYear.length - 1, 1)) * 100"
+                            :cy="100 - (data.score / 10 * 100)"
+                            r="2"
                             fill="#0B1120"
                             stroke="url(#lineGradient)"
-                            stroke-width="2.5"
-                            class="cursor-pointer hover:r-6 transition-all"
+                            stroke-width="1.5"
+                            vector-effect="non-scaling-stroke"
+                            class="cursor-pointer"
                           >
                             <title>{{ data.year }}: {{ data.score.toFixed(2) }}</title>
                           </circle>
@@ -520,7 +558,7 @@ const averageHistoryScore = computed(() => {
                       <div>
                         <div class="text-xs text-white/40 mb-1">Meilleur</div>
                         <div class="text-cyan-400 font-bold">
-                          {{ Math.max(...historyByYear.map((d: any) => d.score)).toFixed(2) }}
+                          {{ maxHistoryScore }}
                         </div>
                       </div>
                       <div>
@@ -534,20 +572,18 @@ const averageHistoryScore = computed(() => {
                         <div 
                           :class="[
                             'font-bold flex items-center justify-center gap-1',
-                            historyByYear.length > 1 && historyByYear[historyByYear.length - 1].score > historyByYear[0].score 
-                              ? 'text-green-400' 
-                              : historyByYear.length > 1 && historyByYear[historyByYear.length - 1].score < historyByYear[0].score
-                                ? 'text-red-400'
+                            historyTrend === 'up' ? 'text-green-400' 
+                              : historyTrend === 'down' ? 'text-red-400'
                                 : 'text-white/60'
                           ]"
                         >
                           <Icon 
-                            v-if="historyByYear.length > 1 && historyByYear[historyByYear.length - 1].score > historyByYear[0].score"
+                            v-if="historyTrend === 'up'"
                             name="fluent:arrow-trending-up-24-filled" 
                             class="w-4 h-4" 
                           />
                           <Icon 
-                            v-else-if="historyByYear.length > 1 && historyByYear[historyByYear.length - 1].score < historyByYear[0].score"
+                            v-else-if="historyTrend === 'down'"
                             name="fluent:arrow-trending-down-24-filled" 
                             class="w-4 h-4" 
                           />
@@ -556,7 +592,7 @@ const averageHistoryScore = computed(() => {
                             name="fluent:arrow-right-24-filled" 
                             class="w-4 h-4" 
                           />
-                          {{ historyByYear.length > 1 ? Math.abs(historyByYear[historyByYear.length - 1].score - historyByYear[0].score).toFixed(2) : '0.00' }}
+                          {{ historyEvolutionValue }}
                         </div>
                       </div>
                     </div>
