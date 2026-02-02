@@ -1,5 +1,7 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
+  compatibilityDate: '2026-02-02',
+  
   modules: [
     '@nuxtjs/tailwindcss',
     '@vite-pwa/nuxt',
@@ -49,7 +51,7 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     strategies: 'injectManifest',
-    srcDir: 'app',
+    srcDir: '',
     filename: 'sw.ts',
     manifest: {
       name: 'LiveStreamApp FSG',

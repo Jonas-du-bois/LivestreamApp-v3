@@ -124,9 +124,9 @@ body {
     padding-top: calc(env(safe-area-inset-top, 0px) + 1rem) !important;
   }
 
-  .nav-safe-area {
+ /*  .nav-safe-area {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
-  }
+  } */
   
   /* Fallback for generic selectors */
   header {
@@ -145,4 +145,15 @@ body {
 
 .header-safe-area {
   padding-top: 1rem;
+}
+
+/* Main content safe area handling */
+.main-content {
+  padding-top: 7rem;
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .main-content {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 7rem);
+  }
 }

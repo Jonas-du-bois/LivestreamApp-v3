@@ -115,7 +115,7 @@ provide('openGroupDetails', openGroupDetails)
       <!-- Main Content Area - Scrollable -->
       <main :class="[
         'h-screen overflow-y-auto',
-        showHeader ? 'pt-28' : 'pt-0',
+        showHeader ? 'main-content' : 'pt-0',
         showFooter ? 'pb-[120px]' : 'pb-0'
       ]">
         <slot />
