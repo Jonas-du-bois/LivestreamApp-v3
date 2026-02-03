@@ -46,6 +46,9 @@ const PassageSchema = new Schema<IPassage>(
 // Compound indexes for frequent queries
 PassageSchema.index({ status: 1, isPublished: 1 });
 PassageSchema.index({ apparatus: 1, status: 1, isPublished: 1 });
+// Optimizations for score sorting and rank calculation
+PassageSchema.index({ isPublished: 1, score: -1 });
+PassageSchema.index({ apparatus: 1, isPublished: 1, score: -1 });
 
 const PassageModel: Model<IPassage> = (mongoose.models.Passage as Model<IPassage>) || mongoose.model<IPassage>('Passage', PassageSchema);
 
