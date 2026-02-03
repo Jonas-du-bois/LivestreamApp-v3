@@ -1,7 +1,10 @@
+import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime';
+
 import webPush from 'web-push';
 import PassageModel from '../models/Passage';
 import StreamModel from '../models/Stream';
 import SubscriptionModel from '../models/Subscription';
+
 
 export default defineNitroPlugin((nitroApp) => {
   const config = useRuntimeConfig();

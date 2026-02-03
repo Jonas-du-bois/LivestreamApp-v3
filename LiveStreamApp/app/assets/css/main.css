@@ -157,3 +157,76 @@ body {
     padding-top: calc(env(safe-area-inset-top, 0px) + 7rem);
   }
 }
+
+/* ============================================
+   Overlay Safe Area Handling
+   ============================================ */
+
+/* Top safe area for overlays (Search, etc.) */
+.overlay-safe-top {
+  top: 1rem;
+}
+
+@supports (top: env(safe-area-inset-top)) {
+  .overlay-safe-top {
+    top: calc(env(safe-area-inset-top, 0px) + 1rem);
+  }
+}
+
+/* Bottom safe area for overlays (Filter sheet, etc.) */
+.overlay-safe-bottom {
+  bottom: 1rem;
+}
+
+@supports (bottom: env(safe-area-inset-bottom)) {
+  .overlay-safe-bottom {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+}
+
+/* Full overlay safe area (all sides) for modals/drawers */
+.overlay-safe-all {
+  top: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .overlay-safe-all {
+    top: calc(env(safe-area-inset-top, 0px) + 1rem);
+    right: calc(env(safe-area-inset-right, 0px) + 1rem);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    left: calc(env(safe-area-inset-left, 0px) + 1rem);
+  }
+}
+
+/* Right-side drawer safe area */
+.overlay-safe-right {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .overlay-safe-right {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
+
+/* Padding variants for content inside overlays */
+.overlay-content-safe {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .overlay-content-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}

@@ -54,6 +54,9 @@ components:
         logo:
           type: string
           description: URL ou chemin du logo
+        description:
+          type: string
+          description: Description du groupe
         gymnastsCount:
           type: number
           description: Nombre de gymnastes dans le groupe
@@ -165,6 +168,233 @@ components:
             apparatus:
               $ref: '#/components/schemas/Apparatus'
 
+    SchedulePassage:
+      type: object
+      description: Passage tel que retourné par /schedule
+      properties:
+        _id:
+          type: string
+        group:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            category:
+              type: string
+        apparatus:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            code:
+              type: string
+            icon:
+              type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        location:
+          type: string
+        status:
+          type: string
+          enum: [SCHEDULED, LIVE, FINISHED]
+        score:
+          type: number
+          nullable: true
+
+    ResultsPassage:
+      type: object
+      description: Passage tel que retourné par /results
+      properties:
+        _id:
+          type: string
+        group:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            category:
+              type: string
+            canton:
+              type: string
+            logo:
+              type: string
+        apparatus:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            code:
+              type: string
+            icon:
+              type: string
+        score:
+          type: number
+          nullable: true
+        rank:
+          type: number
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        location:
+          type: string
+        status:
+          type: string
+          enum: [SCHEDULED, LIVE, FINISHED]
+
+    StreamWithCurrentPassage:
+      allOf:
+        - $ref: '#/components/schemas/Stream'
+        - type: object
+          properties:
+            currentPassage:
+              $ref: '#/components/schemas/PassageEnriched'
+
+    LivePassage:
+      type: object
+      description: Passage en direct (version allégée)
+      properties:
+        _id:
+          type: string
+        group:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+        apparatus:
+          $ref: '#/components/schemas/Apparatus'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        location:
+          type: string
+        status:
+          type: string
+          enum: [SCHEDULED, LIVE, FINISHED]
+        score:
+          type: number
+          nullable: true
+        monitors:
+          type: array
+          items:
+            type: string
+
+    TimelinePassage:
+      type: object
+      description: Passage pour la timeline d'un groupe
+      properties:
+        _id:
+          type: string
+        apparatus:
+          $ref: '#/components/schemas/Apparatus'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [SCHEDULED, LIVE, FINISHED]
+        score:
+          type: number
+          nullable: true
+        monitors:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+
+    GroupHistoryItem:
+      type: object
+      properties:
+        year:
+          type: number
+        score:
+          type: number
+        apparatus:
+          type: string
+
+    AdminScorePayload:
+      type: object
+      properties:
+        passageId:
+          type: string
+        score:
+          type: number
+          nullable: true
+        rank:
+          type: number
+        status:
+          type: string
+          enum: [SCHEDULED, LIVE, FINISHED]
+        group:
+          $ref: '#/components/schemas/Group'
+        apparatus:
+          $ref: '#/components/schemas/Apparatus'
+        groupName:
+          type: string
+          nullable: true
+        apparatusCode:
+          type: string
+          nullable: true
+
+    AdminStatusPayload:
+      type: object
+      properties:
+        passageId:
+          type: string
+        status:
+          type: string
+          enum: [SCHEDULED, LIVE, FINISHED]
+        location:
+          type: string
+          nullable: true
+        groupName:
+          type: string
+          nullable: true
+        group:
+          $ref: '#/components/schemas/Group'
+        apparatus:
+          $ref: '#/components/schemas/Apparatus'
+
+    AdminStream:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        url:
+          type: string
+        location:
+          type: string
+        isLive:
+          type: boolean
+        currentPassage:
+          type: string
+          nullable: true
+
     ScheduleResponse:
       type: object
       properties:
@@ -192,13 +422,18 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/PassageEnriched'
+            $ref: '#/components/schemas/SchedulePassage'
 
     GroupDetailsResponse:
       type: object
       properties:
         info:
-          $ref: '#/components/schemas/Group'
+          allOf:
+            - $ref: '#/components/schemas/Group'
+            - type: object
+              properties:
+                description:
+                  type: string
         stats:
           type: object
           properties:
@@ -215,18 +450,11 @@ components:
         history:
           type: array
           items:
-            type: object
-            properties:
-              year:
-                type: number
-              score:
-                type: number
-              apparatus:
-                type: string
+            $ref: '#/components/schemas/GroupHistoryItem'
         timeline:
           type: array
           items:
-            $ref: '#/components/schemas/PassageEnriched'
+            $ref: '#/components/schemas/TimelinePassage'
 
 paths:
   # --- Endpoints Publics ---
@@ -244,18 +472,30 @@ paths:
         - in: query
           name: apparatus
           schema:
-            type: string
-          description: Filtrer par nom d'engin
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          description: Filtrer par nom d'engin (peut être répété)
         - in: query
           name: division
           schema:
-            type: string
-          description: Filtrer par catégorie
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          description: Filtrer par catégorie (peut être répété)
         - in: query
           name: salle
           schema:
-            type: string
-          description: Filtrer par lieu (location)
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+          description: Filtrer par lieu (location) (peut être répété)
       responses:
         '200':
           description: Données de l'horaire et métadonnées
@@ -263,6 +503,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScheduleResponse'
+        '500':
+          description: Erreur serveur
 
   /results:
     get:
@@ -278,13 +520,9 @@ paths:
                 additionalProperties:
                   type: array
                   items:
-                    allOf:
-                      - $ref: '#/components/schemas/PassageEnriched'
-                      - type: object
-                        properties:
-                          rank:
-                            type: number
-                            description: Rang dans le classement de l'engin
+                    $ref: '#/components/schemas/ResultsPassage'
+        '500':
+          description: Erreur serveur
 
   /live:
     get:
@@ -301,16 +539,13 @@ paths:
                   passages:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PassageEnriched'
+                      $ref: '#/components/schemas/LivePassage'
                   streams:
                     type: array
                     items:
-                      allOf:
-                        - $ref: '#/components/schemas/Stream'
-                        - type: object
-                          properties:
-                            currentPassage:
-                              $ref: '#/components/schemas/PassageEnriched'
+                      $ref: '#/components/schemas/StreamWithCurrentPassage'
+        '500':
+          description: Erreur serveur
 
   /streams:
     get:
@@ -320,8 +555,10 @@ paths:
         - in: query
           name: isLive
           schema:
-            type: boolean
-          description: Filtrer uniquement les flux actifs
+            oneOf:
+              - type: boolean
+              - type: string
+          description: Filtrer uniquement les flux actifs (accepte 'true' ou '1')
       responses:
         '200':
           description: Liste des flux
@@ -330,7 +567,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Stream'
+                  $ref: '#/components/schemas/StreamWithCurrentPassage'
+        '500':
+          description: Erreur serveur
 
   /streams/{id}:
     get:
@@ -349,9 +588,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Stream'
+                $ref: '#/components/schemas/StreamWithCurrentPassage'
+        '400':
+          description: ID manquant
         '404':
           description: Flux non trouvé
+        '500':
+          description: Erreur serveur
 
   /groups/{id}/details:
     get:
@@ -371,8 +614,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupDetailsResponse'
+        '400':
+          description: ID manquant ou format invalide
         '404':
           description: Groupe non trouvé
+        '500':
+          description: Erreur serveur
 
   /weather:
     get:
@@ -391,6 +638,7 @@ paths:
                     nullable: true
                   raw:
                     type: object
+                    nullable: true
 
   /socket-status:
     get:
@@ -433,6 +681,10 @@ paths:
                 properties:
                   success:
                     type: boolean
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
 
   /notifications/sync:
     put:
@@ -452,7 +704,7 @@ paths:
                   type: array
                   items:
                     type: string
-                    description: Liste des IDs de groupes
+                    description: Liste des IDs de passages favoris
               required:
                 - endpoint
                 - favorites
@@ -466,6 +718,10 @@ paths:
                 properties:
                   success:
                     type: boolean
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
 
   # --- Endpoints Admin (Sécurisés) ---
 
@@ -497,10 +753,14 @@ paths:
                   token:
                     type: string
                     description: Token à utiliser pour les requêtes suivantes
+        '400':
+          description: Mot de passe manquant
         '401':
           description: Mot de passe invalide
         '429':
           description: Trop de tentatives (Rate Limit)
+        '500':
+          description: Erreur serveur
 
   /admin/score:
     put:
@@ -535,8 +795,13 @@ paths:
                   ok:
                     type: boolean
                   payload:
-                    type: object
-                    description: Données mises à jour diffusées via Socket.io
+                    $ref: '#/components/schemas/AdminScorePayload'
+        '400':
+          description: Validation échouée
+        '404':
+          description: Passage non trouvé
+        '500':
+          description: Erreur serveur
 
   /admin/status:
     put:
@@ -570,7 +835,13 @@ paths:
                   ok:
                     type: boolean
                   payload:
-                    type: object
+                    $ref: '#/components/schemas/AdminStatusPayload'
+        '400':
+          description: Validation échouée
+        '404':
+          description: Passage non trouvé
+        '500':
+          description: Erreur serveur
 
   /admin/stream:
     put:
@@ -587,6 +858,9 @@ paths:
               properties:
                 streamId:
                   type: string
+                type:
+                  type: string
+                  description: Champ optionnel (non utilisé côté serveur)
                 url:
                   type: string
                   nullable: true
@@ -609,7 +883,13 @@ paths:
                   ok:
                     type: boolean
                   stream:
-                    $ref: '#/components/schemas/Stream'
+                    $ref: '#/components/schemas/AdminStream'
+        '400':
+          description: Validation échouée
+        '404':
+          description: Flux non trouvé
+        '500':
+          description: Erreur serveur
 
   /admin/seed:
     post:
@@ -634,3 +914,8 @@ paths:
                         type: number
                       streams:
                         type: number
+                  error:
+                    type: string
+                    nullable: true
+        '500':
+          description: Erreur serveur

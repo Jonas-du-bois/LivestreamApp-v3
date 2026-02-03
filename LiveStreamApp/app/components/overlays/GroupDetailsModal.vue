@@ -228,7 +228,7 @@ const maxHistoryScore = computed(() => {
     <Transition name="scale">
       <div
         v-if="isOpen"
-        class="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90%] md:max-w-2xl glass-panel z-[90] overflow-hidden flex flex-col max-h-[90vh]"
+        class="fixed md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90%] md:max-w-2xl glass-panel z-[90] overflow-hidden flex flex-col max-h-[90vh] overlay-safe-all"
         role="dialog"
         aria-modal="true"
         aria-labelledby="group-details-title"

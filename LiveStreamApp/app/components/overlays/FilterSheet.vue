@@ -85,7 +85,7 @@ onUnmounted(() => {
     <Transition name="slide-up">
       <div
         v-if="isOpen"
-        class="fixed bottom-0 left-0 right-0 glass-panel rounded-t-3xl z-[70] max-h-[80vh] overflow-hidden mb-4"
+        class="fixed left-0 right-0 glass-panel rounded-t-3xl z-[70] max-h-[80vh] overflow-hidden overlay-safe-bottom"
         role="dialog"
         aria-modal="true"
         aria-labelledby="filter-sheet-title"
