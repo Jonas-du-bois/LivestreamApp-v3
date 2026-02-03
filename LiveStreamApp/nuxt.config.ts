@@ -10,22 +10,29 @@ export default defineNuxtConfig({
     '@nuxt/icon' 
   ],
 
+  // Configuration Vue pour les custom elements (pwa-install)
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag === 'pwa-install'
+    }
+  },
+
   nitro: {
     rollupConfig: {
       external: ['@nuxt/nitro-server/dist/runtime/utils/cache-driver.js']
     },
     // Ignore socket.io routes in the router
-    routeRules: {
+    /* routeRules: {
       '/socket.io/**': { proxy: false }
-    }
+    } */
   },
 
   // Ignore socket.io paths in Vue Router
-  router: {
+  /* router: {
     options: {
       strict: false
     }
-  },
+  }, */
 
   // CSS Global
   css: [
@@ -51,6 +58,7 @@ export default defineNuxtConfig({
         { name: 'mobile-web-app-capable', content: 'yes' },
       ],
       link: [
+        { rel: 'manifest', href: '/manifest.webmanifest' },
         // ✅ L'iPhone cherche cette icône spécifiquement :
         { rel: 'apple-touch-icon', href: '/icons/logo_livestreamappv3-192.png' }
       ]
@@ -78,13 +86,71 @@ export default defineNuxtConfig({
           src: '/icons/logo_livestreamappv3-192.png',
           sizes: '192x192',
           type: 'image/png',
-          purpose: 'any maskable'
+          purpose: 'any'
+        },
+        {
+          src: '/icons/logo_livestreamappv3-192.png',
+          sizes: '192x192',
+          type: 'image/png',
+          purpose: 'maskable'
         },
         {
           src: '/icons/logo_livestreamappv3-512.png',
           sizes: '512x512',
           type: 'image/png',
-          purpose: 'any maskable'
+          purpose: 'any'
+        },
+        {
+          src: '/icons/logo_livestreamappv3-512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable'
+        }
+      ],
+      screenshots: [
+        // Screenshots mobile (narrow) - Ajustés à la taille réelle
+        {
+          src: '/screenshots/home.png',
+          sizes: '1170x2532',
+          type: 'image/png',
+          form_factor: 'narrow',
+          label: 'Écran d\'accueil avec scores en direct'
+        },
+        {
+          src: '/screenshots/schedule.png',
+          sizes: '1170x2532',
+          type: 'image/png',
+          form_factor: 'narrow',
+          label: 'Programme des compétitions'
+        },
+        {
+          src: '/screenshots/stream.png',
+          sizes: '1170x2532',
+          type: 'image/png',
+          form_factor: 'narrow',
+          label: 'Streaming en direct'
+        },
+        {
+          src: '/screenshots/results.png',
+          sizes: '1170x2532',
+          type: 'image/png',
+          form_factor: 'narrow',
+          label: 'Résultats et classements'
+        },
+        // Screenshots desktop (wide) - Pour l'interface enrichie sur PC
+        {
+          src: '/screenshots/home.png',
+          sizes: '1170x2532',
+          type: 'image/png',
+          form_factor: 'wide',
+          label: 'Écran d\'accueil avec scores en direct'
+        },
+        {
+          src: '/screenshots/schedule.png',
+          sizes: '1170x2532',
+          type: 'image/png',
+          form_factor: 'wide',
+          label: 'Programme des compétitions'
         }
       ]
     },
@@ -113,5 +179,5 @@ export default defineNuxtConfig({
     }
   },
 
-  devtools: { enabled: true }
+  devtools: { enabled: false }
 })

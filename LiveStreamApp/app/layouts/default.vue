@@ -14,6 +14,9 @@ interface NavItem {
 const route = useRoute()
 const notificationsStore = useNotificationsStore()
 
+// PWA Install
+const { isInstallAvailable, isStandalone, showInstallPrompt } = usePwaInstall()
+
 // Setup socket listeners for real-time notifications
 useNotificationSocket()
 
@@ -92,6 +95,18 @@ provide('openGroupDetails', openGroupDetails)
             <h1 class="text-white text-xl font-bold">{{ currentPageTitle }}</h1>
             
             <div class="flex items-center gap-2">
+              <!-- PWA Install Button - Visible only when installation is available -->
+              <Transition name="badge-pop">
+                <button 
+                  v-if="isInstallAvailable && !isStandalone"
+                  @click="showInstallPrompt(true)"
+                  class="p-2 hover:bg-white/10 rounded-lg transition-colors relative animate-pulse"
+                  aria-label="Installer l'application"
+                >
+                  <Icon name="fluent:arrow-download-24-regular" class="w-5 h-5 text-cyan-400" />
+                </button>
+              </Transition>
+              
               <button 
                 @click="openSearch"
                 class="p-2 hover:bg-white/10 rounded-lg transition-colors relative"
