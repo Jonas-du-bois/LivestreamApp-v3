@@ -180,6 +180,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <button
               @click="passage._id && toggleFavorite(passage._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              :aria-label="`Retirer ${passage.group?.name || 'ce groupe'} des favoris`"
             >
               <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />
             </button>
@@ -216,6 +217,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <button
               @click="passage._id && toggleFavorite(passage._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              :aria-label="`Retirer ${passage.group?.name || 'ce groupe'} des favoris`"
             >
               <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />
             </button>
