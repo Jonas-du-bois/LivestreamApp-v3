@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useNotificationsStore } from '#imports'
+import { useNotificationSocket } from '#imports'
+
 interface NavItem {
   id: string
   icon: string
@@ -9,6 +12,10 @@ interface NavItem {
 }
 
 const route = useRoute()
+const notificationsStore = useNotificationsStore()
+
+// Setup socket listeners for real-time notifications
+useNotificationSocket()
 
 const navItems: NavItem[] = [
   { id: 'home', icon: 'fluent:home-24-regular', iconFilled: 'fluent:home-24-filled', label: 'Accueil', to: '/' },
@@ -45,7 +52,10 @@ const isFilterOpen = ref(false)
 const isGroupDetailsOpen = ref(false)
 const selectedGroupId = ref('')
 const selectedApparatusCode = ref<string | undefined>(undefined)
-const hasUnreadNotifications = ref(true)
+
+// Notifications from store
+const hasUnreadNotifications = computed(() => notificationsStore.hasUnread)
+const unreadCount = computed(() => notificationsStore.unreadCount)
 
 const openSearch = () => {
   isSearchOpen.value = true
@@ -99,13 +109,18 @@ provide('openGroupDetails', openGroupDetails)
               
               <button 
                 @click="openNotifications"
-                class="p-2 hover:bg-white/10 rounded-lg transition-colors relative"
+                class="p-2 hover:bg-white/10 rounded-lg transition-colors relative group"
               >
                 <Icon name="fluent:alert-24-regular" class="w-5 h-5 text-white" />
-                <span 
-                  v-if="hasUnreadNotifications"
-                  class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" 
-                />
+                <!-- Badge with count -->
+                <Transition name="badge-pop">
+                  <span 
+                    v-if="hasUnreadNotifications"
+                    class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-red-500 rounded-full text-[10px] font-bold text-white shadow-lg shadow-red-500/30 animate-pulse"
+                  >
+                    {{ unreadCount > 99 ? '99+' : unreadCount }}
+                  </span>
+                </Transition>
               </button>
             </div>
           </div>
@@ -174,3 +189,37 @@ provide('openGroupDetails', openGroupDetails)
     />
   </div>
 </template>
+<style scoped>
+/* Badge pop animation */
+.badge-pop-enter-active {
+  animation: badge-pop-in 0.3s ease-out;
+}
+.badge-pop-leave-active {
+  animation: badge-pop-out 0.2s ease-in;
+}
+
+@keyframes badge-pop-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes badge-pop-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+</style>

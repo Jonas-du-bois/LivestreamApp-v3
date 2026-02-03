@@ -13,6 +13,17 @@ export default defineNuxtConfig({
   nitro: {
     rollupConfig: {
       external: ['@nuxt/nitro-server/dist/runtime/utils/cache-driver.js']
+    },
+    // Ignore socket.io routes in the router
+    routeRules: {
+      '/socket.io/**': { proxy: false }
+    }
+  },
+
+  // Ignore socket.io paths in Vue Router
+  router: {
+    options: {
+      strict: false
     }
   },
 

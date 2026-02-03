@@ -3,13 +3,81 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { AdminService } from '../../services/admin.service'
 import { PublicService } from '../../services/public.service'
 import type { PassageEnriched, Stream, PassageStatus } from '../../types/api'
+import type { NotificationType } from '../../types/notifications'
 import { useAdminAuth } from '../../composables/useAdminAuth'
 import { useSocket } from '../../composables/useSocket'
+import { useNotificationsStore } from '#imports'
 
 definePageMeta({ header: false, footer: false })
 
 const { token: adminToken, login, logout, loginError, isLoggingIn } = useAdminAuth()
+const notificationsStore = useNotificationsStore()
 const passwordInput = ref('')
+
+// Test notifications state
+const showTestNotificationMenu = ref(false)
+const isSendingNotification = ref(false)
+const notificationResult = ref<{ success: boolean; message: string } | null>(null)
+const notificationTypes: NotificationType[] = ['live', 'score', 'reminder', 'info', 'success', 'warning']
+
+/**
+ * Envoie UNE notification de test unifiée (in-app + navigateur)
+ */
+const sendTestNotification = async (type: NotificationType) => {
+  isSendingNotification.value = true
+  notificationResult.value = null
+  
+  try {
+    // Envoie la notification via le store (in-app + navigateur)
+    await notificationsStore.sendTestNotification(type)
+    
+    notificationResult.value = { 
+      success: true, 
+      message: `Notification "${type}" envoyée !`
+    }
+    
+    // Auto-hide result after 2s
+    setTimeout(() => {
+      notificationResult.value = null
+    }, 2000)
+  } catch (e: any) {
+    notificationResult.value = { 
+      success: false, 
+      message: e.message || 'Erreur lors de l\'envoi'
+    }
+  } finally {
+    isSendingNotification.value = false
+    showTestNotificationMenu.value = false
+  }
+}
+
+/**
+ * Envoie toutes les notifications de test une par une
+ */
+const sendAllTestNotifications = async () => {
+  showTestNotificationMenu.value = false
+  
+  for (let i = 0; i < notificationTypes.length; i++) {
+    await notificationsStore.sendTestNotification(notificationTypes[i])
+    // Petit délai entre chaque pour l'effet visuel
+    if (i < notificationTypes.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 500))
+    }
+  }
+}
+
+// Close dropdown when clicking outside
+const closeTestMenu = () => {
+  showTestNotificationMenu.value = false
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeTestMenu)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeTestMenu)
+})
 
 const isAuthenticated = computed(() => !!adminToken.value)
 
@@ -186,6 +254,81 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
         <h1 class="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
         <div class="flex items-center gap-4">
           <div class="flex gap-2">
+             <!-- Test Notifications Button with Dropdown -->
+             <div class="relative" @click.stop>
+               <button 
+                 @click="showTestNotificationMenu = !showTestNotificationMenu" 
+                 class="bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 px-4 py-2 rounded-lg transition-colors border border-purple-500/20 flex items-center gap-2"
+               >
+                 <Icon name="fluent:alert-24-regular" class="w-4 h-4" />
+                 Test Notif
+               </button>
+               
+               <!-- Dropdown Menu -->
+               <Transition name="dropdown">
+                 <div 
+                   v-if="showTestNotificationMenu" 
+                   class="absolute top-full right-0 mt-2 w-64 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50"
+                 >
+                   <div class="p-3">
+                     <p class="text-xs text-white/40 px-2 py-2 font-medium uppercase tracking-wider flex items-center gap-2">
+                       <Icon name="fluent:alert-24-regular" class="w-3 h-3" />
+                       Tester les notifications
+                     </p>
+                     <p class="text-xs text-white/30 px-2 mb-3">
+                       Envoie une notification (in-app + navigateur)
+                     </p>
+                     
+                     <div class="space-y-1">
+                       <button
+                         v-for="type in notificationTypes"
+                         :key="type"
+                         :disabled="isSendingNotification"
+                         @click="sendTestNotification(type)"
+                         class="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-white/80 hover:bg-white/10 rounded-lg transition-colors capitalize disabled:opacity-50"
+                       >
+                         <span 
+                           class="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                           :class="{
+                             'bg-cyan-400': type === 'info',
+                             'bg-emerald-400': type === 'success',
+                             'bg-amber-400': type === 'warning',
+                             'bg-red-400': type === 'live',
+                             'bg-purple-400': type === 'score',
+                             'bg-orange-400': type === 'reminder'
+                           }"
+                         />
+                         <span class="flex-1 text-left">{{ type }}</span>
+                         <Icon v-if="isSendingNotification" name="fluent:spinner-ios-20-regular" class="w-4 h-4 animate-spin" />
+                       </button>
+                     </div>
+                     
+                     <hr class="border-white/10 my-3" />
+                     
+                     <button
+                       :disabled="isSendingNotification"
+                       @click="sendAllTestNotifications"
+                       class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors font-medium disabled:opacity-50"
+                     >
+                       <Icon name="fluent:flash-24-regular" class="w-4 h-4" />
+                       Envoyer toutes (6)
+                     </button>
+                     
+                     <!-- Result feedback -->
+                     <Transition name="fade">
+                       <div 
+                         v-if="notificationResult" 
+                         class="mt-3 p-2 rounded-lg text-xs text-center"
+                         :class="notificationResult.success ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'"
+                       >
+                         {{ notificationResult.message }}
+                       </div>
+                     </Transition>
+                   </div>
+                 </div>
+               </Transition>
+             </div>
+             
              <button @click="handleReseed" class="bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 px-4 py-2 rounded-lg transition-colors border border-yellow-500/20">Reseed DB</button>
              <button @click="refreshAll" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">Refresh</button>
              <button @click="logout" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors">Logout</button>
@@ -432,5 +575,30 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
   100% {
     transform: translateX(100%);
   }
+}
+
+/* Dropdown animation */
+.dropdown-enter-active {
+  transition: all 0.2s ease-out;
+}
+.dropdown-leave-active {
+  transition: all 0.15s ease-in;
+}
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+}
+
+/* Fade animation */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

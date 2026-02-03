@@ -78,7 +78,7 @@ const goBack = () => {
 <template>
   <div class="h-screen w-full relative flex flex-col">
     <!-- Back button (top-left) -->
-    <div class="absolute top-4 left-4 z-[1000] p-2 pointer-events-auto">
+    <div class="absolute top-4 left-4 z-[1000] p-2 pointer-events-auto safe-area-inset-left safe-area-inset-top">
       <button @click="goBack" class="glass-panel p-2 rounded-lg flex items-center gap-2">
         <Icon name="fluent:chevron-left-24-regular" class="w-4 h-4 text-white" />
         <span class="text-white text-sm">Retour</span>
