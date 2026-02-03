@@ -19,6 +19,9 @@ export interface IPassage extends Document {
   status?: PassageStatus;
   monitors?: string[];
   history?: IPassageHistoryEntry[];
+  // Tracking pour éviter les notifications en double
+  notifiedAt15?: Date;  // Notification 15 min avant
+  notifiedAt3?: Date;   // Notification 3 min avant
 }
 
 const PassageSchema = new Schema<IPassage>(
@@ -39,6 +42,9 @@ const PassageSchema = new Schema<IPassage>(
       }], 
       default: [] 
     },
+    // Tracking pour éviter les notifications en double
+    notifiedAt15: { type: Date, default: null },
+    notifiedAt3: { type: Date, default: null },
   },
   { timestamps: true }
 );

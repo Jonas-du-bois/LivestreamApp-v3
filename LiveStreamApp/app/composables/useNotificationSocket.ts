@@ -1,5 +1,5 @@
 import { useSocket } from './useSocket'
-import { useNotificationsStore } from '#imports'
+import { useNotificationsStore, useFavoritesStore } from '#imports'
 
 interface StreamUpdatePayload {
   _id?: string
@@ -7,7 +7,11 @@ interface StreamUpdatePayload {
   location?: string
   url?: string
   isLive?: boolean
-  currentPassage?: any
+  currentPassage?: {
+    _id?: string
+    group?: { _id?: string; name?: string }
+    apparatus?: { _id?: string; name?: string; code?: string }
+  } | null
 }
 
 interface ScoreUpdatePayload {
@@ -21,53 +25,72 @@ interface ScoreUpdatePayload {
 }
 
 /**
- * Composable pour écouter les événements socket et créer des notifications in-app.
- * À utiliser dans le layout ou un composant de haut niveau.
+ * Composable pour écouter les événements socket et créer des notifications.
+ * 
+ * LOGIQUE DE NOTIFICATION :
+ * - Si l'utilisateur a un abonnement push actif : le serveur envoie déjà le push
+ *   → On ajoute seulement au store in-app (pas de notification navigateur pour éviter les doublons)
+ * - Si l'utilisateur n'a PAS d'abonnement push : le serveur n'envoie rien
+ *   → On ajoute au store in-app ET on affiche une notification navigateur
  */
 export const useNotificationSocket = () => {
   const socket = useSocket()
   const notificationsStore = useNotificationsStore()
+  const favoritesStore = useFavoritesStore()
   
-  // Track streams that were previously offline (persistent across re-renders)
-  const previousStreamStates = useState<Map<string, boolean>>('stream-states', () => new Map())
-  
-  // Track if listeners are already set up
   const isSetup = useState('notification-socket-setup', () => false)
+  
+  /**
+   * Vérifie si l'utilisateur a un abonnement push actif
+   * L'endpoint est stocké dans favoritesStore quand l'utilisateur s'abonne
+   */
+  const hasPushSubscription = computed(() => !!favoritesStore.endpoint)
   
   const handleStreamUpdate = (payload: StreamUpdatePayload) => {
     console.log('[NotificationSocket] stream-update received:', payload)
-    if (!payload._id) return
     
-    const wasLive = previousStreamStates.value.get(payload._id) ?? false
-    const isNowLive = payload.isLive ?? false
-    
-    // Notify when stream goes live
-    if (!wasLive && isNowLive && payload.name) {
-      console.log('[NotificationSocket] Stream went live, creating notification')
-      notificationsStore.notifyStreamOnline(
-        payload.name,
-        '/stream'
-      )
+    if (payload.currentPassage?._id) {
+      const passageId = payload.currentPassage._id
+      
+      // Ne notifier QUE si le passage est en favoris
+      if (favoritesStore.isFavorite(passageId)) {
+        const groupName = payload.currentPassage.group?.name || 'Groupe'
+        const apparatusName = payload.currentPassage.apparatus?.name || 'appareil'
+        
+        // Utilise notifyIfNeeded : ajoute au store + notification navigateur seulement si pas d'abonnement push
+        notificationsStore.notifyLive(
+          groupName,
+          apparatusName,
+          hasPushSubscription.value,
+          '/stream'
+        )
+      }
     }
-    
-    previousStreamStates.value.set(payload._id, isNowLive)
   }
 
   const handleScoreUpdate = (payload: ScoreUpdatePayload) => {
     console.log('[NotificationSocket] score-update received:', payload)
-    if (payload.score !== undefined && payload.groupName) {
-      notificationsStore.notifyScore(
-        payload.groupName,
-        payload.apparatusName || payload.apparatusCode,
-        payload.score,
-        '/results'
-      )
+    
+    // Ne créer une notification que si le passage est en favoris
+    if (payload.passageId && favoritesStore.isFavorite(payload.passageId)) {
+      if (payload.score !== undefined && payload.groupName) {
+        // Utilise notifyIfNeeded : ajoute au store + notification navigateur seulement si pas d'abonnement push
+        notificationsStore.notifyScore(
+          payload.groupName,
+          payload.apparatusName || payload.apparatusCode,
+          payload.score,
+          hasPushSubscription.value,
+          '/results'
+        )
+      }
+    } else {
+      console.log('[NotificationSocket] Score update ignored - passage not in favorites')
     }
   }
 
   const handleScheduleUpdate = () => {
     console.log('[NotificationSocket] schedule-update received')
-    // Schedule updates are handled by other components, we just log here
+    // Les mises à jour de schedule sont gérées par d'autres composants
   }
 
   const setupListeners = () => {
@@ -76,18 +99,16 @@ export const useNotificationSocket = () => {
       return
     }
     
-    // Join the notification rooms
     socket.emit('join-room', 'streams')
     socket.emit('join-room', 'live-scores')
     socket.emit('join-room', 'schedule-updates')
     
-    // Register event listeners
     socket.on('stream-update', handleStreamUpdate)
     socket.on('score-update', handleScoreUpdate)
     socket.on('schedule-update', handleScheduleUpdate)
     
     isSetup.value = true
-    console.log('[NotificationSocket] Listeners registered and rooms joined')
+    console.log('[NotificationSocket] Listeners registered, hasPushSubscription:', hasPushSubscription.value)
   }
 
   const cleanupListeners = () => {
@@ -95,7 +116,6 @@ export const useNotificationSocket = () => {
     socket.off('score-update', handleScoreUpdate)
     socket.off('schedule-update', handleScheduleUpdate)
     
-    // Leave rooms
     socket.emit('leave-room', 'streams')
     socket.emit('leave-room', 'live-scores')
     socket.emit('leave-room', 'schedule-updates')
@@ -104,10 +124,8 @@ export const useNotificationSocket = () => {
     console.log('[NotificationSocket] Listeners cleaned up')
   }
 
-  // Auto setup on mount (client-side only)
   if (import.meta.client) {
     onMounted(() => {
-      // Wait for socket to be connected
       if (socket.connected) {
         setupListeners()
       } else {
@@ -125,6 +143,7 @@ export const useNotificationSocket = () => {
 
   return {
     setupListeners,
-    cleanupListeners
+    cleanupListeners,
+    hasPushSubscription
   }
 }

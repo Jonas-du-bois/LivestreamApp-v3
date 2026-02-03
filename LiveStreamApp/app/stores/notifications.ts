@@ -23,19 +23,16 @@ export const useNotificationsStore = defineStore('notifications', {
   }),
 
   getters: {
-    // Toutes les notifications triées par date (plus récentes en premier)
     allNotifications(): AppNotification[] {
       return [...this.notifications].sort(
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       )
     },
 
-    // Nombre de non lues
     unreadCount(): number {
       return this.notifications.filter(n => !n.isRead).length
     },
 
-    // Y a-t-il des notifications non lues?
     hasUnread(): boolean {
       return this.notifications.some(n => !n.isRead)
     }
@@ -43,53 +40,104 @@ export const useNotificationsStore = defineStore('notifications', {
 
   actions: {
     /**
-     * Ajoute une notification au store ET déclenche une notification navigateur si possible
-     * C'est LA méthode unifiée pour toutes les notifications
+     * Ajoute une notification UNIQUEMENT au store in-app (pas de notification navigateur)
+     * Utilisé quand le serveur envoie déjà un push notification
      */
-    async notify(notification: Omit<AppNotification, 'id' | 'timestamp' | 'isRead'>) {
+    addToStore(notification: Omit<AppNotification, 'id' | 'timestamp' | 'isRead'>): AppNotification {
       const newNotification: AppNotification = {
         ...notification,
         id: crypto.randomUUID(),
         timestamp: new Date().toISOString(),
         isRead: false
       }
-
-      // 1. Ajouter au store (in-app)
       this.notifications = [newNotification, ...this.notifications.slice(0, 49)]
-
-      // 2. Déclencher la notification navigateur/OS (si permission accordée)
-      if (typeof window !== 'undefined' && 'Notification' in window) {
-        if (Notification.permission === 'granted') {
-          try {
-            // Utiliser le Service Worker si disponible (fonctionne même en arrière-plan)
-            const registration = await navigator.serviceWorker?.ready
-            if (registration) {
-              await registration.showNotification(notification.title, {
-                body: notification.message,
-                icon: '/icons/logo_livestreamappv3-192.png',
-                badge: '/icons/logo_livestreamappv3-192.png',
-                tag: newNotification.id, // Évite les doublons
-                data: { url: notification.url || '/' },
-                requireInteraction: notification.type === 'live' || notification.type === 'reminder'
-              })
-            } else {
-              // Fallback: notification directe (ne fonctionne qu'en premier plan)
-              new Notification(notification.title, {
-                body: notification.message,
-                icon: '/icons/logo_livestreamappv3-192.png',
-                tag: newNotification.id
-              })
-            }
-          } catch (e) {
-            console.warn('[Notifications] Failed to show browser notification:', e)
-          }
-        }
-      }
-
       return newNotification
     },
 
-    // Marquer une notification comme lue
+    /**
+     * Affiche une notification navigateur (sans l'ajouter au store)
+     * Utilisé pour les utilisateurs non-abonnés aux push
+     */
+    async showBrowserNotification(notification: { title: string; message: string; url?: string; type?: NotificationType }): Promise<boolean> {
+      if (typeof window === 'undefined' || !('Notification' in window)) {
+        return false
+      }
+      
+      if (Notification.permission !== 'granted') {
+        return false
+      }
+
+      try {
+        const tag = `notif-${Date.now()}`
+        const registration = await navigator.serviceWorker?.ready
+        
+        if (registration) {
+          await registration.showNotification(notification.title, {
+            body: notification.message,
+            icon: '/icons/logo_livestreamappv3-192.png',
+            badge: '/icons/logo_livestreamappv3-192.png',
+            tag,
+            data: { url: notification.url || '/' },
+            requireInteraction: notification.type === 'live' || notification.type === 'reminder'
+          })
+        } else {
+          new Notification(notification.title, {
+            body: notification.message,
+            icon: '/icons/logo_livestreamappv3-192.png',
+            tag
+          })
+        }
+        return true
+      } catch (e) {
+        console.warn('[Notifications] Failed to show browser notification:', e)
+        return false
+      }
+    },
+
+    /**
+     * Méthode unifiée : ajoute au store ET affiche notification navigateur
+     * Utilisé pour les tests admin ou quand on veut forcer les 2
+     */
+    async notify(notification: Omit<AppNotification, 'id' | 'timestamp' | 'isRead'>): Promise<AppNotification> {
+      const newNotification = this.addToStore(notification)
+      await this.showBrowserNotification({
+        title: notification.title,
+        message: notification.message,
+        url: notification.url,
+        type: notification.type
+      })
+      return newNotification
+    },
+
+    /**
+     * Méthode intelligente : ajoute au store + affiche notification navigateur SEULEMENT si pas d'abonnement push
+     * C'est LA méthode à utiliser pour les événements temps réel (socket)
+     * @param notification - Les données de la notification
+     * @param hasPushSubscription - true si l'utilisateur est abonné aux push (le serveur envoie déjà le push)
+     */
+    async notifyIfNeeded(
+      notification: Omit<AppNotification, 'id' | 'timestamp' | 'isRead'>,
+      hasPushSubscription: boolean
+    ): Promise<AppNotification> {
+      // Toujours ajouter au store in-app
+      const newNotification = this.addToStore(notification)
+      
+      // Afficher notification navigateur SEULEMENT si pas d'abonnement push
+      // (sinon le serveur l'a déjà envoyée via WebPush)
+      if (!hasPushSubscription) {
+        await this.showBrowserNotification({
+          title: notification.title,
+          message: notification.message,
+          url: notification.url,
+          type: notification.type
+        })
+      }
+      
+      return newNotification
+    },
+
+    // === Actions de gestion ===
+    
     markAsRead(notificationId: string) {
       const idx = this.notifications.findIndex(n => n.id === notificationId)
       if (idx !== -1 && this.notifications[idx]) {
@@ -97,69 +145,65 @@ export const useNotificationsStore = defineStore('notifications', {
       }
     },
 
-    // Marquer toutes comme lues
     markAllAsRead() {
       this.notifications = this.notifications.map(n => ({ ...n, isRead: true }))
     },
 
-    // Supprimer une notification
     removeNotification(notificationId: string) {
       this.notifications = this.notifications.filter(n => n.id !== notificationId)
     },
 
-    // Vider toutes les notifications
     clearAll() {
       this.notifications = []
     },
 
-    // Vider uniquement les notifications lues
     clearRead() {
       this.notifications = this.notifications.filter(n => !n.isRead)
     },
 
-    // === HELPERS pour différents types de notifications ===
+    // === HELPERS pour différents types (utilisent notifyIfNeeded) ===
     
-    notifyLive(groupName: string, apparatusName: string, url?: string) {
-      return this.notify({
+    notifyLive(groupName: string, apparatusName: string, hasPushSubscription: boolean, url?: string) {
+      return this.notifyIfNeeded({
         title: '🔴 En direct !',
         message: `${groupName} passe au ${apparatusName}`,
         type: 'live',
         icon: 'fluent:live-24-filled',
         url
-      })
+      }, hasPushSubscription)
     },
 
-    notifyScore(groupName: string, apparatusName: string, score: number, url?: string) {
-      return this.notify({
+    notifyScore(groupName: string, apparatusName: string, score: number, hasPushSubscription: boolean, url?: string) {
+      return this.notifyIfNeeded({
         title: '🏆 Résultat disponible',
         message: `${groupName} - ${apparatusName}: ${score.toFixed(2)}`,
         type: 'score',
         icon: 'fluent:trophy-24-regular',
         url
-      })
+      }, hasPushSubscription)
     },
 
-    notifyReminder(groupName: string, apparatusName: string, minutesUntil: number, url?: string) {
-      return this.notify({
+    notifyReminder(groupName: string, apparatusName: string, minutesUntil: number, hasPushSubscription: boolean, url?: string) {
+      return this.notifyIfNeeded({
         title: '⏰ Passage imminent',
         message: `${groupName} passe au ${apparatusName} dans ${minutesUntil} min`,
         type: 'reminder',
         icon: 'fluent:clock-alarm-24-regular',
         url
-      })
+      }, hasPushSubscription)
     },
 
-    notifyStreamOnline(streamName: string, url?: string) {
-      return this.notify({
+    notifyStreamOnline(streamName: string, hasPushSubscription: boolean, url?: string) {
+      return this.notifyIfNeeded({
         title: '📺 Nouveau direct',
         message: `${streamName} est maintenant en ligne`,
         type: 'info',
         icon: 'fluent:video-24-regular',
         url
-      })
+      }, hasPushSubscription)
     },
 
-    // Pour les tests depuis l'admin - envoie UNE notification (in-app + navigateur)
+    // Pour les tests admin - force les 2 (in-app + navigateur)
     sendTestNotification(type: NotificationType = 'info') {
       const msg = DEFAULT_MESSAGES[type]
       return this.notify({
@@ -173,9 +217,8 @@ export const useNotificationsStore = defineStore('notifications', {
   },
 
   persist: {
-    // Configuration plus précise de la persistance
     key: 'app-notifications',
     storage: typeof window !== 'undefined' ? localStorage : undefined,
-    pick: ['notifications'] // Ne persister que les notifications
+    pick: ['notifications']
   }
 })

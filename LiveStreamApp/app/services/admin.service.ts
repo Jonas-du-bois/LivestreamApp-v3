@@ -34,20 +34,5 @@ export const AdminService = {
     return apiClient<{ success: boolean; summary: any }>('/admin/seed', {
       method: 'POST'
     })
-  },
-
-  // Test push notifications
-  sendTestPush(payload: { type?: string; title?: string; message?: string; url?: string }) {
-    return apiClient<{ 
-      success: boolean
-      message: string
-      sent: number
-      failed: number
-      total: number
-      errors?: string[]
-    }>('/admin/test-push', {
-      method: 'POST',
-      body: payload
-    })
   }
 }

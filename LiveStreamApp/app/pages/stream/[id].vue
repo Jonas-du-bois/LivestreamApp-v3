@@ -169,14 +169,40 @@ watch(streamUrl, (url) => {
 })
 
 // Refresh data on any real-time event
-const handleRefresh = async () => {
-  console.log('[stream/id] 🔄 Handling refresh event...')
+const handleRefresh = async (payload?: any) => {
+  console.log('[stream/id] 🔄 Handling refresh event...', payload)
   try {
     await fetchAll()
     console.log('[stream/id] ✅ Data refreshed, currentGroup:', currentGroup.value?.name, 'currentApparatus:', currentApparatus.value?.name)
   } catch (err) {
     console.error('[stream/id] ❌ Error refreshing data:', err)
   }
+}
+
+// Handle stream-update with direct payload update
+const handleStreamUpdate = (payload: any) => {
+  console.log('[stream/id] 📺 Stream update received:', payload)
+  
+  // Si le payload contient les données du stream actuel, les utiliser directement
+  if (payload && payload._id === route.params.id && stream.value) {
+    // Mise à jour directe depuis le payload
+    if (payload.currentPassage !== undefined) {
+      stream.value = {
+        ...stream.value,
+        currentPassage: payload.currentPassage
+      }
+      console.log('[stream/id] ✅ Direct update from payload')
+      
+      // Fetch group details if needed
+      if (payload.currentPassage?.group?._id) {
+        fetchGroupDetails(payload.currentPassage.group._id)
+      }
+      return
+    }
+  }
+  
+  // Fallback: refresh depuis l'API
+  handleRefresh(payload)
 }
 
 // Cleanup player timeout on unmount
@@ -188,7 +214,7 @@ onBeforeUnmount(() => {
 const streamRoom = `stream-${route.params.id}`
 
 useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
-  { event: 'stream-update', handler: handleRefresh },
+  { event: 'stream-update', handler: handleStreamUpdate },
   { event: 'status-update', handler: handleRefresh },
   { event: 'schedule-update', handler: handleRefresh }
 ])

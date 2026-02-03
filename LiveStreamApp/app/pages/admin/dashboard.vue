@@ -36,18 +36,19 @@ const sendTestNotification = async (type: NotificationType) => {
       message: `Notification "${type}" envoyée !`
     }
     
-    // Auto-hide result after 2s
+    // Auto-hide result and close menu after delay
     setTimeout(() => {
       notificationResult.value = null
-    }, 2000)
+      showTestNotificationMenu.value = false
+    }, 1500)
   } catch (e: any) {
+    console.error('[Dashboard] Test notification error:', e)
     notificationResult.value = { 
       success: false, 
       message: e.message || 'Erreur lors de l\'envoi'
     }
   } finally {
     isSendingNotification.value = false
-    showTestNotificationMenu.value = false
   }
 }
 
@@ -503,7 +504,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
               <div class="text-xs text-cyan-400 font-bold uppercase">{{ passage.startTime }} - {{ passage.endTime }}</div>
               <div class="font-bold text-lg leading-tight mb-1">{{ passage.group.name }}</div>
               <div class="text-sm text-white/60 flex items-center gap-2">
-                <Icon :name="passage.apparatus.icon" class="w-4 h-4" />
+                <Icon :name="passage.apparatus.icon || 'fluent:sport-24-regular'" class="w-4 h-4" />
                 {{ passage.apparatus.name }}
               </div>
             </div>

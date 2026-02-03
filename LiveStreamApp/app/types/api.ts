@@ -71,6 +71,8 @@ export interface ScheduleResponse {
   meta: {
     availableApparatus: string[];
     availableDays: string[];
+    availableCategories?: string[];
+    availableLocations?: string[];
   };
   data: PassageEnriched[];
 }

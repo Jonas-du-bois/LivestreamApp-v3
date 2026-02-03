@@ -33,16 +33,15 @@ export default defineNitroPlugin((nitroApp) => {
 
       // --- 1. STATUS UPDATE LOGIC (AUTO-PILOT) ---
       let scheduleChanged = false;
+      const updatedStreams: any[] = [];
 
       // A. Promote SCHEDULED -> LIVE (if startTime is reached/passed)
-      // First get the passages that will be promoted so we can update streams
       const passagesToGoLive = await PassageModel.find({
         status: 'SCHEDULED',
         startTime: { $lte: now }
-      });
+      }).populate('group').populate('apparatus');
 
       if (passagesToGoLive.length > 0) {
-        // Update passages to LIVE
         await PassageModel.updateMany(
           { _id: { $in: passagesToGoLive.map(p => p._id) } },
           { $set: { status: 'LIVE' } }
@@ -53,10 +52,18 @@ export default defineNitroPlugin((nitroApp) => {
         // Update corresponding streams' currentPassage
         for (const passage of passagesToGoLive) {
           if (passage.location) {
-            await StreamModel.findOneAndUpdate(
+            const stream = await StreamModel.findOneAndUpdate(
               { location: passage.location },
-              { currentPassage: passage._id }
-            );
+              { currentPassage: passage._id },
+              { new: true }
+            ).populate({
+              path: 'currentPassage',
+              populate: [{ path: 'group' }, { path: 'apparatus' }]
+            });
+            
+            if (stream) {
+              updatedStreams.push(stream);
+            }
             console.log(`[Scheduler] Updated stream for location ${passage.location} with passage ${passage._id}`);
           }
         }
@@ -76,10 +83,8 @@ export default defineNitroPlugin((nitroApp) => {
         console.log(`[Scheduler] Promoted ${passagesToFinish.length} passages to FINISHED`);
         scheduleChanged = true;
 
-        // Clear currentPassage on streams if no other LIVE passage exists for that location
         for (const passage of passagesToFinish) {
           if (passage.location) {
-            // Check if there's another LIVE passage for this location
             const anotherLive = await PassageModel.findOne({
               location: passage.location,
               status: 'LIVE',
@@ -87,84 +92,143 @@ export default defineNitroPlugin((nitroApp) => {
             });
             
             if (!anotherLive) {
-              // No other live passage, clear the currentPassage
-              await StreamModel.findOneAndUpdate(
+              const stream = await StreamModel.findOneAndUpdate(
                 { location: passage.location },
-                { currentPassage: null }
+                { currentPassage: null },
+                { new: true }
               );
+              if (stream) {
+                updatedStreams.push(stream);
+              }
               console.log(`[Scheduler] Cleared currentPassage for location ${passage.location}`);
             }
           }
         }
       }
 
-      // Emit event if schedule changed
+      // Emit events with full payload if schedule changed
       if (scheduleChanged) {
         const io = (globalThis as any).io;
         if (io) {
-            io.to('schedule-updates').emit('schedule-update');
-            io.to('streams').emit('stream-update');
-            console.log('[Scheduler] Emitted schedule-update and stream-update to rooms');
-        } else {
-            console.warn('[Scheduler] Schedule changed but Socket.io not initialized yet');
+          io.to('schedule-updates').emit('schedule-update');
+          
+          // Emit stream-update with full payload for each updated stream
+          for (const stream of updatedStreams) {
+            io.to('streams').emit('stream-update', {
+              _id: stream._id?.toString(),
+              name: stream.name,
+              location: stream.location,
+              url: stream.url,
+              isLive: stream.isLive,
+              currentPassage: stream.currentPassage ? {
+                _id: stream.currentPassage._id?.toString(),
+                group: stream.currentPassage.group ? {
+                  _id: stream.currentPassage.group._id?.toString(),
+                  name: stream.currentPassage.group.name
+                } : null,
+                apparatus: stream.currentPassage.apparatus ? {
+                  _id: stream.currentPassage.apparatus._id?.toString(),
+                  name: stream.currentPassage.apparatus.name,
+                  code: stream.currentPassage.apparatus.code
+                } : null
+              } : null
+            });
+          }
+          
+          // Also emit a generic stream-update if no specific streams were updated
+          if (updatedStreams.length === 0) {
+            io.to('streams').emit('stream-update', {});
+          }
+          
+          console.log('[Scheduler] Emitted schedule-update and stream-update to rooms');
         }
       }
-
 
       // --- 2. NOTIFICATIONS LOGIC (only if webPush is enabled) ---
       if (!webPushEnabled) return;
       
-      // Look for passages starting in ~15 minutes (between 14.5 and 15.5 mins from now)
-      const startWindow = new Date(now.getTime() + 14.5 * 60000);
-      const endWindow = new Date(now.getTime() + 15.5 * 60000);
-
-      const passages = await PassageModel.find({
-        startTime: { $gte: startWindow, $lte: endWindow }
-      }).populate('group').populate('apparatus');
-
-      if (passages.length === 0) return;
-
-      console.log(`[Scheduler] Found ${passages.length} passages starting soon.`);
-
-      for (const passage of passages) {
-        const group = passage.group as any;
-        const apparatus = passage.apparatus as any;
-        if (!group) continue;
-
-        // Find subscribers who favorited this SPECIFIC PASSAGE
-        const subscriptions = await SubscriptionModel.find({
-          favorites: passage._id.toString()
-        });
-
-        if (subscriptions.length === 0) continue;
-
-        const payload = JSON.stringify({
-          title: 'Passage imminent !',
-          body: `${group.name} va passer au ${apparatus?.name || 'sol'} dans 15 minutes !`,
-          icon: '/icons/logo_livestreamappv3-192.png',
-          url: '/schedule'
-        });
-
-        const notifications = subscriptions.map(sub => {
-          // webPush.sendNotification expects { endpoint, keys: { p256dh, auth } }
-          // sub.keys in DB matches this structure
-          return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload)
-            .catch(err => {
-              if (err.statusCode === 410 || err.statusCode === 404) {
-                // Subscription expired
-                console.log(`[Scheduler] Removing expired subscription ${sub._id}`);
-                return SubscriptionModel.findByIdAndDelete(sub._id);
-              }
-              console.error('[Scheduler] Error sending push:', err);
-            });
-        });
-
-        await Promise.all(notifications);
-        console.log(`[Scheduler] Sent ${subscriptions.length} notifications for ${group.name}`);
-      }
+      // === NOTIFICATION 15 MINUTES AVANT ===
+      await sendReminderNotifications(now, 15, 'notifiedAt15');
+      
+      // === NOTIFICATION 3 MINUTES AVANT ===
+      await sendReminderNotifications(now, 3, 'notifiedAt3');
 
     } catch (err) {
       console.error('[Scheduler] Error in job:', err);
     }
-  }, 30000); // Check every 30s for better precision
+  }, 30000); // Check every 30s
+
+  /**
+   * Envoie des notifications de rappel pour les passages à X minutes
+   * Utilise un champ de tracking pour éviter les doublons
+   */
+  async function sendReminderNotifications(
+    now: Date, 
+    minutesBefore: number, 
+    trackingField: 'notifiedAt15' | 'notifiedAt3'
+  ) {
+    // Fenêtre de recherche: X minutes ± 30 secondes
+    const windowStart = new Date(now.getTime() + (minutesBefore - 0.5) * 60000);
+    const windowEnd = new Date(now.getTime() + (minutesBefore + 0.5) * 60000);
+
+    // Trouver les passages dans la fenêtre qui n'ont PAS encore été notifiés
+    const query: any = {
+      startTime: { $gte: windowStart, $lte: windowEnd },
+      [trackingField]: null // Pas encore notifié
+    };
+
+    const passages = await PassageModel.find(query)
+      .populate('group')
+      .populate('apparatus');
+
+    if (passages.length === 0) return;
+
+    console.log(`[Scheduler] Found ${passages.length} passages for ${minutesBefore}min reminder`);
+
+    for (const passage of passages) {
+      const group = passage.group as any;
+      const apparatus = passage.apparatus as any;
+      if (!group) continue;
+
+      // Trouver les abonnés qui ont ce passage en favoris
+      const subscriptions = await SubscriptionModel.find({
+        favorites: passage._id.toString()
+      });
+
+      if (subscriptions.length === 0) {
+        // Même sans abonnés, marquer comme notifié pour éviter de le retraiter
+        await PassageModel.findByIdAndUpdate(passage._id, {
+          $set: { [trackingField]: now }
+        });
+        continue;
+      }
+
+      const payload = JSON.stringify({
+        title: minutesBefore === 3 ? '⏰ Passage imminent !' : '📣 Passage bientôt',
+        body: `${group.name} passe au ${apparatus?.name || 'sol'} dans ${minutesBefore} minutes !`,
+        icon: '/icons/logo_livestreamappv3-192.png',
+        url: '/schedule'
+      });
+
+      const notifications = subscriptions.map(sub => {
+        return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload)
+          .catch(err => {
+            if (err.statusCode === 410 || err.statusCode === 404) {
+              console.log(`[Scheduler] Removing expired subscription ${sub._id}`);
+              return SubscriptionModel.findByIdAndDelete(sub._id);
+            }
+            console.error('[Scheduler] Error sending push:', err);
+          });
+      });
+
+      await Promise.all(notifications);
+      
+      // Marquer le passage comme notifié pour éviter les doublons
+      await PassageModel.findByIdAndUpdate(passage._id, {
+        $set: { [trackingField]: now }
+      });
+      
+      console.log(`[Scheduler] Sent ${subscriptions.length} notifications (${minutesBefore}min) for ${group.name}`);
+    }
+  }
 });
