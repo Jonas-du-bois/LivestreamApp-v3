@@ -153,22 +153,12 @@ const historyByYear = computed(() => {
           <h3 class="text-white font-bold">Historique des notes</h3>
         </div>
         <div class="glass-card p-4">
-          <div class="space-y-2">
-            <div
-              v-for="data in historyByYear"
-              :key="data.year"
-              class="flex items-center gap-4"
-            >
-              <span class="text-white/60 text-sm w-12">{{ data.year }}</span>
-              <div class="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  class="h-full gradient-cyan-purple rounded-full"
-                  :style="{ width: `${(data.score / 10) * 100}%` }"
-                />
-              </div>
-              <span class="text-cyan-400 font-bold text-sm w-10">{{ typeof data.score === 'number' ? data.score.toFixed(2) : '0.00' }}</span>
-            </div>
-          </div>
+          <!-- Chart.js Line Chart (compact mode) -->
+          <ChartsHistoryLineChart
+            :data="historyByYear"
+            :height="150"
+            :compact="true"
+          />
         </div>
       </div>
     </div>

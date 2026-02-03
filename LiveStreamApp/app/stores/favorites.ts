@@ -53,6 +53,61 @@ export const useFavoritesStore = defineStore('favorites', {
 
       await this.sync();
     },
+    async toggleGroupFavorites(passageIds: string[]) {
+      // Check if all passages are already favorited
+      const allFavorited = passageIds.every(id => this.favorites.includes(id));
+      
+      if (allFavorited) {
+        // Remove all
+        this.favorites = this.favorites.filter(id => !passageIds.includes(id));
+      } else {
+        // Add all that aren't already favorited
+        passageIds.forEach(id => {
+          if (!this.favorites.includes(id)) {
+            this.favorites.push(id);
+          }
+        });
+
+        // --- NOTIFICATION LOGIC (First Like) ---
+        if (!this.endpoint && typeof Notification !== 'undefined' && Notification.permission !== 'denied') {
+          try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+              const config = useRuntimeConfig();
+              const vapidKey = config.public.vapidPublicKey;
+
+              if (vapidKey) {
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: urlBase64ToUint8Array(vapidKey)
+                });
+
+                const subJson = subscription.toJSON();
+                if (subJson.endpoint && subJson.keys && subJson.keys.p256dh && subJson.keys.auth) {
+                  await NotificationService.subscribe({
+                    endpoint: subJson.endpoint,
+                    keys: {
+                      p256dh: subJson.keys.p256dh,
+                      auth: subJson.keys.auth
+                    }
+                  }, this.favorites);
+
+                  this.endpoint = subJson.endpoint;
+                }
+              }
+            }
+          } catch (err) {
+            console.error('[Favorites] Subscription failed:', err);
+          }
+        }
+      }
+
+      await this.sync();
+    },
+    areAllGroupPassagesFavorited(passageIds: string[]): boolean {
+      return passageIds.length > 0 && passageIds.every(id => this.favorites.includes(id));
+    },
     isFavorite(passageId: string): boolean {
       return this.favorites.includes(passageId);
     },

@@ -76,17 +76,23 @@ export default defineEventHandler(async (event) => {
 
     const groupDocs = Array.from(uniqueGroups).map(name => {
         // Extrait le canton/ville à partir du nom (partie avant le ":")
-        const canton = name.includes(':') ? (name.split(':')[0]?.trim() ?? name) : name;
+        const canton = name.includes(':') ? name.split(':')[0]?.trim() : undefined;
         
         // Génère un nombre de gymnastes réaliste (6 à 16)
         const gymnastsCount = Math.floor(Math.random() * 11) + 6;
         
-        return {
+        const doc: any = {
             name,
-            canton,
             category: name.toLowerCase().includes("mixte") ? 'MIXTE' : 'ACTIVE',
             gymnastsCount
         };
+        
+        // N'ajoute le canton que s'il existe
+        if (canton) {
+            doc.canton = canton;
+        }
+        
+        return doc;
     });
 
     const insertedGroups = await GroupModel.insertMany(groupDocs);

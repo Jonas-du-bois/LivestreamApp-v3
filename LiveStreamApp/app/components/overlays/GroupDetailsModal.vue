@@ -6,6 +6,7 @@ const detailsCache = new Map<string, any>()
 <script setup lang="ts">
 import { PublicService } from '../../services/public.service'
 import { useSocket } from '../../composables/useSocket'
+import { useFavoritesStore } from '../../stores/favorites'
 import type { PassageEnriched, HistoryEntry } from '../../types/api'
 
 interface Props {
@@ -21,10 +22,10 @@ const emit = defineEmits<{
 }>()
 
 const socket = useSocket()
+const favoritesStore = useFavoritesStore()
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 const details = ref<any>(null)
-const isFavorite = ref(false)
 const activeTab = ref<'timeline' | 'stats'>('timeline')
 
 const fetchData = async () => {
@@ -105,8 +106,21 @@ onUnmounted(() => {
 
 const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-const toggleFavorite = () => {
-  isFavorite.value = !isFavorite.value
+// Get all passage IDs from the same group and category
+const groupPassageIds = computed(() => {
+  if (!details.value?.timeline) return []
+  return details.value.timeline.map((p: any) => p._id).filter(Boolean)
+})
+
+// Check if all group passages are favorited
+const isFavorite = computed(() => {
+  return favoritesStore.areAllGroupPassagesFavorited(groupPassageIds.value)
+})
+
+const toggleFavorite = async () => {
+  if (groupPassageIds.value.length > 0) {
+    await favoritesStore.toggleGroupFavorites(groupPassageIds.value)
+  }
 }
 
 const getInitials = (name: string) => {
@@ -464,143 +478,19 @@ const maxHistoryScore = computed(() => {
                     <h3 class="text-white font-bold">Historique des performances</h3>
                   </div>
                   <div class="glass-card p-5 bg-white/5">
-                    <!-- Chart Container -->
-                    <div class="relative h-48 mb-4">
-                      <!-- Y-axis labels -->
-                      <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-white/40 pr-2">
-                        <span>10.0</span>
-                        <span>7.5</span>
-                        <span>5.0</span>
-                        <span>2.5</span>
-                        <span>0.0</span>
-                      </div>
-
-                      <!-- Chart area -->
-                      <div class="ml-8 h-full relative">
-                        <!-- Grid lines -->
-                        <div class="absolute inset-0 flex flex-col justify-between">
-                          <div class="border-t border-white/5"></div>
-                          <div class="border-t border-white/5"></div>
-                          <div class="border-t border-white/5"></div>
-                          <div class="border-t border-white/5"></div>
-                          <div class="border-t border-white/10"></div>
-                        </div>
-
-                        <!-- SVG Line Chart -->
-                        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                          <!-- Define gradient for the line -->
-                          <defs>
-                            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:1" />
-                              <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
-                            </linearGradient>
-                            <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                              <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:0.2" />
-                              <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.05" />
-                            </linearGradient>
-                          </defs>
-
-                          <!-- Area under the curve -->
-                          <path
-                            v-if="historyByYear.length > 0"
-                            :d="`M 0,100 ${historyByYear.map((d, i) => {
-                              const x = (i / Math.max(historyByYear.length - 1, 1)) * 100
-                              const y = 100 - (d.score / 10 * 100)
-                              return `L ${x},${y}`
-                            }).join(' ')} L 100,100 Z`"
-                            fill="url(#areaGradient)"
-                          />
-
-                          <!-- Line -->
-                          <polyline
-                            v-if="historyByYear.length > 0"
-                            :points="historyByYear.map((d, i) => {
-                              const x = (i / Math.max(historyByYear.length - 1, 1)) * 100
-                              const y = 100 - (d.score / 10 * 100)
-                              return `${x},${y}`
-                            }).join(' ')"
-                            fill="none"
-                            stroke="url(#lineGradient)"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            vector-effect="non-scaling-stroke"
-                          />
-
-                          <!-- Data points -->
-                          <circle
-                            v-for="(data, index) in historyByYear"
-                            :key="data.year"
-                            :cx="(index / Math.max(historyByYear.length - 1, 1)) * 100"
-                            :cy="100 - (data.score / 10 * 100)"
-                            r="2"
-                            fill="#0B1120"
-                            stroke="url(#lineGradient)"
-                            stroke-width="1.5"
-                            vector-effect="non-scaling-stroke"
-                            class="cursor-pointer"
-                          >
-                            <title>{{ data.year }}: {{ data.score.toFixed(2) }}</title>
-                          </circle>
-                        </svg>
-                      </div>
-                    </div>
-
-                    <!-- X-axis labels (years) -->
-                    <div class="ml-8 flex justify-between text-xs text-white/60 font-semibold">
-                      <span v-for="data in historyByYear" :key="data.year">
-                        {{ data.year }}
-                      </span>
-                    </div>
-
-                    <!-- Stats summary -->
-                    <div class="mt-4 pt-4 border-t border-white/10 grid grid-cols-3 gap-3 text-center">
-                      <div>
-                        <div class="text-xs text-white/40 mb-1">Meilleur</div>
-                        <div class="text-cyan-400 font-bold">
-                          {{ maxHistoryScore }}
-                        </div>
-                      </div>
-                      <div>
-                        <div class="text-xs text-white/40 mb-1">Moyenne</div>
-                        <div class="text-white font-bold">
-                          {{ averageHistoryScore }}
-                        </div>
-                      </div>
-                      <div>
-                        <div class="text-xs text-white/40 mb-1">Évolution</div>
-                        <div 
-                          :class="[
-                            'font-bold flex items-center justify-center gap-1',
-                            historyTrend === 'up' ? 'text-green-400' 
-                              : historyTrend === 'down' ? 'text-red-400'
-                                : 'text-white/60'
-                          ]"
-                        >
-                          <Icon 
-                            v-if="historyTrend === 'up'"
-                            name="fluent:arrow-trending-up-24-filled" 
-                            class="w-4 h-4" 
-                          />
-                          <Icon 
-                            v-else-if="historyTrend === 'down'"
-                            name="fluent:arrow-trending-down-24-filled" 
-                            class="w-4 h-4" 
-                          />
-                          <Icon 
-                            v-else
-                            name="fluent:arrow-right-24-filled" 
-                            class="w-4 h-4" 
-                          />
-                          {{ historyEvolutionValue }}
-                        </div>
-                      </div>
-                    </div>
+                    <!-- Chart.js Line Chart -->
+                    <ChartsHistoryLineChart
+                      :data="historyByYear"
+                      :height="200"
+                    />
                   </div>
                 </div>
               </div>
             </div>
-
+  <p v-if="groupPassageIds.length > 0" class="text-white/50 text-xs text-center mt-2">
+                {{ groupPassageIds.length }} passage{{ groupPassageIds.length > 1 ? 's' : '' }} dans ce groupe
+              </p>
+            
             <!-- Footer Action -->
             <div class="p-6 border-t border-white/10 flex-shrink-0 bg-[#0B1120]/50 backdrop-blur-xl">
               <button
