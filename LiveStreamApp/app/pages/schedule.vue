@@ -168,6 +168,7 @@ useSocketRoom('schedule-updates', [
             <button 
               @click="item._id && toggleFavorite(item._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              :aria-label="(item._id && isFavorite(item._id)) ? `Retirer ${item.group?.name || 'ce groupe'} des favoris` : `Ajouter ${item.group?.name || 'ce groupe'} aux favoris`"
             >
               <Icon 
                 :name="(item._id && isFavorite(item._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
