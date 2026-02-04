@@ -6,7 +6,9 @@ import StreamModel from '../../models/Stream';
 const schema = z.object({
   streamId: z.string(),
   type: z.string().optional(),
-  url: z.string().optional(),
+  // Security: Prevent Stored XSS by strictly validating URL scheme (http/https only)
+  // This blocks javascript: and data: URIs which could be exploited in iframes or links.
+  url: z.string().url().startsWith('http').or(z.literal('')).optional(),
   isLive: z.boolean().optional(),
   currentPassageId: z.string().nullable().optional(),
 });
