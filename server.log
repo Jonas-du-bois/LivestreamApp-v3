@@ -1,0 +1,212 @@
+
+> dev
+> nuxt dev
+
+│
+●  Nuxt 4.3.0 (with Nitro 2.13.1, Vite 7.3.1 and Vue 3.5.27)
+
+  ➜ Local:    http://localhost:3000/
+  ➜ Network:  use --host to expose
+
+[nuxt:tailwindcss] ℹ Using default Tailwind CSS file
+[nuxt:tailwindcss] ℹ Tailwind Viewer: http://localhost:3000/_tailwind/
+✔ Vite client built in 77ms
+✔ Vite server built in 100ms
+[nitro] ✔ Nuxt Nitro server built in 2095ms
+ℹ Vite server warmed up in 1ms
+ℹ Vite client warmed up in 13ms
+[db] Connecting to MongoDB (masked): mongodb+sr...
+WARN  [Scheduler] WebPush init failed (invalid keys) - Notifications disabled Vapid private key must be a URL safe Base 64 (without "=")
+
+    at Object.validatePrivateKey (node_modules/web-push/src/vapid-helper.js:126:11)
+    at WebPushLib.setVapidDetails (node_modules/web-push/src/web-push-lib.js:61:17)
+    at .nuxt/dev/index.mjs:2503:15
+    at runNitroPlugins (.nuxt/dev/index.mjs:3549:7)
+    at .nuxt/dev/index.mjs:3560:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+[Scheduler] Starting scheduler for status updates...
+ERROR  [db] Connection error: bad auth : authentication failed
+
+    at Connection.sendCommand (node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (node_modules/mongodb/lib/cmap/connect.js:24:9)
+ERROR  [db] mongoose connection error bad auth : authentication failed
+
+    at Connection.sendCommand (node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (node_modules/mongodb/lib/cmap/connect.js:24:9)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+✅ [Socket.io] Serveur initialisé avec succès
+ERROR  [live] Error fetching live data Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  API Error: 500 { error: true,
+  url: 'http://localhost:3000/api/live',
+  statusCode: 500,
+  statusMessage: 'Failed to fetch live data',
+  message: 'Failed to fetch live data',
+  stack:
+   [ 'Failed to fetch live data',
+     'at createError (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:71:15)',
+     'at Object.handler (/app/LiveStreamApp/server/api/live.get.ts:36:0)',
+     'at async file:///app/LiveStreamApp/node_modules/h3/dist/index.mjs:2011:19)',
+     'at async Object.callAsync (/app/LiveStreamApp/node_modules/unctx/dist/index.mjs:72:16)',
+     'at async toNodeHandle (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:2303:7)',
+     'at async b (/app/LiveStreamApp/node_modules/node-mock-http/dist/index.mjs:1:6876)',
+     'at async C (/app/LiveStreamApp/node_modules/node-mock-http/dist/index.mjs:1:7159)',
+     'at async $fetchRaw2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:274:26)',
+     'at async $fetch2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:332:15)',
+     'at async setup (/app/LiveStreamApp/app/pages/index.vue:29:183)' ] }
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [live] Error fetching live data Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  API Error: 500 { error: true,
+  url: 'http://localhost:3000/api/live',
+  statusCode: 500,
+  statusMessage: 'Failed to fetch live data',
+  message: 'Failed to fetch live data',
+  stack:
+   [ 'Failed to fetch live data',
+     'at createError (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:71:15)',
+     'at Object.handler (/app/LiveStreamApp/server/api/live.get.ts:36:0)',
+     'at async file:///app/LiveStreamApp/node_modules/h3/dist/index.mjs:2011:19)',
+     'at async Object.callAsync (/app/LiveStreamApp/node_modules/unctx/dist/index.mjs:72:16)',
+     'at async toNodeHandle (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:2303:7)',
+     'at async b (/app/LiveStreamApp/node_modules/node-mock-http/dist/index.mjs:1:6876)',
+     'at async C (/app/LiveStreamApp/node_modules/node-mock-http/dist/index.mjs:1:7159)',
+     'at async $fetchRaw2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:274:26)',
+     'at async $fetchRaw2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:327:14)',
+     'at async $fetch2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:332:15)' ] }
+[weather] Fetching https://api.open-meteo.com/v1/forecast?latitude=46.7785&longitude=6.6412&current_weather=true&temperature_unit=celsius
+[useSocketRoom] Initializing with rooms: schedule-updates
+ℹ ✨ new dependencies optimized: workbox-window
+📡 API Params: { day: '', apparatus: undefined, division: undefined, salle: undefined }
+ℹ ✨ new dependencies optimized: socket.io-client, @khmyznikov/pwa-install
+ℹ ✨ optimized dependencies changed. reloading
+ERROR  [schedule] Error: Operation passages.aggregate() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  API Error: 500 { error: true,
+  url: 'http://localhost:3000/api/schedule?day',
+  statusCode: 500,
+  statusMessage: 'Failed to fetch schedule',
+  message: 'Failed to fetch schedule',
+  stack:
+   [ 'Failed to fetch schedule',
+     'at createError (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:71:15)',
+     'at defineCachedEventHandler.swr (/app/LiveStreamApp/server/api/schedule.get.ts:200:0)',
+     'at async file:///app/LiveStreamApp/.nuxt/dev/index.mjs:496:20)',
+     'at async _resolve (/app/LiveStreamApp/node_modules/nitropack/dist/runtime/internal/cache.mjs:57:22)',
+     'at async get (/app/LiveStreamApp/node_modules/nitropack/dist/runtime/internal/cache.mjs:85:6)',
+     'at async file:///app/LiveStreamApp/.nuxt/dev/index.mjs:342:19)',
+     'at async Object.handler (/app/LiveStreamApp/node_modules/nitropack/dist/runtime/internal/cache.mjs:299:21)',
+     'at async file:///app/LiveStreamApp/node_modules/h3/dist/index.mjs:2011:19)',
+     'at async Object.callAsync (/app/LiveStreamApp/node_modules/unctx/dist/index.mjs:72:16)',
+     'at async toNodeHandle (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:2303:7)' ] }
+ERROR  [live] Error fetching live data Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  API Error: 500 { error: true,
+  url: 'http://localhost:3000/api/live',
+  statusCode: 500,
+  statusMessage: 'Failed to fetch live data',
+  message: 'Failed to fetch live data',
+  stack:
+   [ 'Failed to fetch live data',
+     'at createError (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:71:15)',
+     'at Object.handler (/app/LiveStreamApp/server/api/live.get.ts:36:0)',
+     'at async file:///app/LiveStreamApp/node_modules/h3/dist/index.mjs:2011:19)',
+     'at async Object.callAsync (/app/LiveStreamApp/node_modules/unctx/dist/index.mjs:72:16)',
+     'at async toNodeHandle (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:2303:7)',
+     'at async b (/app/LiveStreamApp/node_modules/node-mock-http/dist/index.mjs:1:6876)',
+     'at async C (/app/LiveStreamApp/node_modules/node-mock-http/dist/index.mjs:1:7159)',
+     'at async $fetchRaw2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:274:26)',
+     'at async $fetch2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:332:15)',
+     'at async setup (/app/LiveStreamApp/app/pages/index.vue:29:183)' ] }
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [schedule] Error: Operation passages.aggregate() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  API Error: 500 { error: true,
+  url: 'http://localhost:3000/api/schedule?day',
+  statusCode: 500,
+  statusMessage: 'Failed to fetch schedule',
+  message: 'Failed to fetch schedule',
+  stack:
+   [ 'Failed to fetch schedule',
+     'at createError (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:71:15)',
+     'at defineCachedEventHandler.swr (/app/LiveStreamApp/server/api/schedule.get.ts:200:0)',
+     'at async file:///app/LiveStreamApp/.nuxt/dev/index.mjs:496:20)',
+     'at async _resolve (/app/LiveStreamApp/node_modules/nitropack/dist/runtime/internal/cache.mjs:57:22)',
+     'at async get (/app/LiveStreamApp/node_modules/nitropack/dist/runtime/internal/cache.mjs:85:6)',
+     'at async file:///app/LiveStreamApp/.nuxt/dev/index.mjs:342:19)',
+     'at async Object.handler (/app/LiveStreamApp/node_modules/nitropack/dist/runtime/internal/cache.mjs:299:21)',
+     'at async file:///app/LiveStreamApp/node_modules/h3/dist/index.mjs:2011:19)',
+     'at async Object.callAsync (/app/LiveStreamApp/node_modules/unctx/dist/index.mjs:72:16)',
+     'at async toNodeHandle (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:2303:7)' ] }
+[useSocketRoom] Initializing with rooms: schedule-updates
+ERROR  [live] Error fetching live data Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  API Error: 500 { error: true,
+  url: 'http://localhost:3000/api/live',
+  statusCode: 500,
+  statusMessage: 'Failed to fetch live data',
+  message: 'Failed to fetch live data',
+  stack:
+   [ 'Failed to fetch live data',
+     'at createError (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:71:15)',
+     'at Object.handler (/app/LiveStreamApp/server/api/live.get.ts:36:0)',
+     'at async file:///app/LiveStreamApp/node_modules/h3/dist/index.mjs:2011:19)',
+     'at async Object.callAsync (/app/LiveStreamApp/node_modules/unctx/dist/index.mjs:72:16)',
+     'at async toNodeHandle (/app/LiveStreamApp/node_modules/h3/dist/index.mjs:2303:7)',
+     'at async b (/app/LiveStreamApp/node_modules/node-mock-http/dist/index.mjs:1:6876)',
+     'at async C (/app/LiveStreamApp/node_modules/node-mock-http/dist/index.mjs:1:7159)',
+     'at async $fetchRaw2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:274:26)',
+     'at async $fetchRaw2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:327:14)',
+     'at async $fetch2 (/app/LiveStreamApp/node_modules/ofetch/dist/shared/ofetch.CWycOUEr.mjs:332:15)' ] }
+[weather] Fetching https://api.open-meteo.com/v1/forecast?latitude=46.7785&longitude=6.6412&current_weather=true&temperature_unit=celsius
+[useSocketRoom] Initializing with rooms: schedule-updates
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)

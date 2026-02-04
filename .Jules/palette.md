@@ -9,3 +9,7 @@
 ## 2024-05-24 - Dynamic Action Labels
 **Learning:** Icon-only buttons (like Favorites) in lists are common but lack context for screen readers.
 **Action:** Always bind a dynamic `aria-label` to these buttons that includes the item's name (e.g., `Retirer ${group.name} des favoris`), rather than a static label.
+
+## 2024-05-25 - Header Navigation & Action Accessibility
+**Learning:** Important navigation and action buttons in the global header and drawers are frequently icon-only for aesthetic minimalism but completely invisible to screen readers.
+**Action:** Systematically add `aria-label` to all icon-only buttons in `layouts/` and `components/overlays/`, and consider adding `title` for mouse hover tooltips as a bonus.
