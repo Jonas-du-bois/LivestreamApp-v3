@@ -127,7 +127,7 @@ export default defineCachedEventHandler(async (event) => {
             },
             { $unwind: "$info" },
             { $replaceRoot: { newRoot: "$info" } },
-            { $project: { name: 1 } }
+            { $project: { name: 1, code: 1 } }
           ],
           categories: [
             { $match: metaQueryCategories },
@@ -153,7 +153,7 @@ export default defineCachedEventHandler(async (event) => {
       }
     ]);
 
-    const availableApparatus = facets?.apparatus ? facets.apparatus.map((a: any) => a.name) : [];
+    const availableApparatus = facets?.apparatus ? facets.apparatus.map((a: any) => ({ code: a.code, name: a.name })) : [];
     const availableCategories = facets?.categories
       ? [...new Set(facets.categories.map((c: any) => c.category).filter(Boolean))]
       : [];

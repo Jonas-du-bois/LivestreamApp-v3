@@ -11,6 +11,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const { t } = useI18n()
 const notificationsStore = useNotificationsStore()
 
 // Computed values from store
@@ -27,11 +28,11 @@ const formatRelativeTime = (timestamp: string): string => {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffMins < 1) return 'À l\'instant'
-  if (diffMins < 60) return `Il y a ${diffMins} min`
-  if (diffHours < 24) return `Il y a ${diffHours} h`
-  if (diffDays === 1) return 'Hier'
-  return `Il y a ${diffDays} jours`
+  if (diffMins < 1) return t('notifications.justNow')
+  if (diffMins < 60) return t('notifications.minutesAgo', { count: diffMins })
+  if (diffHours < 24) return t('notifications.hoursAgo', { count: diffHours })
+  if (diffDays === 1) return t('notifications.yesterday')
+  return t('notifications.daysAgo', { count: diffDays })
 }
 
 // Get icon based on notification type
@@ -113,16 +114,16 @@ const handleNotificationClick = (notification: AppNotification) => {
                 <Icon name="fluent:alert-24-regular" class="w-5 h-5 text-cyan-400" />
               </div>
               <div>
-                <h2 class="text-white font-bold text-lg">Notifications</h2>
+                <h2 class="text-white font-bold text-lg">{{ t('notifications.title') }}</h2>
                 <p class="text-white/50 text-xs">
-                  {{ unreadCount > 0 ? `${unreadCount} non lue${unreadCount > 1 ? 's' : ''}` : 'Tout est lu' }}
+                  {{ unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : t('notifications.allRead') }}
                 </p>
               </div>
             </div>
             <button
               @click="emit('close')"
               class="p-2.5 hover:bg-white/10 rounded-xl transition-colors"
-              aria-label="Fermer les notifications"
+              :aria-label="t('notifications.closeNotifications')"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/70" />
             </button>
@@ -136,7 +137,7 @@ const handleNotificationClick = (notification: AppNotification) => {
               class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 rounded-xl text-sm font-medium transition-colors"
             >
               <Icon name="fluent:checkmark-circle-24-regular" class="w-4 h-4" />
-              <span>Tout marquer comme lu</span>
+              <span>{{ t('notifications.markAllAsRead') }}</span>
             </button>
             <button
               @click="clearAllRead"
@@ -155,9 +156,9 @@ const handleNotificationClick = (notification: AppNotification) => {
             <div class="p-6 bg-white/5 rounded-full mb-4">
               <Icon name="fluent:alert-off-24-regular" class="w-12 h-12 text-white/20" />
             </div>
-            <h3 class="text-white/60 font-medium mb-2">Aucune notification</h3>
+            <h3 class="text-white/60 font-medium mb-2">{{ t('notifications.noNotifications') }}</h3>
             <p class="text-white/40 text-sm">
-              Les notifications apparaîtront ici lorsqu'il y aura de l'activité
+              {{ t('notifications.notificationsWillAppear') }}
             </p>
           </div>
 
@@ -219,14 +220,14 @@ const handleNotificationClick = (notification: AppNotification) => {
                         v-if="!notification.isRead"
                         @click.stop="markAsRead(notification.id)"
                         class="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-                        title="Marquer comme lu"
+                        :title="t('notifications.markAsRead')"
                       >
                         <Icon name="fluent:checkmark-24-regular" class="w-3.5 h-3.5 text-white/60" />
                       </button>
                       <button
                         @click.stop="removeNotification(notification.id)"
                         class="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
-                        title="Supprimer"
+                        :title="t('notifications.delete')"
                       >
                         <Icon name="fluent:dismiss-24-regular" class="w-3.5 h-3.5 text-white/60 hover:text-red-400" />
                       </button>

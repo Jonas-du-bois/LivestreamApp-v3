@@ -2,6 +2,8 @@
 import type { Stream, Passage, Group, Apparatus } from '../../types/api'
 import { ref, watch, onBeforeUnmount, onMounted, computed } from 'vue'
 
+const { t } = useI18n()
+const { translateApparatus } = useTranslatedData()
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -230,7 +232,7 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
       >
         <Icon name="fluent:arrow-left-24-regular" class="w-6 h-6 text-white" />
       </NuxtLink>
-      <h1 class="text-xl font-bold text-white">Retour aux directs</h1>
+      <h1 class="text-xl font-bold text-white">{{ t('stream.backToStreams') }}</h1>
     </div>
 
     <!-- Loading State -->
@@ -256,13 +258,13 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
 
           <!-- If iframe failed to load (e.g., blocked by adblocker), show fallback with external link -->
           <div v-if="playerFailed" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-center p-4">
-            <p class="text-white mb-3">Le lecteur intégré n'a pas pu se charger (une extension peut bloquer les requêtes). Ouvrir le flux en externe :</p>
+            <p class="text-white mb-3">{{ t('stream.playerBlocked') }}</p>
             <a
               :href="streamUrl"
               rel="noopener noreferrer"
               class="inline-block bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg"
             >
-              Ouvrir le flux
+              {{ t('stream.openStream') }}
             </a>
           </div>
 
@@ -276,9 +278,9 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
               rel="noopener noreferrer"
               class="text-white font-bold hover:underline"
             >
-              Ouvrir le lien externe
+              {{ t('stream.openExternalLink') }}
             </a>
-            <p v-else class="text-white/60">Aucun lien disponible pour ce flux.</p>
+            <p v-else class="text-white/60">{{ t('stream.noLinkAvailable') }}</p>
           </div>
         </div>
       </div>
@@ -292,32 +294,32 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
           </div>
           <div>
             <h2 class="text-white font-bold text-lg leading-tight">{{ stream.name }}</h2>
-            <p class="text-red-400 text-xs font-bold uppercase tracking-wider">En Direct</p>
+            <p class="text-red-400 text-xs font-bold uppercase tracking-wider">{{ t('stream.liveNow') }}</p>
           </div>
         </div>
 
         <div v-if="currentApparatus" class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
           <Icon :name="currentApparatus.icon || 'fluent:sport-24-regular'" class="w-5 h-5 text-cyan-400" />
-          <span class="text-white font-medium text-sm">{{ currentApparatus.name }}</span>
+          <span class="text-white font-medium text-sm">{{ translateApparatus(currentApparatus.code, currentApparatus.name) }}</span>
         </div>
       </div>
 
       <!-- Context Section -->
       <div v-if="currentGroup">
-        <h3 class="text-white/60 font-medium mb-3 ml-1">Sur le praticable :</h3>
+        <h3 class="text-white/60 font-medium mb-3 ml-1">{{ t('stream.onPracticable') }}</h3>
         <div @click="openGroupDetails && currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
            <GroupInfoCard :group="currentGroup" :passage-monitors="passageMonitors" />
         </div>
       </div>
 
       <div v-else class="glass-panel p-6 text-center">
-        <p class="text-white/60">Aucun passage en cours pour le moment.</p>
+        <p class="text-white/60">{{ t('stream.noCurrentPassage') }}</p>
       </div>
     </div>
 
     <div v-else class="glass-panel p-8 text-center">
-      <h2 class="text-white font-bold text-xl mb-2">Stream introuvable</h2>
-      <NuxtLink to="/stream" class="text-cyan-400 hover:underline">Retourner à la liste</NuxtLink>
+      <h2 class="text-white font-bold text-xl mb-2">{{ t('stream.streamNotFound') }}</h2>
+      <NuxtLink to="/stream" class="text-cyan-400 hover:underline">{{ t('stream.backToList') }}</NuxtLink>
     </div>
   </div>
 </template>

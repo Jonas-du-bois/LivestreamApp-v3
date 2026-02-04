@@ -3,19 +3,21 @@ import { onMounted, ref } from 'vue';
 // Leaflet doit être importé dynamiquement car il ne supporte pas le SSR (Server Side Rendering)
 import 'leaflet/dist/leaflet.css';
 
+const { t } = useI18n()
+
 // Demander au layout global de masquer header et footer
 definePageMeta({ header: false, footer: false })
 
 const mapContainer = ref<HTMLElement | null>(null);
 
 // Liste des points d'intérêt (POIs)
-const pointsOfInterest = [
-  { name: "Entrée Principale", lat: 46.7785, lng: 6.6412, type: "info", icon: "fluent:door-arrow-left-24-regular" },
-  { name: "Salle de Concours A", lat: 46.7790, lng: 6.6420, type: "gym", icon: "fluent:trophy-24-regular" },
-  { name: "Salle de Concours B", lat: 46.7782, lng: 6.6405, type: "gym", icon: "fluent:trophy-24-regular" },
-  { name: "Food Court", lat: 46.7788, lng: 6.6415, type: "food", icon: "fluent:food-pizza-24-regular" },
-  { name: "Sanitaires", lat: 46.7786, lng: 6.6418, type: "wc", icon: "fluent:drop-24-regular" },
-];
+const pointsOfInterest = computed(() => [
+  { name: t('plan.pois.mainEntrance'), lat: 46.7785, lng: 6.6412, type: "info", icon: "fluent:door-arrow-left-24-regular" },
+  { name: t('plan.pois.hallA'), lat: 46.7790, lng: 6.6420, type: "gym", icon: "fluent:trophy-24-regular" },
+  { name: t('plan.pois.hallB'), lat: 46.7782, lng: 6.6405, type: "gym", icon: "fluent:trophy-24-regular" },
+  { name: t('plan.pois.foodCourt'), lat: 46.7788, lng: 6.6415, type: "food", icon: "fluent:food-pizza-24-regular" },
+  { name: t('plan.pois.restrooms'), lat: 46.7786, lng: 6.6418, type: "wc", icon: "fluent:drop-24-regular" },
+]);
 
 onMounted(async () => {
   if (!mapContainer.value) return;
@@ -38,7 +40,7 @@ onMounted(async () => {
   }).addTo(map);
 
   // 3. Ajouter les Marqueurs Personnalisés
-  pointsOfInterest.forEach(poi => {
+  pointsOfInterest.value.forEach(poi => {
     // Création d'une icône HTML personnalisée (DivIcon) pour garder le style "Glass"
     const customIcon = L.divIcon({
       className: 'custom-pin', // Classe définie dans le CSS en bas
@@ -81,7 +83,7 @@ const goBack = () => {
     <div class="absolute top-4 left-4 z-[1000] p-2 pointer-events-auto safe-area-inset-left safe-area-inset-top">
       <button @click="goBack" class="glass-panel p-2 rounded-lg flex items-center gap-2">
         <Icon name="fluent:chevron-left-24-regular" class="w-4 h-4 text-white" />
-        <span class="text-white text-sm">Retour</span>
+        <span class="text-white text-sm">{{ t('plan.back') }}</span>
       </button>
     </div>
 
@@ -89,15 +91,15 @@ const goBack = () => {
       <div class="glass-panel p-3 rounded-xl mx-auto max-w-max pointer-events-auto flex gap-4 overflow-x-auto no-scrollbar">
         <div class="flex items-center gap-2">
           <span class="w-3 h-3 rounded-full bg-blue-500 block"></span>
-          <span class="text-xs text-white">Concours</span>
+          <span class="text-xs text-white">{{ t('plan.competition') }}</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="w-3 h-3 rounded-full bg-orange-500 block"></span>
-          <span class="text-xs text-white">Food</span>
+          <span class="text-xs text-white">{{ t('plan.food') }}</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="w-3 h-3 rounded-full bg-gray-400 block"></span>
-          <span class="text-xs text-white">Infos</span>
+          <span class="text-xs text-white">{{ t('plan.info') }}</span>
         </div>
       </div>
     </div>

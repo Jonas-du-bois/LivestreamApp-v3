@@ -4,7 +4,7 @@
     <div class="px-6 pt-4 pb-2">
       <NuxtLink to="/" class="inline-flex items-center gap-2 glass-panel px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
         <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
-        <span class="text-white text-sm font-medium">Retour</span>
+        <span class="text-white text-sm font-medium">{{ t('common.back') }}</span>
       </NuxtLink>
     </div>
 
@@ -14,11 +14,11 @@
         <Icon name="fluent:food-pizza-24-filled" class="text-9xl text-blue-500 blur-2xl animate-pulse" />
       </div>
       <h1 class="text-3xl font-black text-white mb-2 uppercase tracking-wide">
-        Restauration
+        {{ t('food.title') }}
         <span class="text-blue-500">.</span>
       </h1>
       <p class="text-white/60 text-sm max-w-xs">
-        Découvrez nos stands pour reprendre des forces entre deux compétitions.
+        {{ t('food.subtitle') }}
       </p>
     </div>
 
@@ -42,9 +42,9 @@
           <Icon name="fluent:wallet-credit-card-24-regular" class="text-blue-400" size="20" />
         </div>
         <div>
-          <h3 class="text-white font-bold text-sm">Moyens de paiement</h3>
+          <h3 class="text-white font-bold text-sm">{{ t('food.paymentMethods') }}</h3>
           <p class="text-blue-200/70 text-xs mt-0.5">
-            Cash, Twint & Cartes bancaires acceptés partout.
+            {{ t('food.paymentInfo') }}
           </p>
         </div>
       </div>
@@ -99,7 +99,7 @@
             <div class="bg-white/5 rounded-xl p-4 border border-white/5">
               <h4 class="text-xs font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
                 <Icon name="fluent:options-20-filled" />
-                Au Menu
+                {{ t('food.onTheMenu') }}
               </h4>
               <ul class="space-y-3">
                 <li v-for="(item, idx) in spot.menu" :key="idx" class="flex items-end justify-between text-sm group/item">
@@ -118,7 +118,7 @@
       <div class="inline-flex h-16 w-16 rounded-full bg-white/5 items-center justify-center mb-4">
         <Icon name="fluent:food-24-regular" class="text-white/20" size="32" />
       </div>
-      <p class="text-white/40">Aucun stand ne correspond à ce filtre.</p>
+      <p class="text-white/40">{{ t('food.noFilterMatch') }}</p>
     </div>
   </div>
 </template>
@@ -126,76 +126,78 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 
+const { t } = useI18n()
+
 // --- Configuration ---
 const activeCategory = ref('all');
 
-const categories = [
-  { id: 'all', label: 'Tout' },
-  { id: 'hot', label: 'Repas Chauds' },
-  { id: 'snack', label: 'Snacks & Burgers' },
-  { id: 'drink', label: 'Bar & Boissons' },
-];
+const categories = computed(() => [
+  { id: 'all', label: t('food.all') },
+  { id: 'hot', label: t('food.hotMeals') },
+  { id: 'snack', label: t('food.snacks') },
+  { id: 'drink', label: t('food.drinks') },
+]);
 
 // --- Données ---
-const foodSpots = ref([
+const foodSpots = computed(() => [
   {
     id: 1,
     category: 'hot',
-    name: "La Cantine Centrale",
-    type: "Restauration",
-    description: "Le cœur de l'événement. Plats chauds traditionnels, pâtes fraîches et une grande zone assise conviviale.",
+    name: t('food.spots.cantine.name'),
+    type: t('food.spots.cantine.type'),
+    description: t('food.spots.cantine.description'),
     icon: "fluent:food-24-filled",
-    status: "Ouvert",
+    status: t('common.open'),
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800",
     menu: [
-      { item: "Assiette Steak-Frites", price: "18.-" },
-      { item: "Pâtes (Bolo / Pesto)", price: "14.-" },
-      { item: "Salade Mêlée", price: "8.-" }
+      { item: t('food.menu.steakFrites'), price: "18.-" },
+      { item: t('food.menu.pasta'), price: "14.-" },
+      { item: t('food.menu.salad'), price: "8.-" }
     ]
   },
   {
     id: 2,
     category: 'snack',
-    name: "Burger Express",
-    type: "Food Truck",
-    description: "Des burgers gourmets faits minute avec du bœuf local et du fromage de la région.",
+    name: t('food.spots.burger.name'),
+    type: t('food.spots.burger.type'),
+    description: t('food.spots.burger.description'),
     icon: "fluent:food-24-filled",
-    status: "Ouvert",
+    status: t('common.open'),
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800",
     menu: [
-      { item: "Le Classic (Bœuf)", price: "15.-" },
-      { item: "Le Vaudois (Tomme)", price: "17.-" },
-      { item: "Frites Maison", price: "6.-" }
+      { item: t('food.menu.classicBurger'), price: "15.-" },
+      { item: t('food.menu.vaudoisBurger'), price: "17.-" },
+      { item: t('food.menu.fries'), price: "6.-" }
     ]
   },
   {
     id: 3,
     category: 'hot',
-    name: "La Raclette du Gym",
-    type: "Tradition",
-    description: "L'incontournable raclette valaisanne coulée sur demande. Ambiance chaleureuse garantie.",
+    name: t('food.spots.raclette.name'),
+    type: t('food.spots.raclette.type'),
+    description: t('food.spots.raclette.description'),
     icon: "fluent:food-toast-24-filled",
-    status: "Ouvert",
+    status: t('common.open'),
     image: "https://images.unsplash.com/photo-1706363447064-1ae8d6d3bc5d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     menu: [
-      { item: "Portion Raclette", price: "7.-" },
-      { item: "Planchette Valaisanne", price: "16.-" },
-      { item: "Thé Chaud", price: "4.-" }
+      { item: t('food.menu.raclettePortion'), price: "7.-" },
+      { item: t('food.menu.valaisanBoard'), price: "16.-" },
+      { item: t('food.menu.hotTea'), price: "4.-" }
     ]
   },
   {
     id: 4,
     category: 'drink',
-    name: "Le Bar des Sports",
-    type: "Boissons",
-    description: "Le point de rendez-vous pour fêter les résultats. Bières locales, minérales et bonne humeur.",
+    name: t('food.spots.bar.name'),
+    type: t('food.spots.bar.type'),
+    description: t('food.spots.bar.description'),
     icon: "fluent:drink-beer-24-filled",
-    status: "Ouvert",
+    status: t('common.open'),
     image: "https://images.unsplash.com/photo-1575444758702-4a6b9222336e?auto=format&fit=crop&q=80&w=800",
     menu: [
-      { item: "Bière Pression (3dl)", price: "5.-" },
-      { item: "Minérales (5dl)", price: "4.-" },
-      { item: "Café / Renversé", price: "3.50" }
+      { item: t('food.menu.beer'), price: "5.-" },
+      { item: t('food.menu.water'), price: "4.-" },
+      { item: t('food.menu.coffee'), price: "3.50" }
     ]
   }
 ]);

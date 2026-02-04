@@ -10,6 +10,8 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const { t, locale } = useI18n()
+const { translateApparatus, translateCategory } = useTranslatedData()
 const router = useRouter()
 const searchQuery = ref('')
 const searchInput = ref<HTMLInputElement | null>(null)
@@ -148,7 +150,8 @@ const goToLive = () => {
 
 // Format time
 const formatTime = (date: string) => {
-  return new Date(date).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })
+  const loc = locale.value === 'de' ? 'de-CH' : 'fr-CH'
+  return new Date(date).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })
 }
 
 // Computed: has results
@@ -163,12 +166,12 @@ const filteredGroupResults = computed(() => activeTab.value === 'all' || activeT
 const filteredPassageResults = computed(() => activeTab.value === 'all' || activeTab.value === 'passages' ? passageResults.value : [])
 const filteredLiveResults = computed(() => activeTab.value === 'all' || activeTab.value === 'live' ? liveResults.value : { passages: [], streams: [] })
 
-const tabs = [
-  { id: 'all' as const, label: 'Tout', icon: 'fluent:apps-24-regular' },
-  { id: 'groups' as const, label: 'Groupes', icon: 'fluent:people-24-regular' },
-  { id: 'passages' as const, label: 'Passages', icon: 'fluent:calendar-24-regular' },
-  { id: 'live' as const, label: 'En direct', icon: 'fluent:live-24-regular' }
-]
+const tabs = computed(() => [
+  { id: 'all' as const, label: t('search.all'), icon: 'fluent:apps-24-regular' },
+  { id: 'groups' as const, label: t('search.groups'), icon: 'fluent:people-24-regular' },
+  { id: 'passages' as const, label: t('search.passages'), icon: 'fluent:calendar-24-regular' },
+  { id: 'live' as const, label: t('search.live'), icon: 'fluent:live-24-regular' }
+])
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
@@ -196,7 +199,7 @@ onUnmounted(() => {
         class="fixed left-4 right-4 glass-panel z-[70] overflow-hidden max-w-2xl mx-auto overlay-safe-top"
         role="dialog"
         aria-modal="true"
-        aria-label="Recherche"
+        :aria-label="t('common.search')"
       >
         <!-- Search Input -->
         <div class="p-4 border-b border-white/10">
@@ -206,9 +209,9 @@ onUnmounted(() => {
               ref="searchInput"
               v-model="searchQuery"
               type="text"
-              placeholder="Rechercher un groupe, passage, salle..."
+              :placeholder="t('search.placeholder')"
               class="flex-1 bg-transparent text-white placeholder-white/40 outline-none text-lg"
-              aria-label="Rechercher"
+              :aria-label="t('common.search')"
             />
 
             <div v-if="isLoading" class="flex-shrink-0">
@@ -219,7 +222,7 @@ onUnmounted(() => {
               v-else-if="searchQuery"
               @click="clearSearch"
               class="p-1 hover:text-white text-white/60 transition-colors"
-              aria-label="Effacer la recherche"
+              :aria-label="t('search.clearSearch')"
             >
               <Icon name="fluent:dismiss-circle-24-filled" class="w-5 h-5" />
             </button>
@@ -227,7 +230,7 @@ onUnmounted(() => {
             <button
               @click="emit('close')"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
-              aria-label="Fermer la recherche"
+              :aria-label="t('search.closeSearch')"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/80" />
             </button>
@@ -272,8 +275,8 @@ onUnmounted(() => {
               <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
                 <Icon name="fluent:search-info-24-regular" class="w-8 h-8 opacity-50" />
               </div>
-              <p class="text-lg font-medium text-white/80">Aucun résultat</p>
-              <p class="text-sm mt-1">Nous n'avons rien trouvé pour "{{ searchQuery }}"</p>
+              <p class="text-lg font-medium text-white/80">{{ t('search.noResults') }}</p>
+              <p class="text-sm mt-1">{{ t('search.tryAnother') }}</p>
             </div>
           </template>
 
@@ -284,7 +287,7 @@ onUnmounted(() => {
               <div v-if="filteredLiveResults.passages.length > 0 || filteredLiveResults.streams.length > 0">
                 <h3 class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
                   <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                  En direct
+                  {{ t('search.live') }}
                 </h3>
                 
                 <!-- Live Streams -->
@@ -320,7 +323,7 @@ onUnmounted(() => {
                     </div>
                     <div class="flex-1 min-w-0">
                       <p class="text-white font-medium truncate">{{ (passage.group as any)?.name }}</p>
-                      <p class="text-white/50 text-sm">{{ passage.apparatus?.name }} • {{ passage.location }}</p>
+                      <p class="text-white/50 text-sm">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }} • {{ passage.location }}</p>
                     </div>
                     <span class="px-2 py-0.5 bg-red-500/30 text-red-300 text-xs font-medium rounded-full">LIVE</span>
                   </button>
@@ -331,7 +334,7 @@ onUnmounted(() => {
               <div v-if="filteredGroupResults.length > 0">
                 <h3 class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Icon name="fluent:people-24-regular" class="w-4 h-4" />
-                  Groupes ({{ filteredGroupResults.length }})
+                  {{ t('search.groups') }} ({{ filteredGroupResults.length }})
                 </h3>
                 <div class="space-y-2">
                   <button
@@ -346,7 +349,7 @@ onUnmounted(() => {
                     </div>
                     <div class="flex-1 min-w-0">
                       <p class="text-white font-medium truncate">{{ group.name }}</p>
-                      <p class="text-white/50 text-sm">{{ group.canton }} • {{ group.category }}</p>
+                      <p class="text-white/50 text-sm">{{ group.canton }} • {{ translateCategory(group.category) }}</p>
                     </div>
                     <Icon name="fluent:chevron-right-24-regular" class="w-5 h-5 text-white/40" />
                   </button>
@@ -357,7 +360,7 @@ onUnmounted(() => {
               <div v-if="filteredPassageResults.length > 0">
                 <h3 class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Icon name="fluent:calendar-24-regular" class="w-4 h-4" />
-                  Passages ({{ filteredPassageResults.length }})
+                  {{ t('search.passages') }} ({{ filteredPassageResults.length }})
                 </h3>
                 <div class="space-y-2">
                   <button
@@ -372,7 +375,7 @@ onUnmounted(() => {
                     <div class="flex-1 min-w-0">
                       <p class="text-white font-medium truncate">{{ (passage.group as any)?.name }}</p>
                       <p class="text-white/50 text-sm">
-                        {{ passage.apparatus?.name }} • {{ formatTime(passage.startTime) }} • {{ passage.location }}
+                        {{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }} • {{ formatTime(passage.startTime) }} • {{ passage.location }}
                       </p>
                     </div>
                     <span 
@@ -383,7 +386,7 @@ onUnmounted(() => {
                         'bg-red-500/30 text-red-300': passage.status === 'LIVE'
                       }"
                     >
-                      {{ passage.status === 'FINISHED' ? 'Terminé' : passage.status === 'LIVE' ? 'En cours' : 'Prévu' }}
+                      {{ passage.status === 'FINISHED' ? t('status.finished') : passage.status === 'LIVE' ? t('status.live') : t('status.scheduled') }}
                     </span>
                   </button>
                 </div>
@@ -399,7 +402,7 @@ onUnmounted(() => {
             class="flex-1 glass-card py-2 px-4 text-center text-cyan-300 hover:bg-cyan-500/20 transition-colors rounded-lg text-sm font-medium flex items-center justify-center gap-2"
           >
             <Icon name="fluent:live-24-regular" class="w-4 h-4" />
-            Voir les directs
+            {{ t('search.allLiveStreams') }}
           </button>
         </div>
       </div>

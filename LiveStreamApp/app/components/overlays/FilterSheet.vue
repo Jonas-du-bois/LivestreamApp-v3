@@ -8,6 +8,9 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const { t, locale } = useI18n()
+const { translateApparatus, translateCategory } = useTranslatedData()
+
 // Access shared metadata from schedule.vue
 const meta = useState<any>('scheduleMeta')
 const availableApparatus = computed(() => meta.value?.availableApparatus || [])
@@ -95,12 +98,12 @@ onUnmounted(() => {
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-3">
               <Icon name="fluent:options-24-regular" class="w-6 h-6 text-cyan-400" />
-              <h2 id="filter-sheet-title" class="text-white font-bold text-xl">Filtres</h2>
+              <h2 id="filter-sheet-title" class="text-white font-bold text-xl">{{ t('filters.title') }}</h2>
             </div>
             <button
               @click="emit('close')"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              aria-label="Fermer"
+              :aria-label="t('common.close')"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/80" />
             </button>
@@ -112,30 +115,30 @@ onUnmounted(() => {
 
           <!-- Apparatus Filter (Dynamic) -->
           <div v-if="availableApparatus.length > 0">
-            <h3 class="text-white font-bold mb-3">Engin</h3>
+            <h3 class="text-white font-bold mb-3">{{ t('filters.apparatus') }}</h3>
             <div class="grid grid-cols-2 gap-2">
               <button
                 v-for="app in availableApparatus"
-                :key="app"
-                @click="toggleSelection(app, 'apparatus')"
+                :key="`${app.code || app}-${locale}`"
+                @click="toggleSelection(app.name || app, 'apparatus')"
                 class="py-3 px-4 rounded-lg text-sm font-medium transition-all"
-                :class="selectedApparatus.includes(app)
+                :class="selectedApparatus.includes(app.name || app)
                   ? 'bg-cyan-400 text-[#0B1120]'
                   : 'glass-card text-white/80'"
-                :aria-pressed="selectedApparatus.includes(app)"
+                :aria-pressed="selectedApparatus.includes(app.name || app)"
               >
-                {{ app }}
+                {{ translateApparatus(app.code, app.name) || app }}
               </button>
             </div>
           </div>
 
           <!-- Division Filter -->
           <div v-if="availableCategories.length > 0">
-            <h3 class="text-white font-bold mb-3">Division</h3>
+            <h3 class="text-white font-bold mb-3">{{ t('filters.division') }}</h3>
             <div class="grid grid-cols-2 gap-2">
               <button
                 v-for="division in availableCategories"
-                :key="division"
+                :key="`${division}-${locale}`"
                 @click="toggleSelection(division, 'division')"
                 class="py-3 px-4 rounded-lg text-sm font-medium transition-all"
                 :class="selectedDivision.includes(division)
@@ -143,14 +146,14 @@ onUnmounted(() => {
                   : 'glass-card text-white/80'"
                 :aria-pressed="selectedDivision.includes(division)"
               >
-                {{ division }}
+                {{ translateCategory(division) }}
               </button>
             </div>
           </div>
 
           <!-- Salle Filter -->
           <div v-if="availableLocations.length > 0">
-            <h3 class="text-white font-bold mb-3">Salle</h3>
+            <h3 class="text-white font-bold mb-3">{{ t('filters.hall') }}</h3>
             <div class="grid grid-cols-3 gap-2">
               <button
                 v-for="salle in availableLocations"
@@ -174,13 +177,13 @@ onUnmounted(() => {
             @click="clearFilters"
             class="flex-1 glass-card py-3 rounded-xl text-white font-medium hover:bg-white/15 transition-colors"
           >
-            Effacer
+            {{ t('filters.clear') }}
           </button>
           <button
             @click="applyFilters"
             class="flex-1 gradient-cyan-purple py-3 rounded-xl text-white font-medium"
           >
-            Appliquer
+            {{ t('filters.apply') }}
           </button>
         </div>
       </div>

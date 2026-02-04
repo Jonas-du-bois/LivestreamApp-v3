@@ -2,6 +2,9 @@
 import { PublicService } from '~/services/public.service'
 import type { PassageEnriched } from '~/types/api'
 
+const { t } = useI18n()
+const { translateApparatus, translateCategory } = useTranslatedData()
+
 // Extended type including rank
 type PassageResult = PassageEnriched & { rank: number }
 
@@ -34,7 +37,7 @@ const resultsSections = computed(() => {
     const first = list[0]
     return {
       code,
-      name: first?.apparatus?.name || code,
+      name: translateApparatus(code, first?.apparatus?.name || code),
       icon: first?.apparatus?.icon,
       results: list
     }
@@ -223,7 +226,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
     <!-- Empty State -->
     <div v-if="!resultsSections.length" class="text-center py-10 text-white/50 px-4">
-      <p>Aucun résultat disponible pour le moment.</p>
+      <p>{{ t('results.noResults') }}</p>
     </div>
 
     <!-- Tabs Navigation -->
@@ -247,7 +250,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
     <div v-if="activeSection" class="px-4 mt-6 space-y-6">
       <!-- Podium Section -->
       <div v-if="podiumResults.length > 0">
-        <h2 class="text-white text-xl font-bold mb-4">Podium</h2>
+        <h2 class="text-white text-xl font-bold mb-4">{{ t('results.podium') }}</h2>
         <div class="space-y-3">
           <div
             v-for="result in podiumResults"
@@ -271,7 +274,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               <!-- Group Info -->
               <div class="flex-1 min-w-0">
                 <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                <p class="text-white/60 text-sm">{{ result.group.category || 'ACTIFS' }}</p>
+                <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('ACTIFS') }}</p>
               </div>
 
               <!-- Score -->
@@ -285,7 +288,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
       <!-- Full Ranking Section -->
       <div v-if="fullRanking.length > 0">
-        <h2 class="text-white text-xl font-bold mb-4">Classement complet</h2>
+        <h2 class="text-white text-xl font-bold mb-4">{{ t('results.fullRanking') }}</h2>
         <div class="space-y-3">
           <div
             v-for="result in fullRanking"
@@ -303,7 +306,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               <!-- Group Info -->
               <div class="flex-1 min-w-0">
                 <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                <p class="text-white/60 text-sm">{{ result.group.category || 'Mixte' }}</p>
+                <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('MIXTE') }}</p>
               </div>
 
               <!-- Score -->
@@ -317,7 +320,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
       <!-- No results for this apparatus -->
       <div v-if="activeSection.results.length === 0" class="text-center py-10 text-white/50">
-        <p>Aucun résultat pour cet agrès.</p>
+        <p>{{ t('results.noApparatusResults') }}</p>
       </div>
     </div>
   </div>

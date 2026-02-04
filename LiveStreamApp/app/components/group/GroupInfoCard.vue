@@ -7,6 +7,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
+const { translateCategory } = useTranslatedData()
 
 const getInitials = (name: string) => {
   if (!name) return ''
@@ -36,7 +38,7 @@ const averageScore = computed(() => {
 
 // Category display
 const categoryLabel = computed(() => {
-  return props.group.category === 'MIXTE' ? 'Mixte' : 'Actifs'
+  return translateCategory(props.group.category)
 })
 
 const categoryColor = computed(() => {
@@ -100,17 +102,17 @@ const historyByYear = computed(() => {
         <div class="glass-card p-4 text-center">
           <Icon name="fluent:people-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
           <div class="text-white font-bold text-xl">{{ gymnastsCount }}</div>
-          <div class="text-white/60 text-xs">Gymnastes</div>
+          <div class="text-white/60 text-xs">{{ t('group.gymnasts') }}</div>
         </div>
         <div class="glass-card p-4 text-center">
           <Icon name="fluent:person-24-regular" class="w-6 h-6 text-purple-400 mx-auto mb-2" />
           <div class="text-white font-bold text-xl">{{ monitorsCount }}</div>
-          <div class="text-white/60 text-xs">Moniteurs</div>
+          <div class="text-white/60 text-xs">{{ t('group.monitors') }}</div>
         </div>
         <div class="glass-card p-4 text-center">
           <Icon name="fluent:arrow-trending-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
           <div class="text-white font-bold text-xl">{{ averageScore }}</div>
-          <div class="text-white/60 text-xs">Moyenne</div>
+          <div class="text-white/60 text-xs">{{ t('group.average') }}</div>
         </div>
       </div>
 
@@ -119,9 +121,9 @@ const historyByYear = computed(() => {
         <div class="flex items-start gap-3">
           <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
           <div>
-            <h4 class="text-white font-semibold text-sm mb-1">Groupe Mixte</h4>
+            <h4 class="text-white font-semibold text-sm mb-1">{{ t('group.mixedGroup') }}</h4>
             <p class="text-white/60 text-xs">
-              Ce groupe participe dans la catégorie mixte, combinant gymnastes féminins et masculins.
+              {{ t('group.mixedGroupInfo') }}
             </p>
           </div>
         </div>
@@ -129,7 +131,7 @@ const historyByYear = computed(() => {
 
       <!-- Coaches -->
       <div v-if="monitors.length > 0">
-        <h3 class="text-white font-bold mb-3">Moniteurs</h3>
+        <h3 class="text-white font-bold mb-3">{{ t('group.monitors') }}</h3>
         <div class="glass-card p-4 space-y-3">
           <div
             v-for="coach in monitors"
@@ -150,7 +152,7 @@ const historyByYear = computed(() => {
       <div v-if="historyByYear.length > 0">
         <div class="flex items-center gap-2 mb-3">
           <Icon name="fluent:history-24-regular" class="w-5 h-5 text-cyan-400" />
-          <h3 class="text-white font-bold">Historique des notes</h3>
+          <h3 class="text-white font-bold">{{ t('group.historicalPerformance') }}</h3>
         </div>
         <div class="glass-card p-4">
           <!-- Chart.js Line Chart (compact mode) -->

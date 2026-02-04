@@ -21,6 +21,8 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const { t } = useI18n()
+const { translateCategory, translateApparatus } = useTranslatedData()
 const socket = useSocket()
 const favoritesStore = useFavoritesStore()
 const isLoading = ref(false)
@@ -45,7 +47,7 @@ const fetchData = async () => {
     detailsCache.set(props.groupId, data)
   } catch (err) {
     console.error(err)
-    error.value = "Impossible de charger les détails du groupe."
+    error.value = t('group.loadError')
   } finally {
     isLoading.value = false
   }
@@ -130,8 +132,8 @@ const getInitials = (name: string) => {
 
 // Computed properties
 const categoryLabel = computed(() => {
-  if (!details.value?.info) return 'Actifs'
-  return details.value.info.category === 'MIXTE' ? 'Mixte' : 'Actifs'
+  if (!details.value?.info) return translateCategory('ACTIFS')
+  return translateCategory(details.value.info.category)
 })
 
 const categoryColor = computed(() => {
@@ -249,7 +251,7 @@ const maxHistoryScore = computed(() => {
       >
         <div v-if="isLoading && !details" class="p-12 text-center text-white/60">
            <Icon name="fluent:spinner-ios-20-filled" class="w-8 h-8 animate-spin mx-auto mb-4" />
-           <p>Chargement du tableau de bord...</p>
+           <p>{{ t('group.loadingDashboard') }}</p>
         </div>
 
         <div v-else-if="error" class="p-12 text-center text-red-400">
@@ -284,7 +286,7 @@ const maxHistoryScore = computed(() => {
               <button
                 @click="emit('close')"
                 class="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-lg transition-colors"
-                aria-label="Fermer"
+                :aria-label="t('common.close')"
               >
                 <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white" />
               </button>
@@ -319,7 +321,7 @@ const maxHistoryScore = computed(() => {
                 aria-controls="panel-timeline"
               >
                 <Icon name="fluent:timeline-24-regular" class="w-5 h-5 inline-block mr-2" />
-                Timeline
+                {{ t('group.timeline') }}
                 <div v-if="activeTab === 'timeline'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400" />
               </button>
               <button
@@ -333,7 +335,7 @@ const maxHistoryScore = computed(() => {
                 aria-controls="panel-stats"
               >
                 <Icon name="fluent:data-bar-vertical-24-regular" class="w-5 h-5 inline-block mr-2" />
-                Statistiques
+                {{ t('group.statistics') }}
                 <div v-if="activeTab === 'stats'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400" />
               </button>
             </div>
@@ -349,19 +351,19 @@ const maxHistoryScore = computed(() => {
                     <div class="text-2xl font-bold text-white leading-none mb-1">
                       {{ details.stats.completedPassages }} <span class="text-sm text-white/40 font-normal">/ {{ details.stats.totalPassages }}</span>
                     </div>
-                    <div class="text-xs text-white/50">Passages terminés</div>
+                    <div class="text-xs text-white/50">{{ t('group.completedPassages') }}</div>
                   </div>
                   <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
                     <Icon name="fluent:arrow-trending-24-regular" class="w-6 h-6 text-purple-400 mb-2" />
                     <div class="text-2xl font-bold text-white leading-none mb-1">{{ details.stats.currentTotalScore }}</div>
-                    <div class="text-xs text-white/50">Note Moyenne</div>
+                    <div class="text-xs text-white/50">{{ t('group.averageScore') }}</div>
                   </div>
                 </div>
 
                 <!-- Timeline -->
                 <h3 class="text-white font-bold mb-4 flex items-center gap-2">
                   <Icon name="fluent:calendar-clock-24-regular" class="w-5 h-5 text-cyan-400" />
-                  Déroulement de la journée
+                  {{ t('group.daySchedule') }}
                 </h3>
                 <div class="space-y-4 relative">
                   <!-- Vertical Line -->
@@ -385,7 +387,7 @@ const maxHistoryScore = computed(() => {
                     <div class="glass-card p-4 hover:bg-white/10 transition-colors">
                       <div class="flex justify-between items-start mb-2">
                         <div>
-                          <div class="font-bold text-white text-lg leading-tight mb-0.5">{{ item.apparatus.name }}</div>
+                          <div class="font-bold text-white text-lg leading-tight mb-0.5">{{ translateApparatus(item.apparatus.code, item.apparatus.name) }}</div>
                           <div class="text-xs text-white/50 flex items-center gap-1.5">
                             <Icon name="fluent:clock-24-regular" class="w-3.5 h-3.5" />
                             <span>{{ formatTime(item.startTime) }}</span>
@@ -398,10 +400,10 @@ const maxHistoryScore = computed(() => {
                           <div class="text-2xl font-bold text-cyan-400 leading-none">{{ item.score?.toFixed(2) || '0.00' }}</div>
                         </div>
                         <div v-else-if="item.status === 'LIVE'" class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/20 animate-pulse">
-                          🔴 EN COURS
+                          🔴 {{ t('group.inProgress') }}
                         </div>
                         <div v-else class="text-white/40 text-sm italic">
-                          À venir
+                          {{ t('group.upcoming') }}
                         </div>
                       </div>
                     </div>
@@ -415,23 +417,23 @@ const maxHistoryScore = computed(() => {
                 <div>
                   <h3 class="text-white font-bold mb-4 flex items-center gap-2">
                     <Icon name="fluent:data-bar-vertical-24-regular" class="w-5 h-5 text-cyan-400" />
-                    Vue d'ensemble
+                    {{ t('group.overview') }}
                   </h3>
                   <div class="grid grid-cols-3 gap-3">
                     <div class="glass-card p-4 text-center bg-white/5">
                       <Icon name="fluent:people-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
                       <div class="text-white font-bold text-xl">{{ gymnastsCount }}</div>
-                      <div class="text-white/60 text-xs">Gymnastes</div>
+                      <div class="text-white/60 text-xs">{{ t('group.gymnasts') }}</div>
                     </div>
                     <div class="glass-card p-4 text-center bg-white/5">
                       <Icon name="fluent:person-24-regular" class="w-6 h-6 text-purple-400 mx-auto mb-2" />
                       <div class="text-white font-bold text-xl">{{ monitorsCount }}</div>
-                      <div class="text-white/60 text-xs">Moniteurs</div>
+                      <div class="text-white/60 text-xs">{{ t('group.monitors') }}</div>
                     </div>
                     <div class="glass-card p-4 text-center bg-white/5">
                       <Icon name="fluent:trophy-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
                       <div class="text-white font-bold text-xl">{{ averageHistoryScore }}</div>
-                      <div class="text-white/60 text-xs">Moy. Hist.</div>
+                      <div class="text-white/60 text-xs">{{ t('group.historyAvg') }}</div>
                     </div>
                   </div>
                 </div>
@@ -441,9 +443,9 @@ const maxHistoryScore = computed(() => {
                   <div class="flex items-start gap-3">
                     <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 class="text-white font-semibold text-sm mb-1">Groupe Mixte</h4>
+                      <h4 class="text-white font-semibold text-sm mb-1">{{ t('group.mixedGroup') }}</h4>
                       <p class="text-white/60 text-xs">
-                        Ce groupe participe dans la catégorie mixte, combinant gymnastes féminins et masculins.
+                        {{ t('group.mixedGroupInfo') }}
                       </p>
                     </div>
                   </div>
@@ -453,7 +455,7 @@ const maxHistoryScore = computed(() => {
                 <div v-if="monitors.length > 0">
                   <h3 class="text-white font-bold mb-3 flex items-center gap-2">
                     <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-cyan-400" />
-                    Équipe d'encadrement
+                    {{ t('group.staffTeam') }}
                   </h3>
                   <div class="glass-card p-4 space-y-3 bg-white/5">
                     <div
@@ -475,7 +477,7 @@ const maxHistoryScore = computed(() => {
                 <div v-if="historyByYear.length > 0">
                   <div class="flex items-center gap-2 mb-3">
                     <Icon name="fluent:history-24-regular" class="w-5 h-5 text-cyan-400" />
-                    <h3 class="text-white font-bold">Historique des performances</h3>
+                    <h3 class="text-white font-bold">{{ t('group.historicalPerformance') }}</h3>
                   </div>
                   <div class="glass-card p-5 bg-white/5">
                     <!-- Chart.js Line Chart -->
@@ -488,7 +490,7 @@ const maxHistoryScore = computed(() => {
               </div>
             </div>
   <p v-if="groupPassageIds.length > 0" class="text-white/50 text-xs text-center mt-2">
-                {{ groupPassageIds.length }} passage{{ groupPassageIds.length > 1 ? 's' : '' }} dans ce groupe
+                {{ t('group.passagesInGroup', { count: groupPassageIds.length }, groupPassageIds.length) }}
               </p>
             
             <!-- Footer Action -->
@@ -501,7 +503,7 @@ const maxHistoryScore = computed(() => {
                   :name="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
                   class="w-5 h-5"
                 />
-                {{ isFavorite ? 'Retirer des Favoris' : 'Ajouter aux Favoris' }}
+                {{ isFavorite ? t('group.removeFromFavorites') : t('group.addToFavorites') }}
               </button>
             </div>
         </template>

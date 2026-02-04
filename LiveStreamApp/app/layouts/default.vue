@@ -6,13 +6,14 @@ interface NavItem {
   id: string
   icon: string
   iconFilled: string
-  label: string
+  labelKey: string
   to: string
   isCenter?: boolean
 }
 
 const route = useRoute()
 const notificationsStore = useNotificationsStore()
+const { t, locale, locales, setLocale } = useI18n()
 
 // PWA Install
 const { isInstallAvailable, isStandalone, showInstallPrompt } = usePwaInstall()
@@ -21,22 +22,28 @@ const { isInstallAvailable, isStandalone, showInstallPrompt } = usePwaInstall()
 useNotificationSocket()
 
 const navItems: NavItem[] = [
-  { id: 'home', icon: 'fluent:home-24-regular', iconFilled: 'fluent:home-24-filled', label: 'Accueil', to: '/' },
-  { id: 'schedule', icon: 'fluent:calendar-24-regular', iconFilled: 'fluent:calendar-24-filled', label: 'Programme', to: '/schedule' },
-  { id: 'stream', icon: 'fluent:play-circle-24-regular', iconFilled: 'fluent:play-circle-24-filled', label: 'Directs', to: '/stream', isCenter: true },
-  { id: 'results', icon: 'fluent:trophy-24-regular', iconFilled: 'fluent:trophy-24-filled', label: 'Résultats', to: '/results' },
-  { id: 'favorites', icon: 'fluent:heart-24-regular', iconFilled: 'fluent:heart-24-filled', label: 'Favoris', to: '/favorites' }
+  { id: 'home', icon: 'fluent:home-24-regular', iconFilled: 'fluent:home-24-filled', labelKey: 'nav.home', to: '/' },
+  { id: 'schedule', icon: 'fluent:calendar-24-regular', iconFilled: 'fluent:calendar-24-filled', labelKey: 'nav.schedule', to: '/schedule' },
+  { id: 'stream', icon: 'fluent:play-circle-24-regular', iconFilled: 'fluent:play-circle-24-filled', labelKey: 'nav.stream', to: '/stream', isCenter: true },
+  { id: 'results', icon: 'fluent:trophy-24-regular', iconFilled: 'fluent:trophy-24-filled', labelKey: 'nav.results', to: '/results' },
+  { id: 'favorites', icon: 'fluent:heart-24-regular', iconFilled: 'fluent:heart-24-filled', labelKey: 'nav.favorites', to: '/favorites' }
 ]
 
-const pageTitles: Record<string, string> = {
-  '/': 'Accueil',
-  '/schedule': 'Programme',
-  '/stream': 'Directs',
-  '/results': 'Résultats',
-  '/favorites': 'Mon Planning'
+const pageTitleKeys: Record<string, string> = {
+  '/': 'pages.home',
+  '/schedule': 'pages.schedule',
+  '/stream': 'pages.stream',
+  '/results': 'pages.results',
+  '/favorites': 'pages.favorites'
 }
 
-const currentPageTitle = computed(() => pageTitles[route.path] || 'Accueil')
+const currentPageTitle = computed(() => t(pageTitleKeys[route.path] || 'pages.home'))
+
+// Language toggle
+const toggleLocale = () => {
+  const newLocale = locale.value === 'fr' ? 'de' : 'fr'
+  setLocale(newLocale)
+}
 
 // Page meta-based visibility for header/footer (default: shown)
 const routeMeta = computed(() => (route.meta || {}) as Record<string, any>)
@@ -95,13 +102,23 @@ provide('openGroupDetails', openGroupDetails)
             <h1 class="text-white text-xl font-bold">{{ currentPageTitle }}</h1>
             
             <div class="flex items-center gap-2">
+              <!-- Language Toggle Button -->
+              <button 
+                @click="toggleLocale"
+                class="p-2 hover:bg-white/10 rounded-lg transition-colors relative flex items-center gap-1"
+                :aria-label="locale === 'fr' ? 'Auf Deutsch wechseln' : 'Passer en français'"
+              >
+                <span class="text-white text-sm font-bold uppercase">{{ locale }}</span>
+                <Icon name="fluent:globe-24-regular" class="w-4 h-4 text-white/70" />
+              </button>
+              
               <!-- PWA Install Button - Visible only when installation is available -->
               <Transition name="badge-pop">
                 <button 
                   v-if="isInstallAvailable && !isStandalone"
                   @click="showInstallPrompt(true)"
                   class="p-2 hover:bg-white/10 rounded-lg transition-colors relative animate-pulse"
-                  aria-label="Installer l'application"
+                  :aria-label="t('pwa.installApp')"
                 >
                   <Icon name="fluent:arrow-download-24-regular" class="w-5 h-5 text-cyan-400" />
                 </button>
@@ -160,7 +177,7 @@ provide('openGroupDetails', openGroupDetails)
             :to="item.to"
             class="relative flex flex-col items-center justify-center transition-all"
             :class="{ 'scale-125': item.isCenter }"
-            :aria-label="item.label"
+            :aria-label="t(item.labelKey)"
           >
             <div 
               class="p-2 rounded-xl transition-all"

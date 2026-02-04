@@ -6,6 +6,7 @@ const props = defineProps<{
   manifestUrl?: string
 }>()
 
+const { t } = useI18n()
 const pwaInstallRef = ref<HTMLElement | null>(null)
 const showInstallButton = ref(false)
 
@@ -75,7 +76,7 @@ defineExpose({
       name="LiveStreamApp FSG"
       description="Suivez les scores en direct de la FSG"
       icon="/icons/logo_livestreamappv3-192.png"
-      install-description="Installez l'application pour une meilleure expérience !"
+      :install-description="t('pwa.installDescription')"
       disable-install-description="false"
       disable-screenshots="true"
       disable-close="false"

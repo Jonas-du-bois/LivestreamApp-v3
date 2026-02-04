@@ -10,6 +10,8 @@ import { useNotificationsStore } from '#imports'
 
 definePageMeta({ header: false, footer: false })
 
+const { t } = useI18n()
+const { translateApparatus } = useTranslatedData()
 const { token: adminToken, login, logout, loginError, isLoggingIn } = useAdminAuth()
 const notificationsStore = useNotificationsStore()
 const passwordInput = ref('')
@@ -33,7 +35,7 @@ const sendTestNotification = async (type: NotificationType) => {
     
     notificationResult.value = { 
       success: true, 
-      message: `Notification "${type}" envoyée !`
+      message: t('admin.notificationSent', { type })
     }
     
     // Auto-hide result and close menu after delay
@@ -45,7 +47,7 @@ const sendTestNotification = async (type: NotificationType) => {
     console.error('[Dashboard] Test notification error:', e)
     notificationResult.value = { 
       success: false, 
-      message: e.message || 'Erreur lors de l\'envoi'
+      message: e.message || t('admin.notificationError')
     }
   } finally {
     isSendingNotification.value = false
@@ -130,14 +132,14 @@ const refreshAll = async () => {
 }
 
 const handleReseed = async () => {
-  if (!confirm('⚠️ ATTENTION ⚠️\n\nCela va EFFACER toute la base de données et regénérer des données de test fraîches (live maintenant).\n\nÊtes-vous sûr de vouloir continuer ?')) {
+  if (!confirm(t('admin.reseedWarning'))) {
     return
   }
 
   try {
     const res = await AdminService.seedDatabase()
     if (res && res.success) {
-      alert(`Database reseeded!\nPassages: ${res.summary.passages}\nStreams: ${res.summary.streams}`)
+      alert(t('admin.reseedSuccess', { passages: res.summary.passages, streams: res.summary.streams }))
       await refreshAll()
     }
   } catch (e) {
@@ -155,10 +157,10 @@ const getStreamForPassage = (passage: PassageEnriched): Stream | undefined => {
 const handleAuthError = (e: any) => {
   console.error('Operation failed:', e)
   if (e.statusCode === 401 || e.response?.status === 401) {
-    alert('Session expired. Please log in again.')
+    alert(t('admin.sessionExpired'))
     logout()
   } else {
-    alert('An error occurred: ' + (e.message || 'Unknown error'))
+    alert(t('admin.errorOccurred', { error: e.message || 'Unknown error' }))
   }
 }
 
@@ -179,7 +181,7 @@ const updateScore = async (passage: PassageEnriched) => {
       passageId: passage._id!,
       score: passage.score
     })
-    alert('Score saved')
+    alert(t('admin.scoreSaved'))
   } catch (e) {
     handleAuthError(e)
   }
@@ -193,7 +195,7 @@ const updateStreamUrl = async (stream: Stream) => {
       url: stream.url,
       isLive: stream.isLive
     })
-    alert('Stream updated')
+    alert(t('admin.streamUpdated'))
   } catch (e) {
     handleAuthError(e)
   }
@@ -230,11 +232,11 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
 <template>
   <div class="min-h-screen p-4 md:p-8 text-white">
     <div v-if="!isAuthenticated" class="max-w-md mx-auto mt-20 glass-panel p-8 rounded-3xl text-center">
-      <h1 class="text-2xl font-bold mb-6">Admin Login</h1>
+      <h1 class="text-2xl font-bold mb-6">{{ t('admin.login') }}</h1>
       <input
         v-model="passwordInput"
         type="password"
-        placeholder="Mot de passe Administrateur"
+        :placeholder="t('admin.password')"
         class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white mb-4 focus:outline-none focus:border-cyan-400"
         :disabled="isLoggingIn"
         @keyup.enter="handleLogin"
@@ -245,14 +247,14 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
         :disabled="isLoggingIn"
         class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span v-if="isLoggingIn">Connexion...</span>
-        <span v-else>Login</span>
+        <span v-if="isLoggingIn">{{ t('admin.loggingIn') }}</span>
+        <span v-else>{{ t('admin.loginBtn') }}</span>
       </button>
     </div>
 
     <div v-else>
       <header class="flex justify-between items-center mb-8 fixed top-0 left-4 right-4 bg-[#0B1120]/80 backdrop-blur-md z-50 p-4 -mx-4 rounded-b-2xl">
-        <h1 class="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
+        <h1 class="text-2xl md:text-3xl font-bold">{{ t('admin.dashboard') }}</h1>
         <div class="flex items-center gap-4">
           <div class="flex gap-2">
              <!-- Test Notifications Button with Dropdown -->
@@ -262,7 +264,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
                  class="bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 px-4 py-2 rounded-lg transition-colors border border-purple-500/20 flex items-center gap-2"
                >
                  <Icon name="fluent:alert-24-regular" class="w-4 h-4" />
-                 Test Notif
+                 {{ t('admin.testNotif') }}
                </button>
                
                <!-- Dropdown Menu -->
@@ -274,10 +276,10 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
                    <div class="p-3">
                      <p class="text-xs text-white/40 px-2 py-2 font-medium uppercase tracking-wider flex items-center gap-2">
                        <Icon name="fluent:alert-24-regular" class="w-3 h-3" />
-                       Tester les notifications
+                       {{ t('admin.testNotifications') }}
                      </p>
                      <p class="text-xs text-white/30 px-2 mb-3">
-                       Envoie une notification (in-app + navigateur)
+                       {{ t('admin.sendNotification') }}
                      </p>
                      
                      <div class="space-y-1">
@@ -312,7 +314,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
                        class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors font-medium disabled:opacity-50"
                      >
                        <Icon name="fluent:flash-24-regular" class="w-4 h-4" />
-                       Envoyer toutes (6)
+                       {{ t('admin.sendAll') }}
                      </button>
                      
                      <!-- Result feedback -->
@@ -330,16 +332,16 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
                </Transition>
              </div>
              
-             <button @click="handleReseed" class="bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 px-4 py-2 rounded-lg transition-colors border border-yellow-500/20">Reseed DB</button>
-             <button @click="refreshAll" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">Refresh</button>
-             <button @click="logout" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors">Logout</button>
+             <button @click="handleReseed" class="bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 px-4 py-2 rounded-lg transition-colors border border-yellow-500/20">{{ t('admin.reseedDb') }}</button>
+             <button @click="refreshAll" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">{{ t('admin.refresh') }}</button>
+             <button @click="logout" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors">{{ t('admin.logout') }}</button>
           </div>
         </div>
       </header>
 
       <!-- Streams Section -->
       <section class="mb-12 pt-24">
-        <h2 class="text-xl font-bold mb-4 text-cyan-400">Streams Management</h2>
+        <h2 class="text-xl font-bold mb-4 text-cyan-400">{{ t('admin.streamsManagement') }}</h2>
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <div v-for="stream in streams" :key="stream._id" class="glass-panel p-6 rounded-2xl">
             <h3 class="font-bold mb-2 flex justify-between">
@@ -348,7 +350,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
             </h3>
             <div class="space-y-4">
               <div>
-                <label class="text-xs text-white/60 block mb-1">YouTube/Video URL</label>
+                <label class="text-xs text-white/60 block mb-1">{{ t('admin.youtubeUrl') }}</label>
                 <input
                   v-model="stream.url"
                   class="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white focus:border-cyan-400"
@@ -358,9 +360,9 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
               <!-- Ultra Modern Liquid Glass Toggle Switch -->
               <div class="flex items-center justify-between py-2">
                 <div class="flex flex-col">
-                  <span class="text-sm font-semibold text-white/90 mb-0.5">Stream Live</span>
+                  <span class="text-sm font-semibold text-white/90 mb-0.5">{{ t('admin.streamLive') }}</span>
                   <span class="text-xs text-white/40">
-                    {{ stream.isLive ? 'Broadcasting now' : 'Currently offline' }}
+                    {{ stream.isLive ? t('admin.broadcastingNow') : t('admin.currentlyOffline') }}
                   </span>
                 </div>
                 
@@ -459,7 +461,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
                     <span v-else class="w-2.5 h-2.5 rounded-full bg-white/20"></span>
                     
                     <span class="font-bold tracking-wide">
-                      {{ stream.isLive ? 'LIVE STREAMING' : 'OFFLINE' }}
+                      {{ stream.isLive ? t('admin.liveStreaming') : t('admin.offline') }}
                     </span>
                   </div>
                 </div>
@@ -479,7 +481,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
                 @click="updateStreamUrl(stream)"
                 class="w-full bg-white/10 hover:bg-white/20 py-2.5 rounded-lg text-sm font-medium transition-all hover:shadow-lg"
               >
-                Update Stream
+                {{ t('admin.updateStream') }}
               </button>
             </div>
           </div>
@@ -489,7 +491,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
       <!-- Passages Section -->
       <section>
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-cyan-400">Passages ({{ filteredPassages.length }})</h2>
+          <h2 class="text-xl font-bold text-cyan-400">{{ t('admin.passages') }} ({{ filteredPassages.length }})</h2>
           <select
             v-model="selectedLocation"
             class="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-400"
@@ -505,7 +507,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
               <div class="font-bold text-lg leading-tight mb-1">{{ passage.group.name }}</div>
               <div class="text-sm text-white/60 flex items-center gap-2">
                 <Icon :name="passage.apparatus.icon || 'fluent:sport-24-regular'" class="w-4 h-4" />
-                {{ passage.apparatus.name }}
+                {{ translateApparatus(passage.apparatus.code, passage.apparatus.name) }}
               </div>
             </div>
 
@@ -525,7 +527,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
             <!-- Scores -->
             <div class="flex items-center gap-2 flex-1 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
                <div class="flex flex-col">
-                 <label class="text-[10px] text-white/40 text-center">Note Finale</label>
+                 <label class="text-[10px] text-white/40 text-center">{{ t('admin.finalScore') }}</label>
                 <input v-model.number="passage.score" step="0.01" max="10" class="w-24 bg-black/20 border border-white/10 rounded-lg p-1.5 text-sm text-center font-bold focus:border-cyan-400" />
               </div>
               <button @click="updateScore(passage)" class="mt-3 bg-green-500/20 text-green-400 hover:bg-green-500/30 p-2 rounded-lg transition-colors" title="Save Score">
@@ -536,9 +538,9 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
             <!-- Stream Quick Action -->
             <div class="lg:w-1/4 w-full bg-white/5 p-3 rounded-xl border border-white/5">
                <div class="text-[10px] text-white/40 mb-1 flex justify-between">
-                 <span>Stream URL</span>
+                 <span>{{ t('admin.streamUrl') }}</span>
                  <span v-if="getStreamForPassage(passage)" class="text-cyan-400/80">{{ getStreamForPassage(passage)?.name }}</span>
-                 <span v-else class="text-red-400/80">No Stream</span>
+                 <span v-else class="text-red-400/80">{{ t('admin.noStream') }}</span>
                </div>
                <div class="flex gap-2">
                  <input
@@ -549,7 +551,7 @@ useSocketRoom(['streams', 'live-scores', 'schedule-updates'], [
                    placeholder="URL"
                  />
                  <div v-else class="text-xs text-white/40 italic flex items-center justify-center w-full">
-                    No matching stream found
+                    {{ t('admin.noMatchingStream') }}
                  </div>
                  <button
                    v-if="getStreamForPassage(passage)"

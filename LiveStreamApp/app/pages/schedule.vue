@@ -3,19 +3,28 @@ import { PublicService } from '../services/public.service'
 import { useFavoritesStore } from '../stores/favorites'
 import { storeToRefs } from 'pinia'
 
+const { t, locale } = useI18n()
+const { translateApparatus, translateDay, formatLocalizedTime } = useTranslatedData()
 const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
 
 const selectedDay = useState<string>('schedule-selected-day', () => '')
-const selectedFilter = useState('schedule-selected-filter', () => 'Tout')
+const selectedFilter = useState('schedule-selected-filter', () => '')
 const filtersStore = useScheduleFilters()
+
+// Initialize selectedFilter with translated 'all' on mount
+onMounted(() => {
+  if (!selectedFilter.value) {
+    selectedFilter.value = t('common.all')
+  }
+})
 
 // 1. Paramètres réactifs (Computed) - Smart Fetching
 const apiParams = computed(() => ({
   day: selectedDay.value,
   // On priorise le filtre local "Agrès", sinon on prend ceux du FilterSheet
-  apparatus: selectedFilter.value !== 'Tout'
+  apparatus: selectedFilter.value !== t('common.all')
     ? selectedFilter.value
     : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus.join(',') : undefined),
   // Filtres dynamiques provenant du store (FilterSheet)
@@ -55,13 +64,21 @@ const availableDays = computed(() => {
   return days.length > 0 ? days : ['samedi', 'dimanche']
 })
 
-// Filters - stored once, not recomputed on every data change
-const filters = ref<string[]>(['Tout', 'Sol', 'Barres', 'Saut'])
+// Filters - computed to react to locale changes
+const filters = computed(() => {
+  const apparatus = scheduleResponse.value?.meta?.availableApparatus || []
+  const apparatusFilters = apparatus.map((a: { code: string; name: string }) => ({
+    code: a.name, // On utilise le name pour le filtre API (compatibilité)
+    label: translateApparatus(a.code, a.name)
+  }))
+  return [t('common.all'), ...apparatusFilters]
+})
 
-// Initialize filters once when metadata is available
-watchEffect(() => {
-  if (scheduleResponse.value?.meta?.availableApparatus && filters.value.length <= 4) {
-    filters.value = ['Tout', ...scheduleResponse.value.meta.availableApparatus]
+// Reset selectedFilter when locale changes (if it was "Tout"/"Alli")
+watch(locale, () => {
+  // Reset to translated "all" if current filter is the old "all" value
+  if (selectedFilter.value === 'Tout' || selectedFilter.value === 'Alli') {
+    selectedFilter.value = t('common.all')
   }
 })
 
@@ -71,7 +88,7 @@ const filteredSchedule = computed(() => {
 })
 
 const formatTime = (isoString: string) => {
-  return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return formatLocalizedTime(isoString)
 }
 
 const toggleFavorite = (id: string, event: Event) => {
@@ -110,14 +127,14 @@ useSocketRoom('schedule-updates', [
     <div class="glass-card p-1 flex overflow-x-auto">
       <button
         v-for="day in availableDays"
-        :key="day"
+        :key="`${day}-${locale}`"
         @click="selectedDay = day"
         class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap"
         :class="selectedDay === day
           ? 'bg-white/20 text-white' 
           : 'text-white/60'"
       >
-        {{ day }}
+        {{ translateDay(day) }}
       </button>
     </div>
 
@@ -125,14 +142,14 @@ useSocketRoom('schedule-updates', [
     <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scroll-smooth">
       <button
         v-for="filter in filters"
-        :key="filter"
-        @click.stop="selectedFilter = filter"
+        :key="`${filter.code || filter}-${locale}`"
+        @click.stop="selectedFilter = filter.code || filter"
         class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all"
-        :class="selectedFilter === filter
+        :class="selectedFilter === (filter.code || filter)
           ? 'bg-cyan-400 text-[#0B1120]'
           : 'glass-card text-white/80'"
       >
-        {{ filter }}
+        {{ filter.label || filter }}
       </button>
     </div>
 
@@ -157,9 +174,9 @@ useSocketRoom('schedule-updates', [
           <div class="flex-1 min-w-0 pt-0.5">
             <h4 class="text-white font-bold text-base leading-tight mb-1.5">{{ item.group.name }}</h4>
             <div class="flex items-center gap-2 text-sm">
-              <span class="text-white/60">Groupe</span>
+              <span class="text-white/60">{{ t('schedule.group') }}</span>
               <span class="text-white/40">•</span>
-              <span class="text-purple-400">{{ item.apparatus.name }}</span>
+              <span class="text-purple-400">{{ translateApparatus(item.apparatus.code, item.apparatus.name) }}</span>
             </div>
           </div>
 
@@ -168,7 +185,7 @@ useSocketRoom('schedule-updates', [
             <button 
               @click="item._id && toggleFavorite(item._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              :aria-label="(item._id && isFavorite(item._id)) ? `Retirer ${item.group?.name || 'ce groupe'} des favoris` : `Ajouter ${item.group?.name || 'ce groupe'} aux favoris`"
+              :aria-label="(item._id && isFavorite(item._id)) ? t('schedule.removeFromFavorites', { name: item.group?.name || '' }) : t('schedule.addToFavorites', { name: item.group?.name || '' })"
             >
               <Icon 
                 :name="(item._id && isFavorite(item._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"

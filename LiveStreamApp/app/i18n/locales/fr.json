@@ -1,0 +1,254 @@
+{
+  "common": {
+    "back": "Retour",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "apply": "Appliquer",
+    "clear": "Effacer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "all": "Tout",
+    "watch": "Regarder",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "noResults": "Aucun résultat",
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "unknown": "Inconnu"
+  },
+  "nav": {
+    "home": "Accueil",
+    "schedule": "Programme",
+    "stream": "Directs",
+    "results": "Résultats",
+    "favorites": "Favoris"
+  },
+  "pages": {
+    "home": "Accueil",
+    "schedule": "Programme",
+    "stream": "Directs",
+    "results": "Résultats",
+    "favorites": "Mon Planning"
+  },
+  "home": {
+    "live": "EN DIRECT",
+    "happeningNow": "En piste maintenant",
+    "weather": "Météo",
+    "plan": "Plan",
+    "restaurant": "Restau"
+  },
+  "schedule": {
+    "group": "Groupe",
+    "addToFavorites": "Ajouter {name} aux favoris",
+    "removeFromFavorites": "Retirer {name} des favoris"
+  },
+  "results": {
+    "noResults": "Aucun résultat disponible pour le moment.",
+    "podium": "Podium",
+    "fullRanking": "Classement complet",
+    "noApparatusResults": "Aucun résultat pour cet agrès."
+  },
+  "favorites": {
+    "nextFavorite": "Prochain passage favori",
+    "inProgress": "En cours",
+    "mySchedule": "Mon Programme",
+    "pastEvents": "Événements passés",
+    "noFavorites": "Aucun favori pour le moment",
+    "noFavoritesHint": "Ajoutez des groupes en favoris depuis le programme pour créer votre planning personnalisé",
+    "removeFromFavorites": "Retirer {name} des favoris"
+  },
+  "stream": {
+    "liveStreams": "Flux en direct",
+    "onTrack": "En piste",
+    "noLiveStreams": "Aucun flux en direct",
+    "liveStreamsWillAppear": "Les diffusions en direct apparaîtront ici.",
+    "offlineStreams": "Flux hors ligne",
+    "offline": "Hors ligne",
+    "streamUnavailable": "Flux non disponible",
+    "backToStreams": "Retour aux directs",
+    "live": "LIVE",
+    "liveNow": "En Direct",
+    "onPracticable": "Sur le praticable :",
+    "noCurrentPassage": "Aucun passage en cours pour le moment.",
+    "streamNotFound": "Stream introuvable",
+    "backToList": "Retourner à la liste",
+    "playerBlocked": "Le lecteur intégré n'a pas pu se charger (une extension peut bloquer les requêtes). Ouvrir le flux en externe :",
+    "openStream": "Ouvrir le flux",
+    "openExternalLink": "Ouvrir le lien externe",
+    "noLinkAvailable": "Aucun lien disponible pour ce flux."
+  },
+  "food": {
+    "title": "Restauration",
+    "subtitle": "Découvrez nos stands pour reprendre des forces entre deux compétitions.",
+    "all": "Tout",
+    "hotMeals": "Repas Chauds",
+    "snacks": "Snacks & Burgers",
+    "drinks": "Bar & Boissons",
+    "paymentMethods": "Moyens de paiement",
+    "paymentInfo": "Cash, Twint & Cartes bancaires acceptés partout.",
+    "onTheMenu": "Au Menu",
+    "noFilterMatch": "Aucun stand ne correspond à ce filtre.",
+    "spots": {
+      "cantine": {
+        "name": "La Cantine Centrale",
+        "type": "Restauration",
+        "description": "Le cœur de l'événement. Plats chauds traditionnels, pâtes fraîches et une grande zone assise conviviale."
+      },
+      "burger": {
+        "name": "Burger Express",
+        "type": "Food Truck",
+        "description": "Des burgers gourmets faits minute avec du bœuf local et du fromage de la région."
+      },
+      "raclette": {
+        "name": "La Raclette du Gym",
+        "type": "Tradition",
+        "description": "L'incontournable raclette valaisanne coulée sur demande. Ambiance chaleureuse garantie."
+      },
+      "bar": {
+        "name": "Le Bar des Sports",
+        "type": "Boissons",
+        "description": "Le point de rendez-vous pour fêter les résultats. Bières locales, minérales et bonne humeur."
+      }
+    },
+    "menu": {
+      "steakFrites": "Assiette Steak-Frites",
+      "pasta": "Pâtes (Bolo / Pesto)",
+      "salad": "Salade Mêlée",
+      "classicBurger": "Le Classic (Bœuf)",
+      "vaudoisBurger": "Le Vaudois (Tomme)",
+      "fries": "Frites Maison",
+      "raclettePortion": "Portion Raclette",
+      "valaisanBoard": "Planchette Valaisanne",
+      "hotTea": "Thé Chaud",
+      "beer": "Bière Pression (3dl)",
+      "water": "Minérales (5dl)",
+      "coffee": "Café / Renversé"
+    }
+  },
+  "plan": {
+    "back": "Retour",
+    "competition": "Concours",
+    "food": "Food",
+    "info": "Infos",
+    "pois": {
+      "mainEntrance": "Entrée Principale",
+      "hallA": "Salle de Concours A",
+      "hallB": "Salle de Concours B",
+      "foodCourt": "Food Court",
+      "restrooms": "Sanitaires"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "allRead": "Tout est lu",
+    "unread": "{count} non lue | {count} non lues",
+    "markAllAsRead": "Tout marquer comme lu",
+    "noNotifications": "Aucune notification",
+    "notificationsWillAppear": "Les notifications apparaîtront ici lorsqu'il y aura de l'activité",
+    "justNow": "À l'instant",
+    "minutesAgo": "Il y a {count} min",
+    "hoursAgo": "Il y a {count} h",
+    "yesterday": "Hier",
+    "daysAgo": "Il y a {count} jours",
+    "markAsRead": "Marquer comme lu",
+    "delete": "Supprimer",
+    "closeNotifications": "Fermer les notifications"
+  },
+  "search": {
+    "placeholder": "Rechercher un groupe, passage, salle...",
+    "clearSearch": "Effacer la recherche",
+    "closeSearch": "Fermer la recherche",
+    "all": "Tout",
+    "groups": "Groupes",
+    "passages": "Passages",
+    "live": "En direct",
+    "noResults": "Aucun résultat trouvé",
+    "tryAnother": "Essayez une autre recherche",
+    "quickLinks": "Accès rapides",
+    "livePassages": "Passages en direct",
+    "allLiveStreams": "Tous les directs",
+    "seeAll": "Voir tout",
+    "seeResults": "Voir les résultats"
+  },
+  "filters": {
+    "title": "Filtres",
+    "apparatus": "Engin",
+    "division": "Division",
+    "hall": "Salle",
+    "clear": "Effacer",
+    "apply": "Appliquer"
+  },
+  "group": {
+    "gymnasts": "Gymnastes",
+    "monitors": "Moniteurs",
+    "average": "Moyenne",
+    "mixedGroup": "Groupe Mixte",
+    "mixedGroupInfo": "Ce groupe participe dans la catégorie mixte, combinant gymnastes féminins et masculins.",
+    "historicalPerformance": "Historique des performances",
+    "timeline": "Timeline",
+    "statistics": "Statistiques",
+    "overview": "Vue d'ensemble",
+    "historyAvg": "Moy. Hist.",
+    "staffTeam": "Équipe d'encadrement",
+    "completedPassages": "Passages terminés",
+    "averageScore": "Note Moyenne",
+    "daySchedule": "Déroulement de la journée",
+    "inProgress": "EN COURS",
+    "upcoming": "À venir",
+    "addToFavorites": "Ajouter aux Favoris",
+    "removeFromFavorites": "Retirer des Favoris",
+    "passagesInGroup": "{count} passage dans ce groupe | {count} passages dans ce groupe",
+    "loadingDashboard": "Chargement du tableau de bord...",
+    "loadError": "Impossible de charger les détails du groupe."
+  },
+  "pwa": {
+    "installApp": "Installer l'application",
+    "installDescription": "Installez l'application pour une meilleure expérience !"
+  },
+  "admin": {
+    "login": "Admin Login",
+    "password": "Mot de passe Administrateur",
+    "loginBtn": "Login",
+    "loggingIn": "Connexion...",
+    "dashboard": "Admin Dashboard",
+    "testNotif": "Test Notif",
+    "testNotifications": "Tester les notifications",
+    "sendNotification": "Envoie une notification (in-app + navigateur)",
+    "sendAll": "Envoyer toutes (6)",
+    "notificationSent": "Notification \"{type}\" envoyée !",
+    "notificationError": "Erreur lors de l'envoi",
+    "reseedDb": "Reseed DB",
+    "refresh": "Refresh",
+    "logout": "Logout",
+    "reseedWarning": "⚠️ ATTENTION ⚠️\n\nCela va EFFACER toute la base de données et regénérer des données de test fraîches (live maintenant).\n\nÊtes-vous sûr de vouloir continuer ?",
+    "reseedSuccess": "Database reseeded!\nPassages: {passages}\nStreams: {streams}",
+    "sessionExpired": "Session expired. Please log in again.",
+    "errorOccurred": "An error occurred: {error}",
+    "streamsManagement": "Streams Management",
+    "youtubeUrl": "YouTube/Video URL",
+    "streamLive": "Stream Live",
+    "broadcastingNow": "Broadcasting now",
+    "currentlyOffline": "Currently offline",
+    "liveStreaming": "LIVE STREAMING",
+    "offline": "OFFLINE",
+    "updateStream": "Update Stream",
+    "passages": "Passages",
+    "finalScore": "Note Finale",
+    "streamUrl": "Stream URL",
+    "noStream": "No Stream",
+    "noMatchingStream": "No matching stream found",
+    "scoreSaved": "Score saved",
+    "streamUpdated": "Stream updated"
+  },
+
+  "historyLineChart": {
+    "best": "Meilleur",
+    "average": "Moyenne",
+    "trend": "Évolution"
+  },
+
+  "language": {
+    "fr": "Français",
+    "de": "Deutsch"
+  }
+}

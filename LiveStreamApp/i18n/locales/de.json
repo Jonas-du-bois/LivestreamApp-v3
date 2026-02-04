@@ -1,0 +1,287 @@
+{
+  "common": {
+    "back": "Zrugg",
+    "close": "Schliesse",
+    "search": "Sueche",
+    "apply": "Awände",
+    "clear": "Lösche",
+    "save": "Speichere",
+    "cancel": "Abbräche",
+    "all": "Alli",
+    "watch": "Luege",
+    "loading": "Am Lade...",
+    "error": "Fähler",
+    "noResults": "Kei Ergäbnis",
+    "open": "Offe",
+    "closed": "Gschlosse",
+    "unknown": "Unbekannt"
+  },
+  "nav": {
+    "home": "Heime",
+    "schedule": "Programm",
+    "stream": "Live",
+    "results": "Ergäbnis",
+    "favorites": "Favorite"
+  },
+  "pages": {
+    "home": "Heime",
+    "schedule": "Programm",
+    "stream": "Live",
+    "results": "Ergäbnis",
+    "favorites": "Mis Programm"
+  },
+  "home": {
+    "live": "LIVE",
+    "happeningNow": "Jetzt uf de Bühni",
+    "weather": "Wätter",
+    "plan": "Plan",
+    "restaurant": "Beizli"
+  },
+  "schedule": {
+    "group": "Gruppe",
+    "addToFavorites": "{name} zu de Favorite hinzuefüege",
+    "removeFromFavorites": "{name} vo de Favorite entferne"
+  },
+  "results": {
+    "noResults": "No kei Ergäbnis verfüegbar.",
+    "podium": "Podium",
+    "fullRanking": "Kompletti Rangliste",
+    "noApparatusResults": "Kei Ergäbnis für das Grät."
+  },
+  "favorites": {
+    "nextFavorite": "Nächste Favorit-Uftritt",
+    "inProgress": "Am Laufe",
+    "mySchedule": "Mis Programm",
+    "pastEvents": "Vergangeni Events",
+    "noFavorites": "No kei Favorite",
+    "noFavoritesHint": "Füeg Gruppe als Favorite vom Programm hinzu, zum dis persönliche Programm z'erstelle",
+    "removeFromFavorites": "{name} vo de Favorite entferne"
+  },
+  "stream": {
+    "liveStreams": "Live Streams",
+    "onTrack": "Uf de Bühni",
+    "noLiveStreams": "Kei Live Stream",
+    "liveStreamsWillAppear": "D'Live-Übertraagige erschined do.",
+    "offlineStreams": "Offline Streams",
+    "offline": "Offline",
+    "streamUnavailable": "Stream nöd verfüegbar",
+    "backToStreams": "Zrugg zu de Live",
+    "live": "LIVE",
+    "liveNow": "Jetzt Live",
+    "onPracticable": "Uf em Bode:",
+    "noCurrentPassage": "Im Momänt kei Uftritt.",
+    "streamNotFound": "Stream nöd gfunde",
+    "backToList": "Zrugg zur Liste",
+    "playerBlocked": "De integrierti Player het nöd chönne lade (e Erwiiterig blockiert vilicht d'Afrage). Stream extern öffne:",
+    "openStream": "Stream öffne",
+    "openExternalLink": "Externi Link öffne",
+    "noLinkAvailable": "Kei Link verfüegbar für de Stream."
+  },
+  "food": {
+    "title": "Verpflegig",
+    "subtitle": "Entdecket üsi Ständ zum Chraft tanke zwüsche de Wettkämpf.",
+    "all": "Alli",
+    "hotMeals": "Warmi Gricht",
+    "snacks": "Snacks & Burger",
+    "drinks": "Bar & Getränk",
+    "paymentMethods": "Zahligs-Arte",
+    "paymentInfo": "Cash, Twint & Charte überall akzeptiert.",
+    "onTheMenu": "Uf de Charte",
+    "noFilterMatch": "Kei Stand passt zu dem Filter.",
+    "spots": {
+      "cantine": {
+        "name": "D'Kantine",
+        "type": "Verpflegig",
+        "description": "S'Herz vom Event. Traditionelli warmi Gricht, frischi Teigware und e grossi gmüetlichi Sitzzone."
+      },
+      "burger": {
+        "name": "Burger Express",
+        "type": "Food Truck",
+        "description": "Gourmet-Burger frisch gmacht mit regionalem Rindfleisch und Chäs vo de Region."
+      },
+      "raclette": {
+        "name": "D'Gym-Raclette",
+        "type": "Tradition",
+        "description": "De unverzichtbari Walliser Raclette, uf Wunsch gschmelzt. Gmüetlichi Atmosphäre garantiert."
+      },
+      "bar": {
+        "name": "D'Sport-Bar",
+        "type": "Getränk",
+        "description": "De Träffpunkt zum d'Ergäbnis fiire. Lokali Bier, Mineralwasser und gueti Luune."
+      }
+    },
+    "menu": {
+      "steakFrites": "Steak-Frites Täller",
+      "pasta": "Teigware (Bolo / Pesto)",
+      "salad": "Gmischte Salat",
+      "classicBurger": "De Klassiker (Rind)",
+      "vaudoisBurger": "De Waadtländer (Tomme)",
+      "fries": "Huusgmachti Frites",
+      "raclettePortion": "Raclette Portion",
+      "valaisanBoard": "Walliser Plättli",
+      "hotTea": "Warmä Tee",
+      "beer": "Bier vom Fass (3dl)",
+      "water": "Mineralwasser (5dl)",
+      "coffee": "Kafi / Schale"
+    }
+  },
+  "plan": {
+    "back": "Zrugg",
+    "competition": "Wettkampf",
+    "food": "Esse",
+    "info": "Infos",
+    "pois": {
+      "mainEntrance": "Hauptiigang",
+      "hallA": "Wettkampf-Halle A",
+      "hallB": "Wettkampf-Halle B",
+      "foodCourt": "Food Court",
+      "restrooms": "WC"
+    }
+  },
+  "notifications": {
+    "title": "Benachrichtigunge",
+    "allRead": "Alles gläse",
+    "unread": "{count} ungläse",
+    "markAllAsRead": "Alles als gläse markiere",
+    "noNotifications": "Kei Benachrichtigunge",
+    "notificationsWillAppear": "D'Benachrichtigunge erschined do, wenn's Aktivität git",
+    "justNow": "Grad äbe",
+    "minutesAgo": "Vor {count} Min",
+    "hoursAgo": "Vor {count} Std",
+    "yesterday": "Geschter",
+    "daysAgo": "Vor {count} Täg",
+    "markAsRead": "Als gläse markiere",
+    "delete": "Lösche",
+    "closeNotifications": "Benachrichtigunge schliesse"
+  },
+  "search": {
+    "placeholder": "Gruppe, Uftritt, Saal sueche...",
+    "clearSearch": "Suechi lösche",
+    "closeSearch": "Suechi schliesse",
+    "all": "Alli",
+    "groups": "Gruppe",
+    "passages": "Uftritte",
+    "live": "Live",
+    "noResults": "Kei Ergäbnis gfunde",
+    "tryAnother": "Probier e anderi Suechi",
+    "quickLinks": "Schnällzuegriff",
+    "livePassages": "Live Uftritte",
+    "allLiveStreams": "Alli Live Streams",
+    "seeAll": "Alli ahluege",
+    "seeResults": "Ergäbnis ahluege"
+  },
+  "filters": {
+    "title": "Filter",
+    "apparatus": "Grät",
+    "division": "Division",
+    "hall": "Saal",
+    "clear": "Lösche",
+    "apply": "Awände"
+  },
+  "group": {
+    "gymnasts": "Turnende",
+    "monitors": "Leiter",
+    "average": "Schnitt",
+    "mixedGroup": "Gmischti Gruppe",
+    "mixedGroupInfo": "Die Gruppe turnt i de gmischte Kategorie, mit Turnende vo beidne Gschlechter.",
+    "historicalPerformance": "Historischi Performance",
+    "timeline": "Ziitstrahl",
+    "statistics": "Statistik",
+    "overview": "Überblick",
+    "historyAvg": "Hist. Schnitt",
+    "staffTeam": "Leitig",
+    "completedPassages": "Erledigti Uftritte",
+    "averageScore": "Durchschnittsnote",
+    "daySchedule": "Tagsablouf",
+    "inProgress": "AM LAUFE",
+    "upcoming": "Chunnt no",
+    "addToFavorites": "Zu Favorite hinzuefüege",
+    "removeFromFavorites": "Vo Favorite entferne",
+    "passagesInGroup": "{count} Uftritt i de Gruppe | {count} Uftritte i de Gruppe",
+    "loadingDashboard": "Dashboard am Lade...",
+    "loadError": "D'Gruppedetails hend nöd chönne glade wärde."
+  },
+  "pwa": {
+    "installApp": "App installiere",
+    "installDescription": "Installieret d'App für e besseri Erfahrig!"
+  },
+  "admin": {
+    "login": "Admin Login",
+    "password": "Administrator Passwort",
+    "loginBtn": "Iilogge",
+    "loggingIn": "Am Verbinde...",
+    "dashboard": "Admin Dashboard",
+    "testNotif": "Test Notif",
+    "testNotifications": "Benachrichtigunge teste",
+    "sendNotification": "Sendet e Benachrichtigung (in-app + Browser)",
+    "sendAll": "Alli sände (6)",
+    "notificationSent": "Benachrichtigung \"{type}\" gsendet!",
+    "notificationError": "Fähler bim Sände",
+    "reseedDb": "Reseed DB",
+    "refresh": "Aktualisiere",
+    "logout": "Uslogge",
+    "reseedWarning": "⚠️ ACHTUNG ⚠️\n\nDas wird d'ganzi Datebank LÖSCHE und neui Teschtdate generiere (live jetzt).\n\nBisch sicher, dass du witt wiitermache?",
+    "reseedSuccess": "Datebank reseeded!\nUftritte: {passages}\nStreams: {streams}",
+    "sessionExpired": "Session abgloffe. Bitte neu iilogge.",
+    "errorOccurred": "E Fähler isch ufträtte: {error}",
+    "streamsManagement": "Streams Verwaltung",
+    "youtubeUrl": "YouTube/Video URL",
+    "streamLive": "Stream Live",
+    "broadcastingNow": "Jetzt am Sände",
+    "currentlyOffline": "Aktuell offline",
+    "liveStreaming": "LIVE STREAMING",
+    "offline": "OFFLINE",
+    "updateStream": "Stream aktualisiere",
+    "passages": "Uftritte",
+    "finalScore": "Schluss-Note",
+    "streamUrl": "Stream URL",
+    "noStream": "Kei Stream",
+    "noMatchingStream": "Kei passende Stream gfunde",
+    "scoreSaved": "Note gspeicheret",
+    "streamUpdated": "Stream aktualisiert"
+  },
+  "language": {
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "apparatus": {
+    "SS": "Bode",
+    "BA": "Barre",
+    "AB": "Schwingendi Ring",
+    "SA": "Sprung",
+    "RE": "Reck",
+    "BAS": "Stufebarre",
+    "CE": "Grät-Kombi",
+    "SO": "Bode",
+    "BP": "Barre",
+    "BF": "Reck",
+    "GYAE": "Turne mit Grät",
+    "GYSE": "Turne ohni Grät",
+    "ST": "Sprung"
+  },
+  "days": {
+    "lundi": "Mäntig",
+    "mardi": "Zischtig",
+    "mercredi": "Mittwuch",
+    "jeudi": "Dunschtig",
+    "vendredi": "Fritig",
+    "samedi": "Samschtig",
+    "dimanche": "Sunntig"
+  },
+  "categories": {
+    "ACTIFS": "Aktivi",
+    "MIXTE": "Gmischti"
+  },
+  "status": {
+    "finished": "Fertig",
+    "live": "Am Laufe",
+    "scheduled": "Geplant"
+  },
+  "historyLineChart": {
+    "best": "Beste",
+    "average": "Durchschnitt",
+    "trend": "Entwicklig",
+    "edition": "Auflage",
+    "note": "Note: {score} Pkt"
+  }
+}

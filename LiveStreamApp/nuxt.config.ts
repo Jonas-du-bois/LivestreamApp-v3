@@ -7,8 +7,24 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
-    '@nuxt/icon' 
+    '@nuxt/icon',
+    '@nuxtjs/i18n'
   ],
+
+  i18n: {
+    locales: [
+      { code: 'fr', name: 'Français', file: 'fr.json' },
+      { code: 'de', name: 'Deutsch', file: 'de.json' }
+    ],
+    defaultLocale: 'fr',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      alwaysRedirect: false,
+      fallbackLocale: 'fr'
+    }
+  },
 
   // Configuration Vue pour les custom elements (pwa-install)
   vue: {

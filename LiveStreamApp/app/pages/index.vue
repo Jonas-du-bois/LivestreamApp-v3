@@ -2,6 +2,9 @@
 import { PublicService } from '../services/public.service'
 import { useSocket } from '../composables/useSocket'
 
+const { t } = useI18n()
+const { translateApparatus } = useTranslatedData()
+
 interface Group {
   id: string
   name: string
@@ -28,8 +31,8 @@ const happeningNow = computed<Group[]>(() => {
 
     return {
       id: p.group?._id,
-      name: p.group?.name || 'Inconnu',
-      apparatus: p.apparatus?.name || '',
+      name: p.group?.name || t('common.unknown'),
+      apparatus: translateApparatus(p.apparatus?.code, p.apparatus?.name),
       apparatusCode: p.apparatus?.code,
       salle: p.location || '',
       category: '',
@@ -47,7 +50,7 @@ const heroTitle = computed(() => firstLivePassage.value?.group?.name || 'FSG Yve
 const heroSubtitle = computed(() => {
   if (!firstLivePassage.value) return 'Salle 1 • Sol'
   const loc = firstLivePassage.value.location || '—'
-  const app = firstLivePassage.value.apparatus?.name || ''
+  const app = translateApparatus(firstLivePassage.value.apparatus?.code, firstLivePassage.value.apparatus?.name)
   return `${loc} • ${app}`
 })
 
@@ -112,7 +115,7 @@ useSocketRoom('schedule-updates', [
         <div class="flex items-center gap-2 mb-3">
           <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
             <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-            <span class="text-white text-sm font-medium">EN DIRECT</span>
+            <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
           </div>
         </div>
 
@@ -137,7 +140,7 @@ useSocketRoom('schedule-updates', [
         <div class="flex items-center gap-2 mb-3">
           <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
             <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-            <span class="text-white text-sm font-medium">EN DIRECT</span>
+            <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
           </div>
         </div>
         
@@ -148,7 +151,7 @@ useSocketRoom('schedule-updates', [
 
     <!-- Happening Now Carousel -->
     <div>
-      <h3 class="text-white text-lg font-bold mb-4 px-1">En piste maintenant</h3>
+      <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('home.happeningNow') }}</h3>
       <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
         <div 
           v-for="group in happeningNow"
@@ -167,7 +170,7 @@ useSocketRoom('schedule-updates', [
             class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
           >
             <Icon name="fluent:play-24-filled" class="w-4 h-4" />
-            <span class="text-sm">Regarder</span>
+            <span class="text-sm">{{ t('common.watch') }}</span>
           </NuxtLink>
         </div>
       </div>
@@ -179,7 +182,7 @@ useSocketRoom('schedule-updates', [
         <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:weather-partly-cloudy-day-24-regular" class="w-6 h-6 text-cyan-400" />
         </div>
-        <span class="text-white/80 text-sm">Météo</span>
+        <span class="text-white/80 text-sm">{{ t('home.weather') }}</span>
         <span class="text-white font-bold mt-1">
           <template v-if="weatherPending">--</template>
           <template v-else-if="weatherResp && typeof weatherResp.temperature === 'number'">{{ Math.round(weatherResp.temperature) }}°C</template>
@@ -192,14 +195,14 @@ useSocketRoom('schedule-updates', [
         <div class="w-12 h-12 rounded-full bg-purple-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:location-24-regular" class="w-6 h-6 text-purple-400" />
         </div>
-        <span class="text-white/80 text-sm">Plan</span>
+        <span class="text-white/80 text-sm">{{ t('home.plan') }}</span>
       </NuxtLink>
       
       <NuxtLink to="/food" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg">
         <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:food-24-regular" class="w-6 h-6 text-cyan-400" />
         </div>
-        <span class="text-white/80 text-sm">Restau</span>
+        <span class="text-white/80 text-sm">{{ t('home.restaurant') }}</span>
       </NuxtLink>
     </div>
   </div>

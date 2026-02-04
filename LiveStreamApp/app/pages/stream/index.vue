@@ -2,6 +2,9 @@
 import { ref, computed, onMounted } from 'vue'
 import type { Stream } from '../../types/api'
 
+const { t } = useI18n()
+const { translateApparatus } = useTranslatedData()
+
 interface StreamDisplay {
   id: string
   title: string
@@ -10,6 +13,7 @@ interface StreamDisplay {
   salle?: string
   currentGroup?: string
   currentApparatus?: string
+  currentApparatusCode?: string
 }
 
 // Use refs for reactive data that updates in real-time
@@ -101,6 +105,7 @@ const offlineStreams = computed<StreamDisplay[]>(() => {
 function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): StreamDisplay {
   let currentGroupName = '—'
   let currentApparatusName = ''
+  let currentApparatusCode = ''
   
   // Find live passage by stream's location (most reliable method)
   const livePassage = s.location ? passagesByLocation.get(s.location) : null
@@ -108,12 +113,14 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
   if (livePassage) {
     currentGroupName = livePassage.group?.name || '—'
     currentApparatusName = livePassage.apparatus?.name || ''
+    currentApparatusCode = livePassage.apparatus?.code || ''
   } else if (s.currentPassage) {
     // Fallback to currentPassage if no live passage found by location
     const cp = s.currentPassage
     if (typeof cp === 'object' && cp.group) {
       currentGroupName = cp.group.name || '—'
       currentApparatusName = cp.apparatus?.name || ''
+      currentApparatusCode = cp.apparatus?.code || ''
     }
   }
 
@@ -148,7 +155,8 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
     isLive: !!s.isLive,
     salle: s.location || '',
     currentGroup: currentGroupName,
-    currentApparatus: currentApparatusName
+    currentApparatus: currentApparatusName,
+    currentApparatusCode: currentApparatusCode
   }
 }
 </script>
@@ -158,7 +166,7 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
     <!-- Live Streams Section -->
     <div v-if="liveStreams.length > 0">
       <p class="text-white/60 text-sm px-1 mb-4">
-        Flux en direct
+        {{ t('stream.liveStreams') }}
       </p>
 
       <div class="grid grid-cols-1 gap-4">
@@ -178,7 +186,7 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
             <div class="absolute top-3 left-3 flex gap-2">
               <div class="bg-red-500/90 px-3 py-1.5 rounded-full flex items-center gap-2">
                 <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-                <span class="text-white text-xs font-bold">LIVE</span>
+                <span class="text-white text-xs font-bold">{{ t('stream.live') }}</span>
               </div>
               <div class="glass-card px-3 py-1.5">
                 <span class="text-white text-xs font-medium">{{ stream.salle }}</span>
@@ -195,7 +203,11 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
           <div class="p-4">
             <h3 class="text-white font-bold mb-1">{{ stream.title }}</h3>
             <p class="text-white/60 text-sm">
-              En piste: <span class="text-cyan-400">{{ stream.currentGroup }}</span>
+              {{ t('stream.onTrack') }}: <span class="text-cyan-400">{{ stream.currentGroup }}</span>
+              <template v-if="stream.currentApparatusCode">
+                <span class="text-white/40"> • </span>
+                <span class="text-purple-400">{{ translateApparatus(stream.currentApparatusCode, stream.currentApparatus) }}</span>
+              </template>
             </p>
           </div>
         </NuxtLink>
@@ -205,14 +217,14 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
     <!-- No Live Streams Message -->
     <div v-else class="glass-panel p-8 text-center">
       <Icon name="fluent:video-off-24-regular" class="w-16 h-16 text-white/30 mx-auto mb-4" />
-      <h2 class="text-white font-bold text-xl mb-2">Aucun flux en direct</h2>
-      <p class="text-white/60">Les diffusions en direct apparaîtront ici.</p>
+      <h2 class="text-white font-bold text-xl mb-2">{{ t('stream.noLiveStreams') }}</h2>
+      <p class="text-white/60">{{ t('stream.liveStreamsWillAppear') }}</p>
     </div>
 
     <!-- Offline Streams Section -->
     <div v-if="offlineStreams.length > 0">
       <p class="text-white/40 text-sm px-1 mb-4">
-        Flux hors ligne
+        {{ t('stream.offlineStreams') }}
       </p>
 
       <div class="grid grid-cols-1 gap-4 opacity-60">
@@ -231,7 +243,7 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
             <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
               <div class="text-center">
                 <Icon name="fluent:video-off-24-regular" class="w-10 h-10 text-white/50 mx-auto mb-2" />
-                <span class="text-white/50 text-sm font-medium">Hors ligne</span>
+                <span class="text-white/50 text-sm font-medium">{{ t('stream.offline') }}</span>
               </div>
             </div>
             
@@ -244,7 +256,7 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
 
           <div class="p-4">
             <h3 class="text-white/50 font-bold mb-1">{{ stream.title }}</h3>
-            <p class="text-white/30 text-sm">Flux non disponible</p>
+            <p class="text-white/30 text-sm">{{ t('stream.streamUnavailable') }}</p>
           </div>
         </div>
       </div>

@@ -4,6 +4,8 @@ import { useFavoritesStore } from '~/stores/favorites'
 import { storeToRefs } from 'pinia'
 import type { PassageEnriched } from '~/types/api'
 
+const { t } = useI18n()
+const { translateApparatus, formatLocalizedTime, formatLocalizedDate } = useTranslatedData()
 const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
@@ -50,7 +52,7 @@ const updateTimer = () => {
   const diff = target - now
 
   if (diff <= 0) {
-    timeToNext.value = 'En cours'
+    timeToNext.value = t('favorites.inProgress')
     return
   }
 
@@ -86,11 +88,11 @@ onUnmounted(() => {
 })
 
 const formatTime = (dateStr: string) => {
-  return new Date(dateStr).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })
+  return formatLocalizedTime(dateStr)
 }
 
 const formatDate = (dateStr: string) => {
-  return new Date(dateStr).toLocaleDateString('fr-CH', { weekday: 'long', day: 'numeric' })
+  return formatLocalizedDate(dateStr, { weekday: 'long', day: 'numeric' })
 }
 
 const toggleFavorite = (passageId: string, event: Event) => {
@@ -135,7 +137,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           <Icon name="fluent:timer-24-filled" class="w-24 h-24" />
         </div>
 
-        <p class="text-white/60 text-sm mb-2">Prochain passage favori</p>
+        <p class="text-white/60 text-sm mb-2">{{ t('favorites.nextFavorite') }}</p>
         <div class="flex items-baseline gap-2 mb-4">
           <h2 class="text-4xl font-bold text-white">{{ timeToNext }}</h2>
         </div>
@@ -146,7 +148,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           </div>
           <div>
             <h3 class="text-white font-bold">{{ nextEvent.group?.name }}</h3>
-            <p class="text-white/60 text-sm">{{ nextEvent.apparatus?.name }} • {{ nextEvent.location }}</p>
+            <p class="text-white/60 text-sm">{{ translateApparatus(nextEvent.apparatus?.code, nextEvent.apparatus?.name) }} • {{ nextEvent.location }}</p>
           </div>
         </div>
       </div>
@@ -155,7 +157,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
     <!-- Upcoming Events List -->
     <ClientOnly>
       <div v-if="upcomingPassages.length > 0">
-        <h3 class="text-white text-lg font-bold mb-4 px-1">Mon Programme</h3>
+        <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.mySchedule') }}</h3>
         <div class="space-y-3">
           <div
             v-for="passage in upcomingPassages"
@@ -173,14 +175,14 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               <div class="flex items-center gap-2 text-sm">
                  <span class="text-white/60">{{ passage.location }}</span>
                  <span class="text-white/40">•</span>
-                 <span class="text-purple-400">{{ passage.apparatus?.name }}</span>
+                 <span class="text-purple-400">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }}</span>
               </div>
             </div>
 
             <button
               @click="passage._id && toggleFavorite(passage._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              :aria-label="`Retirer ${passage.group?.name || 'ce groupe'} des favoris`"
+              :aria-label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
             >
               <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />
             </button>
@@ -192,7 +194,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
     <!-- Past Events List -->
     <ClientOnly>
       <div v-if="pastPassages.length > 0">
-        <h3 class="text-white text-lg font-bold mb-4 px-1">Événements passés</h3>
+        <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.pastEvents') }}</h3>
         <div class="space-y-3">
           <div
             v-for="passage in pastPassages"
@@ -210,14 +212,14 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               <div class="flex items-center gap-2 text-sm">
                  <span class="text-white/60">{{ passage.location }}</span>
                  <span class="text-white/40">•</span>
-                 <span class="text-purple-400">{{ passage.apparatus?.name }}</span>
+                 <span class="text-purple-400">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }}</span>
               </div>
             </div>
 
             <button
               @click="passage._id && toggleFavorite(passage._id, $event)"
               class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              :aria-label="`Retirer ${passage.group?.name || 'ce groupe'} des favoris`"
+              :aria-label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
             >
               <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />
             </button>
@@ -232,9 +234,9 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
          <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
             <Icon name="fluent:heart-broken-24-regular" class="w-8 h-8 text-white/40" />
          </div>
-         <h3 class="text-white font-bold text-lg mb-2">Aucun favori pour le moment</h3>
+         <h3 class="text-white font-bold text-lg mb-2">{{ t('favorites.noFavorites') }}</h3>
          <p class="text-white/60 text-sm">
-           Ajoutez des groupes en favoris depuis le programme pour créer votre planning personnalisé
+           {{ t('favorites.noFavoritesHint') }}
          </p>
       </div>
     </ClientOnly>

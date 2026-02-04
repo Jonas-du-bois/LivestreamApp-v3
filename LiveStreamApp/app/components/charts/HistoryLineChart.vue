@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Line } from 'vue-chartjs'
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -45,6 +46,9 @@ const props = withDefaults(defineProps<Props>(), {
   title: '',
   compact: false
 })
+
+
+const { t, locale } = useI18n()
 
 // Chart data
 const chartData = computed<ChartData<'line'>>(() => ({
@@ -134,8 +138,8 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
         size: 13
       },
       callbacks: {
-        title: (items) => `Édition ${items[0]?.label}`,
-        label: (item) => `Note: ${Number(item.raw).toFixed(2)} pts`
+        title: (items) => `${t('historyLineChart.edition')} ${items[0]?.label}`,
+        label: (item) => t('historyLineChart.note', { score: Number(item.raw).toFixed(2) })
       }
     }
   },
@@ -218,22 +222,22 @@ const trendValue = computed(() => {
 <template>
   <div class="history-chart">
     <!-- Chart Container -->
-    <div class="relative" :style="{ height: `${height}px` }">
+    <div class="relative" :style="{ height: `${height}px` }" :key="locale">
       <Line :data="chartData" :options="chartOptions" />
     </div>
 
     <!-- Stats Summary (optional) -->
     <div v-if="!compact" class="mt-4 pt-4 border-t border-white/10 grid grid-cols-3 gap-3 text-center">
       <div>
-        <div class="text-xs text-white/40 mb-1">Meilleur</div>
+        <div class="text-xs text-white/40 mb-1">{{ t('historyLineChart.best') }}</div>
         <div class="text-cyan-400 font-bold">{{ maxScore.toFixed(2) }}</div>
       </div>
       <div>
-        <div class="text-xs text-white/40 mb-1">Moyenne</div>
+        <div class="text-xs text-white/40 mb-1">{{ t('historyLineChart.average') }}</div>
         <div class="text-white font-bold">{{ avgScore.toFixed(2) }}</div>
       </div>
       <div>
-        <div class="text-xs text-white/40 mb-1">Évolution</div>
+        <div class="text-xs text-white/40 mb-1">{{ t('historyLineChart.trend') }}</div>
         <div 
           :class="[
             'font-bold flex items-center justify-center gap-1',
