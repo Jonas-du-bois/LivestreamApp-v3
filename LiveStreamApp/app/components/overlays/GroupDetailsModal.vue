@@ -130,8 +130,8 @@ const getInitials = (name: string) => {
 
 // Computed properties
 const categoryLabel = computed(() => {
-  if (!details.value?.info) return 'Groupe Actif'
-  return details.value.info.category === 'MIXTE' ? 'Groupe Mixte' : 'Groupe Actif'
+  if (!details.value?.info) return 'Actifs'
+  return details.value.info.category === 'MIXTE' ? 'Mixte' : 'Actifs'
 })
 
 const categoryColor = computed(() => {

@@ -271,7 +271,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               <!-- Group Info -->
               <div class="flex-1 min-w-0">
                 <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                <p class="text-white/60 text-sm">{{ result.group.category || 'Actifs/Actives' }}</p>
+                <p class="text-white/60 text-sm">{{ result.group.category || 'ACTIFS' }}</p>
               </div>
 
               <!-- Score -->
@@ -303,7 +303,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               <!-- Group Info -->
               <div class="flex-1 min-w-0">
                 <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                <p class="text-white/60 text-sm">{{ result.group.category || 'Mixtes' }}</p>
+                <p class="text-white/60 text-sm">{{ result.group.category || 'Mixte' }}</p>
               </div>
 
               <!-- Score -->

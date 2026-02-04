@@ -4,6 +4,93 @@ import PassageModel from '../../models/Passage';
 import StreamModel from '../../models/Stream';
 import SubscriptionModel from '../../models/Subscription';
 
+// --- MAPPING VILLES -> CANTONS SUISSES ---
+const CITY_TO_CANTON: Record<string, string> = {
+  // Canton de Vaud (VD)
+  'Lausanne': 'VD', 'Lausanne-Ville': 'VD', 'Lausanne Amis-Gym': 'VD', 'Lausanne Amis Gym': 'VD',
+  'Morges': 'VD', 'Pully': 'VD', 'Yverdon': 'VD', 'Yverdon-Ancienne': 'VD', 'Amis-Gyms Yverdon': 'VD',
+  'Ecublens': 'VD', 'Prilly': 'VD', 'Bussigny': 'VD', 'Nyon': 'VD', 'Aubonne': 'VD',
+  'Rolle': 'VD', 'Gym-Rolle': 'VD', 'Gym Rolle': 'VD', 'Saint-Prex': 'VD', 'Gym Saint-Prex': 'VD', 'St-Prex': 'VD',
+  'Cossonay': 'VD', 'Echallens': 'VD', 'Echallens FSG': 'VD', 'Vallorbe': 'VD',
+  'Grandson': 'VD', 'Yvonand': 'VD', 'Lucens': 'VD', 'Cully-Lutry': 'VD', 'Lutry La Riveraine': 'VD',
+  'Chavornay': 'VD', 'Baulmes': 'VD', 'Le Lieu - Vallée de Joux': 'VD', 'Chexbres': 'VD',
+  'Corcelles-le-Jorat': 'VD', 'Le Mont-sur-Lausanne': 'VD', 'Chailly-Lausanne': 'VD',
+  
+  // Canton de Genève (GE)
+  'Genève': 'GE', 'Lancy': 'GE', 'Veyrier': 'GE',
+  
+  // Canton de Fribourg (FR)
+  'Fribourg': 'FR', 'Bulle': 'FR', 'Romont': 'FR', 'Romont gym': 'FR', 'Romont Gym': 'FR',
+  'Domdidier': 'FR', 'Ursy': 'FR', 'Gym Ursy': 'FR', 'Charmey': 'FR', 'Marly': 'FR',
+  'Courtepin': 'FR', 'Attalens': 'FR', 'Gym Attalens': 'FR', 'Payerne': 'FR',
+  'La Tour-de-Trême': 'FR',
+  
+  // Canton de Neuchâtel (NE)
+  'Neuchâtel': 'NE', 'La Coudre': 'NE', 'Gym La Coudre': 'NE',
+  'Peseux': 'NE', 'Gym Peseux': 'NE', 'Serrières': 'NE', 'Gym Serrières': 'NE',
+  'Chézard-st-Martin': 'NE', 'Gym Chézard-st-Martin': 'NE', 'Gym Chézard-St-Martin': 'NE',
+  'Chézard-St-Martin': 'NE',
+  
+  // Canton du Valais (VS)
+  'Sion': 'VS', 'Agrès Gym 13 étoiles Sion': 'VS', 'Sion Fémina': 'VS',
+  'Martigny': 'VS', 'Martigny-Aurore': 'VS', 'Martigny Octoduria': 'VS',
+  'Fully': 'VS', 'Amis Gym Fully': 'VS', 'Monthey': 'VS', 'Monthey-gym': 'VS',
+  'Massongex': 'VS',
+  
+  // Canton de Berne (BE)
+  'Berne': 'BE', 'Kirchberg': 'BE', 'Niederscherli': 'BE',
+  
+  // Canton d'Argovie (AG)
+  'Neuenhof': 'AG', 'Wettingen': 'AG',
+  
+  // Canton de Lucerne (LU)
+  'Luzern': 'LU', 'Lucerne': 'LU',
+  
+  // Canton de Soleure (SO)
+  'Sins-Oberrüti': 'AG', // En fait Argovie
+  'Rain': 'LU', // En fait Lucerne
+  
+  // Canton du Tessin (TI)
+  'Mendrisio': 'TI',
+  
+  // Canton du Jura (JU)
+  'Vicques': 'JU', 'Fémina Vicques': 'JU',
+  
+  // Région lémanique - Canton de Vaud
+  'Vevey': 'VD', 'Vevey-Ancienne': 'VD', 'Vevey Jeunes-Patriotes': 'VD',
+  'Montreux': 'VD', 'Chailly-Montreux': 'VD', 'Chernex': 'VD',
+  'Blonay': 'VD', 'Corsier-Corseaux': 'VD', 'Corsier - Corseaux': 'VD',
+  'Chardonne-Jongny': 'VD', 'Villeneuve': 'VD', 'Gym Villeneuve': 'VD',
+  'Aigle-Alliance': 'VD', 'Bex': 'VD', 'Ollon/St-Triphon': 'VD',
+  'Roche': 'VD', 'La Tour': 'VD', 'Gym La Tour': 'VD',
+  
+  // Canton de Vaud - autres
+  'Avenches': 'VD', 'Forel-Savigny': 'VD', 'Amis-Gym Forel-Savigny': 'VD',
+};
+
+// Fonction pour extraire le canton à partir du nom complet du groupe
+const extractCanton = (groupName: string): string | undefined => {
+  // Extrait la partie avant le ":" (nom de la ville/société)
+  const cityPart = groupName.includes(':') ? groupName.split(':')[0]?.trim() : groupName.trim();
+  
+  if (!cityPart) return undefined;
+  
+  // Recherche directe dans le mapping
+  if (CITY_TO_CANTON[cityPart]) {
+    return CITY_TO_CANTON[cityPart];
+  }
+  
+  // Recherche fuzzy - cherche si cityPart contient une clé du mapping
+  for (const [city, canton] of Object.entries(CITY_TO_CANTON)) {
+    if (cityPart.includes(city) || city.includes(cityPart)) {
+      return canton;
+    }
+  }
+  
+  // Par défaut, retourne VD (Vaud) car c'est le canton principal de la compétition
+  return 'VD';
+};
+
 // --- DONNÉES BRUTES (Générées à partir de tes fichiers Excel) ---
 const RAW_SCHEDULE = {
   "actifs": [{"location": "Iles 1-2", "time": "07:30:00", "code": "CE", "group": "Grandson : Actifs-actives"}, {"location": "Iles 1-2", "time": "07:44:00", "code": "CE", "group": "Chavornay : Actifs-Actives"}, {"location": "Iles 1-2", "time": "07:58:00", "code": "CE", "group": "Gym Serrières : Actifs-Actives"}, {"location": "Iles 1-2", "time": "08:12:00", "code": "CE", "group": "Yverdon-Ancienne : Actifs-Actives"}, {"location": "Iles 1-2", "time": "08:26:00", "code": "CE", "group": "Echallens FSG : Agrès Actifs Plaisir"}, {"location": "Iles 1-2", "time": "08:40:00", "code": "CE", "group": "Gym Peseux : Actifs mixtes"}, {"location": "Iles 1-2", "time": "08:54:00", "code": "CE", "group": "Amis-Gyms Yverdon : VT-mixtes"}, {"location": "Iles 1-2", "time": "09:08:00", "code": "CE", "group": "Amis Gym Fully : Actifs"}, {"location": "Iles 1-2", "time": "09:22:00", "code": "CE", "group": "Chernex : Actifs-Mixtes"}, {"location": "Iles 1-2", "time": "09:36:00", "code": "CE", "group": "Vevey-Ancienne : Agrès Mixte"}, {"location": "Iles 1-2", "time": "09:50:00", "code": "CE", "group": "Chexbres : Actifs - Actives"}, {"location": "Iles 1-2", "time": "10:04:00", "code": "CE", "group": "Le Lieu - Vallée de Joux : Actifs"}, {"location": "Iles 1-2", "time": "10:18:00", "code": "CE", "group": "Aigle-Alliance : Actifs-Actives"}, {"location": "Iles 1-2", "time": "10:32:00", "code": "CE", "group": "Vevey Jeunes-Patriotes : Actifs-Actives"}, {"location": "Iles 1-2", "time": "10:46:00", "code": "CE", "group": "Montreux : Actifs Mixtes"}, {"location": "Iles 1-2", "time": "11:00:00", "code": "CE", "group": "Gym Chézard-st-Martin : Actif"}, {"location": "Iles 1-2", "time": "11:14:00", "code": "CE", "group": "Kirchberg : Aktive"}, {"location": "Iles 1-2", "time": "11:28:00", "code": "CE", "group": "Yvonand : Actifs-Actives"}, {"location": "Iles 1-2", "time": "11:42:00", "code": "CE", "group": "Agrès Gym 13 étoiles Sion : société"}, {"location": "Iles 1-2", "time": "11:56:00", "code": "CE", "group": "Neuenhof : Aktive"}, {"location": "Iles 1-2", "time": "12:10:00", "code": "CE", "group": "Gym La Coudre : Actifs"}, {"location": "Iles 1-2", "time": "12:24:00", "code": "CE", "group": "Mendrisio : Actifs-Actives"}, {"location": "Iles 1-2", "time": "12:31:00", "code": "BAS", "group": "Blonay : Actifs-Actives"}, {"location": "Iles 1-2", "time": "12:45:00", "code": "BP", "group": "Yvonand : Actifs-Actives"}, {"location": "Iles 1-2", "time": "12:59:00", "code": "BP", "group": "Fribourg : Actifs - actives"}, {"location": "Iles 1-2", "time": "13:13:00", "code": "BP", "group": "Corsier-Corseaux : Actifs-Actives"}, {"location": "Iles 1-2", "time": "13:27:00", "code": "BP", "group": "Ursy : Actifs"}, {"location": "Iles 1-2", "time": "13:41:00", "code": "BP", "group": "Lancy : Actifs-actives"}, {"location": "Iles 1-2", "time": "13:55:00", "code": "BP", "group": "Chardonne-Jongny : Actifs-Actives"}, {"location": "Iles 1-2", "time": "14:09:00", "code": "BP", "group": "Le Lieu - Vallée de Joux : Actifs"}, {"location": "Iles 1-2", "time": "14:23:00", "code": "BP", "group": "Gym Chézard-st-Martin : Actif"}, {"location": "Iles 1-2", "time": "14:37:00", "code": "BP", "group": "Gym La Coudre : Actifs"}, {"location": "Iles 1-2", "time": "14:51:00", "code": "BP", "group": "Montreux : Actifs Mixtes"}, {"location": "Iles 1-2", "time": "15:05:00", "code": "BP", "group": "Rain : Aktive"}, {"location": "Iles 1-2", "time": "15:19:00", "code": "BP", "group": "Luzern : Turn Leistungs-Zentrum"}, {"location": "Iles 1-2", "time": "15:47:00", "code": "BF", "group": "Agrès Gym 13 étoiles Sion : société"}, {"location": "Iles 1-2", "time": "16:01:00", "code": "BF", "group": "Le Lieu - Vallée de Joux : Actifs"}, {"location": "Iles 1-2", "time": "16:15:00", "code": "BF", "group": "Lausanne Amis Gym : Actifs"}, {"location": "Iles 1-2", "time": "16:29:00", "code": "BF", "group": "Vevey-Ancienne : Agrès Filles"}, {"location": "Iles 2-3", "time": "07:37:00", "code": "AB", "group": "Pully : Actifs-Actives"}, {"location": "Iles 2-3", "time": "07:51:00", "code": "AB", "group": "Avenches : Actifs"}, {"location": "Iles 2-3", "time": "08:05:00", "code": "AB", "group": "Morges : Actifs-Actives"}, {"location": "Iles 2-3", "time": "08:19:00", "code": "AB", "group": "Gym La Coudre : Actifs-Actives"}, {"location": "Iles 2-3", "time": "08:33:00", "code": "AB", "group": "Romont gym : Actifs-Actives"}, {"location": "Iles 2-3", "time": "08:47:00", "code": "AB", "group": "Domdidier : Actifs-Actives"}, {"location": "Iles 2-3", "time": "09:01:00", "code": "AB", "group": "Lancy : Actifs-actives"}, {"location": "Iles 2-3", "time": "09:15:00", "code": "AB", "group": "Fribourg : Actifs - actives"}, {"location": "Iles 2-3", "time": "09:29:00", "code": "AB", "group": "Ursy : Actifs"}, {"location": "Iles 2-3", "time": "09:43:00", "code": "AB", "group": "Nyon : Actifs-actives"}, {"location": "Iles 2-3", "time": "09:57:00", "code": "AB", "group": "Kirchberg : Aktive"}, {"location": "Iles 2-3", "time": "10:11:00", "code": "AB", "group": "Wettingen : Aktive"}, {"location": "Iles 2-3", "time": "10:25:00", "code": "AB", "group": "Luzern : Turn Leistungs-Zentrum"}, {"location": "Iles 2-3", "time": "10:39:00", "code": "AB", "group": "Vevey : Team Vevey"}, {"location": "Iles 2-3", "time": "11:07:00", "code": "AB", "group": "Finales"}, {"location": "Iles 2-3", "time": "11:21:00", "code": "AB", "group": "Finales"}, {"location": "Iles 2-3", "time": "11:35:00", "code": "AB", "group": "Finales"}, {"location": "Iles 2-3", "time": "12:38:00", "code": "ST", "group": "Charmey : Actifs"}, {"location": "Iles 2-3", "time": "12:52:00", "code": "ST", "group": "Avenches : Actifs"}, {"location": "Iles 2-3", "time": "13:06:00", "code": "ST", "group": "Chavornay : Actifs-Actives"}, {"location": "Iles 2-3", "time": "13:20:00", "code": "ST", "group": "Domdidier : Actifs-Actives"}, {"location": "Iles 2-3", "time": "13:34:00", "code": "ST", "group": "Gym La Coudre : Actifs-Actives"}, {"location": "Iles 2-3", "time": "13:48:00", "code": "ST", "group": "Gym Serrières : Actifs-Actives"}, {"location": "Iles 2-3", "time": "14:02:00", "code": "ST", "group": "Neuenhof : Aktive"}, {"location": "Iles 2-3", "time": "14:16:00", "code": "ST", "group": "Luzern : Turn Leistungs-Zentrum"}, {"location": "Iles 2-3", "time": "14:30:00", "code": "ST", "group": "Yvonand : Actifs-Actives"}, {"location": "Iles 2-3", "time": "14:44:00", "code": "ST", "group": "Wettingen : Aktive"}, {"location": "Iles 2-3", "time": "14:58:00", "code": "ST", "group": "Amis-Gyms Yverdon : Actifs-Actives"}, {"location": "Iles 2-3", "time": "15:12:00", "code": "ST", "group": "Bulle : Juniors mixtes"}, {"location": "Iles 2-3", "time": "15:26:00", "code": "ST", "group": "Gym Chézard-st-Martin : Actif"}, {"location": "Iles 2-3", "time": "15:54:00", "code": "GYAE", "group": "Aubonne : Gym & Danse Actives"}, {"location": "Iles 2-3", "time": "16:08:00", "code": "GYAE", "group": "Bex : Actives"}, {"location": "Iles 2-3", "time": "16:22:00", "code": "GYAE", "group": "Echallens : Gym Danse actives"}, {"location": "Iles 2-3", "time": "16:34:00", "code": "GYAE", "group": "Gym-Rolle : Actives Gymnastique"}, {"location": "Iles 2-3", "time": "16:40:00", "code": "GYAE", "group": "Prilly : Actives"}, {"location": "Iles 2-3", "time": "16:46:00", "code": "GYAE", "group": "Lausanne-Ville : Actives"}, {"location": "Iles 2-3", "time": "16:52:00", "code": "GYAE", "group": "Vallorbe : Gym-danse actives"}, {"location": "Iles 2-3", "time": "16:58:00", "code": "GYAE", "group": "Amis-Gyms Yverdon : Gym Active 35+"}, {"location": "Iles 2-3", "time": "17:04:00", "code": "GYAE", "group": "Morges : GD Actives"}, {"location": "Iles 2-3", "time": "17:10:00", "code": "GYAE", "group": "Lausanne Amis-Gym : G-Dance"}, {"location": "Iles 2-3", "time": "17:16:00", "code": "GYAE", "group": "Lucens : Actives"}, {"location": "Léon-Michaud", "time": "08:00:00", "code": "SO", "group": "Bussigny : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "08:14:00", "code": "SO", "group": "Amis Gym Fully : Actifs"}, {"location": "Léon-Michaud", "time": "08:28:00", "code": "SO", "group": "Ecublens : Actif"}, {"location": "Léon-Michaud", "time": "08:42:00", "code": "SO", "group": "Pully : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "08:56:00", "code": "SO", "group": "Avenches : Actifs"}, {"location": "Léon-Michaud", "time": "09:10:00", "code": "SO", "group": "Aigle-Alliance : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "09:24:00", "code": "SO", "group": "Morges : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "09:38:00", "code": "SO", "group": "Chardonne-Jongny : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "09:52:00", "code": "SO", "group": "Gym Peseux : Actifs mixtes"}, {"location": "Léon-Michaud", "time": "10:06:00", "code": "SO", "group": "Lausanne : Lausanne Team Agrès"}, {"location": "Léon-Michaud", "time": "10:20:00", "code": "SO", "group": "Domdidier : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "10:34:00", "code": "SO", "group": "Fribourg : Actifs - actives"}, {"location": "Léon-Michaud", "time": "10:48:00", "code": "SO", "group": "Romont gym : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "11:02:00", "code": "SO", "group": "Lancy : Actifs-actives"}, {"location": "Léon-Michaud", "time": "11:16:00", "code": "SO", "group": "Ursy : Actifs"}, {"location": "Léon-Michaud", "time": "11:30:00", "code": "SO", "group": "Charmey : Actifs"}, {"location": "Léon-Michaud", "time": "11:44:00", "code": "SO", "group": "Gym Saint-Prex : actifs-actives"}, {"location": "Léon-Michaud", "time": "11:58:00", "code": "SO", "group": "Montreux : Actifs Mixtes"}, {"location": "Léon-Michaud", "time": "12:12:00", "code": "SO", "group": "Rain : Aktive"}, {"location": "Léon-Michaud", "time": "14:00:00", "code": "SO", "group": "Bulle : Juniors mixtes"}, {"location": "Léon-Michaud", "time": "14:14:00", "code": "SO", "group": "Blonay : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "14:28:00", "code": "SO", "group": "Gym Villeneuve : Rétroactifs"}, {"location": "Léon-Michaud", "time": "14:42:00", "code": "SO", "group": "Corsier-Corseaux : Actifs-Actives"}, {"location": "Léon-Michaud", "time": "14:56:00", "code": "SO", "group": "Niederscherli : Boden"}, {"location": "Léon-Michaud", "time": "15:10:00", "code": "SO", "group": "Vevey : Team Vevey"}, {"location": "Léon-Michaud", "time": "15:24:00", "code": "SO", "group": "Neuenhof : Aktive"}, {"location": "Léon-Michaud", "time": "15:38:00", "code": "SO", "group": "Nyon : Actifs-actives"}, {"location": "Léon-Michaud", "time": "15:52:00", "code": "SO", "group": "Wettingen : Aktive"}, {"location": "Léon-Michaud", "time": "16:06:00", "code": "SO", "group": "Amis-Gyms Yverdon : Actifs-Actives"}],
@@ -75,24 +162,18 @@ export default defineEventHandler(async (event) => {
     [...RAW_SCHEDULE.actifs, ...RAW_SCHEDULE.jeunesse].forEach(p => uniqueGroups.add(p.group));
 
     const groupDocs = Array.from(uniqueGroups).map(name => {
-        // Extrait le canton/ville à partir du nom (partie avant le ":")
-        const canton = name.includes(':') ? name.split(':')[0]?.trim() : undefined;
+        // Utilise la fonction d'extraction du canton
+        const canton = extractCanton(name);
         
         // Génère un nombre de gymnastes réaliste (6 à 16)
         const gymnastsCount = Math.floor(Math.random() * 11) + 6;
         
-        const doc: any = {
+        return {
             name,
-            category: name.toLowerCase().includes("mixte") ? 'MIXTE' : 'ACTIVE',
-            gymnastsCount
+            category: name.toLowerCase().includes("mixte") ? 'MIXTE' : 'ACTIFS',
+            gymnastsCount,
+            canton
         };
-        
-        // N'ajoute le canton que s'il existe
-        if (canton) {
-            doc.canton = canton;
-        }
-        
-        return doc;
     });
 
     const insertedGroups = await GroupModel.insertMany(groupDocs);
@@ -194,8 +275,9 @@ export default defineEventHandler(async (event) => {
                     endTime: endTime,
                     location: current.location,
                     status: status,
-                    // Les passages terminés ont une note, les autres non
+                    // Les passages terminés ont une note et mets isPublished à true, les autres non
                     score: status === 'FINISHED' ? generateScore() : null,
+                    isPublished: status === 'FINISHED',
                     monitors: passageMonitors,
                     // Historique des 7 années précédentes pour ce passage
                     history: generatePassageHistory()

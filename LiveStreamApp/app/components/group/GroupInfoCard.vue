@@ -36,7 +36,7 @@ const averageScore = computed(() => {
 
 // Category display
 const categoryLabel = computed(() => {
-  return props.group.category === 'MIXTE' ? 'Groupe Mixte' : 'Groupe Actif'
+  return props.group.category === 'MIXTE' ? 'Mixte' : 'Actifs'
 })
 
 const categoryColor = computed(() => {

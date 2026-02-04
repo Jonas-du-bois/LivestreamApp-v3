@@ -112,7 +112,7 @@ export default defineEventHandler(async (event) => {
         _id: group._id,
         name: group.name,
         canton: group.canton,
-        category: group.category || 'ACTIVE', // ACTIVE ou MIXTE
+        category: group.category || 'ACTIFS', // ACTIFS ou MIXTE
         logo: group.logo,
         description: group.description,
         gymnastsCount: group.gymnastsCount || 0
