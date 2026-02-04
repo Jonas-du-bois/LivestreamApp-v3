@@ -1,59 +1,86 @@
 import PassageModel from '../models/Passage';
+import ApparatusModel from '../models/Apparatus';
+import GroupModel from '../models/Group';
 
 export default defineEventHandler(async (event) => {
   try {
-    const passages = await PassageModel.find({ isPublished: true })
-      // 1. CORRECTION ICI : On ajoute 'canton' et 'logo' à la liste des champs récupérés
-      .populate('group', 'name category canton logo')
-      .populate('apparatus', 'name code icon')
-      .sort({ 'score': -1 })
-      .lean()
-      .exec();
+    // ⚡ Bolt Optimization: Use Aggregation Pipeline instead of find().populate()
+    // This moves grouping and sorting to the database, reducing memory usage and transfer size.
+    const result = await PassageModel.aggregate([
+      // 1. Filter published passages
+      { $match: { isPublished: true } },
+
+      // 2. Sort by score descending (uses index { isPublished: 1, score: -1 })
+      { $sort: { score: -1 } },
+
+      // 3. Join Apparatus
+      {
+        $lookup: {
+          from: ApparatusModel.collection.name,
+          localField: 'apparatus',
+          foreignField: '_id',
+          as: 'apparatus'
+        }
+      },
+      { $unwind: '$apparatus' }, // Filter out passages with missing apparatus (matches original behavior)
+
+      // 4. Join Group
+      {
+        $lookup: {
+          from: GroupModel.collection.name,
+          localField: 'group',
+          foreignField: '_id',
+          as: 'group'
+        }
+      },
+      { $unwind: { path: '$group', preserveNullAndEmptyArrays: true } }, // Allow passages with missing group (matches original behavior)
+
+      // 5. Group by Apparatus Code
+      {
+        $group: {
+          _id: '$apparatus.code',
+          passages: {
+            $push: {
+              _id: '$_id',
+              group: {
+                $cond: {
+                  if: { $ifNull: ['$group._id', false] },
+                  then: {
+                    _id: '$group._id',
+                    name: '$group.name',
+                    category: '$group.category',
+                    canton: '$group.canton',
+                    logo: '$group.logo'
+                  },
+                  else: null
+                }
+              },
+              apparatus: {
+                _id: '$apparatus._id',
+                name: '$apparatus.name',
+                code: '$apparatus.code',
+                icon: '$apparatus.icon'
+              },
+              score: '$score',
+              startTime: '$startTime',
+              endTime: '$endTime',
+              location: '$location',
+              status: '$status'
+            }
+          }
+        }
+      }
+    ]);
 
     const grouped: Record<string, any[]> = {};
 
-    passages.forEach((p: any) => {
-       if (!p.apparatus || !p.apparatus.code) return;
-       const code = p.apparatus.code;
-
-       if (!grouped[code]) {
-           grouped[code] = [];
-       }
-
-       grouped[code].push({
-          _id: p._id,
-          // 2. CORRECTION ICI : On mappe 'canton' et 'logo' pour le frontend
-          group: p.group ? { 
-            _id: p.group._id, 
-            name: p.group.name, 
-            category: p.group.category,
-            canton: p.group.canton, // Ajouté
-            logo: p.group.logo      // Ajouté
-          } : null,
-          apparatus: p.apparatus ? { 
-            _id: p.apparatus._id, 
-            name: p.apparatus.name, 
-            code: p.apparatus.code, 
-            icon: p.apparatus.icon 
-          } : null,
-          score: p.score,
-          rank: 0, 
-          startTime: p.startTime,
-          endTime: p.endTime,
-          location: p.location,
-          status: p.status,
-       });
-    });
-
-    // Compute ranks
-    Object.values(grouped).forEach(groupList => {
-        // Sort descending by total score
-        groupList.sort((a, b) => (b.score || 0) - (a.score || 0));
-        
-        // Handle Ex-aequo ranks logic (Optional but pro)
-        groupList.forEach((p, index) => {
-            p.rank = index + 1;
-        });
+    result.forEach((item: any) => {
+      // Passages are already sorted by score due to the initial $sort + $push order preservation
+      const passages = item.passages.map((p: any, index: number) => ({
+        ...p,
+        rank: index + 1
+      }));
+      grouped[item._id] = passages;
     });
 
     return grouped;
