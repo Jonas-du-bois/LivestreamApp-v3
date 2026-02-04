@@ -142,6 +142,7 @@ const handleNotificationClick = (notification: AppNotification) => {
             <button
               @click="clearAllRead"
               class="p-2 hover:bg-white/10 rounded-xl transition-colors group"
+              aria-label="Supprimer les notifications lues"
               title="Supprimer les notifications lues"
             >
               <Icon name="fluent:delete-24-regular" class="w-4 h-4 text-white/50 group-hover:text-red-400 transition-colors" />
@@ -220,6 +221,7 @@ const handleNotificationClick = (notification: AppNotification) => {
                         v-if="!notification.isRead"
                         @click.stop="markAsRead(notification.id)"
                         class="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                        :aria-label="t('notifications.markAsRead')"
                         :title="t('notifications.markAsRead')"
                       >
                         <Icon name="fluent:checkmark-24-regular" class="w-3.5 h-3.5 text-white/60" />
@@ -227,6 +229,7 @@ const handleNotificationClick = (notification: AppNotification) => {
                       <button
                         @click.stop="removeNotification(notification.id)"
                         class="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
+                        :aria-label="t('notifications.delete')"
                         :title="t('notifications.delete')"
                       >
                         <Icon name="fluent:dismiss-24-regular" class="w-3.5 h-3.5 text-white/60 hover:text-red-400" />

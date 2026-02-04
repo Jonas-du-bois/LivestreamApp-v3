@@ -127,6 +127,8 @@ provide('openGroupDetails', openGroupDetails)
               <button 
                 @click="openSearch"
                 class="p-2 hover:bg-white/10 rounded-lg transition-colors relative"
+                aria-label="Rechercher"
+                title="Rechercher"
               >
                 <Icon name="fluent:search-24-regular" class="w-5 h-5 text-white" />
               </button>
@@ -135,6 +137,8 @@ provide('openGroupDetails', openGroupDetails)
                 v-if="route.path === '/schedule'"
                 @click="openFilter"
                 class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="Filtrer"
+                title="Filtrer"
               >
                 <Icon name="fluent:options-24-regular" class="w-5 h-5 text-white" />
               </button>
@@ -142,6 +146,8 @@ provide('openGroupDetails', openGroupDetails)
               <button 
                 @click="openNotifications"
                 class="p-2 hover:bg-white/10 rounded-lg transition-colors relative group"
+                aria-label="Notifications"
+                title="Notifications"
               >
                 <Icon name="fluent:alert-24-regular" class="w-5 h-5 text-white" />
                 <!-- Badge with count -->
