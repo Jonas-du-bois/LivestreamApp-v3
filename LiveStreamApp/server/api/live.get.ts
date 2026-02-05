@@ -3,12 +3,17 @@ import StreamModel from '../models/Stream';
 
 export default defineEventHandler(async (event) => {
   try {
-    // Fetch live passages
-    const livePassages = await PassageModel.find({ status: 'LIVE' })
-      .populate('group')
-      .populate('apparatus')
-      .sort({ startTime: 1 })
-      .lean();
+    // ⚡ Bolt: Fetch live passages and streams in parallel to reduce latency
+    const [livePassages, liveStreams] = await Promise.all([
+      PassageModel.find({ status: 'LIVE' })
+        .populate('group')
+        .populate('apparatus')
+        .sort({ startTime: 1 })
+        .lean(),
+      StreamModel.find({ isLive: true })
+        .populate({ path: 'currentPassage', populate: ['group', 'apparatus'] })
+        .lean()
+    ]);
 
     const formattedPassages = livePassages.map((p: any) => ({
       _id: p._id,
@@ -21,11 +26,6 @@ export default defineEventHandler(async (event) => {
       score: p.score,
       monitors: p.monitors || []
     }));
-
-    // Fetch live streams and populate their currentPassage with enriched data
-    const liveStreams = await StreamModel.find({ isLive: true })
-      .populate({ path: 'currentPassage', populate: ['group', 'apparatus'] })
-      .lean();
 
     return {
       passages: formattedPassages,
