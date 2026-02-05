@@ -43,9 +43,25 @@ export default defineNitroPlugin((nitroApp: any) => {
     io.on('connection', (socket) => {
       console.log('[Socket.io] Client connecté :', socket.id)
 
+      // Helper: Validate room name to prevent arbitrary joins
+      const isValidRoom = (room: string): boolean => {
+        // Allow standard public rooms
+        if (['live-scores', 'schedule-updates', 'streams'].includes(room)) return true
+        // Allow specific stream rooms (stream-<ObjectId>)
+        if (/^stream-[0-9a-fA-F]{24}$/.test(room)) return true
+
+        return false
+      }
+
       // Gestion des salles (Rooms)
       socket.on('join-room', (room: string) => {
         if (typeof room === 'string') {
+          // Security: Validate room name
+          if (!isValidRoom(room)) {
+            console.warn(`[Socket.io] Security: Blocked attempt by ${socket.id} to join invalid room: ${room}`)
+            return
+          }
+
           socket.join(room)
           console.log(`[Socket.io] Socket ${socket.id} a rejoint la salle : ${room}`)
           // Log current rooms for this socket
