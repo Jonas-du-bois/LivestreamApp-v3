@@ -39,7 +39,23 @@ watch(apiParams, (newParams) => {
 // 2. Appel Réactif (useFetch surveille apiParams)
 const { data: scheduleResponse, refresh } = await PublicService.getSchedule(apiParams)
 
-// Share metadata globally (for FilterSheet)
+// Store initial metadata separately to avoid filter chips reorganization on refetch
+const initialMeta = useState<{
+  availableApparatus: { code: string; name: string }[]
+  availableDays: string[]
+  availableCategories: string[]
+  availableLocations: string[]
+}>('scheduleInitialMeta', () => ({
+  availableApparatus: [],
+  availableDays: [],
+  availableCategories: [],
+  availableLocations: []
+}))
+
+// Flag to track if initial meta has been set
+const metaInitialized = useState('scheduleMetaInitialized', () => false)
+
+// Share metadata globally (for FilterSheet) - only update on first load
 const meta = useState('scheduleMeta', () => scheduleResponse.value?.meta || {
   availableApparatus: [],
   availableDays: [],
@@ -50,6 +66,13 @@ const meta = useState('scheduleMeta', () => scheduleResponse.value?.meta || {
 watchEffect(() => {
   if (scheduleResponse.value?.meta) {
     meta.value = scheduleResponse.value.meta
+    
+    // Only set initial meta once (first load)
+    if (!metaInitialized.value && scheduleResponse.value.meta.availableApparatus?.length) {
+      initialMeta.value = { ...scheduleResponse.value.meta }
+      metaInitialized.value = true
+    }
+    
     // If no day selected yet, pick the first available day from meta
     if (!selectedDay.value && meta.value.availableDays?.length) {
       selectedDay.value = meta.value.availableDays[0] ?? ''
@@ -57,16 +80,19 @@ watchEffect(() => {
   }
 })
 
-// Dynamic Days
+// Dynamic Days - use initial meta to prevent reordering
 const availableDays = computed(() => {
-  const days = scheduleResponse.value?.meta?.availableDays || []
-  // Capitalize days for display
+  const days = initialMeta.value.availableDays?.length 
+    ? initialMeta.value.availableDays 
+    : (scheduleResponse.value?.meta?.availableDays || [])
   return days.length > 0 ? days : ['samedi', 'dimanche']
 })
 
-// Filters - computed to react to locale changes
+// Filters - use initialMeta to prevent chips from reorganizing on refetch
 const filters = computed(() => {
-  const apparatus = scheduleResponse.value?.meta?.availableApparatus || []
+  const apparatus = initialMeta.value.availableApparatus?.length
+    ? initialMeta.value.availableApparatus
+    : (scheduleResponse.value?.meta?.availableApparatus || [])
   const apparatusFilters = apparatus.map((a: { code: string; name: string }) => ({
     code: a.name, // On utilise le name pour le filtre API (compatibilité)
     label: translateApparatus(a.code, a.name)

@@ -102,8 +102,9 @@ provide('openGroupDetails', openGroupDetails)
             <h1 class="text-white text-xl font-bold">{{ currentPageTitle }}</h1>
             
             <div class="flex items-center gap-2">
-              <!-- Language Toggle Button -->
+              <!-- Language Toggle Button - Only on home page -->
               <button 
+                v-if="route.path === '/'"
                 @click="toggleLocale"
                 class="p-2 hover:bg-white/10 rounded-lg transition-colors relative flex items-center gap-1"
                 :aria-label="locale === 'fr' ? 'Auf Deutsch wechseln' : 'Passer en français'"

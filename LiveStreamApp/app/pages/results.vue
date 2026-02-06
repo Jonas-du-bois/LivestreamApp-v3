@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { PublicService } from '~/services/public.service'
 import type { PassageEnriched } from '~/types/api'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
 
 // Extended type including rank
@@ -10,8 +9,29 @@ type PassageResult = PassageEnriched & { rank: number }
 
 const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
-// Fetch data from API
-const { data: apiResultsMap, refresh } = await PublicService.getResults()
+// Fetch data from API with caching to avoid refetch on tab clicks
+const { data: apiResultsMap, refresh } = await useAsyncData(
+  'results-data',
+  async () => {
+    const config = useRuntimeConfig()
+    return await $fetch<Record<string, PassageResult[]>>('/results', {
+      baseURL: config.public.apiBase as string
+    })
+  },
+  {
+    // Refetch only when locale changes
+    watch: [locale],
+    // Server-side rendering enabled
+    server: true,
+    // Not lazy - load immediately
+    lazy: false,
+    // Use cached data if available
+    getCachedData: (key) => {
+      const nuxtApp = useNuxtApp()
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
+    }
+  }
+)
 
 // Create a local reactive copy that we can mutate properly
 const resultsMap = ref<Record<string, PassageResult[]>>({})

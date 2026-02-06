@@ -154,7 +154,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
         font: {
           family: 'Segoe UI, sans-serif',
           size: props.compact ? 10 : 12,
-          weight: '600'
+          weight: 600
         },
         padding: 8
       },
@@ -177,7 +177,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
         },
         padding: 8,
         stepSize: props.compact ? 5 : 2.5,
-        callback: (value) => value.toFixed(1)
+        callback: (value: string | number) => Number(value).toFixed(1)
       },
       border: {
         display: false

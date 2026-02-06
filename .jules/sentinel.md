@@ -1,4 +1,9 @@
-## 2024-05-22 - Unbounded Token Hashing DoS
-**Vulnerability:** `server/middleware/auth.ts` hashed the Bearer token using `sha256` without verifying its length. An attacker could send a multi-megabyte token in the `Authorization` header, causing the server to expend significant CPU time hashing it on every request, leading to Denial of Service.
-**Learning:** `timingSafeEqual` prevents timing attacks on the *comparison*, but it does not protect the *hashing* step. Input validation (length limits) must happen *before* any resource-intensive operation.
-**Prevention:** Always enforce strict length limits on authentication tokens and user inputs before processing them with crypto functions or complex parsers.
+## 2024-05-26 - Unprotected Database Seeding Endpoint
+**Vulnerability:** The `/api/seed` endpoint was a `GET` request accessible without authentication. This endpoint clears all database collections (`deleteMany({})`), leading to complete data loss if accessed in production.
+**Learning:** Utility endpoints (seeding, maintenance) created during development often lack security controls because they are seen as "dev tools". Placing them in the root API namespace makes them public by default.
+**Prevention:** 1. Place administrative/destructive endpoints under a protected namespace (e.g., `/api/admin`). 2. Use `POST` or `DELETE` for state-changing operations to align with standard middleware protections. 3. Explicitly disable such endpoints in production or require strong authentication.
+
+## 2026-02-02 - Admin Auth Rate Limiting & Spoofing
+**Vulnerability:** The admin login endpoint lacked rate limiting (Brute Force risk) and blindly trusted `X-Forwarded-For` headers (IP Spoofing risk). Additionally, a missing server password configuration could allow login with an empty password.
+**Learning:** Default helper functions like `getRequestIP` can be dangerous if their default behaviors (or simple configurations like `xForwardedFor: true`) are used without understanding the deployment environment (proxies vs direct). In-memory rate limiters must implement cleanup to prevent memory leaks.
+**Prevention:** 1. Implement rate limiting on sensitive auth endpoints. 2. Do not trust `X-Forwarded-For` unless behind a verified trusted proxy. 3. Validate critical security configuration (like passwords) on startup or use.

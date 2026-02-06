@@ -231,57 +231,38 @@
     "currentlyOffline": "Aktuell offline",
     "liveStreaming": "LIVE STREAMING",
     "offline": "OFFLINE",
-    "updateStream": "Stream aktualisiere",
+    "updateStream": "Aktualisiere",
     "passages": "Uftritte",
     "finalScore": "Schluss-Note",
     "streamUrl": "Stream URL",
     "noStream": "Kei Stream",
     "noMatchingStream": "Kei passende Stream gfunde",
     "scoreSaved": "Note gspeicheret",
-    "streamUpdated": "Stream aktualisiert"
+    "streamUpdated": "Stream aktualisiert",
+    "searchPlaceholder": "Gruppe, Grät sueche...",
+    "group": "Gruppe",
+    "apparatus": "Grät",
+    "location": "Saal",
+    "category": "Kategorie",
+    "advancedFilters": "Erwiterte Filter",
+    "hideFinished": "Fertige verstecke",
+    "withScore": "Mit Note",
+    "withoutScore": "Ohni Note",
+    "resetFilters": "Zrugsetze",
+    "noPassagesFound": "Kei Uftritte gfunde",
+    "score": "Note",
+    "expandFilters": "Filter azeige",
+    "collapseFilters": "Filter verstecke"
   },
+
+  "historyLineChart": {
+    "best": "Bester",
+    "average": "Durchschnitt",
+    "trend": "Entwicklung"
+  },
+
   "language": {
     "fr": "Français",
     "de": "Deutsch"
-  },
-  "apparatus": {
-    "SS": "Bode",
-    "BA": "Barre",
-    "AB": "Schwingendi Ring",
-    "SA": "Sprung",
-    "RE": "Reck",
-    "BAS": "Stufebarre",
-    "CE": "Grät-Kombi",
-    "SO": "Bode",
-    "BP": "Barre",
-    "BF": "Reck",
-    "GYAE": "Turne mit Grät",
-    "GYSE": "Turne ohni Grät",
-    "ST": "Sprung"
-  },
-  "days": {
-    "lundi": "Mäntig",
-    "mardi": "Zischtig",
-    "mercredi": "Mittwuch",
-    "jeudi": "Dunschtig",
-    "vendredi": "Fritig",
-    "samedi": "Samschtig",
-    "dimanche": "Sunntig"
-  },
-  "categories": {
-    "ACTIFS": "Aktivi",
-    "MIXTE": "Gmischti"
-  },
-  "status": {
-    "finished": "Fertig",
-    "live": "Am Laufe",
-    "scheduled": "Geplant"
-  },
-  "historyLineChart": {
-    "best": "Beste",
-    "average": "Durchschnitt",
-    "trend": "Entwicklig",
-    "edition": "Auflage",
-    "note": "Note: {score} Pkt"
   }
 }
