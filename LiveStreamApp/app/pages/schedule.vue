@@ -124,7 +124,7 @@ useSocketRoom('schedule-updates', [
 <template>
   <div class="px-4 space-y-4 pb-6">
     <!-- Day Switcher -->
-    <div class="glass-card p-1 flex overflow-x-auto">
+    <div class="glass-card p-1 flex overflow-x-auto" role="tablist" :aria-label="t('pages.schedule')">
       <button
         v-for="day in availableDays"
         :key="`${day}-${locale}`"
@@ -133,13 +133,16 @@ useSocketRoom('schedule-updates', [
         :class="selectedDay === day
           ? 'bg-white/20 text-white' 
           : 'text-white/60'"
+        type="button"
+        role="tab"
+        :aria-selected="selectedDay === day"
       >
         {{ translateDay(day) }}
       </button>
     </div>
 
     <!-- Filter Chips -->
-    <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scroll-smooth">
+    <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scroll-smooth" role="group" :aria-label="t('filters.title')">
       <button
         v-for="filter in filters"
         :key="`${filter.code || filter}-${locale}`"
@@ -148,6 +151,8 @@ useSocketRoom('schedule-updates', [
         :class="selectedFilter === (filter.code || filter)
           ? 'bg-cyan-400 text-[#0B1120]'
           : 'glass-card text-white/80'"
+        type="button"
+        :aria-pressed="selectedFilter === (filter.code || filter)"
       >
         {{ filter.label || filter }}
       </button>

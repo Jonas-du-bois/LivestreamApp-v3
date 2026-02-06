@@ -13,3 +13,7 @@
 ## 2024-05-25 - Header Navigation & Action Accessibility
 **Learning:** Important navigation and action buttons in the global header and drawers are frequently icon-only for aesthetic minimalism but completely invisible to screen readers.
 **Action:** Systematically add `aria-label` to all icon-only buttons in `layouts/` and `components/overlays/`, and consider adding `title` for mouse hover tooltips as a bonus.
+
+## 2024-05-26 - Custom Tab Interfaces
+**Learning:** Custom navigation elements like the Day Switcher are visually tabs but implemented as buttons. Screen readers need `role="tablist"` on the container and `role="tab"` + `aria-selected` on the buttons to understand the relationship.
+**Action:** When implementing custom segmented controls or day pickers, use the `tablist` pattern instead of just independent buttons.
