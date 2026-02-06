@@ -229,6 +229,7 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
       <NuxtLink
         to="/stream"
         class="p-3 rounded-full hover:bg-white/10 glass-panel transition-colors flex items-center justify-center"
+        :aria-label="t('stream.backToStreams')"
       >
         <Icon name="fluent:arrow-left-24-regular" class="w-6 h-6 text-white" />
       </NuxtLink>
@@ -248,6 +249,7 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
           <iframe
             v-if="isEmbed && streamUrl"
             :src="streamUrl"
+            :title="stream?.name || t('stream.liveStreams')"
             class="w-full h-full"
             frameborder="0"
             @load="onIframeLoad"
