@@ -29,6 +29,14 @@ export default defineEventHandler((event) => {
     // Regex matches "Bearer " (case insensitive) at start of string
     const token = authHeader.replace(/^Bearer\s+/i, '');
 
+    // Security: Limit token length to prevent DoS via large payload hashing
+    if (token.length > 128) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized: Invalid Token',
+      });
+    }
+
     // Prevent Timing Attack: Use constant-time comparison
     const safeCompare = (a: string, b: string) => {
       const bufA = createHash('sha256').update(a).digest();
