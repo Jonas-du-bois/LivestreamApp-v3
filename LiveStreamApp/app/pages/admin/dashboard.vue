@@ -405,9 +405,9 @@ const hasActiveFilters = computed(() => {
               </div>
               <div class="hidden sm:block">
                 <h1 class="text-lg md:text-xl font-bold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                  Admin Dashboard
+                  {{ t('admin.dashboard') }}
                 </h1>
-                <p class="text-xs text-white/50">{{ filteredPassages.length }} passages</p>
+                <p class="text-xs text-white/50">{{ t('admin.passagesCount', { count: filteredPassages.length }) }}</p>
               </div>
             </div>
             
@@ -421,7 +421,7 @@ const hasActiveFilters = computed(() => {
                   :class="activeView === 'passages' ? 'bg-white/20 text-white shadow-sm' : 'text-white/60 hover:text-white'"
                 >
                   <Icon name="fluent:people-team-24-regular" class="w-4 h-4 inline mr-2" />
-                  Passages
+                  {{ t('admin.passagesView') }}
                 </button>
                 <button
                   @click="activeView = 'streams'"
@@ -429,7 +429,7 @@ const hasActiveFilters = computed(() => {
                   :class="activeView === 'streams' ? 'bg-white/20 text-white shadow-sm' : 'text-white/60 hover:text-white'"
                 >
                   <Icon name="fluent:video-24-regular" class="w-4 h-4 inline mr-2" />
-                  Streams
+                  {{ t('admin.streamsView') }}
                 </button>
               </div>
               
@@ -452,7 +452,7 @@ const hasActiveFilters = computed(() => {
                 <Transition name="dropdown">
                   <div v-if="showTestNotificationMenu" class="dropdown-menu right-0 w-64">
                     <div class="p-3 border-b border-white/10">
-                      <h3 class="font-semibold text-sm">Test Notifications</h3>
+                      <h3 class="font-semibold text-sm">{{ t('admin.testNotifications') }}</h3>
                     </div>
                     <div class="p-2 space-y-1">
                       <button
@@ -471,7 +471,7 @@ const hasActiveFilters = computed(() => {
                         :disabled="isSendingNotification"
                         class="w-full text-left px-3 py-2 rounded-lg hover:bg-emerald-500/20 transition-colors text-sm font-medium text-emerald-400"
                       >
-                        Send All
+                        {{ t('admin.sendAllNotifications') }}
                       </button>
                     </div>
                   </div>
@@ -481,12 +481,13 @@ const hasActiveFilters = computed(() => {
               <!-- Refresh -->
               <button @click="refreshSchedule(); refreshStreams()" class="btn-secondary">
                 <Icon name="fluent:arrow-clockwise-24-regular" class="w-5 h-5" />
+                <span class="hidden xl:inline">{{ t('admin.refresh') }}</span>
               </button>
               
               <!-- Logout -->
               <button @click="logout" class="btn-danger">
                 <Icon name="fluent:sign-out-24-regular" class="w-5 h-5" />
-                <span class="hidden xl:inline">Logout</span>
+                <span class="hidden xl:inline">{{ t('admin.disconnect') }}</span>
               </button>
             </div>
             
@@ -509,7 +510,7 @@ const hasActiveFilters = computed(() => {
                   :class="activeView === 'passages' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-white/5 text-white/60'"
                 >
                   <Icon name="fluent:people-team-24-regular" class="w-5 h-5 mx-auto mb-1" />
-                  Passages
+                  {{ t('admin.passagesView') }}
                 </button>
                 <button
                   @click="activeView = 'streams'; showMobileMenu = false"
@@ -517,7 +518,7 @@ const hasActiveFilters = computed(() => {
                   :class="activeView === 'streams' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-white/5 text-white/60'"
                 >
                   <Icon name="fluent:video-24-regular" class="w-5 h-5 mx-auto mb-1" />
-                  Streams
+                  {{ t('admin.streamsView') }}
                 </button>
               </div>
               
@@ -528,13 +529,13 @@ const hasActiveFilters = computed(() => {
                 </button>
                 <button @click="refreshSchedule(); refreshStreams()" class="flex-1 btn-secondary">
                   <Icon name="fluent:arrow-clockwise-24-regular" class="w-5 h-5" />
-                  Refresh
+                  {{ t('admin.refresh') }}
                 </button>
               </div>
               
               <button @click="logout" class="w-full btn-danger">
                 <Icon name="fluent:sign-out-24-regular" class="w-5 h-5" />
-                Déconnexion
+                {{ t('admin.disconnect') }}
               </button>
             </div>
           </div>
@@ -558,10 +559,10 @@ const hasActiveFilters = computed(() => {
                 v-model="searchCategory"
                 class="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-cyan-400"
               >
-                <option value="all" class="bg-slate-800 text-white">Tout</option>
-                <option value="group" class="bg-slate-800 text-white">Groupe</option>
-                <option value="apparatus" class="bg-slate-800 text-white">Appareil</option>
-                <option value="location" class="bg-slate-800 text-white">Lieu</option>
+                <option value="all" class="bg-slate-800 text-white">{{ t('admin.all') }}</option>
+                <option value="group" class="bg-slate-800 text-white">{{ t('admin.group') }}</option>
+                <option value="apparatus" class="bg-slate-800 text-white">{{ t('admin.apparatus') }}</option>
+                <option value="location" class="bg-slate-800 text-white">{{ t('admin.location') }}</option>
               </select>
             </div>
           </div>
@@ -602,7 +603,7 @@ const hasActiveFilters = computed(() => {
               :class="showAdvancedFilters ? 'bg-white/20' : ''"
             >
               <Icon name="fluent:filter-24-regular" class="w-5 h-5" />
-              <span class="hidden sm:inline">Filtres</span>
+              <span class="hidden sm:inline">{{ t('admin.filters') }}</span>
             </button>
             
             <!-- Clear Filters -->
@@ -612,7 +613,7 @@ const hasActiveFilters = computed(() => {
               class="btn-secondary flex-shrink-0 text-red-400 hover:bg-red-500/20"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5" />
-              <span class="hidden sm:inline">Reset</span>
+              <span class="hidden sm:inline">{{ t('admin.reset') }}</span>
             </button>
           </div>
           
@@ -622,29 +623,29 @@ const hasActiveFilters = computed(() => {
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <!-- Status Filter -->
                 <div>
-                  <label class="block text-xs font-medium text-white/60 mb-2">Statut</label>
+                  <label class="block text-xs font-medium text-white/60 mb-2">{{ t('admin.status') }}</label>
                   <select v-model="advancedFilters.status" class="select-modern w-full text-sm">
-                    <option value="" class="bg-slate-800">Tous</option>
-                    <option value="SCHEDULED" class="bg-slate-800">Planifié</option>
-                    <option value="LIVE" class="bg-slate-800">En direct</option>
-                    <option value="FINISHED" class="bg-slate-800">Terminé</option>
+                    <option value="" class="bg-slate-800">{{ t('admin.allStatuses') }}</option>
+                    <option value="SCHEDULED" class="bg-slate-800">{{ t('admin.scheduled') }}</option>
+                    <option value="LIVE" class="bg-slate-800">{{ t('admin.live') }}</option>
+                    <option value="FINISHED" class="bg-slate-800">{{ t('admin.finished') }}</option>
                   </select>
                 </div>
                 
                 <!-- Location Filter -->
                 <div>
-                  <label class="block text-xs font-medium text-white/60 mb-2">Lieu</label>
+                  <label class="block text-xs font-medium text-white/60 mb-2">{{ t('admin.location') }}</label>
                   <select v-model="advancedFilters.location" class="select-modern w-full text-sm">
-                    <option value="" class="bg-slate-800">Tous</option>
+                    <option value="" class="bg-slate-800">{{ t('admin.allStatuses') }}</option>
                     <option v-for="loc in availableLocations" :key="loc" :value="loc" class="bg-slate-800">{{ loc }}</option>
                   </select>
                 </div>
                 
                 <!-- Category Filter -->
                 <div>
-                  <label class="block text-xs font-medium text-white/60 mb-2">Catégorie</label>
+                  <label class="block text-xs font-medium text-white/60 mb-2">{{ t('admin.category') }}</label>
                   <select v-model="advancedFilters.category" class="select-modern w-full text-sm">
-                    <option value="" class="bg-slate-800">Toutes</option>
+                    <option value="" class="bg-slate-800">{{ t('admin.allCategories') }}</option>
                     <option v-for="cat in availableCategories" :key="cat" :value="cat" class="bg-slate-800">{{ cat }}</option>
                   </select>
                 </div>
@@ -655,19 +656,19 @@ const hasActiveFilters = computed(() => {
                 <label class="toggle-label">
                   <input type="checkbox" v-model="advancedFilters.hideFinished" class="sr-only peer" />
                   <div class="toggle-switch"></div>
-                  <span class="text-sm">Masquer terminés</span>
+                  <span class="text-sm">{{ t('admin.hideFinishedPassages') }}</span>
                 </label>
                 
                 <label class="toggle-label">
                   <input type="checkbox" v-model="advancedFilters.onlyWithScore" class="sr-only peer" />
                   <div class="toggle-switch"></div>
-                  <span class="text-sm">Avec score uniquement</span>
+                  <span class="text-sm">{{ t('admin.onlyWithScore') }}</span>
                 </label>
                 
                 <label class="toggle-label">
                   <input type="checkbox" v-model="advancedFilters.onlyWithoutScore" class="sr-only peer" />
                   <div class="toggle-switch"></div>
-                  <span class="text-sm">Sans score uniquement</span>
+                  <span class="text-sm">{{ t('admin.onlyWithoutScore') }}</span>
                 </label>
               </div>
             </div>
@@ -685,11 +686,11 @@ const hasActiveFilters = computed(() => {
               <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white/5 mb-6">
                 <Icon name="fluent:search-24-regular" class="w-12 h-12 text-white/30" />
               </div>
-              <h3 class="text-xl font-semibold text-white/60 mb-2">Aucun passage trouvé</h3>
-              <p class="text-white/40 mb-6">Essayez de modifier vos filtres</p>
+              <h3 class="text-xl font-semibold text-white/60 mb-2">{{ t('admin.noPassagesFound') }}</h3>
+              <p class="text-white/40 mb-6">{{ t('admin.tryModifyFilters') }}</p>
               <button @click="clearAllFilters" class="btn-secondary">
                 <Icon name="fluent:arrow-reset-24-regular" class="w-5 h-5" />
-                Réinitialiser les filtres
+                {{ t('admin.resetFilters') }}
               </button>
             </div>
             
@@ -762,7 +763,7 @@ const hasActiveFilters = computed(() => {
                   <!-- Score Input Section -->
                   <div class="glass-card rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <label class="text-sm font-medium text-white/60 flex-shrink-0">
-                      Score de la performance
+                      {{ t('admin.performanceScore') }}
                     </label>
                     <div class="flex items-center gap-3 flex-1 justify-end w-full sm:w-auto">
                       <div class="relative flex-1 sm:flex-initial">
@@ -794,7 +795,7 @@ const hasActiveFilters = computed(() => {
                           : 'opacity-30 cursor-not-allowed'"
                       >
                         <Icon name="fluent:save-24-regular" class="w-5 h-5" />
-                        <span class="hidden sm:inline">Sauvegarder</span>
+                        <span class="hidden sm:inline">{{ t('admin.saveScore') }}</span>
                       </button>
                     </div>
                   </div>
@@ -806,7 +807,7 @@ const hasActiveFilters = computed(() => {
                       :value="getStreamForPassage(passage)?.url"
                       @input="(e) => getStreamForPassage(passage)!.url = (e.target as HTMLInputElement).value"
                       class="flex-1 bg-transparent text-sm text-white/70 focus:outline-none"
-                      placeholder="URL du stream..."
+                      :placeholder="t('admin.streamUrlPlaceholder')"
                     />
                     <span
                       class="px-3 py-1 rounded-lg text-xs font-bold flex-shrink-0"
@@ -827,7 +828,7 @@ const hasActiveFilters = computed(() => {
                 <!-- Header -->
                 <div class="flex items-start justify-between mb-6">
                   <div>
-                    <h3 class="font-bold text-xl mb-2">{{ stream.name || 'Stream' }}</h3>
+                    <h3 class="font-bold text-xl mb-2">{{ stream.name || t('admin.stream') }}</h3>
                     <span class="inline-flex items-center gap-2 text-sm px-3 py-1 rounded-lg bg-white/10 text-white/60">
                       <Icon name="fluent:location-24-regular" class="w-4 h-4" />
                       {{ stream.location }}
@@ -849,7 +850,7 @@ const hasActiveFilters = computed(() => {
                 <div class="space-y-5">
                   <div>
                     <label class="block text-sm font-medium text-white/60 mb-2">
-                      URL YouTube du stream
+                      {{ t('admin.youtubeStreamUrl') }}
                     </label>
                     <input
                       v-model="stream.url"
@@ -860,7 +861,7 @@ const hasActiveFilters = computed(() => {
                   
                   <!-- Live Toggle -->
                   <div class="glass-card rounded-xl p-4 flex items-center justify-between">
-                    <span class="text-sm font-medium">Stream en direct</span>
+                    <span class="text-sm font-medium">{{ t('admin.streamLiveToggle') }}</span>
                     <label class="toggle-switch-large">
                       <input type="checkbox" v-model="stream.isLive" class="sr-only peer" />
                       <div class="toggle-bg"></div>
@@ -872,7 +873,7 @@ const hasActiveFilters = computed(() => {
                     class="w-full btn-primary"
                   >
                     <Icon name="fluent:save-24-regular" class="w-5 h-5" />
-                    Mettre à jour le stream
+                    {{ t('admin.updateStreamBtn') }}
                   </button>
                 </div>
               </div>

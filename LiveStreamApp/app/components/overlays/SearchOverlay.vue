@@ -257,7 +257,7 @@ onUnmounted(() => {
           <template v-if="searchQuery.length < 2">
             <div class="text-center py-8 text-white/50">
               <Icon name="fluent:search-24-regular" class="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>Tapez au moins 2 caractères pour rechercher</p>
+              <p>{{ t('search.minCharacters') }}</p>
             </div>
           </template>
 
@@ -265,7 +265,7 @@ onUnmounted(() => {
           <template v-else-if="isLoading">
             <div class="flex flex-col items-center justify-center py-12">
               <Icon name="fluent:spinner-ios-20-regular" class="w-10 h-10 text-cyan-400 animate-spin" />
-              <p class="text-white/60 mt-3">Recherche en cours...</p>
+              <p class="text-white/60 mt-3">{{ t('search.searching') }}</p>
             </div>
           </template>
 

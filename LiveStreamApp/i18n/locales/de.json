@@ -168,7 +168,9 @@
     "livePassages": "Live Uftritte",
     "allLiveStreams": "Alli Live Streams",
     "seeAll": "Alli ahluege",
-    "seeResults": "Ergäbnis ahluege"
+    "seeResults": "Ergäbnis ahluege",
+    "minCharacters": "Gib mindestens 2 Zeiche ii zum sueche",
+    "searching": "Am sueche..."
   },
   "filters": {
     "title": "Filter",
@@ -206,8 +208,11 @@
     "installDescription": "Installieret d'App für e besseri Erfahrig!"
   },
   "admin": {
-    "login": "Admin Login",
-    "password": "Administrator Passwort",
+    "login": "Iilogge",
+    "loginTitle": "Admin Dashboard",
+    "loginSubtitle": "Sicheri Verbindig",
+    "password": "Passwort",
+    "enterPassword": "Passwort iigäh",
     "loginBtn": "Iilogge",
     "loggingIn": "Am Verbinde...",
     "dashboard": "Admin Dashboard",
@@ -252,7 +257,36 @@
     "noPassagesFound": "Kei Uftritte gfunde",
     "score": "Note",
     "expandFilters": "Filter azeige",
-    "collapseFilters": "Filter verstecke"
+    "collapseFilters": "Filter verstecke",
+    "passagesView": "Uftritte",
+    "streamsView": "Streams",
+    "passagesCount": "{count} Uftritt | {count} Uftritte",
+    "refresh": "Aktualisiere",
+    "disconnect": "Uslogge",
+    "all": "Alli",
+    "filters": "Filter",
+    "reset": "Zrugsetze",
+    "status": "Status",
+    "allStatuses": "Alli",
+    "scheduled": "Planiert",
+    "live": "Live",
+    "finished": "Fertig",
+    "allCategories": "Alli",
+    "hideFinishedPassages": "Fertigi verstecke",
+    "onlyWithScore": "Nur mit Note",
+    "onlyWithoutScore": "Ohni Note",
+    "noPassagesFound": "Kei Uftritte gfunde",
+    "tryModifyFilters": "Probier anderi Filter",
+    "resetFilters": "Filter zrugsetze",
+    "performanceScore": "Performance Note",
+    "saveScore": "Speichere",
+    "streamUrlPlaceholder": "Stream URL...",
+    "stream": "Stream",
+    "youtubeStreamUrl": "YouTube Stream URL",
+    "streamLiveToggle": "Stream Live",
+    "updateStreamBtn": "Stream aktualisiere",
+    "testNotifications": "Test Benachrichtigunge",
+    "sendAllNotifications": "Alli sände"
   },
 
   "historyLineChart": {
