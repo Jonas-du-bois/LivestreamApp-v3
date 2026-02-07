@@ -56,6 +56,11 @@ PassageSchema.index({ apparatus: 1, status: 1, isPublished: 1 });
 PassageSchema.index({ isPublished: 1, score: -1 });
 PassageSchema.index({ apparatus: 1, isPublished: 1, score: -1 });
 
+// Optimizations for Schedule Filtering (Apparatus/Location/Group + Time Range)
+PassageSchema.index({ apparatus: 1, startTime: 1 });
+PassageSchema.index({ location: 1, startTime: 1 });
+PassageSchema.index({ group: 1, startTime: 1 });
+
 const PassageModel: Model<IPassage> = (mongoose.models.Passage as Model<IPassage>) || mongoose.model<IPassage>('Passage', PassageSchema);
 
 export default PassageModel;
