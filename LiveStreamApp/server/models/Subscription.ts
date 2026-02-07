@@ -21,6 +21,9 @@ const SubscriptionSchema = new Schema<ISubscription>(
   { timestamps: true }
 );
 
+// Optimize notification lookups (finding subscribers for a passage)
+SubscriptionSchema.index({ favorites: 1 });
+
 const SubscriptionModel: Model<ISubscription> =
   (mongoose.models.Subscription as Model<ISubscription>) ||
   mongoose.model<ISubscription>('Subscription', SubscriptionSchema);
