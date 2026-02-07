@@ -189,8 +189,17 @@ useSocketRoom('schedule-updates', [
       <div 
         v-for="item in filteredSchedule"
         :key="item._id || 'unknown'"
-        class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+        class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
         @click="handleGroupClick(item.group._id, item.apparatus.code)"
+        role="button"
+        tabindex="0"
+        @keydown.enter="handleGroupClick(item.group._id, item.apparatus.code)"
+        @keydown.space.prevent="handleGroupClick(item.group._id, item.apparatus.code)"
+        :aria-label="t('schedule.openGroupDetails', {
+          group: item.group.name,
+          apparatus: translateApparatus(item.apparatus.code, item.apparatus.name),
+          time: formatTime(item.startTime)
+        })"
       >
         <div class="flex items-start gap-4">
           <!-- Time & Location -->

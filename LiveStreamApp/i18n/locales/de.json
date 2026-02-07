@@ -40,7 +40,8 @@
   "schedule": {
     "group": "Gruppe",
     "addToFavorites": "{name} zu de Favorite hinzuefüege",
-    "removeFromFavorites": "{name} vo de Favorite entferne"
+    "removeFromFavorites": "{name} vo de Favorite entferne",
+    "openGroupDetails": "Details azeige für {group} am {apparatus} am {time}"
   },
   "results": {
     "noResults": "No kei Ergäbnis verfüegbar.",

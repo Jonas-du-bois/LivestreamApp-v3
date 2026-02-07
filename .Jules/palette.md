@@ -17,3 +17,7 @@
 ## 2024-05-26 - Custom Tab Interfaces
 **Learning:** Custom navigation elements like the Day Switcher are visually tabs but implemented as buttons. Screen readers need `role="tablist"` on the container and `role="tab"` + `aria-selected` on the buttons to understand the relationship.
 **Action:** When implementing custom segmented controls or day pickers, use the `tablist` pattern instead of just independent buttons.
+
+## 2026-02-07 - Interactive List Item Pattern
+**Learning:** Schedule and Result items are implemented as `div`s with `@click` handlers, making them inaccessible to keyboard users and screen readers.
+**Action:** Convert interactive list items to `role="button"` with `tabindex="0"`, add `@keydown.enter` and `@keydown.space` handlers, and ensure a descriptive `aria-label` is provided that summarizes the item's content.

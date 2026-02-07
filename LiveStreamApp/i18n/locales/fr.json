@@ -40,7 +40,8 @@
   "schedule": {
     "group": "Groupe",
     "addToFavorites": "Ajouter {name} aux favoris",
-    "removeFromFavorites": "Retirer {name} des favoris"
+    "removeFromFavorites": "Retirer {name} des favoris",
+    "openGroupDetails": "Voir les détails pour {group} à {apparatus} à {time}"
   },
   "results": {
     "noResults": "Aucun résultat disponible pour le moment.",
