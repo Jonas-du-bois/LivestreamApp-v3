@@ -14,3 +14,29 @@ export const SyncFavoritesSchema = z.object({
     z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId')
   ).max(50),
 });
+
+/**
+ * Validates a Socket.io room name against a strict whitelist.
+ * This prevents users from joining arbitrary channels and potential resource exhaustion attacks.
+ */
+export const isValidRoom = (room: string): boolean => {
+  // Public channels
+  const allowedRooms = new Set([
+    'live-scores',
+    'schedule-updates',
+    'streams',
+    'admin-dashboard'
+  ]);
+
+  if (allowedRooms.has(room)) {
+    return true;
+  }
+
+  // Specific stream channels: stream-{ObjectId}
+  const streamRoomRegex = /^stream-[0-9a-fA-F]{24}$/;
+  if (streamRoomRegex.test(room)) {
+    return true;
+  }
+
+  return false;
+};
