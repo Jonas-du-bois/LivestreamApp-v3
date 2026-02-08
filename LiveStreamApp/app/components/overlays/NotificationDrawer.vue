@@ -142,8 +142,8 @@ const handleNotificationClick = (notification: AppNotification) => {
             <button
               @click="clearAllRead"
               class="p-2 hover:bg-white/10 rounded-xl transition-colors group"
-              aria-label="Supprimer les notifications lues"
-              title="Supprimer les notifications lues"
+              :aria-label="t('notifications.clearRead')"
+              :title="t('notifications.clearRead')"
             >
               <Icon name="fluent:delete-24-regular" class="w-4 h-4 text-white/50 group-hover:text-red-400 transition-colors" />
             </button>
@@ -215,12 +215,12 @@ const handleNotificationClick = (notification: AppNotification) => {
                       <span>{{ formatRelativeTime(notification.timestamp) }}</span>
                     </div>
 
-                    <!-- Actions (show on hover) -->
-                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <!-- Actions (show on hover or focus) -->
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                       <button
                         v-if="!notification.isRead"
                         @click.stop="markAsRead(notification.id)"
-                        class="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                        class="p-1.5 hover:bg-white/10 focus-visible:bg-white/10 rounded-lg transition-colors outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50"
                         :aria-label="t('notifications.markAsRead')"
                         :title="t('notifications.markAsRead')"
                       >
@@ -228,7 +228,7 @@ const handleNotificationClick = (notification: AppNotification) => {
                       </button>
                       <button
                         @click.stop="removeNotification(notification.id)"
-                        class="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
+                        class="p-1.5 hover:bg-red-500/20 focus-visible:bg-red-500/20 rounded-lg transition-colors outline-none focus-visible:ring-2 focus-visible:ring-red-400/50"
                         :aria-label="t('notifications.delete')"
                         :title="t('notifications.delete')"
                       >
