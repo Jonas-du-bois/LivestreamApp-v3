@@ -1,59 +1,77 @@
 import PassageModel from '../models/Passage';
+import ApparatusModel from '../models/Apparatus';
+import GroupModel from '../models/Group';
 
 export default defineEventHandler(async (event) => {
   try {
-    const passages = await PassageModel.find({ isPublished: true })
-      // 1. CORRECTION ICI : On ajoute 'canton' et 'logo' à la liste des champs récupérés
-      .populate('group', 'name category canton logo')
-      .populate('apparatus', 'name code icon')
-      .sort({ 'score': -1 })
-      .lean()
-      .exec();
+    // OPTIMIZATION: Use Aggregation Pipeline instead of find() + in-memory processing
+    // This reduces memory usage and leverages DB for sorting and grouping
+    const pipeline: any[] = [
+      { $match: { isPublished: true } },
+      { $sort: { score: -1 } },
+      {
+        $lookup: {
+          from: ApparatusModel.collection.name,
+          localField: 'apparatus',
+          foreignField: '_id',
+          as: 'apparatus'
+        }
+      },
+      { $unwind: '$apparatus' },
+      {
+        $lookup: {
+          from: GroupModel.collection.name,
+          localField: 'group',
+          foreignField: '_id',
+          as: 'group'
+        }
+      },
+      {
+        $unwind: {
+          path: '$group',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          score: 1,
+          startTime: 1,
+          endTime: 1,
+          location: 1,
+          status: 1,
+          "group._id": 1,
+          "group.name": 1,
+          "group.category": 1,
+          "group.canton": 1,
+          "group.logo": 1,
+          "apparatus._id": 1,
+          "apparatus.name": 1,
+          "apparatus.code": 1,
+          "apparatus.icon": 1
+        }
+      },
+      {
+        $group: {
+          _id: "$apparatus.code",
+          passages: { $push: "$$ROOT" }
+        }
+      }
+    ];
+
+    const result = await PassageModel.aggregate(pipeline);
 
     const grouped: Record<string, any[]> = {};
 
-    passages.forEach((p: any) => {
-       if (!p.apparatus || !p.apparatus.code) return;
-       const code = p.apparatus.code;
-
-       if (!grouped[code]) {
-           grouped[code] = [];
-       }
-
-       grouped[code].push({
-          _id: p._id,
-          // 2. CORRECTION ICI : On mappe 'canton' et 'logo' pour le frontend
-          group: p.group ? { 
-            _id: p.group._id, 
-            name: p.group.name, 
-            category: p.group.category,
-            canton: p.group.canton, // Ajouté
-            logo: p.group.logo      // Ajouté
-          } : null,
-          apparatus: p.apparatus ? { 
-            _id: p.apparatus._id, 
-            name: p.apparatus.name, 
-            code: p.apparatus.code, 
-            icon: p.apparatus.icon 
-          } : null,
-          score: p.score,
-          rank: 0, 
-          startTime: p.startTime,
-          endTime: p.endTime,
-          location: p.location,
-          status: p.status,
-       });
-    });
-
-    // Compute ranks
-    Object.values(grouped).forEach(groupList => {
-        // Sort descending by total score
-        groupList.sort((a, b) => (b.score || 0) - (a.score || 0));
-        
-        // Handle Ex-aequo ranks logic (Optional but pro)
-        groupList.forEach((p, index) => {
-            p.rank = index + 1;
-        });
+    result.forEach((item: any) => {
+       if (!item._id) return;
+       // Add rank (since passages are already sorted by score desc in the group)
+       grouped[item._id] = item.passages.map((p: any, index: number) => ({
+         ...p,
+         // Ensure group is null if missing (orphaned passage), matching original behavior
+         group: (p.group && p.group._id) ? p.group : null,
+         rank: index + 1
+       }));
     });
 
     return grouped;
