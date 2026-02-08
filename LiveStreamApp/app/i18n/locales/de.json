@@ -152,6 +152,7 @@
     "daysAgo": "Vor {count} Täg",
     "markAsRead": "Als gläse markiere",
     "delete": "Lösche",
+    "clearRead": "Gleseni Benachrichtigunge lösche",
     "closeNotifications": "Benachrichtigunge schliesse"
   },
   "search": {
