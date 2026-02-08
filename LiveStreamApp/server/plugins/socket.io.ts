@@ -46,6 +46,12 @@ export default defineNitroPlugin((nitroApp: any) => {
       // Gestion des salles (Rooms)
       socket.on('join-room', (room: string) => {
         if (typeof room === 'string') {
+          // Security: Validate room name to prevent DoS and unauthorized access
+          if (!isValidRoom(room)) {
+            console.warn(`[Socket.io] Security: Socket ${socket.id} attempted to join invalid room: ${room}`)
+            return
+          }
+
           socket.join(room)
           console.log(`[Socket.io] Socket ${socket.id} a rejoint la salle : ${room}`)
           // Log current rooms for this socket

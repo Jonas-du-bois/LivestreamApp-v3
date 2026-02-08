@@ -14,3 +14,23 @@ export const SyncFavoritesSchema = z.object({
     z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId')
   ).max(50),
 });
+
+// Security: Validate Socket.io rooms to prevent arbitrary room joining
+const VALID_STATIC_ROOMS = new Set([
+  'live-scores',
+  'schedule-updates',
+  'streams',
+  'admin-dashboard'
+]);
+
+const STREAM_ROOM_REGEX = /^stream-[0-9a-fA-F]{24}$/;
+
+/**
+ * Validates if a room name is allowed.
+ * Security: Prevents joining arbitrary rooms and potential DoS.
+ */
+export const isValidRoom = (room: string): boolean => {
+  if (typeof room !== 'string') return false;
+  if (VALID_STATIC_ROOMS.has(room)) return true;
+  return STREAM_ROOM_REGEX.test(room);
+};

@@ -7,3 +7,8 @@
 **Vulnerability:** The admin login endpoint lacked rate limiting (Brute Force risk) and blindly trusted `X-Forwarded-For` headers (IP Spoofing risk). Additionally, a missing server password configuration could allow login with an empty password.
 **Learning:** Default helper functions like `getRequestIP` can be dangerous if their default behaviors (or simple configurations like `xForwardedFor: true`) are used without understanding the deployment environment (proxies vs direct). In-memory rate limiters must implement cleanup to prevent memory leaks.
 **Prevention:** 1. Implement rate limiting on sensitive auth endpoints. 2. Do not trust `X-Forwarded-For` unless behind a verified trusted proxy. 3. Validate critical security configuration (like passwords) on startup or use.
+
+## 2025-05-27 - Missing Socket.io Room Validation
+**Vulnerability:** The Socket.io `join-room` handler accepted any string as a room name. This allowed clients to join arbitrary rooms (DoS risk via memory exhaustion) or unauthorized internal rooms (Info Leak risk).
+**Learning:** Memories or documentation claiming security controls exist (e.g., "enforces server-side validation") must be verified against the actual code. Missing implementation of planned security features is a common gap.
+**Prevention:** 1. Implement strict allowlists for room names. 2. Use `isValidRoom` utility in `server/utils/validation.ts` to centralize logic. 3. Log security warnings for invalid join attempts.
