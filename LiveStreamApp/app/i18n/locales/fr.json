@@ -152,6 +152,7 @@
     "daysAgo": "Il y a {count} jours",
     "markAsRead": "Marquer comme lu",
     "delete": "Supprimer",
+    "clearRead": "Supprimer les notifications lues",
     "closeNotifications": "Fermer les notifications"
   },
   "search": {
