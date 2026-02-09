@@ -251,15 +251,19 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
     <!-- Tabs Navigation -->
     <div v-if="resultsSections.length" class="px-4">
-      <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
+      <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4" role="tablist" :aria-label="t('filters.apparatus')">
         <button
           v-for="section in resultsSections"
           :key="section.code"
           @click="activeTab = section.code"
-          class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all"
+          class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
           :class="activeTab === section.code 
             ? 'bg-cyan-400 text-[#0B1120]' 
             : 'glass-card text-white/80'"
+          role="tab"
+          :aria-selected="activeTab === section.code"
+          :aria-controls="'panel-' + section.code"
+          :id="'tab-' + section.code"
         >
           {{ section.name }}
         </button>
@@ -267,7 +271,13 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
     </div>
 
     <!-- Content for active tab -->
-    <div v-if="activeSection" class="px-4 mt-6 space-y-6">
+    <div
+      v-if="activeSection"
+      class="px-4 mt-6 space-y-6"
+      role="tabpanel"
+      :id="'panel-' + activeSection.code"
+      :aria-labelledby="'tab-' + activeSection.code"
+    >
       <!-- Podium Section -->
       <div v-if="podiumResults.length > 0">
         <h2 class="text-white text-xl font-bold mb-4">{{ t('results.podium') }}</h2>
@@ -276,9 +286,14 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             v-for="result in podiumResults"
             :key="result._id"
             :id="'result-' + result._id"
-            class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+            class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
             :class="getPodiumBorderClass(result.rank)"
             @click="handleGroupClick(result.group._id, activeSection.code)"
+            role="button"
+            tabindex="0"
+            @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
+            @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
+            :aria-label="t('results.openGroupDetails', { group: result.group.name })"
           >
             <div class="flex items-center gap-4">
               <!-- Medal Icon -->
@@ -314,8 +329,13 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             v-for="result in fullRanking"
             :key="result._id"
             :id="'result-' + result._id"
-            class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+            class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
             @click="handleGroupClick(result.group._id, activeSection.code)"
+            role="button"
+            tabindex="0"
+            @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
+            @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
+            :aria-label="t('results.openGroupDetails', { group: result.group.name })"
           >
             <div class="flex items-center gap-4">
               <!-- Rank Number -->
