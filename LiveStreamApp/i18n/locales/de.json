@@ -47,7 +47,8 @@
     "noResults": "No kei Ergäbnis verfüegbar.",
     "podium": "Podium",
     "fullRanking": "Kompletti Rangliste",
-    "noApparatusResults": "Kei Ergäbnis für das Grät."
+    "noApparatusResults": "Kei Ergäbnis für das Grät.",
+    "openGroupDetails": "Details und Ergäbnis azeige für {group}"
   },
   "favorites": {
     "nextFavorite": "Nächste Favorit-Uftritt",

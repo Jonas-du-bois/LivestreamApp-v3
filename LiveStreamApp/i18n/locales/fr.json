@@ -47,7 +47,8 @@
     "noResults": "Aucun résultat disponible pour le moment.",
     "podium": "Podium",
     "fullRanking": "Classement complet",
-    "noApparatusResults": "Aucun résultat pour cet agrès."
+    "noApparatusResults": "Aucun résultat pour cet agrès.",
+    "openGroupDetails": "Voir les détails et résultats pour {group}"
   },
   "favorites": {
     "nextFavorite": "Prochain passage favori",
