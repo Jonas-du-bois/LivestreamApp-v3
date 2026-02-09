@@ -6,10 +6,18 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "generate:mobile": "cross-env NUXT_SSR=false NUXT_PUBLIC_API_BASE=https://livestreamapp-v3.onrender.com/api NUXT_PUBLIC_SOCKET_URL=https://livestreamapp-v3.onrender.com nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "cap:sync": "npx cap sync",
+    "cap:open": "npx cap open android",
+    "mobile": "npm run generate:mobile && npm run cap:sync"
   },
   "dependencies": {
+    "@capacitor/android": "^8.0.2",
+    "@capacitor/cli": "^8.0.2",
+    "@capacitor/core": "^8.0.2",
+    "@capacitor/preferences": "^7.0.3",
     "@khmyznikov/pwa-install": "^0.6.3",
     "@nuxtjs/i18n": "^10.2.1",
     "chart.js": "^4.5.1",
@@ -35,6 +43,7 @@
     "@types/leaflet": "^1.9.21",
     "@types/web-push": "^3.6.4",
     "@vite-pwa/nuxt": "^1.1.0",
+    "cross-env": "^10.1.0",
     "mongodb-memory-server": "^11.0.1",
     "nitropack": "^2.13.1",
     "workbox-core": "^7.4.0",

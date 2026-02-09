@@ -1,9 +1,15 @@
 import { defineNuxtPlugin } from '#app'
 import { io, Socket } from 'socket.io-client'
+import { isNativePlatform } from '~/utils/capacitor'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  // Use relative path to let Socket.io auto-detect host (works for localhost and production)
-  const socket: Socket = io({
+  const config = useRuntimeConfig()
+  
+  // En mode Capacitor, on doit se connecter avec l'URL absolue du serveur
+  // En mode Web, on garde la connexion relative (auto-detect host)
+  const socketUrl = isNativePlatform() ? (config.public.socketUrl as string) : undefined
+
+  const socket: Socket = io(socketUrl || '', {
     path: '/socket.io',
     transports: ['websocket', 'polling'],
     reconnectionAttempts: 5,

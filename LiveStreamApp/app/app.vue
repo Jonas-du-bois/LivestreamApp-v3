@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import { isNativePlatform } from '~/utils/capacitor'
+
 const pwaInstallRef = ref<InstanceType<typeof import('./components/PwaInstallPrompt.vue').default> | null>(null)
+
+// Désactiver le PWA prompt en mode natif (Capacitor)
+const showPwaPrompt = !isNativePlatform()
 
 // Optionnel: Stocker si l'utilisateur a déjà vu/refusé le prompt
 const hasSeenInstallPrompt = useCookie('pwa-install-seen', {
@@ -27,8 +32,9 @@ const handleUserChoice = (choice: 'accepted' | 'dismissed') => {
       <NuxtPage :keepalive="{ max: 10 }" />
     </NuxtLayout>
     
-    <!-- PWA Install Prompt - Visible sur tous les appareils compatibles -->
+    <!-- PWA Install Prompt - Désactivé en mode natif (Capacitor) -->
     <PwaInstallPrompt 
+      v-if="showPwaPrompt"
       ref="pwaInstallRef"
       @install-success="handleInstallSuccess"
       @user-choice-result="handleUserChoice"

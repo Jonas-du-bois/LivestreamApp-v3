@@ -28,6 +28,11 @@
 /* Base Styles */
 html {
   font-size: var(--font-size);
+  /* Safe area insets pour Capacitor edge-to-edge */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
 }
 
 body {
@@ -118,15 +123,15 @@ body {
 
 /* Safe area handling for devices with notches (iPhone, etc.) */
 /* Adds safe inset on top of header and bottom of footer/nav when present */
-/* Safe area handling for devices with notches (iPhone, etc.) */
+/* Safe area handling for devices with notches (iPhone, Android cutouts, Capacitor edge-to-edge) */
 @supports (padding: env(safe-area-inset-top)) {
   .header-safe-area {
     padding-top: calc(env(safe-area-inset-top, 0px) + 1rem) !important;
   }
 
- /*  .nav-safe-area {
+  .nav-safe-area {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
-  } */
+  }
   
   /* Fallback for generic selectors */
   header {

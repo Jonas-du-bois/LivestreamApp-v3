@@ -1,8 +1,14 @@
 import { getCurrentInstance, ref } from 'vue'
+import { isNativePlatform, getNativeToken } from '~/utils/capacitor'
 
-// Helper to get auth token from cookie
+// Helper to get auth token (hybrid: native storage on Capacitor, cookie on web)
 const getAuthToken = (): string | null => {
-  // Try useCookie first (works in Vue context)
+  // Mode Capacitor → token stocké dans Preferences (chargé en mémoire au démarrage)
+  if (import.meta.client && isNativePlatform()) {
+    return getNativeToken()
+  }
+
+  // Mode Web → cookie classique
   try {
     const cookieRef = useCookie('auth_token')
     if (cookieRef.value) {
@@ -92,6 +98,11 @@ export const useApiClient = <T>(
 
   return useFetch<T>(url, {
     baseURL: apiBase,
+    // En mode SPA/Capacitor (ssr: false), forcer le fetch côté client uniquement
+    // car les données pré-rendues au build sont vides
+    server: false,
+    // Ne pas utiliser le cache des payloads pré-rendus (toujours re-fetch)
+    getCachedData: () => undefined,
     ...options,
     onResponseError({ response }) {
       console.error('API Error:', response.status, response._data)

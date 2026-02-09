@@ -1,11 +1,26 @@
+import { isNativePlatform, getNativeToken, setNativeToken, removeNativeToken } from '~/utils/capacitor'
+
 export const useAdminAuth = () => {
-  // Use cookie for persistence (24 hours)
-  const token = useCookie<string | null>('auth_token', {
+  // Cookie pour le mode Web (24 heures)
+  const cookieToken = useCookie<string | null>('auth_token', {
     maxAge: 60 * 60 * 24, // 1 day
     sameSite: 'lax',
     path: '/',
-    secure: false, // Ensure it works on localhost HTTP
-    httpOnly: false // Accessible to JS (needed for client-side API calls if we read it there, though useCookie handles it)
+    secure: false,
+    httpOnly: false
+  })
+
+  // Token réactif hybride : lit depuis le bon stockage selon la plateforme
+  const token = computed({
+    get: () => {
+      if (import.meta.client && isNativePlatform()) {
+        return getNativeToken()
+      }
+      return cookieToken.value
+    },
+    set: () => {
+      // La modification se fait via login/logout (async pour le natif)
+    }
   })
 
   const loginError = ref<string | null>(null)
@@ -16,13 +31,20 @@ export const useAdminAuth = () => {
     isLoggingIn.value = true
     
     try {
+      const config = useRuntimeConfig()
       const response = await $fetch<{ success: boolean; token: string }>('/api/admin/login', {
         method: 'POST',
+        baseURL: config.public.apiBase as string,
         body: { password }
       })
       
       if (response.success && response.token) {
-        token.value = response.token
+        // Stockage hybride : Preferences sur mobile, cookie sur web
+        if (isNativePlatform()) {
+          await setNativeToken(response.token)
+        } else {
+          cookieToken.value = response.token
+        }
         return true
       }
       
@@ -41,8 +63,12 @@ export const useAdminAuth = () => {
     }
   }
 
-  const logout = () => {
-    token.value = null
+  const logout = async () => {
+    if (isNativePlatform()) {
+      await removeNativeToken()
+    } else {
+      cookieToken.value = null
+    }
   }
 
   const authHeader = computed(() => {

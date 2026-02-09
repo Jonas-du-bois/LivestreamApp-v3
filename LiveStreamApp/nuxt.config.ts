@@ -1,6 +1,11 @@
 // nuxt.config.ts
+const isMobile = process.env.NUXT_SSR === 'false'
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-02-02',
+
+  // En mode mobile (Capacitor), on désactive le SSR pour générer un SPA statique
+  ssr: !isMobile,
   
   modules: [
     '@nuxtjs/tailwindcss',
@@ -37,10 +42,17 @@ export default defineNuxtConfig({
     rollupConfig: {
       external: ['@nuxt/nitro-server/dist/runtime/utils/cache-driver.js']
     },
-    // Ignore socket.io routes in the router
-    /* routeRules: {
-      '/socket.io/**': { proxy: false }
-    } */
+    // CORS headers pour permettre les requêtes depuis Capacitor (origin: http://localhost)
+    routeRules: {
+      '/api/**': {
+        cors: true,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+      }
+    }
   },
 
   // Ignore socket.io paths in Vue Router
@@ -190,7 +202,8 @@ export default defineNuxtConfig({
     mongodbUri: process.env.MONGODB_URI,
     vapidPrivateKey: process.env.NUXT_VAPID_PRIVATE_KEY,
     public: {
-      apiBase: '/api',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
+      socketUrl: process.env.NUXT_PUBLIC_SOCKET_URL || '',
       vapidPublicKey: process.env.NUXT_PUBLIC_VAPID_PUBLIC_KEY
     }
   },
