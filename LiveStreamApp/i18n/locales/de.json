@@ -154,6 +154,7 @@
     "daysAgo": "Vor {count} Täg",
     "markAsRead": "Als gläse markiere",
     "delete": "Lösche",
+    "clearRead": "Gleseni Benachrichtigunge lösche",
     "closeNotifications": "Benachrichtigunge schliesse"
   },
   "search": {
@@ -225,7 +226,6 @@
     "notificationSent": "Benachrichtigung \"{type}\" gsendet!",
     "notificationError": "Fähler bim Sände",
     "reseedDb": "Reseed DB",
-    "refresh": "Aktualisiere",
     "logout": "Uslogge",
     "reseedWarning": "⚠️ ACHTUNG ⚠️\n\nDas wird d'ganzi Datebank LÖSCHE und neui Teschtdate generiere (live jetzt).\n\nBisch sicher, dass du witt wiitermache?",
     "reseedSuccess": "Datebank reseeded!\nUftritte: {passages}\nStreams: {streams}",
@@ -255,8 +255,6 @@
     "hideFinished": "Fertige verstecke",
     "withScore": "Mit Note",
     "withoutScore": "Ohni Note",
-    "resetFilters": "Zrugsetze",
-    "noPassagesFound": "Kei Uftritte gfunde",
     "score": "Note",
     "expandFilters": "Filter azeige",
     "collapseFilters": "Filter verstecke",
@@ -274,6 +272,7 @@
     "live": "Live",
     "finished": "Fertig",
     "allCategories": "Alli",
+    "allLocations": "Alli",
     "hideFinishedPassages": "Fertigi verstecke",
     "onlyWithScore": "Nur mit Note",
     "onlyWithoutScore": "Ohni Note",
@@ -287,14 +286,52 @@
     "youtubeStreamUrl": "YouTube Stream URL",
     "streamLiveToggle": "Stream Live",
     "updateStreamBtn": "Stream aktualisiere",
-    "testNotifications": "Test Benachrichtigunge",
     "sendAllNotifications": "Alli sände"
   },
 
   "historyLineChart": {
     "best": "Bester",
     "average": "Durchschnitt",
-    "trend": "Entwicklung"
+    "trend": "Entwicklung",
+    "edition": "Ausgab",
+    "note": "Note: {score}"
+  },
+
+  "apparatus": {
+    "SS": "Bode",
+    "BA": "Barren",
+    "AB": "Schwingringe",
+    "SA": "Sprung",
+    "RE": "Reck",
+    "BAS": "Stufenbarren",
+    "CE": "Grätekombination",
+    "SO": "Bode",
+    "BP": "Barren",
+    "BF": "Reck",
+    "GYAE": "Gym. mit Grät",
+    "GYSE": "Gym. ohni Grät",
+    "ST": "Sprung"
+  },
+
+  "days": {
+    "lundi": "Mäntig",
+    "mardi": "Ziischtig",
+    "mercredi": "Mittwuch",
+    "jeudi": "Dunschtig",
+    "vendredi": "Friitig",
+    "samedi": "Samschtig",
+    "dimanche": "Sunntig"
+  },
+
+  "categories": {
+    "ACTIFS": "Aktivi",
+    "MIXTE": "Gmischt"
+  },
+
+  "status": {
+    "scheduled": "Planiert",
+    "live": "Live",
+    "finished": "Fertig"
   },
 
   "language": {

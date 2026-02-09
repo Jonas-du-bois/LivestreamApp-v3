@@ -40,13 +40,15 @@
   "schedule": {
     "group": "Groupe",
     "addToFavorites": "Ajouter {name} aux favoris",
-    "removeFromFavorites": "Retirer {name} des favoris"
+    "removeFromFavorites": "Retirer {name} des favoris",
+    "openGroupDetails": "Voir les détails pour {group} à {apparatus} à {time}"
   },
   "results": {
     "noResults": "Aucun résultat disponible pour le moment.",
     "podium": "Podium",
     "fullRanking": "Classement complet",
-    "noApparatusResults": "Aucun résultat pour cet agrès."
+    "noApparatusResults": "Aucun résultat pour cet agrès.",
+    "openGroupDetails": "Voir les détails et résultats pour {group}"
   },
   "favorites": {
     "nextFavorite": "Prochain passage favori",
@@ -169,7 +171,9 @@
     "livePassages": "Passages en direct",
     "allLiveStreams": "Tous les directs",
     "seeAll": "Voir tout",
-    "seeResults": "Voir les résultats"
+    "seeResults": "Voir les résultats",
+    "minCharacters": "Tapez au moins 2 caractères pour rechercher",
+    "searching": "Recherche en cours..."
   },
   "filters": {
     "title": "Filtres",
@@ -207,11 +211,14 @@
     "installDescription": "Installez l'application pour une meilleure expérience !"
   },
   "admin": {
-    "login": "Admin Login",
-    "password": "Mot de passe Administrateur",
-    "loginBtn": "Login",
+    "login": "Se connecter",
+    "loginTitle": "Admin Dashboard",
+    "loginSubtitle": "Connexion sécurisée",
+    "password": "Mot de passe",
+    "enterPassword": "Entrez le mot de passe",
+    "loginBtn": "Se connecter",
     "loggingIn": "Connexion...",
-    "dashboard": "Admin Dashboard",
+    "dashboard": "Tableau de bord Admin",
     "testNotif": "Test Notif",
     "testNotifications": "Tester les notifications",
     "sendNotification": "Envoie une notification (in-app + navigateur)",
@@ -219,7 +226,6 @@
     "notificationSent": "Notification \"{type}\" envoyée !",
     "notificationError": "Erreur lors de l'envoi",
     "reseedDb": "Reseed DB",
-    "refresh": "Actualiser",
     "logout": "Déconnexion",
     "reseedWarning": "⚠️ ATTENTION ⚠️\n\nCela va EFFACER toute la base de données et regénérer des données de test fraîches (live maintenant).\n\nÊtes-vous sûr de vouloir continuer ?",
     "reseedSuccess": "Base de données regénérée !\nPassages: {passages}\nStreams: {streams}",
@@ -249,17 +255,83 @@
     "hideFinished": "Masquer terminés",
     "withScore": "Avec note",
     "withoutScore": "Sans note",
-    "resetFilters": "Réinitialiser",
-    "noPassagesFound": "Aucun passage trouvé",
     "score": "Note",
     "expandFilters": "Afficher filtres",
-    "collapseFilters": "Masquer filtres"
+    "collapseFilters": "Masquer filtres",
+    "passagesView": "Passages",
+    "streamsView": "Streams",
+    "passagesCount": "{count} passage | {count} passages",
+    "refresh": "Actualiser",
+    "disconnect": "Déconnexion",
+    "all": "Tout",
+    "filters": "Filtres",
+    "reset": "Reset",
+    "status": "Statut",
+    "allStatuses": "Tous",
+    "scheduled": "Planifié",
+    "live": "En direct",
+    "finished": "Terminé",
+    "allCategories": "Toutes",
+    "allLocations": "Toutes",
+    "hideFinishedPassages": "Masquer terminés",
+    "onlyWithScore": "Avec score uniquement",
+    "onlyWithoutScore": "Sans score uniquement",
+    "noPassagesFound": "Aucun passage trouvé",
+    "tryModifyFilters": "Essayez de modifier vos filtres",
+    "resetFilters": "Réinitialiser les filtres",
+    "performanceScore": "Score de la performance",
+    "saveScore": "Sauvegarder",
+    "streamUrlPlaceholder": "URL du stream...",
+    "stream": "Stream",
+    "youtubeStreamUrl": "URL YouTube du stream",
+    "streamLiveToggle": "Stream en direct",
+    "updateStreamBtn": "Mettre à jour le stream",
+    "sendAllNotifications": "Tout envoyer"
   },
 
   "historyLineChart": {
     "best": "Meilleur",
     "average": "Moyenne",
-    "trend": "Évolution"
+    "trend": "Évolution",
+    "edition": "Édition",
+    "note": "Note : {score}"
+  },
+
+  "apparatus": {
+    "SS": "Sol",
+    "BA": "Barres Parallèles",
+    "AB": "Anneaux Balançants",
+    "SA": "Saut",
+    "RE": "Reck",
+    "BAS": "Barres Asymétriques",
+    "CE": "Combinaison d'engins",
+    "SO": "Sol",
+    "BP": "Barres Parallèles",
+    "BF": "Barre Fixe",
+    "GYAE": "Gym. avec engins",
+    "GYSE": "Gym. sans engins",
+    "ST": "Saut"
+  },
+
+  "days": {
+    "lundi": "Lundi",
+    "mardi": "Mardi",
+    "mercredi": "Mercredi",
+    "jeudi": "Jeudi",
+    "vendredi": "Vendredi",
+    "samedi": "Samedi",
+    "dimanche": "Dimanche"
+  },
+
+  "categories": {
+    "ACTIFS": "Actifs",
+    "MIXTE": "Mixte"
+  },
+
+  "status": {
+    "scheduled": "Planifié",
+    "live": "En direct",
+    "finished": "Terminé"
   },
 
   "language": {

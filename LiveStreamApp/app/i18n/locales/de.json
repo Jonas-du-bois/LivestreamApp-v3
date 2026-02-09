@@ -40,13 +40,15 @@
   "schedule": {
     "group": "Gruppe",
     "addToFavorites": "{name} zu de Favorite hinzuefüege",
-    "removeFromFavorites": "{name} vo de Favorite entferne"
+    "removeFromFavorites": "{name} vo de Favorite entferne",
+    "openGroupDetails": "Details azeige für {group} am {apparatus} am {time}"
   },
   "results": {
     "noResults": "No kei Ergäbnis verfüegbar.",
     "podium": "Podium",
     "fullRanking": "Kompletti Rangliste",
-    "noApparatusResults": "Kei Ergäbnis für das Grät."
+    "noApparatusResults": "Kei Ergäbnis für das Grät.",
+    "openGroupDetails": "Details und Ergäbnis azeige für {group}"
   },
   "favorites": {
     "nextFavorite": "Nächste Favorit-Uftritt",
@@ -169,7 +171,9 @@
     "livePassages": "Live Uftritte",
     "allLiveStreams": "Alli Live Streams",
     "seeAll": "Alli ahluege",
-    "seeResults": "Ergäbnis ahluege"
+    "seeResults": "Ergäbnis ahluege",
+    "minCharacters": "Gib mindestens 2 Zeiche ii zum sueche",
+    "searching": "Am sueche..."
   },
   "filters": {
     "title": "Filter",
@@ -207,8 +211,11 @@
     "installDescription": "Installieret d'App für e besseri Erfahrig!"
   },
   "admin": {
-    "login": "Admin Login",
-    "password": "Administrator Passwort",
+    "login": "Iilogge",
+    "loginTitle": "Admin Dashboard",
+    "loginSubtitle": "Sicheri Verbindig",
+    "password": "Passwort",
+    "enterPassword": "Passwort iigäh",
     "loginBtn": "Iilogge",
     "loggingIn": "Am Verbinde...",
     "dashboard": "Admin Dashboard",
@@ -219,7 +226,6 @@
     "notificationSent": "Benachrichtigung \"{type}\" gsendet!",
     "notificationError": "Fähler bim Sände",
     "reseedDb": "Reseed DB",
-    "refresh": "Aktualisiere",
     "logout": "Uslogge",
     "reseedWarning": "⚠️ ACHTUNG ⚠️\n\nDas wird d'ganzi Datebank LÖSCHE und neui Teschtdate generiere (live jetzt).\n\nBisch sicher, dass du witt wiitermache?",
     "reseedSuccess": "Datebank reseeded!\nUftritte: {passages}\nStreams: {streams}",
@@ -249,17 +255,83 @@
     "hideFinished": "Fertige verstecke",
     "withScore": "Mit Note",
     "withoutScore": "Ohni Note",
-    "resetFilters": "Zrugsetze",
-    "noPassagesFound": "Kei Uftritte gfunde",
     "score": "Note",
     "expandFilters": "Filter azeige",
-    "collapseFilters": "Filter verstecke"
+    "collapseFilters": "Filter verstecke",
+    "passagesView": "Uftritte",
+    "streamsView": "Streams",
+    "passagesCount": "{count} Uftritt | {count} Uftritte",
+    "refresh": "Aktualisiere",
+    "disconnect": "Uslogge",
+    "all": "Alli",
+    "filters": "Filter",
+    "reset": "Zrugsetze",
+    "status": "Status",
+    "allStatuses": "Alli",
+    "scheduled": "Planiert",
+    "live": "Live",
+    "finished": "Fertig",
+    "allCategories": "Alli",
+    "allLocations": "Alli",
+    "hideFinishedPassages": "Fertigi verstecke",
+    "onlyWithScore": "Nur mit Note",
+    "onlyWithoutScore": "Ohni Note",
+    "noPassagesFound": "Kei Uftritte gfunde",
+    "tryModifyFilters": "Probier anderi Filter",
+    "resetFilters": "Filter zrugsetze",
+    "performanceScore": "Performance Note",
+    "saveScore": "Speichere",
+    "streamUrlPlaceholder": "Stream URL...",
+    "stream": "Stream",
+    "youtubeStreamUrl": "YouTube Stream URL",
+    "streamLiveToggle": "Stream Live",
+    "updateStreamBtn": "Stream aktualisiere",
+    "sendAllNotifications": "Alli sände"
   },
 
   "historyLineChart": {
     "best": "Bester",
     "average": "Durchschnitt",
-    "trend": "Entwicklung"
+    "trend": "Entwicklung",
+    "edition": "Ausgab",
+    "note": "Note: {score}"
+  },
+
+  "apparatus": {
+    "SS": "Bode",
+    "BA": "Barren",
+    "AB": "Schwingringe",
+    "SA": "Sprung",
+    "RE": "Reck",
+    "BAS": "Stufenbarren",
+    "CE": "Grätekombination",
+    "SO": "Bode",
+    "BP": "Barren",
+    "BF": "Reck",
+    "GYAE": "Gym. mit Grät",
+    "GYSE": "Gym. ohni Grät",
+    "ST": "Sprung"
+  },
+
+  "days": {
+    "lundi": "Mäntig",
+    "mardi": "Ziischtig",
+    "mercredi": "Mittwuch",
+    "jeudi": "Dunschtig",
+    "vendredi": "Friitig",
+    "samedi": "Samschtig",
+    "dimanche": "Sunntig"
+  },
+
+  "categories": {
+    "ACTIFS": "Aktivi",
+    "MIXTE": "Gmischt"
+  },
+
+  "status": {
+    "scheduled": "Planiert",
+    "live": "Live",
+    "finished": "Fertig"
   },
 
   "language": {

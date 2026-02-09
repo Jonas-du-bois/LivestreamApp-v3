@@ -154,6 +154,7 @@
     "daysAgo": "Il y a {count} jours",
     "markAsRead": "Marquer comme lu",
     "delete": "Supprimer",
+    "clearRead": "Supprimer les notifications lues",
     "closeNotifications": "Fermer les notifications"
   },
   "search": {
@@ -225,7 +226,6 @@
     "notificationSent": "Notification \"{type}\" envoyée !",
     "notificationError": "Erreur lors de l'envoi",
     "reseedDb": "Reseed DB",
-    "refresh": "Actualiser",
     "logout": "Déconnexion",
     "reseedWarning": "⚠️ ATTENTION ⚠️\n\nCela va EFFACER toute la base de données et regénérer des données de test fraîches (live maintenant).\n\nÊtes-vous sûr de vouloir continuer ?",
     "reseedSuccess": "Base de données regénérée !\nPassages: {passages}\nStreams: {streams}",
@@ -255,8 +255,6 @@
     "hideFinished": "Masquer terminés",
     "withScore": "Avec note",
     "withoutScore": "Sans note",
-    "resetFilters": "Réinitialiser",
-    "noPassagesFound": "Aucun passage trouvé",
     "score": "Note",
     "expandFilters": "Afficher filtres",
     "collapseFilters": "Masquer filtres",
@@ -274,6 +272,7 @@
     "live": "En direct",
     "finished": "Terminé",
     "allCategories": "Toutes",
+    "allLocations": "Toutes",
     "hideFinishedPassages": "Masquer terminés",
     "onlyWithScore": "Avec score uniquement",
     "onlyWithoutScore": "Sans score uniquement",
@@ -287,14 +286,52 @@
     "youtubeStreamUrl": "URL YouTube du stream",
     "streamLiveToggle": "Stream en direct",
     "updateStreamBtn": "Mettre à jour le stream",
-    "testNotifications": "Test Notifications",
     "sendAllNotifications": "Tout envoyer"
   },
 
   "historyLineChart": {
     "best": "Meilleur",
     "average": "Moyenne",
-    "trend": "Évolution"
+    "trend": "Évolution",
+    "edition": "Édition",
+    "note": "Note : {score}"
+  },
+
+  "apparatus": {
+    "SS": "Sol",
+    "BA": "Barres Parallèles",
+    "AB": "Anneaux Balançants",
+    "SA": "Saut",
+    "RE": "Reck",
+    "BAS": "Barres Asymétriques",
+    "CE": "Combinaison d'engins",
+    "SO": "Sol",
+    "BP": "Barres Parallèles",
+    "BF": "Barre Fixe",
+    "GYAE": "Gym. avec engins",
+    "GYSE": "Gym. sans engins",
+    "ST": "Saut"
+  },
+
+  "days": {
+    "lundi": "Lundi",
+    "mardi": "Mardi",
+    "mercredi": "Mercredi",
+    "jeudi": "Jeudi",
+    "vendredi": "Vendredi",
+    "samedi": "Samedi",
+    "dimanche": "Dimanche"
+  },
+
+  "categories": {
+    "ACTIFS": "Actifs",
+    "MIXTE": "Mixte"
+  },
+
+  "status": {
+    "scheduled": "Planifié",
+    "live": "En direct",
+    "finished": "Terminé"
   },
 
   "language": {

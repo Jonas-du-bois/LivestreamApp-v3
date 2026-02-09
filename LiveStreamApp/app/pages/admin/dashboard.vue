@@ -11,7 +11,7 @@ import { useNotificationsStore } from '#imports'
 definePageMeta({ header: false, footer: false })
 
 const { t, locale, setLocale } = useI18n()
-const { translateApparatus, translateDay, formatLocalizedTime } = useTranslatedData()
+const { translateApparatus, translateDay, translateCategory, formatLocalizedTime } = useTranslatedData()
 const { token: adminToken, login, logout, loginError, isLoggingIn } = useAdminAuth()
 const notificationsStore = useNotificationsStore()
 const passwordInput = ref('')
@@ -685,7 +685,7 @@ const hasActiveFilters = computed(() => {
                 <div>
                   <label class="block text-xs font-medium text-white/60 mb-2">{{ t('admin.location') }}</label>
                   <select v-model="advancedFilters.location" class="select-modern w-full text-sm">
-                    <option value="" class="bg-slate-800">{{ t('admin.allStatuses') }}</option>
+                    <option value="" class="bg-slate-800">{{ t('admin.allLocations') }}</option>
                     <option v-for="loc in availableLocations" :key="loc" :value="loc" class="bg-slate-800">{{ loc }}</option>
                   </select>
                 </div>
@@ -695,7 +695,7 @@ const hasActiveFilters = computed(() => {
                   <label class="block text-xs font-medium text-white/60 mb-2">{{ t('admin.category') }}</label>
                   <select v-model="advancedFilters.category" class="select-modern w-full text-sm">
                     <option value="" class="bg-slate-800">{{ t('admin.allCategories') }}</option>
-                    <option v-for="cat in availableCategories" :key="cat" :value="cat" class="bg-slate-800">{{ cat }}</option>
+                    <option v-for="cat in availableCategories" :key="cat" :value="cat" class="bg-slate-800">{{ translateCategory(cat) }}</option>
                   </select>
                 </div>
               </div>
@@ -817,7 +817,7 @@ const hasActiveFilters = computed(() => {
                       <span class="text-white/60">{{ passage.location }}</span>
                       <span v-if="passage.group.category" class="text-white/30">•</span>
                       <span v-if="passage.group.category" class="px-2 py-0.5 rounded-full bg-white/10 text-white/50 text-xs">
-                        {{ passage.group.category }}
+                        {{ translateCategory(passage.group.category) }}
                       </span>
                     </div>
                   </div>
@@ -828,7 +828,7 @@ const hasActiveFilters = computed(() => {
                     :class="getStatusColor(passage.status)"
                   >
                     <Icon :name="getStatusIcon(passage.status)" class="w-4 h-4" />
-                    <span class="hidden sm:inline">{{ passage.status }}</span>
+                    <span class="hidden sm:inline">{{ passage.status ? t(`admin.${passage.status.toLowerCase()}`) : '' }}</span>
                   </div>
                 </div>
                 
@@ -845,7 +845,7 @@ const hasActiveFilters = computed(() => {
                         ? getStatusColor(status) 
                         : 'bg-white/5 text-white/50 hover:bg-white/10 border border-white/10'"
                     >
-                      {{ status }}
+                      {{ t(`admin.${status.toLowerCase()}`) }}
                     </button>
                   </div>
                   
