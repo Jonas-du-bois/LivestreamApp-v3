@@ -4,7 +4,15 @@ import GroupModel from '../models/Group';
 
 export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event);
-  const dayFilter = query.day as string | undefined;
+
+  // Security: Sanitize inputs to prevent DoS (Parameter Pollution) and Type Errors
+
+  // Day Filter: Expects string. If array (duplicate param), take first.
+  let dayFilter = query.day;
+  if (Array.isArray(dayFilter)) dayFilter = dayFilter[0];
+  if (typeof dayFilter !== 'string') dayFilter = undefined;
+
+  // Other filters: Allow string or string[]
   const apparatusFilter = query.apparatus as string | string[] | undefined;
   const divisionFilter = query.division as string | string[] | undefined;
   const salleFilter = query.salle as string | string[] | undefined;
@@ -76,24 +84,39 @@ export default defineCachedEventHandler(async (event) => {
 
     // Filter by Apparatus
     if (apparatusFilter && apparatusFilter !== 'Tout') {
-      const appNames = Array.isArray(apparatusFilter) ? apparatusFilter : [apparatusFilter];
-      const apps = await ApparatusModel.find({ name: { $in: appNames } }).select('_id').lean();
-      const appIds = apps.map((a: any) => a._id);
-      dbQuery.apparatus = { $in: appIds };
+      const rawNames = Array.isArray(apparatusFilter) ? apparatusFilter : [apparatusFilter];
+      // Security: Ensure all items are strings
+      const appNames = rawNames.filter(n => typeof n === 'string');
+
+      if (appNames.length > 0) {
+        const apps = await ApparatusModel.find({ name: { $in: appNames } }).select('_id').lean();
+        const appIds = apps.map((a: any) => a._id);
+        dbQuery.apparatus = { $in: appIds };
+      }
     }
 
     // Filter by Division (Category)
     if (divisionFilter && divisionFilter !== 'Tout') {
-      const categories = Array.isArray(divisionFilter) ? divisionFilter : [divisionFilter];
-      const groups = await GroupModel.find({ category: { $in: categories } }).select('_id').lean();
-      const groupIds = groups.map((g: any) => g._id);
-      dbQuery.group = { $in: groupIds };
+      const rawCategories = Array.isArray(divisionFilter) ? divisionFilter : [divisionFilter];
+      // Security: Ensure all items are strings
+      const categories = rawCategories.filter(c => typeof c === 'string');
+
+      if (categories.length > 0) {
+        const groups = await GroupModel.find({ category: { $in: categories } }).select('_id').lean();
+        const groupIds = groups.map((g: any) => g._id);
+        dbQuery.group = { $in: groupIds };
+      }
     }
 
     // Filter by Salle (Location)
     if (salleFilter && salleFilter !== 'Tout') {
-      const locations = Array.isArray(salleFilter) ? salleFilter : [salleFilter];
-      dbQuery.location = { $in: locations };
+      const rawLocations = Array.isArray(salleFilter) ? salleFilter : [salleFilter];
+      // Security: Ensure all items are strings
+      const locations = rawLocations.filter(l => typeof l === 'string');
+
+      if (locations.length > 0) {
+        dbQuery.location = { $in: locations };
+      }
     }
 
     // 3. Metadata: Available Lists (Dynamic)

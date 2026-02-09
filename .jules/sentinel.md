@@ -7,3 +7,8 @@
 **Vulnerability:** The admin login endpoint lacked rate limiting (Brute Force risk) and blindly trusted `X-Forwarded-For` headers (IP Spoofing risk). Additionally, a missing server password configuration could allow login with an empty password.
 **Learning:** Default helper functions like `getRequestIP` can be dangerous if their default behaviors (or simple configurations like `xForwardedFor: true`) are used without understanding the deployment environment (proxies vs direct). In-memory rate limiters must implement cleanup to prevent memory leaks.
 **Prevention:** 1. Implement rate limiting on sensitive auth endpoints. 2. Do not trust `X-Forwarded-For` unless behind a verified trusted proxy. 3. Validate critical security configuration (like passwords) on startup or use.
+
+## 2026-02-09 - DoS via Parameter Pollution
+**Vulnerability:** The schedule API endpoint crashed with a 500 error when receiving duplicate query parameters (e.g., `?day=Monday&day=Tuesday`), because it blindly cast the input to a string and called `.toLowerCase()` on what became an array.
+**Learning:** Frameworks like `h3` and `ufo` handle query parameters flexibly (string or array), but application logic often assumes a single string. Type assertions (`as string`) without runtime validation are dangerous when input is user-controlled.
+**Prevention:** 1. Explicitly validate the type of all query parameters (e.g., `typeof day === 'string'`). 2. Handle array inputs gracefully (e.g., take the first element or reject the request). 3. Use schema validation (like Zod) for query parameters where possible.
