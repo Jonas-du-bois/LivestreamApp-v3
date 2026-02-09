@@ -14,6 +14,10 @@ export default defineEventHandler(async (event) => {
           from: ApparatusModel.collection.name,
           localField: 'apparatus',
           foreignField: '_id',
+          // OPTIMIZATION: Project early to reduce document size (exclude unused fields)
+          pipeline: [
+            { $project: { _id: 1, name: 1, code: 1, icon: 1 } }
+          ],
           as: 'apparatus'
         }
       },
@@ -23,6 +27,10 @@ export default defineEventHandler(async (event) => {
           from: GroupModel.collection.name,
           localField: 'group',
           foreignField: '_id',
+          // OPTIMIZATION: Project early to avoid fetching large history/description fields
+          pipeline: [
+            { $project: { _id: 1, name: 1, category: 1, canton: 1, logo: 1 } }
+          ],
           as: 'group'
         }
       },
