@@ -25,5 +25,3 @@ logs
 .env.*
 !.env.example
 
-# Capacitor androir
-android
