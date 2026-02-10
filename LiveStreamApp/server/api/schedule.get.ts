@@ -134,62 +134,65 @@ export default defineCachedEventHandler(async (event) => {
     const metaQueryLocations = { ...dbQuery };
     delete metaQueryLocations.location;
 
-    const [facets] = await PassageModel.aggregate([
-      {
-        $facet: {
-          apparatus: [
-            { $match: metaQueryApparatus },
-            { $group: { _id: "$apparatus" } },
-            {
-              $lookup: {
-                from: ApparatusModel.collection.name,
-                localField: "_id",
-                foreignField: "_id",
-                as: "info"
-              }
-            },
-            { $unwind: "$info" },
-            { $replaceRoot: { newRoot: "$info" } },
-            { $project: { name: 1, code: 1 } }
-          ],
-          categories: [
-            { $match: metaQueryCategories },
-            { $group: { _id: "$group" } },
-            {
-              $lookup: {
-                from: GroupModel.collection.name,
-                localField: "_id",
-                foreignField: "_id",
-                as: "info"
-              }
-            },
-            { $unwind: "$info" },
-            { $replaceRoot: { newRoot: "$info" } },
-            { $project: { category: 1 } }
-          ],
-          locations: [
-            { $match: metaQueryLocations },
-            { $group: { _id: "$location" } },
-            { $sort: { _id: 1 } } // Optional: sort locations
-          ]
+    // OPTIMIZATION: Run metadata aggregation and data fetching in parallel
+    const [facetsResult, passages] = await Promise.all([
+      PassageModel.aggregate([
+        {
+          $facet: {
+            apparatus: [
+              { $match: metaQueryApparatus },
+              { $group: { _id: "$apparatus" } },
+              {
+                $lookup: {
+                  from: ApparatusModel.collection.name,
+                  localField: "_id",
+                  foreignField: "_id",
+                  as: "info"
+                }
+              },
+              { $unwind: "$info" },
+              { $replaceRoot: { newRoot: "$info" } },
+              { $project: { name: 1, code: 1 } }
+            ],
+            categories: [
+              { $match: metaQueryCategories },
+              { $group: { _id: "$group" } },
+              {
+                $lookup: {
+                  from: GroupModel.collection.name,
+                  localField: "_id",
+                  foreignField: "_id",
+                  as: "info"
+                }
+              },
+              { $unwind: "$info" },
+              { $replaceRoot: { newRoot: "$info" } },
+              { $project: { category: 1 } }
+            ],
+            locations: [
+              { $match: metaQueryLocations },
+              { $group: { _id: "$location" } },
+              { $sort: { _id: 1 } } // Optional: sort locations
+            ]
+          }
         }
-      }
+      ]),
+      PassageModel.find(dbQuery)
+        .select('startTime endTime location status score group apparatus')
+        .populate('group', 'name category')
+        .populate('apparatus', 'name code icon')
+        .sort({ startTime: 1 }) // Sorting at DB level
+        .lean()
+        .exec()
     ]);
+
+    const facets = facetsResult[0];
 
     const availableApparatus = facets?.apparatus ? facets.apparatus.map((a: any) => ({ code: a.code, name: a.name })) : [];
     const availableCategories = facets?.categories
       ? [...new Set(facets.categories.map((c: any) => c.category).filter(Boolean))]
       : [];
     const availableLocations = facets?.locations ? facets.locations.map((l: any) => l._id).filter(Boolean) : [];
-
-    // 4. Fetch Data
-    const passages = await PassageModel.find(dbQuery)
-      .select('startTime endTime location status score group apparatus')
-      .populate('group', 'name category')
-      .populate('apparatus', 'name code icon')
-      .sort({ startTime: 1 }) // Sorting at DB level
-      .lean()
-      .exec();
 
     // 5. Format Response
     const formattedData = passages.map((p: any) => ({
