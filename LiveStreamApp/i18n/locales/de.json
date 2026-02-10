@@ -35,7 +35,8 @@
     "happeningNow": "Jetzt uf de Bühni",
     "weather": "Wätter",
     "plan": "Plan",
-    "restaurant": "Beizli"
+    "restaurant": "Beizli",
+    "afterParty": "After Party"
   },
   "schedule": {
     "group": "Gruppe",
@@ -125,6 +126,48 @@
       "beer": "Bier vom Fass (3dl)",
       "water": "Mineralwasser (5dl)",
       "coffee": "Kafi / Schale"
+    }
+  },
+  "afterparty": {
+    "title": "After Party",
+    "subtitle": "D'Offizielli Afterparty vo de Coupe des Bains.",
+    "comingSoon": "Bald",
+    "countdownLabel": "Start i",
+    "countdownNow": "ES GEHT LOS! 🔥",
+    "themeLabel": "Party-Thema",
+    "themeValue": "Bad Taste Party",
+    "themeDescription": "Wage de schlimmschte Look! Je kitschiger, desto besser.",
+    "startLabel": "Start",
+    "startTime": "22:00",
+    "endLabel": "Ende",
+    "endTime": "04:00",
+    "locationLabel": "Ort",
+    "locationValue": "La salle des Isles",
+    "entryLabel": "Itritt",
+    "entryValue": "Gratis",
+    "ageLabel": "Alter",
+    "ageValue": "16+",
+    "dressCode": "Party-Outfit empfohle",
+    "paymentMethods": "Cash & TWINT",
+    "ambience": "DJ Set",
+    "drinksTitle": "Getränk-Chärtli",
+    "drinksSubtitle": "Ungefähri Pryse",
+    "categories": {
+      "beers": "Bier",
+      "cocktails": "Cocktails",
+      "wines": "Wii",
+      "softs": "Softs",
+      "shots": "Shots"
+    },
+    "drinks": {
+      "beerSmall": "Bier vom Fass 3dl",
+      "beerLarge": "Bier vom Fass 5dl",
+      "beerBottle": "Bier Fläsche",
+      "whiteWine": "Wiisswii 1dl",
+      "redWine": "Rootwii 1dl",
+      "water": "Mineralwasser 5dl",
+      "vodkaShot": "Shot Vodka",
+      "tequilaShot": "Shot Tequila"
     }
   },
   "plan": {

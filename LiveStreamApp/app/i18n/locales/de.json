@@ -35,7 +35,8 @@
     "happeningNow": "Jetzt uf de Bühni",
     "weather": "Wätter",
     "plan": "Plan",
-    "restaurant": "Beizli"
+    "restaurant": "Beizli",
+    "afterParty": "After Party"
   },
   "schedule": {
     "group": "Gruppe",
@@ -125,6 +126,28 @@
       "beer": "Bier vom Fass (3dl)",
       "water": "Mineralwasser (5dl)",
       "coffee": "Kafi / Schale"
+    }
+  },
+  "afterparty": {
+    "title": "After Party",
+    "subtitle": "D'Offizielli Afterparty vo de Coupe des Bains.",
+    "themeLabel": "Party-Thema",
+    "themeValue": "Wird no bekanntgäh",
+    "startLabel": "Start",
+    "startTime": "Wird no bekanntgäh",
+    "endLabel": "Ende",
+    "endTime": "Wird no bekanntgäh",
+    "locationLabel": "Ort",
+    "locationValue": "Wird no bekanntgäh",
+    "entryLabel": "Itritt",
+    "entryValue": "Gratis",
+    "drinksTitle": "Getränk-Chärtli",
+    "drinksSubtitle": "Uswahl zur Info - Details vor Ort",
+    "drinks": {
+      "beer": "Bier (Zapf & Fläsche)",
+      "wine": "Wy (wiiss, rot, rosé)",
+      "softs": "Softs & Mineralwasser",
+      "cocktails": "Cocktails & Longdrinks"
     }
   },
   "plan": {

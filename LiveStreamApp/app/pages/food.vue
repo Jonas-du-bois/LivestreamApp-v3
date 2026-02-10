@@ -22,12 +22,12 @@
       </p>
     </div>
 
-    <div class="px-6 mb-8 flex gap-3 overflow-x-auto no-scrollbar pb-2">
+    <div class="px-6 mb-8 flex gap-3 overflow-x-auto no-scrollbar pb-2 w-full flex-nowrap">
       <button 
         v-for="cat in categories" 
         :key="cat.id"
         @click="activeCategory = cat.id"
-        class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border"
+        class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border shrink-0" 
         :class="activeCategory === cat.id 
           ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/50' 
           : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'"
@@ -35,7 +35,7 @@
         {{ cat.label }}
       </button>
     </div>
-
+    
     <div class="px-6 mb-8">
       <div class="glass-panel p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 flex gap-4 items-center">
         <div class="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">

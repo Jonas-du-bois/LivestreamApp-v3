@@ -31,7 +31,7 @@ export const AdminService = {
   },
 
   seedDatabase() {
-    return apiClient<{ success: boolean; summary: any }>('/admin/seed', {
+    return apiClient<{ success: boolean; summary?: any; error?: string }>('/admin/seed', {
       method: 'POST'
     })
   }

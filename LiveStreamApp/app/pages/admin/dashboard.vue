@@ -55,6 +55,7 @@ const buildPassageUI = (p: PassageEnriched): PassageUI => {
 const activeView = ref<'passages' | 'streams'>('passages')
 const showAdvancedFilters = ref(false)
 const showMobileMenu = ref(false)
+const isReseeding = ref(false)
 const isHeaderCollapsed = ref(false)
 const searchQuery = ref('')
 const debouncedSearchQuery = ref('')
@@ -336,6 +337,34 @@ const updateStreamUrl = async (stream: Stream) => {
   }
 }
 
+const reseedDatabase = async () => {
+  if (isReseeding.value) return
+  if (typeof window === 'undefined') return
+
+  const confirmed = window.confirm(t('admin.reseedWarning'))
+  if (!confirmed) return
+
+  isReseeding.value = true
+  try {
+    const response = await AdminService.seedDatabase()
+    if (response?.success) {
+      await Promise.all([refreshSchedule(), refreshStreams()])
+      const passagesCount = response.summary?.passages ?? 0
+      const streamsCount = response.summary?.streams ?? 0
+      window.alert(t('admin.reseedSuccess', { passages: passagesCount, streams: streamsCount }))
+    } else {
+      const errorMessage = response?.error || 'Unknown error'
+      window.alert(t('admin.errorOccurred', { error: errorMessage }))
+    }
+  } catch (e: any) {
+    console.error('[Dashboard] Failed to reseed DB:', e)
+    const errorMessage = e?.message || String(e)
+    window.alert(t('admin.errorOccurred', { error: errorMessage }))
+  } finally {
+    isReseeding.value = false
+  }
+}
+
 const getStreamForPassage = (passage: PassageEnriched) => {
   return streams.value.find(s => s.location === passage.location)
 }
@@ -461,7 +490,7 @@ const hasActiveFilters = computed(() => {
             </div>
             
             <!-- Desktop Actions -->
-            <div class="hidden lg:flex items-center gap-3">
+            <div class="hidden md:flex items-center gap-3">
               <!-- View Toggle -->
               <div class="glass-card rounded-xl p-1 flex">
                 <button
@@ -532,6 +561,17 @@ const hasActiveFilters = computed(() => {
                 <Icon name="fluent:arrow-clockwise-24-regular" class="w-5 h-5" />
                 <span class="hidden xl:inline">{{ t('admin.refresh') }}</span>
               </button>
+
+              <!-- Reseed DB -->
+              <button
+                @click="reseedDatabase"
+                class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="isReseeding"
+              >
+                <Icon v-if="isReseeding" name="svg-spinners:ring-resize" class="w-5 h-5" />
+                <Icon v-else name="fluent:database-24-regular" class="w-5 h-5" />
+                <span class="hidden xl:inline">{{ t('admin.reseedDb') }}</span>
+              </button>
               
               <!-- Logout -->
               <button @click="logout" class="btn-danger">
@@ -541,7 +581,7 @@ const hasActiveFilters = computed(() => {
             </div>
             
             <!-- Mobile Menu Button -->
-            <button @click.stop="showMobileMenu = !showMobileMenu" class="lg:hidden btn-secondary">
+            <button @click.stop="showMobileMenu = !showMobileMenu" class="md:hidden btn-secondary">
               <Icon :name="showMobileMenu ? 'fluent:dismiss-24-regular' : 'fluent:navigation-24-regular'" class="w-6 h-6" />
             </button>
           </div>
@@ -549,7 +589,7 @@ const hasActiveFilters = computed(() => {
         
         <!-- Mobile Menu -->
         <Transition name="slide-down">
-          <div v-if="showMobileMenu" @click.stop class="lg:hidden border-t border-white/10 bg-slate-900/95 backdrop-blur-xl">
+          <div v-if="showMobileMenu" @click.stop class="md:hidden border-t border-white/10 bg-slate-900/95 backdrop-blur-xl">
             <div class="px-4 py-4 space-y-3">
               <!-- View Toggle Mobile -->
               <div class="grid grid-cols-2 gap-2">
@@ -581,6 +621,16 @@ const hasActiveFilters = computed(() => {
                   {{ t('admin.refresh') }}
                 </button>
               </div>
+
+              <button
+                @click="reseedDatabase(); showMobileMenu = false"
+                class="w-full btn-danger disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="isReseeding"
+              >
+                <Icon v-if="isReseeding" name="svg-spinners:ring-resize" class="w-5 h-5" />
+                <Icon v-else name="fluent:database-24-regular" class="w-5 h-5" />
+                {{ t('admin.reseedDb') }}
+              </button>
               
               <button @click="logout" class="w-full btn-danger">
                 <Icon name="fluent:sign-out-24-regular" class="w-5 h-5" />

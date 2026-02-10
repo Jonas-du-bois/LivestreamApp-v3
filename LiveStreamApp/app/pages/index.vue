@@ -177,7 +177,7 @@ useSocketRoom('schedule-updates', [
     </div>
 
     <!-- Info Tiles -->
-    <div class="grid grid-cols-3 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="glass-card p-4 flex flex-col items-center text-center">
         <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:weather-partly-cloudy-day-24-regular" class="w-6 h-6 text-cyan-400" />
@@ -203,6 +203,13 @@ useSocketRoom('schedule-updates', [
           <Icon name="fluent:food-24-regular" class="w-6 h-6 text-cyan-400" />
         </div>
         <span class="text-white/80 text-sm">{{ t('home.restaurant') }}</span>
+      </NuxtLink>
+
+      <NuxtLink to="/afterparty" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg">
+        <div class="w-12 h-12 rounded-full bg-pink-400/20 flex items-center justify-center mb-3">
+          <Icon name="fluent:drink-beer-24-regular" class="w-6 h-6 text-pink-300" />
+        </div>
+        <span class="text-white/80 text-sm">{{ t('home.afterParty') }}</span>
       </NuxtLink>
     </div>
   </div>

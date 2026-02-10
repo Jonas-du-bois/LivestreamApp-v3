@@ -94,6 +94,16 @@ provide('openGroupDetails', openGroupDetails)
     <!-- Animated Background -->
     <LiquidBackground />
 
+    <div 
+      class="fixed top-0 left-0 right-0 h-12 bg-gradient-to-b from-black/80 to-transparent z-30 pointer-events-none" 
+      aria-hidden="true"
+    ></div>
+
+    <div 
+      class="fixed bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-black/80 to-transparent z-30 pointer-events-none" 
+      aria-hidden="true"
+    ></div>
+
     <div class="relative z-10">
       <!-- Glass Header with safe area support -->
       <header v-if="showHeader" class="fixed top-0 left-0 right-0 z-50 px-2 header-safe-area">

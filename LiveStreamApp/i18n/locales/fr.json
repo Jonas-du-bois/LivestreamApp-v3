@@ -35,7 +35,8 @@
     "happeningNow": "En piste maintenant",
     "weather": "Météo",
     "plan": "Plan",
-    "restaurant": "Restau"
+    "restaurant": "Restau",
+    "afterParty": "After Party"
   },
   "schedule": {
     "group": "Groupe",
@@ -127,17 +128,60 @@
       "coffee": "Café / Renversé"
     }
   },
+  "afterparty": {
+    "title": "After Party",
+    "subtitle": "La soirée officielle de la Coupe des Bains.",
+    "comingSoon": "Bientôt",
+    "countdownLabel": "Début dans",
+    "countdownNow": "C'EST PARTI ! 🔥",
+    "themeLabel": "Thème de la soirée",
+    "themeValue": "Bad Taste Party",
+    "themeDescription": "Osez le pire look ! Plus c'est kitsch, mieux c'est.",
+    "startLabel": "Début",
+    "startTime": "22:00",
+    "endLabel": "Fin",
+    "endTime": "04:00",
+    "locationLabel": "Lieu",
+    "locationValue": "La salle des Isles",
+    "entryLabel": "Entrée",
+    "entryValue": "Gratuite",
+    "ageLabel": "Âge",
+    "ageValue": "16+",
+    "dressCode": "Tenue de soirée recommandée",
+    "paymentMethods": "Cash & TWINT",
+    "ambience": "DJ Set",
+    "drinksTitle": "Carte des Boissons",
+    "drinksSubtitle": "Prix indicatifs",
+    "categories": {
+      "beers": "Bières",
+      "cocktails": "Cocktails",
+      "wines": "Vins",
+      "softs": "Softs",
+      "shots": "Shots"
+    },
+    "drinks": {
+      "beerSmall": "Bière Pression 3dl",
+      "beerLarge": "Bière Pression 5dl",
+      "beerBottle": "Bière Bouteille",
+      "whiteWine": "Vin Blanc 1dl",
+      "redWine": "Vin Rouge 1dl",
+      "water": "Eau Minérale 5dl",
+      "vodkaShot": "Shot Vodka",
+      "tequilaShot": "Shot Tequila"
+    }
+  },
   "plan": {
     "back": "Retour",
     "competition": "Concours",
     "food": "Food",
     "info": "Infos",
     "pois": {
-      "mainEntrance": "Entrée Principale",
-      "hallA": "Salle de Concours A",
-      "hallB": "Salle de Concours B",
+      "parking": "Parking",
+      "leonMichaud": "Léon Michaud",
+      "isle": "Salle des Isles",
       "foodCourt": "Food Court",
-      "restrooms": "Sanitaires"
+      "restrooms": "WC",
+      "afterParty": "After Party"
     }
   },
   "notifications": {

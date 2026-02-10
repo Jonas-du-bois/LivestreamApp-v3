@@ -35,7 +35,8 @@
     "happeningNow": "En piste maintenant",
     "weather": "Météo",
     "plan": "Plan",
-    "restaurant": "Restau"
+    "restaurant": "Restau",
+    "afterParty": "After Party"
   },
   "schedule": {
     "group": "Groupe",
@@ -127,17 +128,40 @@
       "coffee": "Café / Renversé"
     }
   },
+  "afterparty": {
+    "title": "After Party",
+    "subtitle": "La soirée officielle de la Coupe des Bains.",
+    "themeLabel": "Thème de la soirée",
+    "themeValue": "À confirmer",
+    "startLabel": "Début",
+    "startTime": "À confirmer",
+    "endLabel": "Fin",
+    "endTime": "À confirmer",
+    "locationLabel": "Lieu",
+    "locationValue": "À confirmer",
+    "entryLabel": "Entrée",
+    "entryValue": "Gratuite",
+    "drinksTitle": "Carte des boissons",
+    "drinksSubtitle": "Sélection indicative - détails sur place",
+    "drinks": {
+      "beer": "Bières pression & bouteilles",
+      "wine": "Vins (blanc, rouge, rosé)",
+      "softs": "Softs & eaux minérales",
+      "cocktails": "Cocktails & long drinks"
+    }
+  },
   "plan": {
     "back": "Retour",
     "competition": "Concours",
     "food": "Food",
     "info": "Infos",
     "pois": {
-      "mainEntrance": "Entrée Principale",
-      "hallA": "Salle de Concours A",
-      "hallB": "Salle de Concours B",
+      "parking": "Parking",
+      "leonMichaud": "Léon Michaud",
+      "isle": "Salle des Isles",
       "foodCourt": "Food Court",
-      "restrooms": "Sanitaires"
+      "restrooms": "WC",
+      "afterParty": "After Party"
     }
   },
   "notifications": {
