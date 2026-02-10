@@ -28,7 +28,8 @@
     "schedule": "Programme",
     "stream": "Directs",
     "results": "Résultats",
-    "favorites": "Mon Planning"
+    "favorites": "Mon Planning",
+    "weather": "Météo"
   },
   "home": {
     "live": "EN DIRECT",
@@ -37,6 +38,39 @@
     "plan": "Plan",
     "restaurant": "Restau",
     "afterParty": "After Party"
+  },
+  "weather": {
+    "title": "Météo",
+    "subtitle": "Yverdon-les-Bains",
+    "now": "Maintenant",
+    "updated": "Mis à jour",
+    "temperature": "Température",
+    "condition": "Ciel",
+    "wind": "Vent",
+    "refresh": "Actualiser",
+    "location": "Lieu",
+    "conditions": {
+      "sunny": "Grand soleil",
+      "partly_cloudy": "Soleil & nuages",
+      "cloudy": "Nuageux",
+      "rain": "Pluie",
+      "snow": "Neige",
+      "thunder": "Orage",
+      "fog": "Brouillard",
+      "windy": "Vent fort",
+      "unknown": "Indéterminé"
+    },
+    "humor": {
+      "sunny": "Crème solaire conseillée, les gradins vont cuire plus vite qu'un croissant.",
+      "partly_cloudy": "Mi-ombre, mi-soleil : le ciel hésite comme un juge.",
+      "cloudy": "Nuages en mode bouchon. Le soleil est au ralenti.",
+      "rain": "Parapluie de rigueur, sinon c'est rinçage gratuit.",
+      "snow": "Neige au programme : les sauts deviennent du patinage artistique.",
+      "thunder": "Orage à l'horizon : ça va gronder plus fort que les supporters.",
+      "fog": "Brouillard : on voit moins bien que la note d'un juge distrait.",
+      "windy": "Vent fort : coiffure freestyle garantie.",
+      "unknown": "Le ciel fait son mystère. On improvise."
+    }
   },
   "schedule": {
     "group": "Groupe",

@@ -190,6 +190,10 @@ const goBack = () => {
   en dehors du scope VueJS.
 */
 
+.top-safe {
+  top: env(safe-area-inset-top, 0px);
+}
+
 /* 1. ÉPINGLES (Markers) */
 .custom-pin-container {
   background: transparent;

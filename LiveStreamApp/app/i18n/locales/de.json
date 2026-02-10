@@ -28,7 +28,8 @@
     "schedule": "Programm",
     "stream": "Live",
     "results": "Ergäbnis",
-    "favorites": "Mis Programm"
+    "favorites": "Mis Programm",
+    "weather": "Wätter"
   },
   "home": {
     "live": "LIVE",
@@ -37,6 +38,39 @@
     "plan": "Plan",
     "restaurant": "Beizli",
     "afterParty": "After Party"
+  },
+  "weather": {
+    "title": "Wätter",
+    "subtitle": "Yverdon-les-Bains",
+    "now": "Jetzt",
+    "updated": "Aktualisiert",
+    "temperature": "Temperatur",
+    "condition": "Himmel",
+    "wind": "Wind",
+    "refresh": "Aktualisiere",
+    "location": "Ort",
+    "conditions": {
+      "sunny": "Sunnig",
+      "partly_cloudy": "Sunne & Wolke",
+      "cloudy": "Bewölkt",
+      "rain": "Räge",
+      "snow": "Schnee",
+      "thunder": "Gwätter",
+      "fog": "Nebel",
+      "windy": "Starker Wind",
+      "unknown": "Unbekannt"
+    },
+    "humor": {
+      "sunny": "Sunnäcreme parat, d'Sitzplätz brätet schneller als es Gipfeli.",
+      "partly_cloudy": "Halb Sunne, halb Wolke – de Himmel isch au am Z'ögern.",
+      "cloudy": "Wolke im Vollbetrieb. D'Sunne het hüt Homeoffice.",
+      "rain": "Räge-Modus: wer trocken bliibt, kriegt Bonuspünkt.",
+      "snow": "Schnee-Alarm: hübsch, aber rutschig.",
+      "thunder": "Gwätter am Himmel: dröhnt lauter als d'Fans.",
+      "fog": "Nebel: Sichtkontakt nur no mit em eigene Team.",
+      "windy": "Stürmisch: Frisur freestyle, Haarspray het frei.",
+      "unknown": "De Himmel spielt Mystery-Box."
+    }
   },
   "schedule": {
     "group": "Gruppe",

@@ -34,7 +34,8 @@ const pageTitleKeys: Record<string, string> = {
   '/schedule': 'pages.schedule',
   '/stream': 'pages.stream',
   '/results': 'pages.results',
-  '/favorites': 'pages.favorites'
+  '/favorites': 'pages.favorites',
+  '/weather': 'pages.weather'
 }
 
 const currentPageTitle = computed(() => t(pageTitleKeys[route.path] || 'pages.home'))
@@ -95,12 +96,12 @@ provide('openGroupDetails', openGroupDetails)
     <LiquidBackground />
 
     <div 
-      class="fixed top-0 left-0 right-0 h-12 bg-gradient-to-b from-black/80 to-transparent z-30 pointer-events-none" 
+      class="fixed top-0 left-0 right-0 h-12 bg-gradient-to-b from-black/80 to-transparent z-30 pointer-events-none blur-sm" 
       aria-hidden="true"
     ></div>
 
     <div 
-      class="fixed bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-black/80 to-transparent z-30 pointer-events-none" 
+      class="fixed bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-black/80 to-transparent z-30 pointer-events-none blur-sm" 
       aria-hidden="true"
     ></div>
 
