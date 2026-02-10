@@ -285,7 +285,7 @@ const maxHistoryScore = computed(() => {
               <!-- Close button -->
               <button
                 @click="emit('close')"
-                class="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-lg transition-colors"
+                class="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
                 :aria-label="t('common.close')"
               >
                 <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white" />
@@ -313,7 +313,7 @@ const maxHistoryScore = computed(() => {
               <button
                 @click="activeTab = 'timeline'"
                 :class="[
-                  'flex-1 py-4 px-6 font-semibold transition-colors relative',
+                  'flex-1 py-4 px-6 font-semibold transition-colors relative focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none',
                   activeTab === 'timeline' ? 'text-cyan-400' : 'text-white/60 hover:text-white/80'
                 ]"
                 role="tab"
@@ -327,7 +327,7 @@ const maxHistoryScore = computed(() => {
               <button
                 @click="activeTab = 'stats'"
                 :class="[
-                  'flex-1 py-4 px-6 font-semibold transition-colors relative',
+                  'flex-1 py-4 px-6 font-semibold transition-colors relative focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none',
                   activeTab === 'stats' ? 'text-cyan-400' : 'text-white/60 hover:text-white/80'
                 ]"
                 role="tab"
@@ -497,7 +497,7 @@ const maxHistoryScore = computed(() => {
             <div class="p-6 border-t border-white/10 flex-shrink-0 bg-[#0B1120]/50 backdrop-blur-xl">
               <button
                 @click="toggleFavorite"
-                class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
               >
                 <Icon
                   :name="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"

@@ -221,7 +221,7 @@ onUnmounted(() => {
             <button
               v-else-if="searchQuery"
               @click="clearSearch"
-              class="p-1 hover:text-white text-white/60 transition-colors"
+              class="p-1 hover:text-white text-white/60 transition-colors rounded-full focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
               :aria-label="t('search.clearSearch')"
             >
               <Icon name="fluent:dismiss-circle-24-filled" class="w-5 h-5" />
@@ -229,7 +229,7 @@ onUnmounted(() => {
 
             <button
               @click="emit('close')"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+              class="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
               :aria-label="t('search.closeSearch')"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/80" />
@@ -243,7 +243,7 @@ onUnmounted(() => {
             v-for="tab in tabs"
             :key="tab.id"
             @click="activeTab = tab.id"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
             :class="activeTab === tab.id ? 'bg-cyan-500/30 text-cyan-300' : 'text-white/60 hover:bg-white/10'"
           >
             <Icon :name="tab.icon" class="w-4 h-4" />
@@ -296,7 +296,7 @@ onUnmounted(() => {
                     v-for="stream in filteredLiveResults.streams"
                     :key="stream._id"
                     @click="goToStream(stream)"
-                    class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3"
+                    class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
                       <Icon name="fluent:video-24-filled" class="w-5 h-5 text-red-400" />
@@ -315,7 +315,7 @@ onUnmounted(() => {
                     v-for="passage in filteredLiveResults.passages"
                     :key="passage._id"
                     @click="goToPassage(passage)"
-                    class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3"
+                    class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center relative">
                       <Icon :name="passage.apparatus?.icon || 'fluent:sport-24-regular'" class="w-5 h-5 text-red-400" />
@@ -341,7 +341,7 @@ onUnmounted(() => {
                     v-for="group in filteredGroupResults"
                     :key="group._id"
                     @click="goToGroup(group)"
-                    class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3"
+                    class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center overflow-hidden">
                       <img v-if="group.logo" :src="group.logo" :alt="group.name" class="w-full h-full object-cover" />
@@ -367,7 +367,7 @@ onUnmounted(() => {
                     v-for="passage in filteredPassageResults"
                     :key="passage._id"
                     @click="goToPassage(passage)"
-                    class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3"
+                    class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
                       <Icon :name="passage.apparatus?.icon || 'fluent:sport-24-regular'" class="w-5 h-5 text-purple-400" />
@@ -399,7 +399,7 @@ onUnmounted(() => {
         <div v-if="searchQuery.length >= 2 && hasResults" class="p-3 border-t border-white/10 flex gap-2">
           <button
             @click="goToLive"
-            class="flex-1 glass-card py-2 px-4 text-center text-cyan-300 hover:bg-cyan-500/20 transition-colors rounded-lg text-sm font-medium flex items-center justify-center gap-2"
+            class="flex-1 glass-card py-2 px-4 text-center text-cyan-300 hover:bg-cyan-500/20 transition-colors rounded-lg text-sm font-medium flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
           >
             <Icon name="fluent:live-24-regular" class="w-4 h-4" />
             {{ t('search.allLiveStreams') }}
