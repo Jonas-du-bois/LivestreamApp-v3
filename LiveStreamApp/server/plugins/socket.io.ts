@@ -1,4 +1,5 @@
 import { Server as IOServer } from 'socket.io'
+import { isValidRoom } from '../utils/validation'
 
 export default defineNitroPlugin((nitroApp: any) => {
   // Optionnel : On récupère la config si on veut restreindre les origines (CORS)
@@ -46,6 +47,12 @@ export default defineNitroPlugin((nitroApp: any) => {
       // Gestion des salles (Rooms)
       socket.on('join-room', (room: string) => {
         if (typeof room === 'string') {
+          // Security: Validate room name to prevent unauthorized access to internal rooms
+          if (!isValidRoom(room)) {
+            console.warn(`[Security] Socket ${socket.id} attempted to join invalid room: ${room}`)
+            return
+          }
+
           socket.join(room)
           console.log(`[Socket.io] Socket ${socket.id} a rejoint la salle : ${room}`)
           // Log current rooms for this socket
