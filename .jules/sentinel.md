@@ -2,3 +2,8 @@
 **Vulnerability:** Socket.io room joining was completely unrestricted, allowing clients to join any room (DoS/Snooping risk), despite documentation claiming validation existed.
 **Learning:** Documentation/Memory can drift from code reality. A "phantom security control" (believed to exist but missing) is dangerous because it creates false confidence.
 **Prevention:** Always verify security controls in the actual code, even if documentation/architecture docs claim they exist. Implement explicit validation on all socket inputs.
+
+## 2025-05-20 - Global Shared Rate Limiting
+**Vulnerability:** The rate limiting implementation used a single global key (IP address) for all endpoints, meaning a user triggering one action could be blocked from another unrelated action, and it lacked granularity for different risk levels (e.g., login vs sync).
+**Learning:** Simple utility functions often lack the nuance needed for complex apps. Security controls need context (scope) to be effective without hurting UX.
+**Prevention:** Use scoped keys (e.g., `ip:action`) for rate limiting to isolate different functional areas and allow tuning limits per endpoint.

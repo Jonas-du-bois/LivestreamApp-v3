@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
 
   // Security: Rate Limit (5 req/min)
   const ip = getRequestIP(event) || 'unknown';
-  if (isRateLimited(ip)) {
+  if (isRateLimited(`${ip}:login`, 5, 60000)) {
     throw createError({
       statusCode: 429,
       statusMessage: 'Too Many Requests',
