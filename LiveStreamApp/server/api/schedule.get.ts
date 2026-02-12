@@ -18,10 +18,12 @@ export default defineCachedEventHandler(async (event) => {
   const salleFilter = query.salle as string | string[] | undefined;
 
   try {
-    // 1. Metadata: Available Days
-    // OPTIMIZATION: Aggregate by day instead of fetching all timestamps
-    // This reduces payload from O(Passages) to O(Days) and allows range queries
-    const dayAggregation = await PassageModel.aggregate([
+    // OPTIMIZATION: Run independent queries in parallel
+    // 1. Metadata: Available Days (Aggregation)
+    // 2. Filter Lookups (Apparatus IDs)
+    // 3. Filter Lookups (Group IDs)
+
+    const dayAggregationPromise = PassageModel.aggregate([
       {
         $project: {
           dayISO: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
@@ -37,6 +39,31 @@ export default defineCachedEventHandler(async (event) => {
       { $sort: { _id: 1 } }
     ]);
 
+    let apparatusIdsPromise = Promise.resolve(null);
+    if (apparatusFilter && apparatusFilter !== 'Tout') {
+      const rawNames = Array.isArray(apparatusFilter) ? apparatusFilter : [apparatusFilter];
+      const appNames = rawNames.filter(n => typeof n === 'string');
+      if (appNames.length > 0) {
+        apparatusIdsPromise = ApparatusModel.find({ name: { $in: appNames } }).select('_id').lean();
+      }
+    }
+
+    let groupIdsPromise = Promise.resolve(null);
+    if (divisionFilter && divisionFilter !== 'Tout') {
+      const rawCategories = Array.isArray(divisionFilter) ? divisionFilter : [divisionFilter];
+      const categories = rawCategories.filter(c => typeof c === 'string');
+      if (categories.length > 0) {
+        groupIdsPromise = GroupModel.find({ category: { $in: categories } }).select('_id').lean();
+      }
+    }
+
+    const [dayAggregation, apparatusIdsResult, groupIdsResult] = await Promise.all([
+      dayAggregationPromise,
+      apparatusIdsPromise,
+      groupIdsPromise
+    ]);
+
+    // Process Day Map
     const dayMap = new Map<string, string[]>(); // Map 'samedi' -> ['2023-10-14']
     const availableDaysSet = new Set<string>();
 
@@ -82,33 +109,19 @@ export default defineCachedEventHandler(async (event) => {
       }
     }
 
-    // Filter by Apparatus
-    if (apparatusFilter && apparatusFilter !== 'Tout') {
-      const rawNames = Array.isArray(apparatusFilter) ? apparatusFilter : [apparatusFilter];
-      // Security: Ensure all items are strings
-      const appNames = rawNames.filter(n => typeof n === 'string');
-
-      if (appNames.length > 0) {
-        const apps = await ApparatusModel.find({ name: { $in: appNames } }).select('_id').lean();
-        const appIds = apps.map((a: any) => a._id);
-        dbQuery.apparatus = { $in: appIds };
-      }
+    // Filter by Apparatus (from resolved promise)
+    if (apparatusIdsResult && apparatusIdsResult.length > 0) {
+      const appIds = apparatusIdsResult.map((a: any) => a._id);
+      dbQuery.apparatus = { $in: appIds };
     }
 
-    // Filter by Division (Category)
-    if (divisionFilter && divisionFilter !== 'Tout') {
-      const rawCategories = Array.isArray(divisionFilter) ? divisionFilter : [divisionFilter];
-      // Security: Ensure all items are strings
-      const categories = rawCategories.filter(c => typeof c === 'string');
-
-      if (categories.length > 0) {
-        const groups = await GroupModel.find({ category: { $in: categories } }).select('_id').lean();
-        const groupIds = groups.map((g: any) => g._id);
-        dbQuery.group = { $in: groupIds };
-      }
+    // Filter by Division (from resolved promise)
+    if (groupIdsResult && groupIdsResult.length > 0) {
+      const groupIds = groupIdsResult.map((g: any) => g._id);
+      dbQuery.group = { $in: groupIds };
     }
 
-    // Filter by Salle (Location)
+    // Filter by Salle (Location) - Sync logic
     if (salleFilter && salleFilter !== 'Tout') {
       const rawLocations = Array.isArray(salleFilter) ? salleFilter : [salleFilter];
       // Security: Ensure all items are strings
@@ -134,49 +147,60 @@ export default defineCachedEventHandler(async (event) => {
     const metaQueryLocations = { ...dbQuery };
     delete metaQueryLocations.location;
 
+    // OPTIMIZATION: Hoist the 'startTime' match to filter the stream BEFORE entering the facet stage.
+    // This utilizes the index on 'startTime' efficiently and reduces documents processed by $facet.
+    const facetPipeline: any[] = [];
+
+    if (dbQuery.startTime) {
+      facetPipeline.push({ $match: { startTime: dbQuery.startTime } });
+    } else if (dbQuery.$or) {
+       // If day filter uses $or (multiple days), we can match that too
+       facetPipeline.push({ $match: { $or: dbQuery.$or } });
+    }
+
+    facetPipeline.push({
+      $facet: {
+        apparatus: [
+          { $match: metaQueryApparatus },
+          { $group: { _id: "$apparatus" } },
+          {
+            $lookup: {
+              from: ApparatusModel.collection.name,
+              localField: "_id",
+              foreignField: "_id",
+              as: "info"
+            }
+          },
+          { $unwind: "$info" },
+          { $replaceRoot: { newRoot: "$info" } },
+          { $project: { name: 1, code: 1 } }
+        ],
+        categories: [
+          { $match: metaQueryCategories },
+          { $group: { _id: "$group" } },
+          {
+            $lookup: {
+              from: GroupModel.collection.name,
+              localField: "_id",
+              foreignField: "_id",
+              as: "info"
+            }
+          },
+          { $unwind: "$info" },
+          { $replaceRoot: { newRoot: "$info" } },
+          { $project: { category: 1 } }
+        ],
+        locations: [
+          { $match: metaQueryLocations },
+          { $group: { _id: "$location" } },
+          { $sort: { _id: 1 } } // Optional: sort locations
+        ]
+      }
+    });
+
     // OPTIMIZATION: Run metadata aggregation and data fetching in parallel
     const [facetsResult, passages] = await Promise.all([
-      PassageModel.aggregate([
-        {
-          $facet: {
-            apparatus: [
-              { $match: metaQueryApparatus },
-              { $group: { _id: "$apparatus" } },
-              {
-                $lookup: {
-                  from: ApparatusModel.collection.name,
-                  localField: "_id",
-                  foreignField: "_id",
-                  as: "info"
-                }
-              },
-              { $unwind: "$info" },
-              { $replaceRoot: { newRoot: "$info" } },
-              { $project: { name: 1, code: 1 } }
-            ],
-            categories: [
-              { $match: metaQueryCategories },
-              { $group: { _id: "$group" } },
-              {
-                $lookup: {
-                  from: GroupModel.collection.name,
-                  localField: "_id",
-                  foreignField: "_id",
-                  as: "info"
-                }
-              },
-              { $unwind: "$info" },
-              { $replaceRoot: { newRoot: "$info" } },
-              { $project: { category: 1 } }
-            ],
-            locations: [
-              { $match: metaQueryLocations },
-              { $group: { _id: "$location" } },
-              { $sort: { _id: 1 } } // Optional: sort locations
-            ]
-          }
-        }
-      ]),
+      PassageModel.aggregate(facetPipeline),
       PassageModel.find(dbQuery)
         .select('startTime endTime location status score group apparatus')
         .populate('group', 'name category')
