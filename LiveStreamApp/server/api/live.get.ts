@@ -4,14 +4,22 @@ import StreamModel from '../models/Stream';
 export default defineEventHandler(async (event) => {
   try {
     // Fetch live passages and streams in parallel
+    // OPTIMIZATION: Use field selection to prevent over-fetching large documents (e.g. group history)
+    // NOTE: The selected fields must match the response mapping below (name, code, icon)
     const [livePassages, liveStreams] = await Promise.all([
       PassageModel.find({ status: 'LIVE' })
-        .populate('group')
-        .populate('apparatus')
+        .populate('group', 'name')
+        .populate('apparatus', 'name code icon')
         .sort({ startTime: 1 })
         .lean(),
       StreamModel.find({ isLive: true })
-        .populate({ path: 'currentPassage', populate: ['group', 'apparatus'] })
+        .populate({
+          path: 'currentPassage',
+          populate: [
+            { path: 'group', select: 'name' },
+            { path: 'apparatus', select: 'name code icon' }
+          ]
+        })
         .lean()
     ]);
 
