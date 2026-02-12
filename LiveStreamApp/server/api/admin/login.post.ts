@@ -1,5 +1,3 @@
-import { createHash, timingSafeEqual } from 'node:crypto';
-
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
@@ -23,13 +21,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // Prevent Timing Attack: Use constant-time comparison
-  const safeCompare = (a: string, b: string) => {
-    const bufA = createHash('sha256').update(a).digest();
-    const bufB = createHash('sha256').update(b).digest();
-    return timingSafeEqual(bufA, bufB);
-  };
-
   const adminPassword = config.adminPassword || '';
   
   // Security: Prevent login if password is not configured
@@ -41,17 +32,18 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (!safeCompare(password, adminPassword)) {
+  // Use centralized verification utility (auto-imported)
+  if (!verifyPassword(password, adminPassword)) {
     throw createError({
       statusCode: 401,
       statusMessage: 'Invalid password',
     });
   }
 
-  // Password is correct, return success with the password as token
-  // (In a production app, you'd generate a proper JWT here)
+  // Return a hashed token instead of raw password
+  // This prevents the password from being echoed back and stored in plaintext
   return {
     success: true,
-    token: password
+    token: generateAdminToken(password)
   };
 });
