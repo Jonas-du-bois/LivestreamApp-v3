@@ -237,14 +237,19 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
     </div>
 
     <!-- Loading State -->
-    <div v-if="pending" class="space-y-6">
-      <div class="aspect-video rounded-3xl bg-white/5 animate-pulse" />
-      <div class="h-48 rounded-3xl bg-white/5 animate-pulse" />
+    <div v-if="pending" class="space-y-6" role="status" :aria-label="t('common.loading')">
+      <div class="aspect-video rounded-3xl bg-white/5 animate-pulse" aria-hidden="true" />
+      <div class="h-48 rounded-3xl bg-white/5 animate-pulse" aria-hidden="true" />
+      <span class="sr-only">{{ t('common.loading') }}</span>
     </div>
 
     <div v-else-if="stream" class="space-y-6">
       <!-- Main Stage (Player) -->
-      <div class="glass-panel p-1 rounded-3xl overflow-hidden shadow-2xl relative group">
+      <div
+        class="glass-panel p-1 rounded-3xl overflow-hidden shadow-2xl relative group"
+        role="region"
+        :aria-label="t('stream.liveStreams')"
+      >
         <div class="aspect-video rounded-2xl overflow-hidden bg-black relative">
           <iframe
             v-if="isEmbed && streamUrl"
@@ -265,6 +270,7 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
               :href="streamUrl"
               rel="noopener noreferrer"
               class="inline-block bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg"
+              :aria-label="t('stream.openExternalLink')"
             >
               {{ t('stream.openStream') }}
             </a>
@@ -288,15 +294,18 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
       </div>
 
       <!-- Meta Bar -->
-      <div class="glass-panel p-4 rounded-2xl flex items-center justify-between">
+      <div class="glass-panel p-4 rounded-2xl flex items-center justify-between" aria-live="polite">
         <div class="flex items-center gap-3">
-          <div class="relative">
+          <div class="relative" aria-hidden="true">
             <div class="w-3 h-3 bg-red-500 rounded-full animate-ping absolute inset-0 opacity-75"></div>
             <div class="w-3 h-3 bg-red-500 rounded-full relative"></div>
           </div>
           <div>
             <h2 class="text-white font-bold text-lg leading-tight">{{ stream.name }}</h2>
-            <p class="text-red-400 text-xs font-bold uppercase tracking-wider">{{ t('stream.liveNow') }}</p>
+            <p class="text-red-400 text-xs font-bold uppercase tracking-wider">
+              <span class="sr-only">{{ t('stream.live') }} - </span>
+              {{ t('stream.liveNow') }}
+            </p>
           </div>
         </div>
 
