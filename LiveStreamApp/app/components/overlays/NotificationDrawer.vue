@@ -122,7 +122,7 @@ const handleNotificationClick = (notification: AppNotification) => {
             </div>
             <button
               @click="emit('close')"
-              class="p-2.5 hover:bg-white/10 rounded-xl transition-colors"
+              class="p-2.5 hover:bg-white/10 rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
               :aria-label="t('notifications.closeNotifications')"
             >
               <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/70" />
@@ -134,14 +134,14 @@ const handleNotificationClick = (notification: AppNotification) => {
             <button
               v-if="unreadCount > 0"
               @click="markAllAsRead"
-              class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 rounded-xl text-sm font-medium transition-colors"
+              class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 rounded-xl text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
             >
               <Icon name="fluent:checkmark-circle-24-regular" class="w-4 h-4" />
               <span>{{ t('notifications.markAllAsRead') }}</span>
             </button>
             <button
               @click="clearAllRead"
-              class="p-2 hover:bg-white/10 rounded-xl transition-colors group"
+              class="p-2 hover:bg-white/10 rounded-xl transition-colors group focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
               :aria-label="t('notifications.clearRead')"
               :title="t('notifications.clearRead')"
             >
@@ -168,13 +168,18 @@ const handleNotificationClick = (notification: AppNotification) => {
             <div
               v-for="notification in notifications"
               :key="notification.id"
-              class="notification-card glass-card p-4 transition-all cursor-pointer group"
+              class="notification-card glass-card p-4 transition-all cursor-pointer group focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
               :class="[
                 !notification.isRead 
                   ? 'ring-1 ring-cyan-400/30 bg-cyan-500/5' 
                   : 'opacity-70 hover:opacity-100'
               ]"
               @click="handleNotificationClick(notification)"
+              @keydown.enter="handleNotificationClick(notification)"
+              @keydown.space.prevent="handleNotificationClick(notification)"
+              role="button"
+              tabindex="0"
+              :aria-label="notification.title"
             >
               <div class="flex items-start gap-3">
                 <!-- Type indicator icon -->
