@@ -48,10 +48,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // Password is correct, return success with the password as token
-  // (In a production app, you'd generate a proper JWT here)
+  // Password is correct, generate a session token
+  const token = createAdminSession();
+
   return {
     success: true,
-    token: password
+    token
   };
 });
