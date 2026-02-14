@@ -121,9 +121,9 @@ onUnmounted(() => {
                 v-for="app in availableApparatus"
                 :key="`${app.code || app}-${locale}`"
                 @click="toggleSelection(app.name || app, 'apparatus')"
-                class="py-3 px-4 rounded-lg text-sm font-medium transition-all"
+                class="py-3 px-4 rounded-lg text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
                 :class="selectedApparatus.includes(app.name || app)
-                  ? 'bg-cyan-400 text-[#0B1120]'
+                  ? 'bg-cyan-400 text-[#0B1120] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
                   : 'glass-card text-white/80'"
                 :aria-pressed="selectedApparatus.includes(app.name || app)"
               >
@@ -140,9 +140,9 @@ onUnmounted(() => {
                 v-for="division in availableCategories"
                 :key="`${division}-${locale}`"
                 @click="toggleSelection(division, 'division')"
-                class="py-3 px-4 rounded-lg text-sm font-medium transition-all"
+                class="py-3 px-4 rounded-lg text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
                 :class="selectedDivision.includes(division)
-                  ? 'bg-cyan-400 text-[#0B1120]'
+                  ? 'bg-cyan-400 text-[#0B1120] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
                   : 'glass-card text-white/80'"
                 :aria-pressed="selectedDivision.includes(division)"
               >
@@ -159,9 +159,9 @@ onUnmounted(() => {
                 v-for="salle in availableLocations"
                 :key="salle"
                 @click="toggleSelection(salle, 'salle')"
-                class="py-3 px-4 rounded-lg text-sm font-medium transition-all"
+                class="py-3 px-4 rounded-lg text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
                 :class="selectedSalle.includes(salle)
-                  ? 'gradient-cyan-purple text-white'
+                  ? 'gradient-cyan-purple text-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
                   : 'glass-card text-white/80'"
                 :aria-pressed="selectedSalle.includes(salle)"
               >
@@ -175,13 +175,13 @@ onUnmounted(() => {
         <div class="p-6 border-t border-white/10 flex gap-3">
           <button
             @click="clearFilters"
-            class="flex-1 glass-card py-3 rounded-xl text-white font-medium hover:bg-white/15 transition-colors"
+            class="flex-1 glass-card py-3 rounded-xl text-white font-medium hover:bg-white/15 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
           >
             {{ t('filters.clear') }}
           </button>
           <button
             @click="applyFilters"
-            class="flex-1 gradient-cyan-purple py-3 rounded-xl text-white font-medium"
+            class="flex-1 gradient-cyan-purple py-3 rounded-xl text-white font-medium focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
           >
             {{ t('filters.apply') }}
           </button>
