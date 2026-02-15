@@ -52,23 +52,30 @@ export default defineNitroPlugin((nitroApp) => {
         console.log(`[Scheduler] Promoted ${passagesToGoLive.length} passages to LIVE`);
         scheduleChanged = true;
 
-        // Update corresponding streams' currentPassage
-        for (const passage of passagesToGoLive) {
-          if (passage.location) {
-            const stream = await StreamModel.findOneAndUpdate(
-              { location: passage.location },
-              { currentPassage: passage._id },
-              { new: true }
-            ).populate({
+        // OPTIMIZATION: Batch update streams instead of sequential loops
+        // Reduces DB round-trips from O(N) to O(1)
+        const bulkOps = passagesToGoLive
+          .filter(p => p.location)
+          .map(p => ({
+            updateOne: {
+              filter: { location: p.location },
+              update: { $set: { currentPassage: p._id } }
+            }
+          }));
+
+        if (bulkOps.length > 0) {
+          await StreamModel.bulkWrite(bulkOps);
+
+          // Fetch updated streams for notification
+          const targetLocations = passagesToGoLive.map(p => p.location).filter(Boolean);
+          const newStreams = await StreamModel.find({ location: { $in: targetLocations } })
+            .populate({
               path: 'currentPassage',
               populate: [{ path: 'group' }, { path: 'apparatus' }]
             });
             
-            if (stream) {
-              updatedStreams.push(stream);
-            }
-            console.log(`[Scheduler] Updated stream for location ${passage.location} with passage ${passage._id}`);
-          }
+          updatedStreams.push(...newStreams);
+          console.log(`[Scheduler] Batch updated streams for ${newStreams.length} locations`);
         }
       }
 
@@ -86,25 +93,29 @@ export default defineNitroPlugin((nitroApp) => {
         console.log(`[Scheduler] Promoted ${passagesToFinish.length} passages to FINISHED`);
         scheduleChanged = true;
 
-        for (const passage of passagesToFinish) {
-          if (passage.location) {
-            const anotherLive = await PassageModel.findOne({
-              location: passage.location,
-              status: 'LIVE',
-              _id: { $ne: passage._id }
-            });
+        // OPTIMIZATION: Batch check for active streams
+        const distinctLocations = [...new Set(passagesToFinish.map(p => p.location).filter(l => typeof l === 'string'))] as string[];
+
+        if (distinctLocations.length > 0) {
+          // Check which of these locations still have ANY 'LIVE' passage
+          // (The ones we just finished are already FINISHED, so they won't be counted)
+          const activeLocations = await PassageModel.distinct('location', {
+            status: 'LIVE',
+            location: { $in: distinctLocations }
+          });
+
+          // Identify locations that have NO live passages anymore
+          const locationsToClear = distinctLocations.filter(loc => !activeLocations.includes(loc));
+
+          if (locationsToClear.length > 0) {
+            await StreamModel.updateMany(
+              { location: { $in: locationsToClear } },
+              { $set: { currentPassage: null } }
+            );
             
-            if (!anotherLive) {
-              const stream = await StreamModel.findOneAndUpdate(
-                { location: passage.location },
-                { currentPassage: null },
-                { new: true }
-              );
-              if (stream) {
-                updatedStreams.push(stream);
-              }
-              console.log(`[Scheduler] Cleared currentPassage for location ${passage.location}`);
-            }
+            const clearedStreams = await StreamModel.find({ location: { $in: locationsToClear } });
+            updatedStreams.push(...clearedStreams);
+            console.log(`[Scheduler] Batch cleared streams for ${locationsToClear.length} locations`);
           }
         }
       }
