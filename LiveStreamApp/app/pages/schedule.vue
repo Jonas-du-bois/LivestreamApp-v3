@@ -155,7 +155,7 @@ useSocketRoom('schedule-updates', [
         v-for="day in availableDays"
         :key="`${day}-${locale}`"
         @click="selectedDay = day"
-        class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap"
+        class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
         :class="selectedDay === day
           ? 'bg-white/20 text-white' 
           : 'text-white/60'"
@@ -173,7 +173,7 @@ useSocketRoom('schedule-updates', [
         v-for="filter in filters"
         :key="`${filter.code || filter}-${locale}`"
         @click.stop="selectedFilter = filter.code || filter"
-        class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all"
+        class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
         :class="selectedFilter === (filter.code || filter)
           ? 'bg-cyan-400 text-[#0B1120]'
           : 'glass-card text-white/80'"
@@ -224,7 +224,7 @@ useSocketRoom('schedule-updates', [
           <div class="flex items-start pt-0.5 flex-shrink-0">
             <button 
               @click="item._id && toggleFavorite(item._id, $event)"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              class="p-2 hover:bg-white/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               :aria-label="(item._id && isFavorite(item._id)) ? t('schedule.removeFromFavorites', { name: item.group?.name || '' }) : t('schedule.addToFavorites', { name: item.group?.name || '' })"
             >
               <Icon 
