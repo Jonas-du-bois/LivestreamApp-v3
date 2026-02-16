@@ -12,7 +12,14 @@ export default defineEventHandler(async (event) => {
         .sort({ startTime: 1 })
         .lean(),
       StreamModel.find({ isLive: true })
-        .populate({ path: 'currentPassage', populate: ['group', 'apparatus'] })
+        // OPTIMIZATION: Select only necessary fields to reduce payload size (avoids large history arrays)
+        .populate({
+          path: 'currentPassage',
+          populate: [
+            { path: 'group', select: 'name category' },
+            { path: 'apparatus', select: 'name code icon' }
+          ]
+        })
         .lean()
     ]);
 

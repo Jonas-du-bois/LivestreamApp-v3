@@ -13,7 +13,14 @@ export default defineEventHandler(async (event) => {
 
     // Populate currentPassage with group and apparatus to provide more details
     const streams = await StreamModel.find(filter)
-      .populate({ path: 'currentPassage', populate: ['group', 'apparatus'] })
+      // OPTIMIZATION: Select only necessary fields to reduce payload size (avoids large history arrays)
+      .populate({
+        path: 'currentPassage',
+        populate: [
+          { path: 'group', select: 'name category' },
+          { path: 'apparatus', select: 'name code icon' }
+        ]
+      })
       .lean();
 
     return streams;
