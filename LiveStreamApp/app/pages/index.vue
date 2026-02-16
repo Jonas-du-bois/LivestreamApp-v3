@@ -102,7 +102,7 @@ useSocketRoom('schedule-updates', [
     <NuxtLink
       v-if="firstLiveStream"
       :to="'/stream/' + firstLiveStream._id"
-      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block"
+      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
     >
       <ImageWithFallback
         :src="heroImage"
@@ -126,8 +126,13 @@ useSocketRoom('schedule-updates', [
 
     <div 
       v-else
-      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block"
+      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
       @click="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
+      role="button"
+      tabindex="0"
+      :aria-label="t('results.openGroupDetails', { group: heroTitle })"
+      @keydown.enter="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
+      @keydown.space.prevent="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
     >
       <ImageWithFallback 
         :src="heroImage"
@@ -156,8 +161,13 @@ useSocketRoom('schedule-updates', [
         <div 
           v-for="group in happeningNow"
           :key="group.id"
-          class="glass-card p-4 min-w-[200px] flex-shrink-0 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+          class="glass-card p-4 min-w-[200px] flex-shrink-0 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
           @click="handleGroupClick(group.id, group.apparatusCode)"
+          role="button"
+          tabindex="0"
+          :aria-label="t('results.openGroupDetails', { group: group.name })"
+          @keydown.enter="handleGroupClick(group.id, group.apparatusCode)"
+          @keydown.space.prevent="handleGroupClick(group.id, group.apparatusCode)"
         >
           <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
           <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>
@@ -167,7 +177,7 @@ useSocketRoom('schedule-updates', [
             v-if="group.streamId"
             :to="`/stream/${group.streamId}`"
             @click.stop
-            class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
           >
             <Icon name="fluent:play-24-filled" class="w-4 h-4" />
             <span class="text-sm">{{ t('common.watch') }}</span>
@@ -178,7 +188,7 @@ useSocketRoom('schedule-updates', [
 
     <!-- Info Tiles -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <NuxtLink to="/weather" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg">
+      <NuxtLink to="/weather" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
         <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:weather-partly-cloudy-day-24-regular" class="w-6 h-6 text-cyan-400" />
         </div>
@@ -191,21 +201,21 @@ useSocketRoom('schedule-updates', [
       </NuxtLink>
 
       <!-- button quick access map and food -->
-      <NuxtLink to="/plan" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg">
+      <NuxtLink to="/plan" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
         <div class="w-12 h-12 rounded-full bg-purple-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:location-24-regular" class="w-6 h-6 text-purple-400" />
         </div>
         <span class="text-white/80 text-sm">{{ t('home.plan') }}</span>
       </NuxtLink>
       
-      <NuxtLink to="/food" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg">
+      <NuxtLink to="/food" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
         <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:food-24-regular" class="w-6 h-6 text-cyan-400" />
         </div>
         <span class="text-white/80 text-sm">{{ t('home.restaurant') }}</span>
       </NuxtLink>
 
-      <NuxtLink to="/afterparty" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg">
+      <NuxtLink to="/afterparty" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
         <div class="w-12 h-12 rounded-full bg-pink-800/20 flex items-center justify-center mb-3">
           <Icon name="fluent:drink-beer-24-regular" class="w-6 h-6 text-pink-300" />
         </div>
