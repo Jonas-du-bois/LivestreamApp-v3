@@ -155,9 +155,9 @@ useSocketRoom('schedule-updates', [
         v-for="day in availableDays"
         :key="`${day}-${locale}`"
         @click="selectedDay = day"
-        class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap"
+        class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
         :class="selectedDay === day
-          ? 'bg-white/20 text-white' 
+          ? 'bg-white/20 text-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
           : 'text-white/60'"
         type="button"
         role="tab"
@@ -173,9 +173,9 @@ useSocketRoom('schedule-updates', [
         v-for="filter in filters"
         :key="`${filter.code || filter}-${locale}`"
         @click.stop="selectedFilter = filter.code || filter"
-        class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all"
+        class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
         :class="selectedFilter === (filter.code || filter)
-          ? 'bg-cyan-400 text-[#0B1120]'
+          ? 'bg-cyan-400 text-[#0B1120] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
           : 'glass-card text-white/80'"
         type="button"
         :aria-pressed="selectedFilter === (filter.code || filter)"
