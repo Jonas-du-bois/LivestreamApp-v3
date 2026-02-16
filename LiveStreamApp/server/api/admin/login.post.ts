@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Password is correct, generate a session token
-  const token = createAdminSession();
+  const token = await createAdminSession();
 
   return {
     success: true,

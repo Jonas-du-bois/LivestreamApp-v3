@@ -1,25 +1,18 @@
 import { randomBytes } from 'node:crypto';
+import SessionModel from '../models/Session';
 
-// In-memory session store: token -> expiry timestamp
-const sessions = new Map<string, number>();
 const SESSION_TTL = 24 * 60 * 60 * 1000; // 24 hours
-
-// Cleanup expired sessions every hour
-setInterval(() => {
-  const now = Date.now();
-  for (const [token, expiry] of sessions.entries()) {
-    if (expiry < now) {
-      sessions.delete(token);
-    }
-  }
-}, 60 * 60 * 1000).unref(); // unref so it doesn't keep the process alive unnecessarily
 
 /**
  * Creates a new admin session and returns the session token.
+ * Persisted in MongoDB for resilience across server restarts.
  */
-export const createAdminSession = (): string => {
+export const createAdminSession = async (): Promise<string> => {
   const token = randomBytes(32).toString('hex');
-  sessions.set(token, Date.now() + SESSION_TTL);
+  const expiresAt = new Date(Date.now() + SESSION_TTL);
+  
+  await SessionModel.create({ token, expiresAt });
+  
   return token;
 };
 
@@ -27,14 +20,17 @@ export const createAdminSession = (): string => {
  * Verifies if the provided token is a valid admin session.
  * Returns true if valid, false otherwise.
  */
-export const verifyAdminSession = (token: string): boolean => {
-  const expiry = sessions.get(token);
-  if (!expiry) return false;
-
-  if (expiry < Date.now()) {
-    sessions.delete(token);
+export const verifyAdminSession = async (token: string): Promise<boolean> => {
+  try {
+    const session = await SessionModel.findOne({ 
+      token, 
+      expiresAt: { $gt: new Date() } 
+    });
+    
+    return !!session;
+  } catch (error) {
+    console.error('[Session] Verification error:', error);
     return false;
   }
-
-  return true;
 };
+

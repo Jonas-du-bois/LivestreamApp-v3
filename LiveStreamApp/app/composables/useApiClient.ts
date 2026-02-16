@@ -48,7 +48,26 @@ export const apiClient = <T>(url: string, options: any = {}) => {
   return $fetch<T>(url, {
     baseURL: apiBase,
     ...options,
-    headers: getAuthHeaders(options.headers)
+    headers: getAuthHeaders(options.headers),
+    async onResponseError({ response }) {
+      // Auto-logout on 401 (session expirée/invalide)
+      if (response.status === 401 && import.meta.client) {
+        const { isNativePlatform, removeNativeToken } = await import('~/utils/capacitor')
+        
+        // Clear token selon la plateforme
+        if (isNativePlatform()) {
+          await removeNativeToken()
+        } else {
+          // Clear cookie
+          document.cookie = 'auth_token=; path=/; max-age=0'
+        }
+        
+        // Rediriger vers le dashboard (affichera le login)
+        if (window.location.pathname.startsWith('/admin')) {
+          window.location.reload()
+        }
+      }
+    }
   })
 }
 

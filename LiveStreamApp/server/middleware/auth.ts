@@ -1,4 +1,4 @@
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   // Security: Normalize path to prevent bypass (e.g. //api/admin) and handle query params
   const normalizedPath = event.path.split('?')[0].replace(/\/+/g, '/');
 
@@ -38,7 +38,7 @@ export default defineEventHandler((event) => {
       });
     }
 
-    if (!token || !verifyAdminSession(token)) {
+    if (!token || !(await verifyAdminSession(token))) {
       throw createError({
         statusCode: 401,
         statusMessage: 'Unauthorized: Invalid Token',
