@@ -1,6 +1,9 @@
 export default defineEventHandler((event) => {
+  // Security: Normalize path to prevent bypass (e.g. //api/admin) and handle query params
+  const normalizedPath = event.path.split('?')[0].replace(/\/+/g, '/');
+
   // Define protected zones (exclude login endpoint)
-  const isProtectedPath = event.path.startsWith('/api/admin') && !event.path.endsWith('/login');
+  const isProtectedPath = normalizedPath.startsWith('/api/admin') && !normalizedPath.endsWith('/login');
 
   // Define public mutation endpoints
   const publicMutationPaths = [
@@ -10,7 +13,7 @@ export default defineEventHandler((event) => {
   ];
 
   // Currently protecting all mutations except whitelisted ones.
-  const isProtectedMethod = ['PUT', 'POST', 'DELETE'].includes(event.method) && !publicMutationPaths.includes(event.path);
+  const isProtectedMethod = ['PUT', 'POST', 'DELETE'].includes(event.method) && !publicMutationPaths.includes(normalizedPath);
 
   if (isProtectedPath || isProtectedMethod) {
     const config = useRuntimeConfig();
