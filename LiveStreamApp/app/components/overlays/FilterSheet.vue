@@ -24,6 +24,7 @@ const filtersStore = useScheduleFilters()
 const selectedDivision = useState<string[]>('filter-sheet-division', () => [])
 const selectedSalle = useState<string[]>('filter-sheet-salle', () => [])
 const selectedApparatus = useState<string[]>('filter-sheet-apparatus', () => [])
+const selectedHidePast = useState<boolean>('filter-sheet-hide-past', () => false)
 
 // Sync local state with global state when opening
 watch(() => props.isOpen, (isOpen) => {
@@ -31,6 +32,7 @@ watch(() => props.isOpen, (isOpen) => {
     selectedDivision.value = [...filtersStore.value.division]
     selectedSalle.value = [...filtersStore.value.salle]
     selectedApparatus.value = [...filtersStore.value.apparatus]
+    selectedHidePast.value = filtersStore.value.hidePast
   }
 })
 
@@ -51,12 +53,14 @@ const clearFilters = () => {
   selectedDivision.value = []
   selectedSalle.value = []
   selectedApparatus.value = []
+  selectedHidePast.value = false
 }
 
 const applyFilters = () => {
   filtersStore.value.division = [...selectedDivision.value]
   filtersStore.value.salle = [...selectedSalle.value]
   filtersStore.value.apparatus = [...selectedApparatus.value]
+  filtersStore.value.hidePast = selectedHidePast.value
   emit('close')
 }
 
@@ -112,6 +116,20 @@ onUnmounted(() => {
 
         <!-- Content -->
         <div class="overflow-y-auto p-6 space-y-6 max-h-[calc(80vh-180px)]">
+          <!-- Quick Filter -->
+          <div>
+            <button
+              @click="selectedHidePast = !selectedHidePast"
+              class="w-full py-3 px-4 rounded-xl text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none inline-flex items-center justify-center gap-2"
+              :class="selectedHidePast
+                ? 'bg-amber-300 text-[#0B1120] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
+                : 'glass-card text-white/80'"
+              :aria-pressed="selectedHidePast"
+            >
+              <Icon name="fluent:timer-off-24-regular" class="w-4 h-4" />
+              {{ t('filters.hidePast') }}
+            </button>
+          </div>
 
           <!-- Apparatus Filter (Dynamic) -->
           <div v-if="availableApparatus.length > 0">

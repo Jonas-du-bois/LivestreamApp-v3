@@ -40,10 +40,20 @@ const pageTitleKeys: Record<string, string> = {
 
 const currentPageTitle = computed(() => t(pageTitleKeys[route.path] || 'pages.home'))
 
+const availableLocaleCodes = computed(() =>
+  locales.value
+    .map((localeOption) => (typeof localeOption === 'string' ? localeOption : localeOption.code))
+    .filter((code): code is string => Boolean(code))
+)
+
 // Language toggle
 const toggleLocale = () => {
-  const newLocale = locale.value === 'fr' ? 'de' : 'fr'
-  setLocale(newLocale)
+  const codes = availableLocaleCodes.value
+  if (!codes.length) return
+
+  const currentIndex = codes.indexOf(locale.value)
+  const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % codes.length
+  setLocale(codes[nextIndex]!)
 }
 
 // Page meta-based visibility for header/footer (default: shown)
@@ -118,9 +128,9 @@ provide('openGroupDetails', openGroupDetails)
                 v-if="route.path === '/'"
                 @click="toggleLocale"
                 class="p-2 hover:bg-white/10 rounded-lg transition-colors relative flex items-center gap-1"
-                :aria-label="locale === 'fr' ? 'Auf Deutsch wechseln' : 'Passer en français'"
+                aria-label="Changer de langue"
               >
-                <span class="text-white text-sm font-bold uppercase">{{ locale }}</span>
+                <span class="text-white text-sm font-bold uppercase">{{ locale.toUpperCase() }}</span>
                 <Icon name="fluent:globe-24-regular" class="w-4 h-4 text-white/70" />
               </button>
               

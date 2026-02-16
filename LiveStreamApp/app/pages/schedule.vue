@@ -12,11 +12,24 @@ const { favorites } = storeToRefs(favoritesStore)
 const selectedDay = useState<string>('schedule-selected-day', () => '')
 const selectedFilter = useState('schedule-selected-filter', () => '')
 const filtersStore = useScheduleFilters()
+const nowTimestamp = ref(Date.now())
+let nowRefreshTimer: ReturnType<typeof setInterval> | null = null
 
 // Initialize selectedFilter with translated 'all' on mount
 onMounted(() => {
   if (!selectedFilter.value) {
     selectedFilter.value = t('common.all')
+  }
+
+  nowRefreshTimer = window.setInterval(() => {
+    nowTimestamp.value = Date.now()
+  }, 60_000)
+})
+
+onUnmounted(() => {
+  if (nowRefreshTimer) {
+    clearInterval(nowRefreshTimer)
+    nowRefreshTimer = null
   }
 })
 
@@ -109,8 +122,35 @@ watch(locale, () => {
 })
 
 const filteredSchedule = computed(() => {
-  // Data is already filtered by the backend via useAsyncData watch
-  return scheduleResponse.value?.data || []
+  const schedule = scheduleResponse.value?.data || []
+
+  if (!filtersStore.value.hidePast) {
+    return schedule
+  }
+
+  const now = new Date(nowTimestamp.value)
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+  return schedule.filter((item) => {
+    if (item.status === 'FINISHED') return false
+
+    const startTime = new Date(item.startTime)
+    const endTime = new Date(item.endTime)
+    const startTimestamp = startTime.getTime()
+    const endTimestamp = endTime.getTime()
+    if (Number.isNaN(startTimestamp) || Number.isNaN(endTimestamp)) return true
+
+    const passageDayStart = new Date(
+      startTime.getFullYear(),
+      startTime.getMonth(),
+      startTime.getDate()
+    )
+
+    if (passageDayStart.getTime() < todayStart.getTime()) return false
+    if (passageDayStart.getTime() > todayStart.getTime()) return true
+
+    return endTimestamp >= now.getTime()
+  })
 })
 
 const formatTime = (isoString: string) => {
@@ -186,6 +226,13 @@ useSocketRoom('schedule-updates', [
 
     <!-- Schedule List -->
     <div class="space-y-2">
+      <div
+        v-if="filteredSchedule.length === 0"
+        class="glass-card p-6 text-center text-white/70"
+      >
+        {{ t('common.noResults') }}
+      </div>
+
       <div 
         v-for="item in filteredSchedule"
         :key="item._id || 'unknown'"

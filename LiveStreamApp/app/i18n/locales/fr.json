@@ -238,6 +238,7 @@
     "apparatus": "Engin",
     "division": "Division",
     "hall": "Salle",
+    "hidePast": "Masquer les passages passés",
     "clear": "Effacer",
     "apply": "Appliquer"
   },
