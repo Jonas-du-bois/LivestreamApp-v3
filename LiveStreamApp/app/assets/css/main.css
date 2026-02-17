@@ -50,11 +50,12 @@ body {
 @media (display-mode: standalone) and (-webkit-touch-callout: none) {
   :root {
     --header-safe-extra: 0.5rem;
-    --nav-safe-extra: 0.25rem;
+    --nav-safe-extra: 0px;          /* garde la safe area, enlève l'extra */
     --main-content-top-base: 6.5rem;
-    --main-content-bottom-base: 72px;
+    --main-content-bottom-base: 52px; /* réserve juste la hauteur utile de la nav */
   }
 }
+
 
 /* Glass Card - Primary glassmorphism effect */
 .glass-card {
