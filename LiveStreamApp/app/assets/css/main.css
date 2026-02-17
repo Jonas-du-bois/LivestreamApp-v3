@@ -47,12 +47,14 @@ body {
 }
 
 /* iOS PWA: reduce extra top/bottom spacing without affecting other platforms */
-@media (display-mode: standalone) and (-webkit-touch-callout: none) {
-  :root {
-    --header-safe-extra: 0.5rem;
-    --nav-safe-extra: 0px;          /* garde la safe area, enlève l'extra */
-    --main-content-top-base: 6.5rem;
-    --main-content-bottom-base: 52px; /* réserve juste la hauteur utile de la nav */
+@supports (-webkit-touch-callout: none) {
+  @media (display-mode: standalone), (display-mode: fullscreen) {
+    :root {
+      --header-safe-extra: 0px;
+      --nav-safe-extra: 0px; /* keep safe-area only, no extra spacing */
+      --main-content-top-base: 6.25rem;
+      --main-content-bottom-base: 52px;
+    }
   }
 }
 
