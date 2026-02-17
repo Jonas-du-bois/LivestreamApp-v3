@@ -52,8 +52,8 @@ export default defineNitroPlugin((nitroApp) => {
         console.log(`[Scheduler] Promoted ${passagesToGoLive.length} passages to LIVE`);
         scheduleChanged = true;
 
-        // Update corresponding streams' currentPassage
-        for (const passage of passagesToGoLive) {
+        // BOLT: Parallelize stream updates
+        const streamUpdates = passagesToGoLive.map(async (passage) => {
           if (passage.location) {
             const stream = await StreamModel.findOneAndUpdate(
               { location: passage.location },
@@ -65,11 +65,15 @@ export default defineNitroPlugin((nitroApp) => {
             });
             
             if (stream) {
-              updatedStreams.push(stream);
+              console.log(`[Scheduler] Updated stream for location ${passage.location} with passage ${passage._id}`);
+              return stream;
             }
-            console.log(`[Scheduler] Updated stream for location ${passage.location} with passage ${passage._id}`);
           }
-        }
+          return null;
+        });
+
+        const results = await Promise.all(streamUpdates);
+        updatedStreams.push(...results.filter(s => s !== null));
       }
 
       // B. Promote LIVE -> FINISHED (if endTime is passed)
@@ -86,7 +90,8 @@ export default defineNitroPlugin((nitroApp) => {
         console.log(`[Scheduler] Promoted ${passagesToFinish.length} passages to FINISHED`);
         scheduleChanged = true;
 
-        for (const passage of passagesToFinish) {
+        // BOLT: Parallelize stream cleanup
+        const finishUpdates = passagesToFinish.map(async (passage) => {
           if (passage.location) {
             const anotherLive = await PassageModel.findOne({
               location: passage.location,
@@ -101,12 +106,16 @@ export default defineNitroPlugin((nitroApp) => {
                 { new: true }
               );
               if (stream) {
-                updatedStreams.push(stream);
+                console.log(`[Scheduler] Cleared currentPassage for location ${passage.location}`);
+                return stream;
               }
-              console.log(`[Scheduler] Cleared currentPassage for location ${passage.location}`);
             }
           }
-        }
+          return null;
+        });
+
+        const results = await Promise.all(finishUpdates);
+        updatedStreams.push(...results.filter(s => s !== null));
       }
 
       // Emit events with full payload if schedule changed
@@ -188,10 +197,11 @@ export default defineNitroPlugin((nitroApp) => {
 
     console.log(`[Scheduler] Found ${passages.length} passages for ${minutesBefore}min reminder`);
 
-    for (const passage of passages) {
+    // BOLT: Parallelize notification sending per passage
+    const passagePromises = passages.map(async (passage) => {
       const group = passage.group as any;
       const apparatus = passage.apparatus as any;
-      if (!group) continue;
+      if (!group) return;
 
       // Trouver les abonnés qui ont ce passage en favoris
       const subscriptions = await SubscriptionModel.find({
@@ -203,7 +213,7 @@ export default defineNitroPlugin((nitroApp) => {
         await PassageModel.findByIdAndUpdate(passage._id, {
           $set: { [trackingField]: now }
         });
-        continue;
+        return;
       }
 
       const payload = JSON.stringify({
@@ -232,6 +242,8 @@ export default defineNitroPlugin((nitroApp) => {
       });
       
       console.log(`[Scheduler] Sent ${subscriptions.length} notifications (${minutesBefore}min) for ${group.name}`);
-    }
+    });
+
+    await Promise.all(passagePromises);
   }
 });
