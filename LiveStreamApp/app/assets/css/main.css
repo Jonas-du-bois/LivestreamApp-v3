@@ -24,9 +24,9 @@
   --ring: rgba(6, 182, 212, 0.5);
   --radius: 16px;
   --header-safe-extra: 1rem;
-  --nav-safe-extra: 0.5rem;
+  --nav-safe-extra: 1rem;
   --main-content-top-base: 7rem;
-  --main-content-bottom-base: 80px;
+  --main-content-bottom-base: 100px;
 }
 
 /* Base Styles */
@@ -51,7 +51,7 @@ body {
   @media (display-mode: standalone), (display-mode: fullscreen) {
     :root {
       --header-safe-extra: 0px;
-      --nav-safe-extra: 0px; /* keep safe-area only, no extra spacing */
+      --nav-safe-extra: -10px; /* keep current iOS PWA visual spacing */
       --main-content-top-base: 6.25rem;
       --main-content-bottom-base: 52px;
     }
@@ -147,7 +147,7 @@ body {
   }
 
   .nav-safe-area {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) - 10px ) !important;
+    padding-bottom: max(0px, calc(env(safe-area-inset-bottom, 0px) + var(--nav-safe-extra))) !important;
   }
 }
 
