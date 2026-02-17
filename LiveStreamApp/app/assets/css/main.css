@@ -130,7 +130,7 @@ body {
   }
 
   .nav-safe-area {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem) !important;
   }
   
   /* Fallback for generic selectors */
@@ -139,13 +139,13 @@ body {
   }
 
   nav {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
   }
 }
 
 /* Non-supporting browsers get standard padding */
 .nav-safe-area {
-  padding-bottom: 1rem;
+  padding-bottom: 0.5rem;
 }
 
 .header-safe-area {

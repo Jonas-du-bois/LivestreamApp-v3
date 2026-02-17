@@ -8,7 +8,7 @@ export interface ISession extends Document {
 
 const sessionSchema = new Schema<ISession>({
   token: { type: String, required: true, unique: true, index: true },
-  expiresAt: { type: Date, required: true, index: true },
+  expiresAt: { type: Date, required: true },
   createdAt: { type: Date, default: Date.now }
 });
 

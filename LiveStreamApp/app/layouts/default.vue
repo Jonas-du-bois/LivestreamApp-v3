@@ -43,7 +43,7 @@ const currentPageTitle = computed(() => t(pageTitleKeys[route.path] || 'pages.ho
 const availableLocaleCodes = computed(() =>
   locales.value
     .map((localeOption) => (typeof localeOption === 'string' ? localeOption : localeOption.code))
-    .filter((code): code is string => Boolean(code))
+    .filter((code) => Boolean(code))
 )
 
 // Language toggle
@@ -191,14 +191,14 @@ provide('openGroupDetails', openGroupDetails)
       <main :class="[
         'h-screen overflow-y-auto',
         showHeader ? 'main-content' : 'pt-0',
-        showFooter ? 'pb-[120px]' : 'pb-0'
+        showFooter ? 'pb-[80px]' : 'pb-0'
       ]">
         <slot />
       </main>
 
       <!-- Bottom Navigation Dock - Fixed with safe area support -->
       <nav v-if="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-2 nav-safe-area">
-        <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-3 py-2 flex items-center justify-around">
+        <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-3 py-1 flex items-center justify-around">
           <NuxtLink
             v-for="item in navItems"
             :key="item.id"
