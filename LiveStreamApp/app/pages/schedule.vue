@@ -269,17 +269,11 @@ useSocketRoom('schedule-updates', [
 
           <!-- Favorite Button -->
           <div class="flex items-start pt-0.5 flex-shrink-0">
-            <button 
-              @click="item._id && toggleFavorite(item._id, $event)"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              :aria-label="(item._id && isFavorite(item._id)) ? t('schedule.removeFromFavorites', { name: item.group?.name || '' }) : t('schedule.addToFavorites', { name: item.group?.name || '' })"
-            >
-              <Icon 
-                :name="(item._id && isFavorite(item._id)) ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
-                class="w-6 h-6"
-                :class="(item._id && isFavorite(item._id)) ? 'text-red-400' : 'text-white/60'"
-              />
-            </button>
+            <SparkHeart
+              :active="!!(item._id && isFavorite(item._id))"
+              :label="(item._id && isFavorite(item._id)) ? t('schedule.removeFromFavorites', { name: item.group?.name || '' }) : t('schedule.addToFavorites', { name: item.group?.name || '' })"
+              @click.stop="item._id && toggleFavorite(item._id, $event)"
+            />
           </div>
         </div>
       </div>
