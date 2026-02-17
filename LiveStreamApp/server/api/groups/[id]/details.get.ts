@@ -129,6 +129,6 @@ export default defineEventHandler(async (event) => {
 
   } catch (err: any) {
     console.error('Error fetching group details:', err)
-    throw createError({ statusCode: 500, message: err.message })
+    throw createError({ statusCode: 500, statusMessage: 'Internal Server Error' })
   }
 })
