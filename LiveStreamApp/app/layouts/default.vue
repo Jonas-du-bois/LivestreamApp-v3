@@ -212,7 +212,6 @@ provide('openGroupDetails', openGroupDetails)
               :class="[
                 isActive(item.to) ? 'text-cyan-400' : 'text-white/60',
                 isActive(item.to) && item.isCenter ? 'glow-cyan' : '',
-                isActive(item.to) && !item.isCenter ? 'bg-white/10' : ''
               ]"
             >
               <Icon 
