@@ -179,13 +179,11 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               </div>
             </div>
 
-            <button
-              @click="passage._id && toggleFavorite(passage._id, $event)"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              :aria-label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
-            >
-              <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />
-            </button>
+            <SparkHeart
+              :active="true"
+              :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
+              @click.stop="passage._id && toggleFavorite(passage._id, $event)"
+            />
           </div>
         </div>
       </div>
@@ -216,13 +214,11 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               </div>
             </div>
 
-            <button
-              @click="passage._id && toggleFavorite(passage._id, $event)"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              :aria-label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
-            >
-              <Icon name="fluent:heart-24-filled" class="w-5 h-5 text-red-400" />
-            </button>
+            <SparkHeart
+              :active="true"
+              :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
+              @click.stop="passage._id && toggleFavorite(passage._id, $event)"
+            />
           </div>
         </div>
       </div>
