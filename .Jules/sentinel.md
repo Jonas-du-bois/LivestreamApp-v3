@@ -12,3 +12,8 @@
 **Vulnerability:** The authentication middleware relied on `event.path.startsWith('/api/admin')` without normalization, allowing attackers to bypass protection using double slashes (e.g., `//api/admin`). It also incorrectly handled query parameters, leading to functional bugs.
 **Learning:** Relying on raw request paths for security decisions is brittle. Frameworks (like Nitro/H3) may expose raw paths that differ from what routing logic uses.
 **Prevention:** Always normalize paths (collapse slashes, strip query strings) before using them in security checks or allowlists.
+
+## 2025-05-20 - Error Message Leakage
+**Vulnerability:** API endpoints `details.get.ts` and `stream.get.ts` were returning raw error messages to the client, potentially exposing stack traces or database internals.
+**Learning:** Using `err.message` in production error responses is a common anti-pattern that can aid attackers in reconnaissance.
+**Prevention:** Always sanitize error messages at the API boundary. Log the full error server-side, but return a generic "Internal Server Error" to the client.
