@@ -191,7 +191,7 @@ provide('openGroupDetails', openGroupDetails)
       <main :class="[
         'h-screen overflow-y-auto',
         showHeader ? 'main-content' : 'pt-0',
-        showFooter ? 'pb-[80px]' : 'pb-0'
+        showFooter ? 'main-content-with-footer' : 'pb-0'
       ]">
         <slot />
       </main>

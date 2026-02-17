@@ -1,3 +1,3 @@
-## 2026-02-17 - Parallelizing Scheduler Operations
-**Learning:** Node.js schedulers processing independent database operations (like notifications or status updates for multiple items) should use `Promise.all` instead of sequential `for...of` loops to minimize latency.
-**Action:** Always review cron jobs for sequential `await` calls inside loops that could be parallelized.
+## 2026-01-31 - Faceted Search Optimization
+**Learning:** Replacing multiple sequential metadata queries with `$facet` in MongoDB Aggregation reduced DB round trips from 6 to 2 (1 for days + 1 for facets/data). This eliminates N+1 latency for dynamic filter options.
+**Action:** Look for "Filter Metadata" patterns in other endpoints to apply `$facet`.
