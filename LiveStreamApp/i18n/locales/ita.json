@@ -29,13 +29,15 @@
     "stream": "Dirette",
     "results": "Risultati",
     "favorites": "La Mia Agenda",
-    "weather": "Meteo"
+    "weather": "Meteo",
+    "info": "Info"
   },
   "home": {
     "live": "IN DIRETTA",
     "happeningNow": "In pedana ora",
     "weather": "Meteo",
     "plan": "Mappa",
+    "info": "Info",
     "restaurant": "Ristoro",
     "afterParty": "After Party"
   },
@@ -92,6 +94,7 @@
     "pastEvents": "Eventi passati",
     "noFavorites": "Nessun preferito al momento",
     "noFavoritesHint": "Aggiungi gruppi ai preferiti dal programma per creare la tua agenda personalizzata",
+    "browseSchedule": "Sfoglia il Programma",
     "removeFromFavorites": "Rimuovi {name} dai preferiti"
   },
   "stream": {

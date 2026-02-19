@@ -29,13 +29,15 @@
     "stream": "Directs",
     "results": "Résultats",
     "favorites": "Mon Planning",
-    "weather": "Météo"
+    "weather": "Météo",
+    "info": "Infos"
   },
   "home": {
     "live": "EN DIRECT",
     "happeningNow": "En piste maintenant",
     "weather": "Météo",
     "plan": "Plan",
+    "info": "Infos",
     "restaurant": "Restau",
     "afterParty": "After Party"
   },

@@ -29,13 +29,15 @@
     "stream": "Live",
     "results": "Ergäbnis",
     "favorites": "Mis Programm",
-    "weather": "Wätter"
+    "weather": "Wätter",
+    "info": "Infos"
   },
   "home": {
     "live": "LIVE",
     "happeningNow": "Jetzt uf de Bühni",
     "weather": "Wätter",
     "plan": "Plan",
+    "info": "Infos",
     "restaurant": "Beizli",
     "afterParty": "After Party"
   },

@@ -29,13 +29,15 @@
     "stream": "Directs",
     "results": "Résultats",
     "favorites": "Mon Planning",
-    "weather": "Météo"
+    "weather": "Météo",
+    "info": "Infos"
   },
   "home": {
     "live": "EN DIRECT",
     "happeningNow": "En piste maintenant",
     "weather": "Météo",
     "plan": "Plan",
+    "info": "Infos",
     "restaurant": "Restau",
     "afterParty": "After Party"
   },
@@ -92,6 +94,7 @@
     "pastEvents": "Événements passés",
     "noFavorites": "Aucun favori pour le moment",
     "noFavoritesHint": "Ajoutez des groupes en favoris depuis le programme pour créer votre planning personnalisé",
+    "browseSchedule": "Explorer le programme",
     "removeFromFavorites": "Retirer {name} des favoris"
   },
   "stream": {

@@ -29,13 +29,15 @@
     "stream": "Dirette",
     "results": "Risultati",
     "favorites": "La Mia Agenda",
-    "weather": "Meteo"
+    "weather": "Meteo",
+    "info": "Info"
   },
   "home": {
     "live": "IN DIRETTA",
     "happeningNow": "In pedana ora",
     "weather": "Meteo",
     "plan": "Mappa",
+    "info": "Info",
     "restaurant": "Ristoro",
     "afterParty": "After Party"
   },

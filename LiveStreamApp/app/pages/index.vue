@@ -187,7 +187,7 @@ useSocketRoom('schedule-updates', [
     </div>
 
     <!-- Info Tiles -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       <NuxtLink to="/weather" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
         <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
           <Icon name="fluent:weather-partly-cloudy-day-24-regular" class="w-6 h-6 text-cyan-400" />
@@ -206,6 +206,13 @@ useSocketRoom('schedule-updates', [
           <Icon name="fluent:location-24-regular" class="w-6 h-6 text-purple-400" />
         </div>
         <span class="text-white/80 text-sm">{{ t('home.plan') }}</span>
+      </NuxtLink>
+
+      <NuxtLink to="/infos" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
+        <div class="w-12 h-12 rounded-full bg-emerald-400/20 flex items-center justify-center mb-3">
+          <Icon name="fluent:info-24-regular" class="w-6 h-6 text-emerald-300" />
+        </div>
+        <span class="text-white/80 text-sm">{{ t('home.info') }}</span>
       </NuxtLink>
       
       <NuxtLink to="/food" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">

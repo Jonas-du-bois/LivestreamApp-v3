@@ -35,7 +35,8 @@ const pageTitleKeys: Record<string, string> = {
   '/stream': 'pages.stream',
   '/results': 'pages.results',
   '/favorites': 'pages.favorites',
-  '/weather': 'pages.weather'
+  '/weather': 'pages.weather',
+  '/infos': 'pages.info'
 }
 
 const currentPageTitle = computed(() => t(pageTitleKeys[route.path] || 'pages.home'))
