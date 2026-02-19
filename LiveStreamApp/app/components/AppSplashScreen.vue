@@ -22,7 +22,7 @@
         />
       </div>
 
-      <!-- <p class="splash-screen__title">Coupe des Bains</p> -->
+      <p class="splash-screen__title">Coupe des Bains</p>
       <p class="splash-screen__subtitle">Connexion au live...</p>
 
       <div class="splash-screen__progress" aria-hidden="true">
