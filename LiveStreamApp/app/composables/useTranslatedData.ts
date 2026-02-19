@@ -72,7 +72,12 @@ export const useTranslatedData = () => {
     }
     
     const localeCode = locale.value === 'de' ? 'de-CH' : 'fr-CH'
-    return new Date(dateStr).toLocaleDateString(localeCode, options || defaultOptions)
+    // Force Swiss timezone to avoid hydration mismatch
+    const finalOptions: Intl.DateTimeFormatOptions = {
+      ...(options || defaultOptions),
+      timeZone: 'Europe/Zurich'
+    }
+    return new Date(dateStr).toLocaleDateString(localeCode, finalOptions)
   }
 
   /**
@@ -83,7 +88,8 @@ export const useTranslatedData = () => {
     const localeCode = locale.value === 'de' ? 'de-CH' : 'fr-CH'
     return new Date(dateStr).toLocaleTimeString(localeCode, { 
       hour: '2-digit', 
-      minute: '2-digit' 
+      minute: '2-digit',
+      timeZone: 'Europe/Zurich' // Force Swiss timezone to avoid hydration mismatch
     })
   }
 
