@@ -203,20 +203,23 @@ provide('openGroupDetails', openGroupDetails)
             v-for="item in navItems"
             :key="item.id"
             :to="item.to"
-            class="relative flex flex-col items-center justify-center transition-all"
+        class="relative flex flex-col items-center justify-center transition-all group"
             :class="{ 'scale-125': item.isCenter }"
             :aria-label="t(item.labelKey)"
           >
             <div 
-              class="p-2 rounded-xl transition-all"
+          class="p-2 rounded-xl transition-all duration-300 group-hover:-translate-y-1 group-active:scale-90"
               :class="[
-                isActive(item.to) ? 'text-cyan-400' : 'text-white/60',
+            isActive(item.to) ? 'text-cyan-400' : 'text-white/60 group-hover:text-cyan-200',
                 isActive(item.to) && item.isCenter ? 'glow-cyan' : '',
               ]"
             >
               <Icon 
                 :name="isActive(item.to) ? item.iconFilled : item.icon"
-                :class="item.isCenter ? 'w-7 h-7' : 'w-6 h-6'"
+            :class="[
+              item.isCenter ? 'w-7 h-7' : 'w-6 h-6',
+              isActive(item.to) ? 'animate-nav-pop' : ''
+            ]"
               />
             </div>
           </NuxtLink>
@@ -280,5 +283,22 @@ provide('openGroupDetails', openGroupDetails)
     transform: scale(0);
     opacity: 0;
   }
+}
+
+/* Nav Item Pop Animation */
+@keyframes nav-pop {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-nav-pop {
+  animation: nav-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 </style>
