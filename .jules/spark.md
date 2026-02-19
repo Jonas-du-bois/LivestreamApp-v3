@@ -1,7 +1,8 @@
 # Spark's Journal
 
-## Group Info Card Stats
-- **Interaction**: Animated counting numbers and staggered entrance for stats cards.
-- **Result**: The static numbers felt dead. Animating them from 0 gives a sense of calculation and liveness.
-- **Learning**: `tabular-nums` is essential for counters to prevent jitter. 50ms delay is enough for the DOM to be ready for transition.
-- **Feeling**: 2000ms duration for the counter feels "epic" but might be too slow for repetitive viewing. Settled on 2000ms for now as it matches the entrance animation vibe.
+## Staggered List Animations
+- **Learning:** Applying `transition-delay` via inline styles on an element that also has `transition-all` (e.g., for hover effects) causes the hover effect to be delayed as well.
+- **Solution:** Use a CSS variable (e.g., `--enter-delay`) for the delay value in the inline style, and then apply `transition-delay: var(--enter-delay)` strictly within the `.v-enter-active` (or `.list-enter-active`) CSS class. This ensures the delay only applies during the entrance animation.
+
+## Lockfiles
+- **Learning:** Be careful not to commit large lockfiles (`pnpm-lock.yaml`) if they were not present before, especially when the task requires small changes.
