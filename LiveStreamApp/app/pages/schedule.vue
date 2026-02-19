@@ -251,9 +251,7 @@ useSocketRoom('schedule-updates', [
         <div class="flex items-start gap-4">
           <!-- Time & Location -->
           <div class="text-left min-w-[70px] flex-shrink-0">
-            <ClientOnly>
-              <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
-            </ClientOnly>
+            <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
             <div class="text-white/50 text-xs mt-0.5">{{ item.location }}</div>
           </div>
 
