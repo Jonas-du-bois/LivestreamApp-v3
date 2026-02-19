@@ -286,18 +286,18 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             v-for="result in podiumResults"
             :key="result._id"
             :id="'result-' + result._id"
-            class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
             :class="getPodiumBorderClass(result.rank)"
             @click="handleGroupClick(result.group._id, activeSection.code)"
             role="button"
             tabindex="0"
             @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
             @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
-            :aria-label="t('results.openGroupDetails', { group: result.group.name })"
           >
             <div class="flex items-center gap-4">
               <!-- Medal Icon -->
               <div class="flex items-center justify-center w-12 h-12">
+                <span class="sr-only">#{{ result.rank }}</span>
                 <Icon
                   v-if="getMedalIcon(result.rank)"
                   :name="getMedalIcon(result.rank)!.name"
@@ -329,13 +329,12 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             v-for="result in fullRanking"
             :key="result._id"
             :id="'result-' + result._id"
-            class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
             @click="handleGroupClick(result.group._id, activeSection.code)"
             role="button"
             tabindex="0"
             @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
             @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
-            :aria-label="t('results.openGroupDetails', { group: result.group.name })"
           >
             <div class="flex items-center gap-4">
               <!-- Rank Number -->
