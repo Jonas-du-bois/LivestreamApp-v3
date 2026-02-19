@@ -92,6 +92,7 @@
     "pastEvents": "Eventi passati",
     "noFavorites": "Nessun preferito al momento",
     "noFavoritesHint": "Aggiungi gruppi ai preferiti dal programma per creare la tua agenda personalizzata",
+    "browseSchedule": "Sfoglia il Programma",
     "removeFromFavorites": "Rimuovi {name} dai preferiti"
   },
   "stream": {

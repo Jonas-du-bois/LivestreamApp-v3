@@ -10,6 +10,10 @@
 **Learning:** List items implemented as `div`s with `click` handlers (like notifications or search results) are completely inaccessible to keyboard users unless explicitly managed. Adding `role="button"` is not enough; they need `tabindex="0"` and `@keydown.enter`/`space` handlers.
 **Action:** Always wrap interactive list items in `<button>` tags if possible, or add full ARIA/keyboard support (role, tabindex, keydown) to the container `div`. Ensure nested interactive elements (like "delete" buttons) have `.stop` propagation modifiers.
 
+## 2025-05-27 - Empty States as Navigation Drivers
+**Learning:** Empty states (like "No Favorites") without actions create dead ends in the user flow. Users may not know where to go next.
+**Action:** Always include a primary Call-to-Action (CTA) button in empty state components that directs users to the place where they can populate that content (e.g., "Browse Schedule").
+
 ## 2025-02-24 - Aria-Label Overriding Child Content
 **Learning:** Placing `aria-label` on a container card (e.g., a result item) completely suppresses the reading of its child elements (rank, score, group name) by screen readers. This hides critical information if the label only describes the action ("Open details") but not the data.
 **Action:** Avoid `aria-label` on complex content containers. Use `sr-only` text inside the container to provide extra context if needed, or rely on the natural reading order of the content. If an action needs a specific label, put it on the specific button, not the whole card, or ensure the label includes ALL data.
