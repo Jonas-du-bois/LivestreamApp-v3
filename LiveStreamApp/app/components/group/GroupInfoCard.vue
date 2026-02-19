@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Group, HistoryEntry } from '../../types/api'
+import AnimatedCounter from '../AnimatedCounter.vue'
 
 interface Props {
   group: Group
@@ -60,6 +61,36 @@ const historyByYear = computed(() => {
     return { year, score: avg }
   }).sort((a, b) => a.year - b.year)
 })
+
+// Stats Array for cleaner template and transitions
+const stats = computed(() => [
+  {
+    id: 'gymnasts',
+    label: t('group.gymnasts'),
+    value: gymnastsCount.value,
+    icon: 'fluent:people-24-regular',
+    color: 'text-cyan-400',
+    rotate: '-rotate-6'
+  },
+  {
+    id: 'monitors',
+    label: t('group.monitors'),
+    value: monitorsCount.value,
+    icon: 'fluent:person-24-regular',
+    color: 'text-purple-400',
+    rotate: 'rotate-6'
+  },
+  {
+    id: 'average',
+    label: t('group.average'),
+    value: averageScore.value,
+    icon: 'fluent:arrow-trending-24-regular',
+    color: 'text-cyan-400',
+    rotate: '-rotate-6',
+    decimals: 2,
+    duration: 2500
+  }
+])
 </script>
 
 <template>
@@ -98,23 +129,32 @@ const historyByYear = computed(() => {
     <!-- Content -->
     <div class="flex-1 p-6 space-y-6 overflow-y-auto">
       <!-- Stats Grid -->
-      <div class="grid grid-cols-3 gap-3">
-        <div class="glass-card p-4 text-center">
-          <Icon name="fluent:people-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-          <div class="text-white font-bold text-xl">{{ gymnastsCount }}</div>
-          <div class="text-white/60 text-xs">{{ t('group.gymnasts') }}</div>
+      <TransitionGroup
+        tag="div"
+        class="grid grid-cols-3 gap-3"
+        name="staggered-fade"
+        appear
+      >
+        <div
+          v-for="(stat, index) in stats"
+          :key="stat.id"
+          class="glass-card p-4 text-center group hover:bg-white/10 hover:scale-105 transition-transform duration-300 cursor-default relative"
+          :style="{ transitionDelay: `${index * 100}ms` }"
+        >
+          <Icon
+            :name="stat.icon"
+            :class="['w-6 h-6 mx-auto mb-2 transition-transform duration-300 group-hover:scale-110', stat.color, `group-hover:${stat.rotate}`]"
+          />
+          <div class="text-white font-bold text-xl">
+            <AnimatedCounter
+              :value="stat.value"
+              :decimals="stat.decimals || 0"
+              :duration="stat.duration || 2000"
+            />
+          </div>
+          <div class="text-white/60 text-xs">{{ stat.label }}</div>
         </div>
-        <div class="glass-card p-4 text-center">
-          <Icon name="fluent:person-24-regular" class="w-6 h-6 text-purple-400 mx-auto mb-2" />
-          <div class="text-white font-bold text-xl">{{ monitorsCount }}</div>
-          <div class="text-white/60 text-xs">{{ t('group.monitors') }}</div>
-        </div>
-        <div class="glass-card p-4 text-center">
-          <Icon name="fluent:arrow-trending-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-          <div class="text-white font-bold text-xl">{{ averageScore }}</div>
-          <div class="text-white/60 text-xs">{{ t('group.average') }}</div>
-        </div>
-      </div>
+      </TransitionGroup>
 
       <!-- Category Info (optional additional details) -->
       <div v-if="group.category === 'MIXTE'" class="glass-card p-4">
@@ -180,3 +220,26 @@ const historyByYear = computed(() => {
     </div> -->
   </div>
 </template>
+
+<style scoped>
+/* Scoped transitions for entrance ONLY */
+.staggered-fade-enter-active {
+  transition: all 0.6s ease-out;
+}
+.staggered-fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+/* Ensure exit doesn't break layout if stats change */
+.staggered-fade-leave-active {
+  transition: all 0.3s ease-in;
+  position: absolute;
+}
+.staggered-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+.staggered-fade-move {
+  transition: transform 0.4s ease;
+}
+</style>
