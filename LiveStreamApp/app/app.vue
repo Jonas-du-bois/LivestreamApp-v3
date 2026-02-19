@@ -3,14 +3,14 @@ import { isNativePlatform } from '~/utils/capacitor'
 
 const pwaInstallRef = ref<InstanceType<typeof import('./components/PwaInstallPrompt.vue').default> | null>(null)
 
-// Désactiver le PWA prompt en mode natif (Capacitor)
-const showPwaPrompt = !isNativePlatform()
-
 // Optionnel: Stocker si l'utilisateur a déjà vu/refusé le prompt
 const hasSeenInstallPrompt = useCookie('pwa-install-seen', {
   default: () => false,
   maxAge: 60 * 60 * 24 * 30 // 30 jours
 })
+
+// Désactiver le PWA prompt en mode natif (Capacitor) et après refus utilisateur
+const showPwaPrompt = computed(() => !isNativePlatform() && !hasSeenInstallPrompt.value)
 
 const handleInstallSuccess = () => {
   console.log('✅ PWA installée avec succès!')

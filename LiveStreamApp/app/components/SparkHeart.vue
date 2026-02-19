@@ -4,6 +4,10 @@ const props = defineProps<{
   label?: string
 }>()
 
+const emit = defineEmits<{
+  (e: 'click', event: MouseEvent): void
+}>()
+
 const isAnimating = ref(false)
 
 watch(() => props.active, (newVal) => {
@@ -14,14 +18,19 @@ watch(() => props.active, (newVal) => {
     }, 300)
   }
 })
+
+const handleClick = (event: MouseEvent) => {
+  emit('click', event)
+}
 </script>
 
 <template>
   <button
     type="button"
-    class="relative p-2 rounded-full transition-all duration-300 ease-out hover:bg-white/10 active:scale-75 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none group"
+    class="relative p-2 rounded-full flex-shrink-0 transition-all duration-300 ease-out active:scale-75 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none group"
     :class="{ 'scale-125': isAnimating }"
     :aria-label="label"
+    @click="handleClick"
   >
     <Icon
       :name="active ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"

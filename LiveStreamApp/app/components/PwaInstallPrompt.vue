@@ -77,9 +77,7 @@ defineExpose({
       description="Suivez les scores en direct de la FSG"
       icon="/icons/logo_livestreamappv3-192.png"
       :install-description="t('pwa.installDescription')"
-      disable-install-description="false"
       disable-screenshots="true"
-      disable-close="false"
     />
   </ClientOnly>
 </template>

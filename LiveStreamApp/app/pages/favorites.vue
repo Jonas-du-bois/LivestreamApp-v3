@@ -179,11 +179,13 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               </div>
             </div>
 
-            <SparkHeart
-              :active="true"
-              :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
-              @click.stop="passage._id && toggleFavorite(passage._id, $event)"
-            />
+            <div class="flex items-start pt-0.5 flex-shrink-0">
+              <SparkHeart
+                :active="true"
+                :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
+                @click.stop="passage._id && toggleFavorite(passage._id, $event)"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -214,11 +216,13 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               </div>
             </div>
 
-            <SparkHeart
-              :active="true"
-              :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
-              @click.stop="passage._id && toggleFavorite(passage._id, $event)"
-            />
+            <div class="flex items-start pt-0.5 flex-shrink-0">
+              <SparkHeart
+                :active="true"
+                :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
+                @click.stop="passage._id && toggleFavorite(passage._id, $event)"
+              />
+            </div>
           </div>
         </div>
       </div>
