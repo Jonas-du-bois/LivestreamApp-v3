@@ -238,6 +238,13 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
          <p class="text-white/60 text-sm">
            {{ t('favorites.noFavoritesHint') }}
          </p>
+
+         <NuxtLink
+           to="/schedule"
+           class="mt-6 inline-block bg-cyan-400 text-[#0B1120] px-6 py-3 rounded-xl font-bold transition-all hover:bg-cyan-300 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-[#0B1120] outline-none"
+         >
+           {{ t('favorites.browseSchedule') }}
+         </NuxtLink>
       </div>
     </ClientOnly>
   </div>
