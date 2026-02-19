@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 const eventInfo = {
   name: 'Coupe des Bains - 39e edition',
   location: 'Yverdon-les-Bains',
@@ -79,6 +81,13 @@ const usefulLinks = [
 
 <template>
   <div class="px-4 space-y-6 pb-6">
+    <div class="px-2 pt-2">
+      <NuxtLink to="/" class="inline-flex items-center gap-2 glass-panel px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
+        <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
+        <span class="text-white text-sm font-medium">{{ t('common.back') }}</span>
+      </NuxtLink>
+    </div>
+
     <section class="glass-card relative overflow-hidden p-5">
       <div class="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-cyan-500/20 blur-2xl" />
       <div class="relative">

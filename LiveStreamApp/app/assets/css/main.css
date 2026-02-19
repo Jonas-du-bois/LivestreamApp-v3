@@ -166,7 +166,8 @@ body {
 }
 
 .main-content-with-footer {
-  padding-bottom: var(--main-content-bottom-base);
+  padding-bottom: calc(var(--main-content-bottom-base) + var(--sab));
+  scroll-padding-bottom: calc(var(--main-content-bottom-base) + var(--sab));
 }
 
 @supports (padding: env(safe-area-inset-top)) {

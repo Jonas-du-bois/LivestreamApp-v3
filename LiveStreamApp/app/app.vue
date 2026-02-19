@@ -2,6 +2,9 @@
 import { isNativePlatform } from '~/utils/capacitor'
 
 const pwaInstallRef = ref<InstanceType<typeof import('./components/PwaInstallPrompt.vue').default> | null>(null)
+const showSplash = ref(true)
+const splashStorageKey = 'livestreamapp:splash:seen'
+let splashTimeout: ReturnType<typeof setTimeout> | undefined
 
 // Optionnel: Stocker si l'utilisateur a déjà vu/refusé le prompt
 const hasSeenInstallPrompt = useCookie('pwa-install-seen', {
@@ -23,6 +26,23 @@ const handleUserChoice = (choice: 'accepted' | 'dismissed') => {
     hasSeenInstallPrompt.value = true
   }
 }
+
+onMounted(() => {
+  const hasSeenSplash = sessionStorage.getItem(splashStorageKey) === '1'
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const splashDuration = hasSeenSplash ? 280 : prefersReducedMotion ? 500 : 1900
+
+  splashTimeout = window.setTimeout(() => {
+    showSplash.value = false
+    sessionStorage.setItem(splashStorageKey, '1')
+  }, splashDuration)
+})
+
+onBeforeUnmount(() => {
+  if (splashTimeout) {
+    clearTimeout(splashTimeout)
+  }
+})
 </script>
 
 <template>
@@ -34,10 +54,27 @@ const handleUserChoice = (choice: 'accepted' | 'dismissed') => {
     
     <!-- PWA Install Prompt - Désactivé en mode natif (Capacitor) -->
     <PwaInstallPrompt 
-      v-if="showPwaPrompt"
+      v-if="showPwaPrompt && !showSplash"
       ref="pwaInstallRef"
       @install-success="handleInstallSuccess"
       @user-choice-result="handleUserChoice"
     />
+
+    <Transition name="splash-fade">
+      <AppSplashScreen v-if="showSplash" />
+    </Transition>
   </div>
 </template>
+
+<style>
+.splash-fade-enter-active,
+.splash-fade-leave-active {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.splash-fade-enter-from,
+.splash-fade-leave-to {
+  opacity: 0;
+  transform: scale(1.02);
+}
+</style>
