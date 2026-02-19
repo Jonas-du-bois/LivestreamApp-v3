@@ -92,6 +92,7 @@
     "pastEvents": "Vergangeni Events",
     "noFavorites": "No kei Favorite",
     "noFavoritesHint": "Füeg Gruppe als Favorite vom Programm hinzu, zum dis persönliche Programm z'erstelle",
+    "browseSchedule": "Programm durchstöbern",
     "removeFromFavorites": "{name} vo de Favorite entferne"
   },
   "stream": {
