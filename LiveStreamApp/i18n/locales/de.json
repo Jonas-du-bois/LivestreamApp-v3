@@ -78,7 +78,10 @@
     "group": "Gruppe",
     "addToFavorites": "{name} zu de Favorite hinzuefüege",
     "removeFromFavorites": "{name} vo de Favorite entferne",
-    "openGroupDetails": "Details azeige für {group} am {apparatus} am {time}"
+    "openGroupDetails": "Details azeige für {group} am {apparatus} am {time}",
+    "noPassagesTitle": "Kei Uuftritt gfunde",
+    "noPassagesHint": "D Filter sind villicht z streng. Lösch d Filter, zum alli Uuftritt azeige.",
+    "clearFilters": "Filter lösche"
   },
   "results": {
     "noResults": "No kei Ergäbnis verfüegbar.",

@@ -153,6 +153,14 @@ const filteredSchedule = computed(() => {
   })
 })
 
+const clearScheduleFilters = () => {
+  selectedFilter.value = t('common.all')
+  filtersStore.value.division = []
+  filtersStore.value.salle = []
+  filtersStore.value.apparatus = []
+  filtersStore.value.hidePast = false
+}
+
 const formatTime = (isoString: string) => {
   return formatLocalizedTime(isoString)
 }
@@ -226,12 +234,13 @@ useSocketRoom('schedule-updates', [
 
     <!-- Schedule List -->
     <div class="space-y-2">
-      <div
+      <ScheduleEmptyState
         v-if="filteredSchedule.length === 0"
-        class="glass-card p-6 text-center text-white/70"
-      >
-        {{ t('common.noResults') }}
-      </div>
+        :title="t('schedule.noPassagesTitle')"
+        :description="t('schedule.noPassagesHint')"
+        :button-label="t('schedule.clearFilters')"
+        @clear-filters="clearScheduleFilters"
+      />
 
       <div 
         v-for="item in filteredSchedule"

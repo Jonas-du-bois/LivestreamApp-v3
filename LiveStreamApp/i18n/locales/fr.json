@@ -78,7 +78,10 @@
     "group": "Groupe",
     "addToFavorites": "Ajouter {name} aux favoris",
     "removeFromFavorites": "Retirer {name} des favoris",
-    "openGroupDetails": "Voir les détails pour {group} à {apparatus} à {time}"
+    "openGroupDetails": "Voir les détails pour {group} à {apparatus} à {time}",
+    "noPassagesTitle": "Aucun passage trouvé",
+    "noPassagesHint": "Les filtres sont peut-être trop restrictifs. Effacez les filtres pour voir tous les passages.",
+    "clearFilters": "Effacer les filtres"
   },
   "results": {
     "noResults": "Aucun résultat disponible pour le moment.",
