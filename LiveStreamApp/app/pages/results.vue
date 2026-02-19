@@ -271,19 +271,21 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
     </div>
 
     <!-- Content for active tab -->
-    <div
-      v-if="activeSection"
-      class="px-4 mt-6 space-y-6"
-      role="tabpanel"
-      :id="'panel-' + activeSection.code"
-      :aria-labelledby="'tab-' + activeSection.code"
-    >
-      <!-- Podium Section -->
-      <div v-if="podiumResults.length > 0">
-        <h2 class="text-white text-xl font-bold mb-4">{{ t('results.podium') }}</h2>
-        <div class="space-y-3">
-          <div
-            v-for="result in podiumResults"
+    <Transition name="page" mode="out-in">
+      <div
+        v-if="activeSection"
+        :key="activeSection.code"
+        class="px-4 mt-6 space-y-6"
+        role="tabpanel"
+        :id="'panel-' + activeSection.code"
+        :aria-labelledby="'tab-' + activeSection.code"
+      >
+        <!-- Podium Section -->
+        <div v-if="podiumResults.length > 0">
+          <h2 class="text-white text-xl font-bold mb-4">{{ t('results.podium') }}</h2>
+          <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
+            <div
+              v-for="result in podiumResults"
             :key="result._id"
             :id="'result-' + result._id"
             class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
@@ -316,17 +318,17 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               <div class="text-cyan-400 font-bold text-3xl">
                 {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
               </div>
+              </div>
             </div>
-          </div>
+          </TransitionGroup>
         </div>
-      </div>
 
-      <!-- Full Ranking Section -->
-      <div v-if="fullRanking.length > 0">
-        <h2 class="text-white text-xl font-bold mb-4">{{ t('results.fullRanking') }}</h2>
-        <div class="space-y-3">
-          <div
-            v-for="result in fullRanking"
+        <!-- Full Ranking Section -->
+        <div v-if="fullRanking.length > 0">
+          <h2 class="text-white text-xl font-bold mb-4">{{ t('results.fullRanking') }}</h2>
+          <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
+            <div
+              v-for="result in fullRanking"
             :key="result._id"
             :id="'result-' + result._id"
             class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
@@ -352,20 +354,53 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               <div class="text-white font-bold text-2xl">
                 {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
               </div>
+              </div>
             </div>
-          </div>
+          </TransitionGroup>
+        </div>
+
+        <!-- No results for this apparatus -->
+        <div v-if="activeSection.results.length === 0" class="text-center py-10 text-white/50">
+          <p>{{ t('results.noApparatusResults') }}</p>
         </div>
       </div>
-
-      <!-- No results for this apparatus -->
-      <div v-if="activeSection.results.length === 0" class="text-center py-10 text-white/50">
-        <p>{{ t('results.noApparatusResults') }}</p>
-      </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
 <style scoped>
+/* Page Transition (Tab Switch) */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+/* List Transitions (Reordering & Entrance) */
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translate(0, 30px);
+}
+
+/* Ensure smooth removal from flow */
+.list-leave-active {
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
