@@ -3,7 +3,8 @@ export default defineEventHandler(async (event) => {
   const normalizedPath = event.path.split('?')[0].replace(/\/+/g, '/');
 
   // Define protected zones (exclude login endpoint)
-  const isProtectedPath = normalizedPath.startsWith('/api/admin') && !normalizedPath.endsWith('/login');
+  // Security: Use strict equality check to prevent bypass (e.g. /api/admin/users/login)
+  const isProtectedPath = normalizedPath.startsWith('/api/admin') && normalizedPath !== '/api/admin/login';
 
   // Define public mutation endpoints
   const publicMutationPaths = [
