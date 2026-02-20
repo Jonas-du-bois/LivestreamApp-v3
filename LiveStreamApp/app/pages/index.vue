@@ -167,127 +167,123 @@ useSocketRoom('schedule-updates', [
 
 <template>
   <div class="px-4 space-y-6 pb-6">
-    <!-- Hero Live Card -->
-    <NuxtLink
-      v-if="firstLiveStream"
-      :to="'/stream/' + firstLiveStream._id"
-      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
-    >
-      <ImageWithFallback
-        :src="heroImage"
-        :alt="heroTitle"
-        class="w-full h-full object-cover"
-      />
-      <div class="absolute inset-0 gradient-overlay" />
-
-      <div class="absolute bottom-0 left-0 right-0 p-6">
-        <div class="flex items-center gap-2 mb-3">
-          <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
-            <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-            <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
-          </div>
-        </div>
-
-        <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
-        <p class="text-white/80">{{ heroSubtitle }}</p>
-      </div>
-    </NuxtLink>
-
-    <div 
-      v-else
-      class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
-      @click="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
-      role="button"
-      tabindex="0"
-      :aria-label="t('results.openGroupDetails', { group: heroTitle })"
-      @keydown.enter="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
-      @keydown.space.prevent="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
-    >
-      <ImageWithFallback 
-        :src="heroImage"
-        :alt="heroTitle"
-        class="w-full h-full object-cover"
-      />
-      <div class="absolute inset-0 gradient-overlay" />
-      
-      <div class="absolute bottom-0 left-0 right-0 p-6">
-        <div class="flex items-center gap-2 mb-3">
-          <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
-            <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-            <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
-          </div>
-        </div>
+    <Transition name="premium-swap" mode="out-in">
+      <div v-if="showHappeningNowSkeleton && !hasLiveLoadedOnce" key="home-loading" class="space-y-6">
+        <!-- Hero Skeleton -->
+        <div class="glass-card overflow-hidden relative h-64 rounded-xl premium-skeleton-shimmer premium-skeleton-surface opacity-50"></div>
         
-        <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
-        <p class="text-white/80">{{ heroSubtitle }}</p>
-      </div>
-    </div>
-
-    <!-- Happening Now Carousel -->
-    <div>
-      <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('home.happeningNow') }}</h3>
-      <Transition name="premium-swap" mode="out-in">
-        <CascadeSkeletonList
-          v-if="showHappeningNowSkeleton"
-          key="happening-now-skeleton"
-          :count="4"
-          layout="horizontal"
-          container-class="-mx-4 px-4"
-          item-class="min-w-[200px] flex-shrink-0"
-          :aria-label="t('common.loading')"
-        >
-          <template #default>
-            <div class="p-4 space-y-3 min-h-[138px]">
-              <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-20"></div>
-              <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-3/4"></div>
-              <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-2/3"></div>
-              <div class="premium-skeleton-surface premium-skeleton-shimmer h-9 w-full rounded-lg mt-2"></div>
-            </div>
-          </template>
-        </CascadeSkeletonList>
-
-        <div v-else key="happening-now-content" class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-          <div 
-            v-for="group in happeningNow"
-            :key="group.id"
-            class="glass-card p-4 min-w-[200px] flex-shrink-0 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
-            @click="handleGroupClick(group.id, group.apparatusCode)"
-            role="button"
-            tabindex="0"
-            :aria-label="t('results.openGroupDetails', { group: group.name })"
-            @keydown.enter="handleGroupClick(group.id, group.apparatusCode)"
-            @keydown.space.prevent="handleGroupClick(group.id, group.apparatusCode)"
-          >
-            <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
-            <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>
-            <p class="text-white/60 text-sm">{{ group.apparatus }}</p>
-            
-            <NuxtLink
-              v-if="group.streamId"
-              :to="`/stream/${group.streamId}`"
-              @click.stop
-              class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
-            >
-              <Icon name="fluent:play-24-filled" class="w-4 h-4" />
-              <span class="text-sm">{{ t('common.watch') }}</span>
-            </NuxtLink>
+        <!-- Carousel Skeleton -->
+        <div>
+          <div class="premium-skeleton-line premium-skeleton-shimmer h-6 w-40 mb-4 px-1"></div>
+          <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+            <div v-for="i in 3" :key="i" class="glass-card p-4 min-w-[200px] h-[138px] premium-skeleton-surface premium-skeleton-shimmer opacity-50 rounded-xl"></div>
           </div>
         </div>
-      </Transition>
-    </div>
+      </div>
 
-    <!-- Info Tiles -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 auto-rows-fr">
-      <HomeQuickActionButton
-        v-for="action in quickActions"
-        :key="action.id"
-        :to="action.to"
-        :label="action.label"
-        :icon="action.icon"
-        :accent="action.accent"
-        :badge="action.badge ?? null"
-        :aria-label="action.label"
-      />
-    </div>
+      <div v-else key="home-content" class="space-y-6">
+        <!-- Hero Live Card -->
+        <NuxtLink
+          v-if="firstLiveStream"
+          :to="'/stream/' + firstLiveStream._id"
+          class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
+        >
+          <ImageWithFallback
+            :src="heroImage"
+            :alt="heroTitle"
+            class="w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 gradient-overlay" />
+
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <div class="flex items-center gap-2 mb-3">
+              <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
+                <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
+                <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
+              </div>
+            </div>
+
+            <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
+            <p class="text-white/80">{{ heroSubtitle }}</p>
+          </div>
+        </NuxtLink>
+
+        <div 
+          v-else
+          class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
+          @click="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
+          role="button"
+          tabindex="0"
+          :aria-label="t('results.openGroupDetails', { group: heroTitle })"
+          @keydown.enter="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
+          @keydown.space.prevent="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
+        >
+          <ImageWithFallback 
+            :src="heroImage"
+            :alt="heroTitle"
+            class="w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 gradient-overlay" />
+          
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <div class="flex items-center gap-2 mb-3">
+              <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
+                <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
+                <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
+              </div>
+            </div>
+            
+            <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
+            <p class="text-white/80">{{ heroSubtitle }}</p>
+          </div>
+        </div>
+
+        <!-- Happening Now Carousel -->
+        <div>
+          <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('home.happeningNow') }}</h3>
+          <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+            <div 
+              v-for="group in happeningNow"
+              :key="group.id"
+              class="glass-card p-4 min-w-[200px] flex-shrink-0 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
+              @click="handleGroupClick(group.id, group.apparatusCode)"
+              role="button"
+              tabindex="0"
+              :aria-label="t('results.openGroupDetails', { group: group.name })"
+              @keydown.enter="handleGroupClick(group.id, group.apparatusCode)"
+              @keydown.space.prevent="handleGroupClick(group.id, group.apparatusCode)"
+            >
+              <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
+              <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>
+              <p class="text-white/60 text-sm">{{ group.apparatus }}</p>
+              
+              <NuxtLink
+                v-if="group.streamId"
+                :to="`/stream/${group.streamId}`"
+                @click.stop
+                class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
+              >
+                <Icon name="fluent:play-24-filled" class="w-4 h-4" />
+                <span class="text-sm">{{ t('common.watch') }}</span>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Tiles -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 auto-rows-fr">
+          <HomeQuickActionButton
+            v-for="action in quickActions"
+            :key="action.id"
+            :to="action.to"
+            :label="action.label"
+            :icon="action.icon"
+            :accent="action.accent"
+            :badge="action.badge ?? null"
+            :aria-label="action.label"
+          />
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>

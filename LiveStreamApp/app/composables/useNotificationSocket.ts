@@ -1,5 +1,5 @@
 import { useSocket } from './useSocket'
-import { useNotificationsStore, useFavoritesStore } from '#imports'
+import { useNotificationsStore, useFavoritesStore, useSocketStore } from '#imports'
 
 interface StreamUpdatePayload {
   _id?: string
@@ -35,6 +35,7 @@ interface ScoreUpdatePayload {
  */
 export const useNotificationSocket = () => {
   const socket = useSocket()
+  const socketStore = useSocketStore()
   const notificationsStore = useNotificationsStore()
   const favoritesStore = useFavoritesStore()
   
@@ -94,21 +95,15 @@ export const useNotificationSocket = () => {
   }
 
   const setupListeners = () => {
-    if (isSetup.value) {
-      console.log('[NotificationSocket] Already setup, skipping')
-      return
-    }
+    if (isSetup.value) return
     
-    socket.emit('join-room', 'streams')
-    socket.emit('join-room', 'live-scores')
-    socket.emit('join-room', 'schedule-updates')
+    socketStore.subscribeToRooms(['streams', 'live-scores', 'schedule-updates'])
     
     socket.on('stream-update', handleStreamUpdate)
     socket.on('score-update', handleScoreUpdate)
     socket.on('schedule-update', handleScheduleUpdate)
     
     isSetup.value = true
-    console.log('[NotificationSocket] Listeners registered, hasPushSubscription:', hasPushSubscription.value)
   }
 
   const cleanupListeners = () => {
@@ -116,12 +111,9 @@ export const useNotificationSocket = () => {
     socket.off('score-update', handleScoreUpdate)
     socket.off('schedule-update', handleScheduleUpdate)
     
-    socket.emit('leave-room', 'streams')
-    socket.emit('leave-room', 'live-scores')
-    socket.emit('leave-room', 'schedule-updates')
+    socketStore.unsubscribeFromRooms(['streams', 'live-scores', 'schedule-updates'])
     
     isSetup.value = false
-    console.log('[NotificationSocket] Listeners cleaned up')
   }
 
   if (import.meta.client) {

@@ -220,23 +220,6 @@ const filteredSpots = computed(() => {
 </script>
 
 <style scoped>
-/* Transition pour la liste */
-.list-move,
-.list-enter-active,
-.list-leave-active {
-  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(8px) scale(0.98);
-}
-
-.list-leave-active {
-  pointer-events: none;
-}
-
 /* Hide scrollbar */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

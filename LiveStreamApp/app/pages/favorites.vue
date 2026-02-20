@@ -192,7 +192,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
         <ClientOnly>
           <div v-if="upcomingPassages.length > 0">
             <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.mySchedule') }}</h3>
-            <div class="space-y-3">
+            <TransitionGroup name="list" tag="div" class="space-y-3 relative">
               <div
                 v-for="passage in upcomingPassages"
                 :key="passage._id"
@@ -221,7 +221,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
                   />
                 </div>
               </div>
-            </div>
+            </TransitionGroup>
           </div>
         </ClientOnly>
 
@@ -229,7 +229,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
         <ClientOnly>
           <div v-if="pastPassages.length > 0">
             <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.pastEvents') }}</h3>
-            <div class="space-y-3">
+            <TransitionGroup name="list" tag="div" class="space-y-3 relative">
               <div
                 v-for="passage in pastPassages"
                 :key="passage._id"
@@ -258,7 +258,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
                   />
                 </div>
               </div>
-            </div>
+            </TransitionGroup>
           </div>
         </ClientOnly>
 

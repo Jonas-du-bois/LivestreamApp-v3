@@ -236,101 +236,104 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
       <h1 class="text-xl font-bold text-white">{{ t('stream.backToStreams') }}</h1>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="pending" class="space-y-6" role="status" :aria-label="t('common.loading')">
-      <div class="aspect-video rounded-3xl bg-white/5 animate-pulse" aria-hidden="true" />
-      <div class="h-48 rounded-3xl bg-white/5 animate-pulse" aria-hidden="true" />
-      <span class="sr-only">{{ t('common.loading') }}</span>
-    </div>
+    <Transition name="premium-swap" mode="out-in">
+      <!-- Loading State -->
+      <div v-if="pending" key="stream-id-loading" class="space-y-6" role="status" :aria-label="t('common.loading')">
+        <div class="aspect-video rounded-3xl bg-white/5 animate-pulse" aria-hidden="true" />
+        <div class="h-48 rounded-3xl bg-white/5 animate-pulse" aria-hidden="true" />
+        <span class="sr-only">{{ t('common.loading') }}</span>
+      </div>
 
-    <div v-else-if="stream" class="space-y-6">
-      <!-- Main Stage (Player) -->
-      <div
-        class="glass-panel p-1 rounded-3xl overflow-hidden shadow-2xl relative group"
-        role="region"
-        :aria-label="t('stream.liveStreams')"
-      >
-        <div class="aspect-video rounded-2xl overflow-hidden bg-black relative">
-          <iframe
-            v-if="isEmbed && streamUrl"
-            :src="streamUrl"
-            :title="stream?.name || t('stream.liveStreams')"
-            class="w-full h-full"
-            frameborder="0"
-            @load="onIframeLoad"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+      <div v-else-if="stream" key="stream-id-content" class="space-y-6">
+        <!-- Main Stage (Player) -->
+        <div
+          class="glass-panel p-1 rounded-3xl overflow-hidden shadow-2xl relative group"
+          role="region"
+          :aria-label="t('stream.liveStreams')"
+        >
+          <div class="aspect-video rounded-2xl overflow-hidden bg-black relative">
+            <iframe
+              v-if="isEmbed && streamUrl"
+              :src="streamUrl"
+              :title="stream?.name || t('stream.liveStreams')"
+              class="w-full h-full"
+              frameborder="0"
+              @load="onIframeLoad"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
 
-          <!-- If iframe failed to load (e.g., blocked by adblocker), show fallback with external link -->
-          <div v-if="playerFailed" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-center p-4">
-            <p class="text-white mb-3">{{ t('stream.playerBlocked') }}</p>
-            <a
-              :href="streamUrl"
-              rel="noopener noreferrer"
-              class="inline-block bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg"
-              :aria-label="t('stream.openExternalLink')"
-            >
-              {{ t('stream.openStream') }}
-            </a>
-          </div>
-
-          <div v-else-if="!isEmbed || !streamUrl" class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black">
-            <div class="w-20 h-20 rounded-full glass-panel flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Icon name="fluent:play-24-filled" class="w-10 h-10 text-white ml-1" />
+            <!-- If iframe failed to load (e.g., blocked by adblocker), show fallback with external link -->
+            <div v-if="playerFailed" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-center p-4">
+              <p class="text-white mb-3">{{ t('stream.playerBlocked') }}</p>
+              <a
+                :href="streamUrl"
+                rel="noopener noreferrer"
+                class="inline-block bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg"
+                :aria-label="t('stream.openExternalLink')"
+              >
+                {{ t('stream.openStream') }}
+              </a>
             </div>
-            <a
-              v-if="streamUrl"
-              :href="streamUrl"
-              rel="noopener noreferrer"
-              class="text-white font-bold hover:underline"
-            >
-              {{ t('stream.openExternalLink') }}
-            </a>
-            <p v-else class="text-white/60">{{ t('stream.noLinkAvailable') }}</p>
-          </div>
-        </div>
-      </div>
 
-      <!-- Meta Bar -->
-      <div class="glass-panel p-4 rounded-2xl flex items-center justify-between" aria-live="polite">
-        <div class="flex items-center gap-3">
-          <div class="relative" aria-hidden="true">
-            <div class="w-3 h-3 bg-red-500 rounded-full animate-ping absolute inset-0 opacity-75"></div>
-            <div class="w-3 h-3 bg-red-500 rounded-full relative"></div>
-          </div>
-          <div>
-            <h2 class="text-white font-bold text-lg leading-tight">{{ stream.name }}</h2>
-            <p class="text-red-400 text-xs font-bold uppercase tracking-wider">
-              <span class="sr-only">{{ t('stream.live') }} - </span>
-              {{ t('stream.liveNow') }}
-            </p>
+            <div v-else-if="!isEmbed || !streamUrl" class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+              <div v-if="streamUrl" class="text-center">
+                <div class="w-20 h-20 rounded-full glass-panel flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+                  <Icon name="fluent:play-24-filled" class="w-10 h-10 text-white ml-1" />
+                </div>
+                <a
+                  :href="streamUrl"
+                  rel="noopener noreferrer"
+                  class="text-white font-bold hover:underline"
+                >
+                  {{ t('stream.openExternalLink') }}
+                </a>
+              </div>
+              <p v-else class="text-white/60">{{ t('stream.noLinkAvailable') }}</p>
+            </div>
           </div>
         </div>
 
-        <div v-if="currentApparatus" class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-          <Icon :name="currentApparatus.icon || 'fluent:sport-24-regular'" class="w-5 h-5 text-cyan-400" />
-          <span class="text-white font-medium text-sm">{{ translateApparatus(currentApparatus.code, currentApparatus.name) }}</span>
+        <!-- Meta Bar -->
+        <div class="glass-panel p-4 rounded-2xl flex items-center justify-between" aria-live="polite">
+          <div class="flex items-center gap-3">
+            <div class="relative" aria-hidden="true">
+              <div class="w-3 h-3 bg-red-500 rounded-full animate-ping absolute inset-0 opacity-75"></div>
+              <div class="w-3 h-3 bg-red-500 rounded-full relative"></div>
+            </div>
+            <div>
+              <h2 class="text-white font-bold text-lg leading-tight">{{ stream.name }}</h2>
+              <p class="text-red-400 text-xs font-bold uppercase tracking-wider">
+                <span class="sr-only">{{ t('stream.live') }} - </span>
+                {{ t('stream.liveNow') }}
+              </p>
+            </div>
+          </div>
+
+          <div v-if="currentApparatus" class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+            <Icon :name="currentApparatus.icon || 'fluent:sport-24-regular'" class="w-5 h-5 text-cyan-400" />
+            <span class="text-white font-medium text-sm">{{ translateApparatus(currentApparatus.code, currentApparatus.name) }}</span>
+          </div>
+        </div>
+
+        <!-- Context Section -->
+        <div v-if="currentGroup">
+          <h3 class="text-white/60 font-medium mb-3 ml-1">{{ t('stream.onPracticable') }}</h3>
+          <div @click="openGroupDetails && currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
+             <GroupInfoCard :group="currentGroup" :passage-monitors="passageMonitors" />
+          </div>
+        </div>
+
+        <div v-else class="glass-panel p-6 text-center">
+          <p class="text-white/60">{{ t('stream.noCurrentPassage') }}</p>
         </div>
       </div>
 
-      <!-- Context Section -->
-      <div v-if="currentGroup">
-        <h3 class="text-white/60 font-medium mb-3 ml-1">{{ t('stream.onPracticable') }}</h3>
-        <div @click="openGroupDetails && currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
-           <GroupInfoCard :group="currentGroup" :passage-monitors="passageMonitors" />
-        </div>
+      <div v-else key="stream-id-error" class="glass-panel p-8 text-center">
+        <h2 class="text-white font-bold text-xl mb-2">{{ t('stream.streamNotFound') }}</h2>
+        <NuxtLink to="/stream" class="text-cyan-400 hover:underline">{{ t('stream.backToList') }}</NuxtLink>
       </div>
-
-      <div v-else class="glass-panel p-6 text-center">
-        <p class="text-white/60">{{ t('stream.noCurrentPassage') }}</p>
-      </div>
-    </div>
-
-    <div v-else class="glass-panel p-8 text-center">
-      <h2 class="text-white font-bold text-xl mb-2">{{ t('stream.streamNotFound') }}</h2>
-      <NuxtLink to="/stream" class="text-cyan-400 hover:underline">{{ t('stream.backToList') }}</NuxtLink>
-    </div>
+    </Transition>
   </div>
 </template>

@@ -81,6 +81,10 @@ const handleScoreUpdate = (payload: any) => {
   }
 }
 
+useSocketRoom('live-scores', [
+  { event: 'score-update', handler: handleScoreUpdate }
+])
+
 const recomputeStats = () => {
    if (!details.value) return
    const finished = details.value.timeline.filter((p: any) => p.status === 'FINISHED' && typeof p.score === 'number')
@@ -98,12 +102,10 @@ const handleKeydown = (e: KeyboardEvent) => {
 }
 
 onMounted(() => {
-  socket.on('score-update', handleScoreUpdate)
   window.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
-  socket.off('score-update', handleScoreUpdate)
   window.removeEventListener('keydown', handleKeydown)
 })
 

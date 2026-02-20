@@ -1,4 +1,5 @@
 import { useSocket } from './useSocket'
+import { useSocketStore } from '#imports'
 
 interface SocketEventHandler {
   event: string
@@ -6,52 +7,26 @@ interface SocketEventHandler {
 }
 
 /**
- * Composable for managing socket room subscriptions with proper lifecycle handling.
- * Handles:
- * - Joining rooms on mount/connect
- * - Leaving rooms on unmount
- * - Re-joining rooms on reconnect
- * - Proper event listener cleanup
+ * Composable optimisé pour la gestion des salles socket.
+ * Utilise un store centralisé avec compteur de références pour éviter de surcharger
+ * le serveur avec des messages join/leave lors de la navigation entre pages.
  */
 export const useSocketRoom = (
   rooms: string | string[],
   events: SocketEventHandler[] = []
 ) => {
   const socket = useSocket()
+  const socketStore = useSocketStore()
   const roomList = Array.isArray(rooms) ? rooms : [rooms]
   
-  // Store wrapped handlers for proper cleanup
   const wrappedHandlers = new Map<string, (...args: any[]) => void>()
   
-  console.log(`[useSocketRoom] Initializing with rooms: ${roomList.join(', ')}`)
-  
-  const joinRooms = () => {
-    roomList.forEach(room => {
-      socket.emit('join-room', room)
-      console.log(`[useSocketRoom] Emitted join-room: ${room}`)
-    })
-  }
-
-  const leaveRooms = () => {
-    roomList.forEach(room => {
-      socket.emit('leave-room', room)
-      console.log(`[useSocketRoom] Left room: ${room}`)
-    })
-  }
-
   const registerEvents = () => {
     events.forEach(({ event, handler }) => {
-      console.log(`[useSocketRoom] Registering event: ${event}`)
-      
-      // Create wrapped handler with logging
       const wrappedHandler = (...args: any[]) => {
-        console.log(`[useSocketRoom] 📨 Received event: ${event}`, args)
         handler(...args)
       }
-      
-      // Store for cleanup
       wrappedHandlers.set(event, wrappedHandler)
-      
       socket.on(event, wrappedHandler)
     })
   }
@@ -67,40 +42,31 @@ export const useSocketRoom = (
   }
 
   const handleConnect = () => {
-    console.log('[useSocketRoom] Socket connected, joining rooms...')
-    joinRooms()
+    // En cas de reconnexion, le store renverra les ordres join-room nécessaires
+    socketStore.subscribeToRooms(roomList)
   }
 
   onMounted(() => {
-    console.log(`[useSocketRoom] onMounted - socket.connected: ${socket.connected}, socket.id: ${socket.id}`)
-    
-    // Register event listeners first
+    // 1. Enregistrement des écouteurs d'événements (local au composant)
     registerEvents()
     
-    // Also listen for reconnections
-    socket.on('connect', handleConnect)
+    // 2. Gestion des salles via le Store (Optimisé)
+    socketStore.subscribeToRooms(roomList)
 
-    // Join rooms now if already connected
-    if (socket.connected) {
-      joinRooms()
-    } else {
-      console.log('[useSocketRoom] Socket not connected yet, waiting for connect event...')
-    }
+    // 3. Gestion de la reconnexion
+    socket.on('connect', handleConnect)
   })
 
   onBeforeUnmount(() => {
-    console.log('[useSocketRoom] onBeforeUnmount - leaving rooms')
-    // Leave rooms
-    leaveRooms()
-    
-    // Remove all event listeners
+    // 1. Nettoyage des événements
     unregisterEvents()
     socket.off('connect', handleConnect)
+
+    // 2. Libération des salles dans le Store
+    socketStore.unsubscribeFromRooms(roomList)
   })
 
   return {
-    socket,
-    joinRooms,
-    leaveRooms
+    socket
   }
 }

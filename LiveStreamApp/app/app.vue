@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { isNativePlatform } from '~/utils/capacitor'
 
+const { t } = useI18n()
 const pwaInstallRef = ref<InstanceType<typeof import('./components/PwaInstallPrompt.vue').default> | null>(null)
 const showSplash = ref(true)
+
+// Initialisation globale du Socket pour les notifications et mises à jour temps réel
+useNotificationSocket()
+
 const splashStorageKey = 'coupedesbains:splash:seen'
 let splashTimeout: ReturnType<typeof setTimeout> | undefined
 

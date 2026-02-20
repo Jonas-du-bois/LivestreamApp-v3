@@ -173,61 +173,72 @@ const stats = computed(() => [
       </NuxtLink>
     </div>
 
-    <div class="glass-card relative overflow-hidden">
-      <div class="absolute inset-0 opacity-70" :class="weatherMeta.gradient" />
-      <div class="relative p-6">
-        <div class="flex items-start justify-between gap-4">
-          <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl border border-white/20 bg-white/10 flex items-center justify-center">
-              <Icon :name="weatherMeta.icon" class="w-8 h-8" :class="weatherMeta.accent" />
+    <Transition name="premium-swap" mode="out-in">
+      <div v-if="pending" key="weather-loading" class="space-y-6">
+        <div class="glass-card h-48 premium-skeleton-surface premium-skeleton-shimmer opacity-50 rounded-xl"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div v-for="i in 4" :key="i" class="glass-card h-24 premium-skeleton-surface premium-skeleton-shimmer opacity-50 rounded-xl"></div>
+        </div>
+      </div>
+
+      <div v-else key="weather-content" class="space-y-6">
+        <div class="glass-card relative overflow-hidden">
+          <div class="absolute inset-0 opacity-70" :class="weatherMeta.gradient" />
+          <div class="relative p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl border border-white/20 bg-white/10 flex items-center justify-center">
+                  <Icon :name="weatherMeta.icon" class="w-8 h-8" :class="weatherMeta.accent" />
+                </div>
+                <div>
+                  <p class="text-white/70 text-sm">{{ t('weather.subtitle') }}</p>
+                  <h2 class="text-white text-4xl font-bold">{{ tempDisplay }}</h2>
+                  <p class="text-white/80">{{ conditionLabel }}</p>
+                </div>
+              </div>
+
+              <button
+                class="glass-card px-3 py-2 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-colors"
+                :class="{ 'opacity-60 pointer-events-none': pending }"
+                @click="refresh"
+              >
+                <Icon name="fluent:arrow-clockwise-24-regular" class="w-4 h-4 text-white" />
+                <span class="text-white text-xs font-semibold">{{ t('weather.refresh') }}</span>
+              </button>
             </div>
-            <div>
-              <p class="text-white/70 text-sm">{{ t('weather.subtitle') }}</p>
-              <h2 class="text-white text-4xl font-bold">{{ tempDisplay }}</h2>
-              <p class="text-white/80">{{ conditionLabel }}</p>
+
+            <div class="mt-4">
+              <p class="text-white font-semibold">{{ humorText }}</p>
+              <p class="text-white/70 text-sm mt-2">{{ t('weather.location') }}: Yverdon-les-Bains</p>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2 text-xs text-white/70">
+              <span class="px-3 py-1.5 rounded-full border border-white/20 bg-white/10">
+                {{ t('weather.updated') }}: {{ updatedDisplay }}
+              </span>
+              <span class="px-3 py-1.5 rounded-full border border-white/20 bg-white/10">
+                {{ t('weather.wind') }}: {{ windDisplay }}
+              </span>
             </div>
           </div>
+        </div>
 
-          <button
-            class="glass-card px-3 py-2 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-colors"
-            :class="{ 'opacity-60 pointer-events-none': pending }"
-            @click="refresh"
+        <div class="grid grid-cols-2 gap-3">
+          <div
+            v-for="stat in stats"
+            :key="stat.key"
+            class="glass-card p-4 flex items-center gap-3"
           >
-            <Icon name="fluent:arrow-clockwise-24-regular" class="w-4 h-4 text-white" />
-            <span class="text-white text-xs font-semibold">{{ t('weather.refresh') }}</span>
-          </button>
-        </div>
-
-        <div class="mt-4">
-          <p class="text-white font-semibold">{{ humorText }}</p>
-          <p class="text-white/70 text-sm mt-2">{{ t('weather.location') }}: Yverdon-les-Bains</p>
-        </div>
-
-        <div class="mt-4 flex flex-wrap gap-2 text-xs text-white/70">
-          <span class="px-3 py-1.5 rounded-full border border-white/20 bg-white/10">
-            {{ t('weather.updated') }}: {{ updatedDisplay }}
-          </span>
-          <span class="px-3 py-1.5 rounded-full border border-white/20 bg-white/10">
-            {{ t('weather.wind') }}: {{ windDisplay }}
-          </span>
+            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/15">
+              <Icon :name="stat.icon" class="w-5 h-5 text-white/80" />
+            </div>
+            <div>
+              <p class="text-xs text-white/60 uppercase tracking-wide">{{ stat.label }}</p>
+              <p class="text-white font-bold">{{ stat.value }}</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-3">
-      <div
-        v-for="stat in stats"
-        :key="stat.key"
-        class="glass-card p-4 flex items-center gap-3"
-      >
-        <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/15">
-          <Icon :name="stat.icon" class="w-5 h-5 text-white/80" />
-        </div>
-        <div>
-          <p class="text-xs text-white/60 uppercase tracking-wide">{{ stat.label }}</p>
-          <p class="text-white font-bold">{{ stat.value }}</p>
-        </div>
-      </div>
-    </div>
+    </Transition>
   </div>
 </template>

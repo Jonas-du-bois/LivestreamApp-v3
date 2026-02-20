@@ -150,151 +150,153 @@ const drinkMenu = computed(() => [
 
     <!-- Contenu scrollable -->
     <div class="relative z-10 pt-32 pb-16 px-6">
-      
-      <!-- Titre -->
-      <div class="text-center mb-8">
-        <h1 class="text-6xl font-black italic tracking-tighter mb-3 text-white drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]">
-          AFTER<br>PARTY
-        </h1>
-        <p class="text-white/80 font-bold tracking-[0.3em] uppercase text-xs mb-2">{{ t('afterparty.subtitle') }}</p>
-      </div>
-
-      <!-- Countdown Timer -->
-      <div class="mb-8 flex justify-center">
-        <div class="relative group">
-          <div class="absolute -inset-1 bg-violet-500/40 rounded-2xl blur-md opacity-60 group-hover:opacity-100 transition duration-500"></div>
-          <div class="relative px-8 py-5 bg-black/90 backdrop-blur-xl border border-violet-500/30 rounded-xl">
-            <p class="text-[10px] text-white/60 uppercase tracking-[0.3em] mb-2 text-center font-bold">{{ t('afterparty.countdownLabel') }}</p>
-            <p class="text-3xl font-mono font-bold text-white tracking-wider text-center">
-              {{ timeLeft || '--j --h --m' }}
-            </p>
+      <Transition name="premium-swap" appear>
+        <div class="space-y-0">
+          <!-- Titre -->
+          <div class="text-center mb-8">
+            <h1 class="text-6xl font-black italic tracking-tighter mb-3 text-white drop-shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+              AFTER<br>PARTY
+            </h1>
+            <p class="text-white/80 font-bold tracking-[0.3em] uppercase text-xs mb-2">{{ t('afterparty.subtitle') }}</p>
           </div>
-        </div>
-      </div>
 
-      <!-- Thème BAD TASTE - Mise en avant -->
-      <div class="mb-8">
-        <div class="relative group">
-          <div class="absolute -inset-0.5 bg-violet-500/50 rounded-3xl blur-md opacity-70 group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
-          <div class="relative bg-black/90 backdrop-blur-md rounded-3xl border-2 border-violet-500/40 p-6 overflow-hidden">
-            <!-- Motif décoratif -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-violet-500/20 rounded-full blur-3xl"></div>
-            
-            <div class="relative">
-              <div class="flex items-center gap-3 mb-3">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center animate-pulse-slow shadow-[0_0_30px_rgba(139,92,246,0.6)]">
-                  <Icon name="fluent:sparkle-24-filled" class="text-white w-6 h-6" />
-                </div>
-                <div>
-                  <p class="text-[10px] text-white/60 uppercase tracking-[0.25em] font-bold">{{ t('afterparty.themeLabel') }}</p>
-                  <h2 class="text-3xl font-black italic text-white">
-                    {{ t('afterparty.themeValue') }}
-                  </h2>
+          <!-- Countdown Timer -->
+          <div class="mb-8 flex justify-center">
+            <div class="relative group">
+              <div class="absolute -inset-1 bg-violet-500/40 rounded-2xl blur-md opacity-60 group-hover:opacity-100 transition duration-500"></div>
+              <div class="relative px-8 py-5 bg-black/90 backdrop-blur-xl border border-violet-500/30 rounded-xl">
+                <p class="text-[10px] text-white/60 uppercase tracking-[0.3em] mb-2 text-center font-bold">{{ t('afterparty.countdownLabel') }}</p>
+                <p class="text-3xl font-mono font-bold text-white tracking-wider text-center">
+                  {{ timeLeft || '--j --h --m' }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thème BAD TASTE - Mise en avant -->
+          <div class="mb-8">
+            <div class="relative group">
+              <div class="absolute -inset-0.5 bg-violet-500/50 rounded-3xl blur-md opacity-70 group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
+              <div class="relative bg-black/90 backdrop-blur-md rounded-3xl border-2 border-violet-500/40 p-6 overflow-hidden">
+                <!-- Motif décoratif -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-violet-500/20 rounded-full blur-3xl"></div>
+                
+                <div class="relative">
+                  <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center animate-pulse-slow shadow-[0_0_30px_rgba(139,92,246,0.6)]">
+                      <Icon name="fluent:sparkle-24-filled" class="text-white w-6 h-6" />
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-white/60 uppercase tracking-[0.25em] font-bold">{{ t('afterparty.themeLabel') }}</p>
+                      <h2 class="text-3xl font-black italic text-white">
+                        {{ t('afterparty.themeValue') }}
+                      </h2>
+                    </div>
+                  </div>
+                  <p class="text-white/80 text-sm leading-relaxed pl-1">
+                    {{ t('afterparty.themeDescription') }}
+                  </p>
                 </div>
               </div>
-              <p class="text-white/80 text-sm leading-relaxed pl-1">
-                {{ t('afterparty.themeDescription') }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Galerie défilante -->
-      <div class="relative -mx-6 py-6 mb-8 overflow-hidden">
-        <div class="flex gap-4 animate-scroll whitespace-nowrap px-4">
-          <div 
-            v-for="(img, i) in [...galleryImages, ...galleryImages]" 
-            :key="i"
-            class="inline-block h-48 w-72 shrink-0 rounded-2xl overflow-hidden border border-violet-500/30 shadow-xl relative group"
-          >
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 group-hover:from-black/70 transition-all"></div>
-            <img :src="img" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Party ambiance" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Infos pratiques -->
-      <div class="grid grid-cols-1 gap-4 mb-8">
-        <div 
-          v-for="item in highlights" 
-          :key="item.label"
-          class="flex items-center gap-4 p-4 rounded-2xl border backdrop-blur-md transition-all hover:scale-[1.02] active:scale-95 bg-black/70"
-          :class="item.bg"
-        >
-          <div class="h-14 w-14 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0 shadow-lg border border-violet-500/30">
-            <Icon :name="item.icon" size="28" :class="item.color" />
-          </div>
-          <div>
-            <p class="text-white/60 text-[11px] font-bold uppercase tracking-[0.2em]">{{ item.label }}</p>
-            <p class="text-white text-xl font-bold leading-tight">{{ item.value }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Menu des boissons avec prix -->
-      <div class="mb-8">
-        <div class="bg-black/80 backdrop-blur-md rounded-3xl border border-violet-500/30 p-6 shadow-2xl">
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <h2 class="text-2xl font-bold text-white flex items-center gap-3 mb-1">
-                <Icon name="fluent:drink-bottle-24-regular" class="text-violet-400" size="28" />
-                {{ t('afterparty.drinksTitle') }}
-              </h2>
-              <p class="text-white/60 text-xs uppercase tracking-wider">{{ t('afterparty.drinksSubtitle') }}</p>
-            </div>
-            <div class="px-3 py-1.5 rounded-lg bg-violet-500/20 border border-violet-400/40">
-              <span class="text-[10px] font-bold text-white uppercase tracking-wider">{{ t('afterparty.paymentMethods') }}</span>
             </div>
           </div>
 
-          <!-- Liste des boissons par catégorie -->
-          <div class="space-y-6">
+          <!-- Galerie défilante -->
+          <div class="relative -mx-6 py-6 mb-8 overflow-hidden">
+            <div class="flex gap-4 animate-scroll whitespace-nowrap px-4">
+              <div 
+                v-for="(img, i) in [...galleryImages, ...galleryImages]" 
+                :key="i"
+                class="inline-block h-48 w-72 shrink-0 rounded-2xl overflow-hidden border border-violet-500/30 shadow-xl relative group"
+              >
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 group-hover:from-black/70 transition-all"></div>
+                <img :src="img" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Party ambiance" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Infos pratiques -->
+          <div class="grid grid-cols-1 gap-4 mb-8">
             <div 
-              v-for="(category, catIdx) in drinkMenu" 
-              :key="catIdx"
+              v-for="item in highlights" 
+              :key="item.label"
+              class="flex items-center gap-4 p-4 rounded-2xl border backdrop-blur-md transition-all hover:scale-[1.02] active:scale-95 bg-black/70"
+              :class="item.bg"
             >
-              <!-- Titre de catégorie -->
-              <div class="flex items-center gap-2 mb-3">
-                <Icon :name="category.icon" class="text-violet-400" size="20" />
-                <h3 class="text-sm font-bold text-white uppercase tracking-wider">{{ category.category }}</h3>
+              <div class="h-14 w-14 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0 shadow-lg border border-violet-500/30">
+                <Icon :name="item.icon" size="28" :class="item.color" />
               </div>
-              
-              <!-- Boissons de la catégorie -->
-              <div class="space-y-2">
+              <div>
+                <p class="text-white/60 text-[11px] font-bold uppercase tracking-[0.2em]">{{ item.label }}</p>
+                <p class="text-white text-xl font-bold leading-tight">{{ item.value }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Menu des boissons avec prix -->
+          <div class="mb-8">
+            <div class="bg-black/80 backdrop-blur-md rounded-3xl border border-violet-500/30 p-6 shadow-2xl">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <h2 class="text-2xl font-bold text-white flex items-center gap-3 mb-1">
+                    <Icon name="fluent:drink-bottle-24-regular" class="text-violet-400" size="28" />
+                    {{ t('afterparty.drinksTitle') }}
+                  </h2>
+                  <p class="text-white/60 text-xs uppercase tracking-wider">{{ t('afterparty.drinksSubtitle') }}</p>
+                </div>
+                <div class="px-3 py-1.5 rounded-lg bg-violet-500/20 border border-violet-400/40">
+                  <span class="text-[10px] font-bold text-white uppercase tracking-wider">{{ t('afterparty.paymentMethods') }}</span>
+                </div>
+              </div>
+
+              <!-- Liste des boissons par catégorie -->
+              <div class="space-y-6">
                 <div 
-                  v-for="(drink, idx) in category.drinks" 
-                  :key="idx" 
-                  class="flex items-center justify-between p-3 rounded-xl bg-violet-500/5 hover:bg-violet-500/10 transition-colors border border-violet-500/20"
+                  v-for="(category, catIdx) in drinkMenu" 
+                  :key="catIdx"
                 >
-                  <span class="text-white text-sm font-medium">{{ drink.name }}</span>
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-sm font-mono font-bold text-white/80">CHF</span>
-                    <span class="text-lg font-mono font-bold text-violet-400">{{ drink.price }}</span>
+                  <!-- Titre de catégorie -->
+                  <div class="flex items-center gap-2 mb-3">
+                    <Icon :name="category.icon" class="text-violet-400" size="20" />
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">{{ category.category }}</h3>
+                  </div>
+                  
+                  <!-- Boissons de la catégorie -->
+                  <div class="space-y-2">
+                    <div 
+                      v-for="(drink, idx) in category.drinks" 
+                      :key="idx" 
+                      class="flex items-center justify-between p-3 rounded-xl bg-violet-500/5 hover:bg-violet-500/10 transition-colors border border-violet-500/20"
+                    >
+                      <span class="text-white text-sm font-medium">{{ drink.name }}</span>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-mono font-bold text-white/80">CHF</span>
+                        <span class="text-lg font-mono font-bold text-violet-400">{{ drink.price }}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Footer infos -->
-      <div class="text-center space-y-3 pt-4 pb-safe">
-        <div class="flex items-center justify-center gap-6 text-white/70 text-sm">
-          <span class="flex items-center gap-2">
-            <Icon name="fluent:ticket-diagonal-24-regular" class="w-4 h-4" />
-            {{ t('afterparty.entryValue') }}
-          </span>
-          <span class="w-px h-4 bg-white/30"></span>
-          <span class="flex items-center gap-2">
-            <Icon name="fluent:people-24-regular" class="w-4 h-4" />
-            {{ t('afterparty.ageValue') }}
-          </span>
+          <!-- Footer infos -->
+          <div class="text-center space-y-3 pt-4 pb-safe">
+            <div class="flex items-center justify-center gap-6 text-white/70 text-sm">
+              <span class="flex items-center gap-2">
+                <Icon name="fluent:ticket-diagonal-24-regular" class="w-4 h-4" />
+                {{ t('afterparty.entryValue') }}
+              </span>
+              <span class="w-px h-4 bg-white/30"></span>
+              <span class="flex items-center gap-2">
+                <Icon name="fluent:people-24-regular" class="w-4 h-4" />
+                {{ t('afterparty.ageValue') }}
+              </span>
+            </div>
+            <p class="text-white/60 text-xs">{{ t('afterparty.dressCode') }}</p>
+          </div>
         </div>
-        <p class="text-white/60 text-xs">{{ t('afterparty.dressCode') }}</p>
-      </div>
-
+      </Transition>
     </div>
   </div>
 </template>

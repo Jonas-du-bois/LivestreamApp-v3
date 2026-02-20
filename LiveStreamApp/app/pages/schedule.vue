@@ -350,22 +350,6 @@ useSocketRoom('schedule-updates', [
 </template>
 
 <style scoped>
-/* List Transitions */
-.list-move {
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.list-enter-active,
-.list-leave-active {
-  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(-14px);
-}
-
 /* Fade Transition for Empty State switch */
 .fade-enter-active,
 .fade-leave-active {
@@ -378,15 +362,9 @@ useSocketRoom('schedule-updates', [
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .list-enter-active,
-  .list-leave-active,
-  .list-move {
+  .fade-enter-active,
+  .fade-leave-active {
     transition: opacity 0.14s ease;
-  }
-
-  .list-enter-from,
-  .list-leave-to {
-    transform: none;
   }
 }
 </style>

@@ -2,20 +2,20 @@
    PAGE TRANSITIONS
    ========================= */
 
-/* Fade + Slide transition (recommended) */
+/* Fade + Slide transition (Premium Style) */
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .page-enter-from {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translate3d(0, 10px, 0);
 }
 
 .page-leave-to {
   opacity: 0;
-  transform: translateX(-20px);
+  transform: translate3d(0, -10px, 0);
 }
 
 /* Alternative: Fade only (plus subtil) */
@@ -60,3 +60,144 @@
   opacity: 0;
   transform: translateY(-30px);
 }
+
+/* =========================
+   LIST TRANSITIONS (Global)
+   ========================= */
+
+.list-move {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-15px);
+}
+
+.list-leave-active {
+  position: absolute;
+  width: 100%;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list-enter-active,
+  .list-leave-active,
+  .list-move {
+    transition: opacity 0.15s ease;
+  }
+
+    .list-enter-from,
+    .list-leave-to {
+      transform: none;
+    }
+  }
+  
+  /* ============================================
+     PREMIUM LOADING / SKELETON MOTION
+     ============================================ */
+  
+  @keyframes premium-cascade-in-left {
+    from {
+      opacity: 0;
+      transform: translate3d(-44px, 0, 0) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+  
+  @keyframes premium-cascade-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes premium-skeleton-shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  .premium-cascade-item {
+    animation-name: premium-cascade-in-left;
+    animation-duration: 0.44s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    animation-delay: calc(var(--cascade-index, 0) * 65ms);
+    will-change: transform, opacity;
+  }
+  
+  .premium-swap-enter-active,
+  .premium-swap-leave-active {
+    transition: opacity 0.2s ease;
+  }
+  
+  .premium-swap-enter-from,
+  .premium-swap-leave-to {
+    opacity: 0;
+  }
+  
+  .premium-skeleton-card {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  
+  .premium-skeleton-surface {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .premium-skeleton-pill {
+    height: 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .premium-skeleton-line {
+    height: 0.7rem;
+    border-radius: 0.45rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .premium-skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .premium-skeleton-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.24) 45%, transparent 65%);
+    animation: premium-skeleton-shimmer 1.35s ease-in-out infinite;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .premium-cascade-item {
+      animation-name: premium-cascade-fade;
+      animation-duration: 0.16s;
+      animation-delay: 0ms;
+    }
+  
+    .premium-swap-enter-active,
+    .premium-swap-leave-active {
+      transition-duration: 0.14s;
+    }
+  }
+  
