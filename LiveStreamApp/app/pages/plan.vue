@@ -124,10 +124,9 @@ const goBack = () => {
     <div ref="mapContainer" class="absolute inset-0 z-0"></div>
 
     <div class="absolute top-safe left-4 z-[500] pt-4">
-      <button @click="goBack" class="glass-panel px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-white/10 transition-colors shadow-lg pointer-events-auto">
-        <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
-        <span class="text-white text-sm font-medium">{{ t('plan.back') }}</span>
-      </button>
+      <UiGlassBackButton @click="goBack" class="hover:bg-white/10 pointer-events-auto">
+        {{ t('plan.back') }}
+      </UiGlassBackButton>
     </div>
 
     <div class="absolute bottom-24 right-4 z-[500]">

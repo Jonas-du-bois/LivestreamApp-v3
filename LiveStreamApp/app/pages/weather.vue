@@ -167,10 +167,9 @@ const stats = computed(() => [
 <template>
   <div class="px-4 space-y-6 pb-6">
     <div class="px-2 pt-2">
-      <NuxtLink to="/" class="inline-flex items-center gap-2 glass-panel px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
-        <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
-        <span class="text-white text-sm font-medium">{{ t('common.back') }}</span>
-      </NuxtLink>
+      <UiGlassBackButton to="/">
+        {{ t('common.back') }}
+      </UiGlassBackButton>
     </div>
 
     <div class="glass-card relative overflow-hidden">
