@@ -83,7 +83,7 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         // ✅ AJOUTS CRUCIAUX POUR IPHONE :
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-        { name: 'apple-mobile-web-app-title', content: 'LiveScore' },
+        { name: 'apple-mobile-web-app-title', content: 'Coupe des Bains' },
         { name: 'mobile-web-app-capable', content: 'yes' },
       ],
       link: [
@@ -102,8 +102,8 @@ export default defineNuxtConfig({
     srcDir: '',
     filename: 'sw.ts',
     manifest: {
-      name: 'LiveStreamApp FSG',
-      short_name: 'LiveScore', // Important qu'il soit court pour l'écran d'accueil
+      name: 'Coupe des Bains',
+      short_name: 'Coupe des Bains', // Important qu'il soit court pour l'écran d'accueil
       theme_color: '#0B1120',
       background_color: '#0B1120',
       start_url: '/?standalone=true', // Permet de toujours démarrer à la racine

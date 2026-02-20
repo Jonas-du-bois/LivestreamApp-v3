@@ -1,6 +1,6 @@
-# Audit de Migration Capacitor - LiveStreamApp
+# Audit de Migration Capacitor - Coupe des Bains
 
-Ce document présente l'audit complet pour porter l'application **LiveStreamApp** sur les stores iOS et Android via Capacitor, tout en conservant une version Web PWA performante.
+Ce document présente l'audit complet pour porter l'application **Coupe des Bains** sur les stores iOS et Android via Capacitor, tout en conservant une version Web PWA performante.
 
 ## 1. Architecture & Séparation (Nuxt 4.3 / Nitro)
 

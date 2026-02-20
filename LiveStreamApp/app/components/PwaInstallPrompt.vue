@@ -73,7 +73,7 @@ defineExpose({
     <pwa-install
       ref="pwaInstallRef"
       :manifest-url="manifestUrl || '/manifest.webmanifest'"
-      name="LiveStreamApp FSG"
+      name="Coupe des Bains"
       description="Suivez les scores en direct de la FSG"
       icon="/icons/logo_livestreamappv3-192.png"
       :install-description="t('pwa.installDescription')"

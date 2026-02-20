@@ -3,7 +3,7 @@
     class="splash-screen"
     role="status"
     aria-live="polite"
-    aria-label="Chargement de LiveStreamApp"
+    aria-label="Chargement de Coupe des Bains"
   >
     <span class="splash-screen__orb splash-screen__orb--cyan" aria-hidden="true" />
     <span class="splash-screen__orb splash-screen__orb--violet" aria-hidden="true" />

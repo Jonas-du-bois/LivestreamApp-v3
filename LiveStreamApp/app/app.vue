@@ -3,7 +3,7 @@ import { isNativePlatform } from '~/utils/capacitor'
 
 const pwaInstallRef = ref<InstanceType<typeof import('./components/PwaInstallPrompt.vue').default> | null>(null)
 const showSplash = ref(true)
-const splashStorageKey = 'livestreamapp:splash:seen'
+const splashStorageKey = 'coupedesbains:splash:seen'
 let splashTimeout: ReturnType<typeof setTimeout> | undefined
 
 // Optionnel: Stocker si l'utilisateur a déjà vu/refusé le prompt

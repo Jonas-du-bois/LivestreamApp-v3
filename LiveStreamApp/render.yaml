@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: LiveStreamApp
+    name: Coupe des Bains
     env: node
     plan: starter
     region: oregon

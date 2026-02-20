@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: LiveStreamApp API
+  title: Coupe des Bains API
   version: 1.0.0
-  description: API complète pour l'application LiveStreamApp des compétitions de la Société Fédérale de Gymnastique (FSG/STV).
+  description: API complète pour l'application Coupe des Bains des compétitions de la Société Fédérale de Gymnastique (FSG/STV).
 servers:
   - url: /api
     description: Serveur API interne
@@ -12,388 +12,67 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
-      description: Token d'authentification (actuellement le mot de passe admin haché ou brut selon l'implémentation).
+      description: Token d'authentification admin.
 
   schemas:
-    # --- Modèles de Données ---
+    # --- Modèles de base ---
     Apparatus:
       type: object
-      description: Engin de gymnastique
       properties:
-        _id:
-          type: string
-          description: Identifiant unique MongoDB
-        code:
-          type: string
-          description: Code unique de l'engin (ex: SS, BA, AB)
-        name:
-          type: string
-          description: Nom complet de l'engin
-        icon:
-          type: string
-          description: Nom de l'icône (ex: fluent:grid-dots-24-regular)
-      required:
-        - code
-        - name
+        _id: { type: string }
+        code: { type: string, description: "Code de l'engin (ex: SS, BA)" }
+        name: { type: string, description: "Nom de l'engin (ex: Sol, Barres)" }
+        icon: { type: string, description: "Identifiant de l'icône Iconify" }
 
     Group:
       type: object
-      description: Société ou Groupe participant
       properties:
-        _id:
-          type: string
-        name:
-          type: string
-          description: Nom de la société
-        canton:
-          type: string
-          description: Canton ou région d'origine
-        category:
-          type: string
-          description: Catégorie (ex: ACTIVE, MIXTE)
-        logo:
-          type: string
-          description: URL ou chemin du logo
-        description:
-          type: string
-          description: Description du groupe
-        gymnastsCount:
-          type: number
-          description: Nombre de gymnastes dans le groupe
-      required:
-        - name
+        _id: { type: string }
+        name: { type: string }
+        canton: { type: string }
+        category: { type: string, enum: [ACTIFS, MIXTE] }
+        logo: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        gymnastsCount: { type: number }
 
     Passage:
       type: object
-      description: Passage d'un groupe à un engin
       properties:
-        _id:
-          type: string
-        group:
-          oneOf:
-            - type: string
-              description: ID du groupe
-            - $ref: '#/components/schemas/Group'
-        apparatus:
-          oneOf:
-            - type: string
-              description: ID de l'engin
-            - $ref: '#/components/schemas/Apparatus'
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        location:
-          type: string
-          description: Lieu du passage (ex: Iles 1-2)
-        status:
-          type: string
-          enum: [SCHEDULED, LIVE, FINISHED]
-          description: État du passage
-        score:
-          type: number
-          nullable: true
-          description: Note finale obtenue
-        monitors:
-          type: array
-          items:
-            type: string
-          description: Liste des moniteurs responsables
-      required:
-        - group
-        - apparatus
-        - startTime
-        - endTime
-        - status
+        _id: { type: string }
+        group: { oneOf: [{ type: string }, { $ref: '#/components/schemas/Group' }] }
+        apparatus: { oneOf: [{ type: string }, { $ref: '#/components/schemas/Apparatus' }] }
+        startTime: { type: string, format: date-time }
+        endTime: { type: string, format: date-time }
+        location: { type: string }
+        status: { type: string, enum: [SCHEDULED, LIVE, FINISHED] }
+        score: { type: number, nullable: true }
+        monitors: { type: array, items: { type: string } }
 
     Stream:
       type: object
-      description: Flux vidéo ou caméra
       properties:
-        _id:
-          type: string
-        name:
-          type: string
-          description: Nom de la caméra
-        url:
-          type: string
-          description: URL d'intégration (YouTube, etc.)
-        location:
-          type: string
-          description: Lieu couvert par la caméra
-        isLive:
-          type: boolean
-          description: Indique si le flux est actif
-        currentPassage:
-          oneOf:
-            - type: string
-              description: ID du passage en cours
-            - $ref: '#/components/schemas/Passage'
-      required:
-        - name
-        - url
+        _id: { type: string }
+        name: { type: string }
+        url: { type: string }
+        location: { type: string }
+        isLive: { type: boolean }
+        currentPassage: { oneOf: [{ type: string }, { $ref: '#/components/schemas/Passage' }], nullable: true }
 
-    Subscription:
-      type: object
-      description: Abonnement WebPush pour les notifications
-      properties:
-        endpoint:
-          type: string
-          format: uri
-          description: Endpoint unique du service de push
-        keys:
-          type: object
-          properties:
-            p256dh:
-              type: string
-            auth:
-              type: string
-          required:
-            - p256dh
-            - auth
-      required:
-        - endpoint
-        - keys
-
-    # --- Réponses API Spécifiques ---
+    # --- Objets de réponse enrichis ---
     PassageEnriched:
       allOf:
         - $ref: '#/components/schemas/Passage'
         - type: object
           properties:
-            group:
-              $ref: '#/components/schemas/Group'
-            apparatus:
-              $ref: '#/components/schemas/Apparatus'
-
-    SchedulePassage:
-      type: object
-      description: Passage tel que retourné par /schedule
-      properties:
-        _id:
-          type: string
-        group:
-          type: object
-          properties:
-            _id:
-              type: string
-            name:
-              type: string
-            category:
-              type: string
-        apparatus:
-          type: object
-          properties:
-            _id:
-              type: string
-            name:
-              type: string
-            code:
-              type: string
-            icon:
-              type: string
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        location:
-          type: string
-        status:
-          type: string
-          enum: [SCHEDULED, LIVE, FINISHED]
-        score:
-          type: number
-          nullable: true
+            group: { $ref: '#/components/schemas/Group' }
+            apparatus: { $ref: '#/components/schemas/Apparatus' }
 
     ResultsPassage:
-      type: object
-      description: Passage tel que retourné par /results
-      properties:
-        _id:
-          type: string
-        group:
-          type: object
-          properties:
-            _id:
-              type: string
-            name:
-              type: string
-            category:
-              type: string
-            canton:
-              type: string
-            logo:
-              type: string
-        apparatus:
-          type: object
-          properties:
-            _id:
-              type: string
-            name:
-              type: string
-            code:
-              type: string
-            icon:
-              type: string
-        score:
-          type: number
-          nullable: true
-        rank:
-          type: number
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        location:
-          type: string
-        status:
-          type: string
-          enum: [SCHEDULED, LIVE, FINISHED]
-
-    StreamWithCurrentPassage:
       allOf:
-        - $ref: '#/components/schemas/Stream'
+        - $ref: '#/components/schemas/PassageEnriched'
         - type: object
           properties:
-            currentPassage:
-              $ref: '#/components/schemas/PassageEnriched'
-
-    LivePassage:
-      type: object
-      description: Passage en direct (version allégée)
-      properties:
-        _id:
-          type: string
-        group:
-          type: object
-          properties:
-            _id:
-              type: string
-            name:
-              type: string
-        apparatus:
-          $ref: '#/components/schemas/Apparatus'
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        location:
-          type: string
-        status:
-          type: string
-          enum: [SCHEDULED, LIVE, FINISHED]
-        score:
-          type: number
-          nullable: true
-        monitors:
-          type: array
-          items:
-            type: string
-
-    TimelinePassage:
-      type: object
-      description: Passage pour la timeline d'un groupe
-      properties:
-        _id:
-          type: string
-        apparatus:
-          $ref: '#/components/schemas/Apparatus'
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        status:
-          type: string
-          enum: [SCHEDULED, LIVE, FINISHED]
-        score:
-          type: number
-          nullable: true
-        monitors:
-          type: array
-          items:
-            type: string
-        location:
-          type: string
-
-    GroupHistoryItem:
-      type: object
-      properties:
-        year:
-          type: number
-        score:
-          type: number
-        apparatus:
-          type: string
-
-    AdminScorePayload:
-      type: object
-      properties:
-        passageId:
-          type: string
-        score:
-          type: number
-          nullable: true
-        rank:
-          type: number
-        status:
-          type: string
-          enum: [SCHEDULED, LIVE, FINISHED]
-        group:
-          $ref: '#/components/schemas/Group'
-        apparatus:
-          $ref: '#/components/schemas/Apparatus'
-        groupName:
-          type: string
-          nullable: true
-        apparatusCode:
-          type: string
-          nullable: true
-
-    AdminStatusPayload:
-      type: object
-      properties:
-        passageId:
-          type: string
-        status:
-          type: string
-          enum: [SCHEDULED, LIVE, FINISHED]
-        location:
-          type: string
-          nullable: true
-        groupName:
-          type: string
-          nullable: true
-        group:
-          $ref: '#/components/schemas/Group'
-        apparatus:
-          $ref: '#/components/schemas/Apparatus'
-
-    AdminStream:
-      type: object
-      properties:
-        _id:
-          type: string
-        name:
-          type: string
-        url:
-          type: string
-        location:
-          type: string
-        isLive:
-          type: boolean
-        currentPassage:
-          type: string
-          nullable: true
+            rank: { type: number }
 
     ScheduleResponse:
       type: object
@@ -404,518 +83,273 @@ components:
             availableApparatus:
               type: array
               items:
-                type: string
-              description: Liste des noms d'engins disponibles
-            availableDays:
-              type: array
-              items:
-                type: string
-              description: Liste des jours disponibles (ex: 'samedi')
-            availableCategories:
-              type: array
-              items:
-                type: string
-            availableLocations:
-              type: array
-              items:
-                type: string
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SchedulePassage'
+                type: object
+                properties:
+                  code: { type: string }
+                  name: { type: string }
+            availableDays: { type: array, items: { type: string } }
+            availableCategories: { type: array, items: { type: string } }
+            availableLocations: { type: array, items: { type: string } }
+        data: { type: array, items: { $ref: '#/components/schemas/PassageEnriched' } }
 
     GroupDetailsResponse:
       type: object
       properties:
-        info:
-          allOf:
-            - $ref: '#/components/schemas/Group'
-            - type: object
-              properties:
-                description:
-                  type: string
+        info: { $ref: '#/components/schemas/Group' }
         stats:
           type: object
           properties:
-            completedPassages:
-              type: number
-            totalPassages:
-              type: number
-            currentTotalScore:
-              type: number
-        monitors:
-          type: array
-          items:
-            type: string
+            completedPassages: { type: number }
+            totalPassages: { type: number }
+            currentTotalScore: { type: number }
+        monitors: { type: array, items: { type: string } }
         history:
           type: array
           items:
-            $ref: '#/components/schemas/GroupHistoryItem'
+            type: object
+            properties:
+              year: { type: number }
+              score: { type: number }
+              apparatus: { type: string }
         timeline:
           type: array
           items:
-            $ref: '#/components/schemas/TimelinePassage'
+            type: object
+            properties:
+              _id: { type: string }
+              apparatus: { $ref: '#/components/schemas/Apparatus' }
+              startTime: { type: string, format: date-time }
+              endTime: { type: string, format: date-time }
+              status: { type: string }
+              score: { type: number, nullable: true }
+              monitors: { type: array, items: { type: string } }
+              location: { type: string }
 
 paths:
-  # --- Endpoints Publics ---
-
+  # --- Public ---
   /schedule:
     get:
-      summary: Obtenir l'horaire complet
-      description: Retourne la liste de tous les passages avec métadonnées pour le filtrage. Les données sont triées par heure de début.
+      summary: Horaire complet avec filtres
       parameters:
-        - in: query
-          name: day
-          schema:
-            type: string
-          description: Filtrer par jour (ex: 'samedi')
-        - in: query
-          name: apparatus
-          schema:
-            oneOf:
-              - type: string
-              - type: array
-                items:
-                  type: string
-          description: Filtrer par nom d'engin (peut être répété)
-        - in: query
-          name: division
-          schema:
-            oneOf:
-              - type: string
-              - type: array
-                items:
-                  type: string
-          description: Filtrer par catégorie (peut être répété)
-        - in: query
-          name: salle
-          schema:
-            oneOf:
-              - type: string
-              - type: array
-                items:
-                  type: string
-          description: Filtrer par lieu (location) (peut être répété)
+        - name: day
+          in: query
+          schema: { type: string }
+        - name: apparatus
+          in: query
+          schema: { oneOf: [{ type: string }, { type: array, items: { type: string } }] }
+        - name: division
+          in: query
+          schema: { oneOf: [{ type: string }, { type: array, items: { type: string } }] }
+        - name: salle
+          in: query
+          schema: { oneOf: [{ type: string }, { type: array, items: { type: string } }] }
       responses:
         '200':
-          description: Données de l'horaire et métadonnées
+          description: Liste des passages et métadonnées de filtrage
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ScheduleResponse'
-        '500':
-          description: Erreur serveur
+              schema: { $ref: '#/components/schemas/ScheduleResponse' }
 
   /results:
     get:
-      summary: Obtenir les résultats
-      description: Retourne les passages publiés (terminés), groupés par code d'engin. Les passages sont triés par score décroissant.
+      summary: Résultats par engin
       responses:
         '200':
-          description: Résultats groupés par engin
+          description: Objet groupé par code d'engin (ex { "SS": [...], "BA": [...] })
           content:
             application/json:
               schema:
                 type: object
                 additionalProperties:
                   type: array
-                  items:
-                    $ref: '#/components/schemas/ResultsPassage'
-        '500':
-          description: Erreur serveur
+                  items: { $ref: '#/components/schemas/ResultsPassage' }
 
   /live:
     get:
-      summary: Données en direct
-      description: Retourne les passages actuellement 'LIVE' et les flux vidéo actifs.
+      summary: Données temps réel (Passages LIVE et Streams actifs)
       responses:
         '200':
-          description: Données live
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  passages:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/LivePassage'
-                  streams:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/StreamWithCurrentPassage'
-        '500':
-          description: Erreur serveur
+                  passages: { type: array, items: { $ref: '#/components/schemas/PassageEnriched' } }
+                  streams: { type: array, items: { $ref: '#/components/schemas/Stream' } }
 
   /streams:
     get:
-      summary: Liste des flux
-      description: Retourne tous les flux configurés.
+      summary: Liste des flux vidéo
       parameters:
-        - in: query
-          name: isLive
-          schema:
-            oneOf:
-              - type: boolean
-              - type: string
-          description: Filtrer uniquement les flux actifs (accepte 'true' ou '1')
+        - name: isLive
+          in: query
+          schema: { type: boolean }
       responses:
         '200':
-          description: Liste des flux
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StreamWithCurrentPassage'
-        '500':
-          description: Erreur serveur
+              schema: { type: array, items: { $ref: '#/components/schemas/Stream' } }
 
   /streams/{id}:
     get:
-      summary: Détails d'un flux
-      description: Retourne les informations d'un flux spécifique avec le passage en cours peuplé.
+      summary: Détails d'un flux spécifique
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
-          schema:
-            type: string
-          description: ID du flux
+          schema: { type: string }
       responses:
         '200':
-          description: Détails du flux
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/StreamWithCurrentPassage'
-        '400':
-          description: ID manquant
-        '404':
-          description: Flux non trouvé
-        '500':
-          description: Erreur serveur
+              schema: { $ref: '#/components/schemas/Stream' }
 
   /groups/{id}/details:
     get:
-      summary: Détails d'un groupe
-      description: Retourne les infos, statistiques, historique et timeline des passages pour un groupe donné.
+      summary: Détails complets d'un groupe (stats, histoire, timeline)
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
-          schema:
-            type: string
-          description: ID du groupe
+          schema: { type: string }
       responses:
         '200':
-          description: Détails complets du groupe
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/GroupDetailsResponse'
-        '400':
-          description: ID manquant ou format invalide
-        '404':
-          description: Groupe non trouvé
-        '500':
-          description: Erreur serveur
+              schema: { $ref: '#/components/schemas/GroupDetailsResponse' }
 
   /weather:
     get:
-      summary: Météo actuelle
-      description: Proxy vers l'API Open-Meteo pour obtenir la température actuelle à Yverdon-les-Bains.
+      summary: Météo à Yverdon-les-Bains
       responses:
         '200':
-          description: Données météo
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  temperature:
-                    type: number
-                    nullable: true
-                  raw:
-                    type: object
-                    nullable: true
+                  temperature: { type: number }
+                  raw: { type: object }
 
-  /socket-status:
-    get:
-      summary: État du Socket.IO
-      description: Vérifie si le serveur Socket.IO est initialisé et retourne le nombre de clients connectés.
-      responses:
-        '200':
-          description: État du serveur
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
-                  hasIo:
-                    type: boolean
-                  socketsCount:
-                    type: number
-
-  # --- Endpoints Notifications ---
-
+  # --- Notifications ---
   /notifications/subscribe:
     post:
-      summary: S'abonner aux notifications
-      description: Enregistre ou met à jour une souscription WebPush.
+      summary: S'abonner aux notifications WebPush
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Subscription'
+              type: object
+              properties:
+                endpoint: { type: string }
+                keys:
+                  type: object
+                  properties:
+                    p256dh: { type: string }
+                    auth: { type: string }
       responses:
         '200':
-          description: Souscription réussie
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-        '400':
-          description: Requête invalide
-        '500':
-          description: Erreur serveur
+              schema: { type: object, properties: { success: { type: boolean } } }
 
   /notifications/sync:
     put:
-      summary: Synchroniser les favoris
-      description: Met à jour la liste des groupes favoris associés à une souscription pour le ciblage des notifications.
+      summary: Synchroniser les favoris pour les push notifications
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                endpoint:
-                  type: string
-                  description: Endpoint de la souscription WebPush
-                favorites:
-                  type: array
-                  items:
-                    type: string
-                    description: Liste des IDs de passages favoris
-              required:
-                - endpoint
-                - favorites
+                endpoint: { type: string }
+                favorites: { type: array, items: { type: string } }
       responses:
         '200':
-          description: Synchronisation réussie
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-        '400':
-          description: Requête invalide
-        '500':
-          description: Erreur serveur
+              schema: { type: object, properties: { success: { type: boolean } } }
 
-  # --- Endpoints Admin (Sécurisés) ---
-
+  # --- Admin ---
   /admin/login:
     post:
-      summary: Connexion Admin
-      description: Authentification de l'administrateur par mot de passe.
+      summary: Connexion administration
       requestBody:
-        required: true
         content:
           application/json:
-            schema:
-              type: object
-              properties:
-                password:
-                  type: string
-              required:
-                - password
+            schema: { type: object, properties: { password: { type: string } } }
       responses:
         '200':
-          description: Connexion réussie
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                  token:
-                    type: string
-                    description: Token à utiliser pour les requêtes suivantes
-        '400':
-          description: Mot de passe manquant
-        '401':
-          description: Mot de passe invalide
-        '429':
-          description: Trop de tentatives (Rate Limit)
-        '500':
-          description: Erreur serveur
+                  success: { type: boolean }
+                  token: { type: string }
 
   /admin/score:
     put:
-      summary: Mettre à jour une note
-      description: Enregistre la note d'un passage, calcule le rang, met à jour le statut en 'FINISHED' (implicite via isPublished) et envoie des notifications push.
-      security:
-        - BearerAuth: []
+      summary: Publier une note
+      security: [{ BearerAuth: [] }]
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                passageId:
-                  type: string
-                score:
-                  type: number
-                  minimum: 0
-                  maximum: 10
-              required:
-                - passageId
-                - score
+                passageId: { type: string }
+                score: { type: number }
       responses:
         '200':
-          description: Note mise à jour
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
-                  payload:
-                    $ref: '#/components/schemas/AdminScorePayload'
-        '400':
-          description: Validation échouée
-        '404':
-          description: Passage non trouvé
-        '500':
-          description: Erreur serveur
+              schema: { type: object, properties: { ok: { type: boolean }, payload: { type: object } } }
 
   /admin/status:
     put:
-      summary: Mettre à jour le statut
-      description: Change le statut d'un passage (SCHEDULED, LIVE, FINISHED). Gère les conflits de lieu pour les passages LIVE.
-      security:
-        - BearerAuth: []
+      summary: Changer le statut d'un passage
+      security: [{ BearerAuth: [] }]
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                passageId:
-                  type: string
-                status:
-                  type: string
-                  enum: [SCHEDULED, LIVE, FINISHED]
-              required:
-                - passageId
-                - status
+                passageId: { type: string }
+                status: { type: string, enum: [SCHEDULED, LIVE, FINISHED] }
       responses:
         '200':
-          description: Statut mis à jour
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
-                  payload:
-                    $ref: '#/components/schemas/AdminStatusPayload'
-        '400':
-          description: Validation échouée
-        '404':
-          description: Passage non trouvé
-        '500':
-          description: Erreur serveur
+              schema: { type: object, properties: { ok: { type: boolean } } }
 
   /admin/stream:
     put:
-      summary: Configurer un flux
-      description: Met à jour l'URL ou l'état d'un flux vidéo.
-      security:
-        - BearerAuth: []
+      summary: Configurer un flux vidéo
+      security: [{ BearerAuth: [] }]
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                streamId:
-                  type: string
-                type:
-                  type: string
-                  description: Champ optionnel (non utilisé côté serveur)
-                url:
-                  type: string
-                  nullable: true
-                isLive:
-                  type: boolean
-                  nullable: true
-                currentPassageId:
-                  type: string
-                  nullable: true
-              required:
-                - streamId
+                streamId: { type: string }
+                url: { type: string }
+                isLive: { type: boolean }
+                currentPassageId: { type: string, nullable: true }
       responses:
         '200':
-          description: Flux mis à jour
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
-                  stream:
-                    $ref: '#/components/schemas/AdminStream'
-        '400':
-          description: Validation échouée
-        '404':
-          description: Flux non trouvé
-        '500':
-          description: Erreur serveur
+              schema: { type: object, properties: { ok: { type: boolean } } }
 
   /admin/seed:
     post:
-      summary: Réinitialiser la base de données
-      description: Supprime toutes les données et recrée le jeu de données initial (Passages, Groupes, Engins, Streams). **Action destructrice.**
-      security:
-        - BearerAuth: []
+      summary: Réinitialiser la base de données (données de test)
+      security: [{ BearerAuth: [] }]
       responses:
         '200':
-          description: Base de données réinitialisée
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  summary:
-                    type: object
-                    properties:
-                      passages:
-                        type: number
-                      streams:
-                        type: number
-                  error:
-                    type: string
-                    nullable: true
-        '500':
-          description: Erreur serveur
+              schema: { type: object, properties: { success: { type: boolean }, summary: { type: object } } }
