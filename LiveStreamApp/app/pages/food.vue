@@ -2,10 +2,9 @@
   <div class="min-h-screen pb-24 pt-safe">
     <!-- Bouton retour -->
     <div class="px-6 pt-4 pb-2">
-      <NuxtLink to="/" class="inline-flex items-center gap-2 glass-panel px-3 py-2 rounded-lg hover:bg-white/20 active:scale-95 transition-all duration-200">
-        <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
-        <span class="text-white text-sm font-medium">{{ t('common.back') }}</span>
-      </NuxtLink>
+      <UiBackButton to="/">
+        {{ t('common.back') }}
+      </UiBackButton>
     </div>
 
     <!-- Hero Section -->
