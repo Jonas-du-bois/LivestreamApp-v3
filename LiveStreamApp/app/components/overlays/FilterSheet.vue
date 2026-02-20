@@ -193,13 +193,13 @@ onUnmounted(() => {
         <div class="p-6 border-t border-white/10 flex gap-3">
           <button
             @click="clearFilters"
-            class="flex-1 glass-card py-3 rounded-xl text-white font-medium hover:bg-white/15 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
+            class="flex-1 glass-card py-3 rounded-xl text-white font-medium hover:bg-white/15 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none active:scale-[0.98] transition-transform"
           >
             {{ t('filters.clear') }}
           </button>
           <button
             @click="applyFilters"
-            class="flex-1 gradient-cyan-purple py-3 rounded-xl text-white font-medium focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
+            class="flex-1 gradient-cyan-purple py-3 rounded-xl text-white font-medium focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none active:scale-[0.98] transition-transform"
           >
             {{ t('filters.apply') }}
           </button>

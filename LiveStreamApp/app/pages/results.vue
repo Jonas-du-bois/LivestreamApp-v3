@@ -172,9 +172,9 @@ const handleScoreUpdate = (data: any) => {
       nextTick(() => {
           const el = document.getElementById(`result-${data.passageId}`)
           if (el) {
-            el.classList.remove('flash-green')
+            el.classList.remove('score-flash')
             void el.offsetWidth
-            el.classList.add('flash-green')
+            el.classList.add('score-flash')
           }
       })
 
@@ -412,18 +412,62 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
   scrollbar-width: none;
 }
 
-.flash-green {
-  animation: flash 2s ease-out;
+.score-flash {
+  animation: premium-pop 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
 }
 
-@keyframes flash {
+.score-flash::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: shine-sweep 1.5s ease-out;
+  pointer-events: none;
+}
+
+@keyframes premium-pop {
   0% {
-    background-color: rgba(74, 222, 128, 0.5); /* green-400 */
-    box-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+    transform: scale(1);
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 rgba(34, 211, 238, 0);
+  }
+  10% {
+    transform: scale(1.02);
+    border-color: rgba(34, 211, 238, 0.8);
+    background-color: rgba(34, 211, 238, 0.15);
+    box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.5);
+  }
+  80% {
+    border-color: rgba(34, 211, 238, 0.4);
+    background-color: rgba(34, 211, 238, 0.05);
   }
   100% {
-    background-color: transparent;
+    transform: scale(1);
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.1);
     box-shadow: none;
+  }
+}
+
+@keyframes shine-sweep {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
   }
 }
 </style>
