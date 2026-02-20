@@ -203,10 +203,10 @@ useSocketRoom('schedule-updates', [
         v-for="day in availableDays"
         :key="`${day}-${locale}`"
         @click="selectedDay = day"
-        class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
+        class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none hover:-translate-y-0.5 active:scale-95"
         :class="selectedDay === day
           ? 'bg-white/20 text-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
-          : 'text-white/60'"
+          : 'text-white/60 hover:bg-white/10'"
         type="button"
         role="tab"
         :aria-selected="selectedDay === day"
@@ -221,7 +221,7 @@ useSocketRoom('schedule-updates', [
         v-for="filter in filters"
         :key="`${filter.code || filter}-${locale}`"
         @click.stop="selectedFilter = filter.code || filter"
-        class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
+        class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none hover:scale-105 active:scale-95"
         :class="selectedFilter === (filter.code || filter)
           ? 'bg-cyan-400 text-[#0B1120] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
           : 'glass-card text-white/80'"
@@ -233,31 +233,41 @@ useSocketRoom('schedule-updates', [
     </div>
 
     <!-- Schedule List -->
-    <div class="space-y-2">
-      <ScheduleEmptyState
-        v-if="filteredSchedule.length === 0"
-        :title="t('schedule.noPassagesTitle')"
-        :description="t('schedule.noPassagesHint')"
-        :button-label="t('schedule.clearFilters')"
-        @clear-filters="clearScheduleFilters"
-      />
+    <div class="min-h-[50vh]">
+      <Transition name="fade" mode="out-in">
+        <ScheduleEmptyState
+          v-if="filteredSchedule.length === 0"
+          key="empty"
+          :title="t('schedule.noPassagesTitle')"
+          :description="t('schedule.noPassagesHint')"
+          :button-label="t('schedule.clearFilters')"
+          @clear-filters="clearScheduleFilters"
+        />
 
-      <div 
-        v-for="item in filteredSchedule"
-        :key="item._id || 'unknown'"
-        class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
-        @click="handleGroupClick(item.group._id, item.apparatus.code)"
-        role="button"
-        tabindex="0"
-        @keydown.enter="handleGroupClick(item.group._id, item.apparatus.code)"
-        @keydown.space.prevent="handleGroupClick(item.group._id, item.apparatus.code)"
-        :aria-label="t('schedule.openGroupDetails', {
-          group: item.group.name,
-          apparatus: translateApparatus(item.apparatus.code, item.apparatus.name),
-          time: formatTime(item.startTime)
-        })"
-      >
-        <div class="flex items-start gap-4">
+        <TransitionGroup
+          v-else
+          name="list"
+          tag="div"
+          class="flex flex-col gap-2 relative"
+          key="list"
+        >
+          <div
+            v-for="(item, index) in filteredSchedule"
+            :key="item._id || 'unknown'"
+            class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
+            :style="{ '--enter-delay': `${Math.min(index * 50, 300)}ms` }"
+            @click="handleGroupClick(item.group._id, item.apparatus.code)"
+            role="button"
+            tabindex="0"
+            @keydown.enter="handleGroupClick(item.group._id, item.apparatus.code)"
+            @keydown.space.prevent="handleGroupClick(item.group._id, item.apparatus.code)"
+            :aria-label="t('schedule.openGroupDetails', {
+              group: item.group.name,
+              apparatus: translateApparatus(item.apparatus.code, item.apparatus.name),
+              time: formatTime(item.startTime)
+            })"
+          >
+            <div class="flex items-start gap-4">
           <!-- Time & Location -->
           <div class="text-left min-w-[70px] flex-shrink-0">
             <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
@@ -284,6 +294,44 @@ useSocketRoom('schedule-updates', [
           </div>
         </div>
       </div>
+        </TransitionGroup>
+      </Transition>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* List Transitions */
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.list-enter-active {
+  transition-delay: var(--enter-delay);
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Ensure leaving items are taken out of layout flow so others can move smoothly */
+.list-leave-active {
+  position: absolute;
+  width: 100%;
+}
+
+/* Fade Transition for Empty State switch */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

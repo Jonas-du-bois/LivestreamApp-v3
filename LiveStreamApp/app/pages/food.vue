@@ -2,7 +2,7 @@
   <div class="min-h-screen pb-24 pt-safe">
     <!-- Bouton retour -->
     <div class="px-6 pt-4 pb-2">
-      <NuxtLink to="/" class="inline-flex items-center gap-2 glass-panel px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
+      <NuxtLink to="/" class="inline-flex items-center gap-2 glass-panel px-3 py-2 rounded-lg hover:bg-white/20 active:scale-95 transition-all duration-200">
         <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
         <span class="text-white text-sm font-medium">{{ t('common.back') }}</span>
       </NuxtLink>
@@ -27,7 +27,7 @@
         v-for="cat in categories" 
         :key="cat.id"
         @click="activeCategory = cat.id"
-        class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border shrink-0" 
+        class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border shrink-0 hover:scale-105 active:scale-95"
         :class="activeCategory === cat.id 
           ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/50' 
           : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'"
@@ -55,14 +55,16 @@
         <div 
           v-for="spot in filteredSpots" 
           :key="spot.id"
-          class="group relative overflow-hidden rounded-2xl bg-gray-900 border border-white/5 shadow-xl transition-all duration-300 hover:border-blue-500/30 hover:shadow-blue-900/10"
+          class="group relative overflow-hidden rounded-2xl bg-gray-900 border border-white/5 shadow-xl transition-all duration-300 hover:border-blue-500/30 hover:shadow-blue-900/10 active:scale-[0.98] active:border-blue-500/50 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
+          tabindex="0"
+          role="button"
         >
           <div class="h-40 w-full relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent z-10"></div>
             <img 
               :src="spot.image" 
               alt="Food" 
-              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-active:scale-105 opacity-80"
             />
             
             <div class="absolute top-3 right-3 z-20">

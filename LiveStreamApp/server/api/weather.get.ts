@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   try {
     // Coordinates for Yverdon-les-Bains
     const latitude = 46.7785
@@ -49,4 +49,9 @@ export default defineEventHandler(async (event) => {
       raw: null
     }
   }
+}, {
+  maxAge: 900, // Cache for 15 minutes
+  swr: true, // Serve stale content while revalidating
+  name: 'api-weather',
+  getKey: () => 'yverdon' // Constant key since coordinates are hardcoded
 })

@@ -23,6 +23,14 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  // Security: Limit password length to prevent DoS via hashing of large payloads
+  if (password.length > 1024) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Password too long',
+    });
+  }
+
   // Prevent Timing Attack: Use constant-time comparison
   const safeCompare = (a: string, b: string) => {
     const bufA = createHash('sha256').update(a).digest();
