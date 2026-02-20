@@ -26,6 +26,7 @@ const { translateCategory, translateApparatus } = useTranslatedData()
 const socket = useSocket()
 const favoritesStore = useFavoritesStore()
 const isLoading = ref(false)
+const isTogglingFavorite = ref(false)
 const error = ref<string | null>(null)
 const details = ref<any>(null)
 const activeTab = ref<'timeline' | 'stats'>('timeline')
@@ -121,7 +122,12 @@ const isFavorite = computed(() => {
 
 const toggleFavorite = async () => {
   if (groupPassageIds.value.length > 0) {
-    await favoritesStore.toggleGroupFavorites(groupPassageIds.value)
+    isTogglingFavorite.value = true
+    try {
+      await favoritesStore.toggleGroupFavorites(groupPassageIds.value)
+    } finally {
+      isTogglingFavorite.value = false
+    }
   }
 }
 
@@ -497,13 +503,21 @@ const maxHistoryScore = computed(() => {
             <div class="p-6 border-t border-white/10 flex-shrink-0 bg-[#0B1120]/50 backdrop-blur-xl">
               <button
                 @click="toggleFavorite"
-                class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
+                :disabled="isTogglingFavorite"
+                :aria-busy="isTogglingFavorite"
+                class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] disabled:active:scale-100 transition-transform focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none disabled:opacity-70 disabled:cursor-wait"
               >
-                <Icon
-                  :name="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
-                  class="w-5 h-5"
-                />
-                {{ isFavorite ? t('group.removeFromFavorites') : t('group.addToFavorites') }}
+                <template v-if="isTogglingFavorite">
+                  <Icon name="fluent:spinner-ios-20-regular" class="w-5 h-5 animate-spin" />
+                  <span>{{ t('common.loading') }}</span>
+                </template>
+                <template v-else>
+                  <Icon
+                    :name="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
+                    class="w-5 h-5"
+                  />
+                  {{ isFavorite ? t('group.removeFromFavorites') : t('group.addToFavorites') }}
+                </template>
               </button>
             </div>
         </template>

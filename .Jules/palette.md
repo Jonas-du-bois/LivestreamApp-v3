@@ -17,3 +17,7 @@
 ## 2025-02-24 - Aria-Label Overriding Child Content
 **Learning:** Placing `aria-label` on a container card (e.g., a result item) completely suppresses the reading of its child elements (rank, score, group name) by screen readers. This hides critical information if the label only describes the action ("Open details") but not the data.
 **Action:** Avoid `aria-label` on complex content containers. Use `sr-only` text inside the container to provide extra context if needed, or rely on the natural reading order of the content. If an action needs a specific label, put it on the specific button, not the whole card, or ensure the label includes ALL data.
+
+## 2025-05-30 - Async Feedback in Modals
+**Learning:** In modal contexts where actions (like toggling favorites) involve network latency (push subscriptions), the lack of immediate feedback can lead to confusion or double-submissions.
+**Action:** Always wrap async actions in a `try/finally` block to manage a loading state, and visually reflect this state on the button (spinner + `disabled` + `aria-busy`).
