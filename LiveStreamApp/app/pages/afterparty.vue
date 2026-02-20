@@ -130,13 +130,9 @@ const drinkMenu = computed(() => [
     <!-- Header avec safe area -->
     <div class="absolute top-safe left-4 right-4 z-50 pt-4 flex justify-between items-start">
       <!-- Bouton Back -->
-      <NuxtLink 
-        to="/" 
-        class="glass-panel px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-white/20 transition-colors shadow-lg border border-white/10 bg-black/40 backdrop-blur-md"
-      >
-        <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
-        <span class="text-white text-sm font-medium">{{ t('common.back') }}</span>
-      </NuxtLink>
+      <UiBackButton to="/">
+        {{ t('common.back') }}
+      </UiBackButton>
       
       <!-- Chip Coming Soon -->
       <div class="glass-panel px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-violet-400/30 flex items-center gap-2 shadow-lg">

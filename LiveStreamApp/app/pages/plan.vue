@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, shallowRef, computed } from 'vue';
 import 'leaflet/dist/leaflet.css'; // Import CSS Leaflet
-import { useRouter } from 'vue-router';
 
 const { t } = useI18n()
-const router = useRouter()
 
 // Masquer header/footer globaux pour cette page "Plein écran"
 definePageMeta({ header: false, footer: false })
@@ -113,9 +111,6 @@ onMounted(async () => {
   });
 });
 
-const goBack = () => {
-  try { router.back() } catch (e) { window.history.back() }
-}
 </script>
 
 <template>
@@ -125,10 +120,9 @@ const goBack = () => {
 
     <Transition name="premium-swap" appear>
       <div class="absolute top-safe left-4 z-[500] pt-4">
-        <button @click="goBack" class="glass-panel px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-white/10 transition-colors shadow-lg pointer-events-auto">
-          <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
-          <span class="text-white text-sm font-medium">{{ t('plan.back') }}</span>
-        </button>
+        <UiBackButton class="pointer-events-auto">
+          {{ t('plan.back') }}
+        </UiBackButton>
       </div>
     </Transition>
 
