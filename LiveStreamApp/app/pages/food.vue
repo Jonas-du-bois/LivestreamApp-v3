@@ -10,7 +10,7 @@
 
     <!-- Hero Section -->
     <div class="relative px-6 py-6 mb-4">
-      <div class="absolute top-0 right-0 p-6 opacity-20">
+      <div class="pointer-events-none absolute top-0 right-0 p-6 opacity-20" aria-hidden="true">
         <Icon name="fluent:food-pizza-24-filled" class="text-9xl text-blue-500 blur-2xl animate-pulse" />
       </div>
       <h1 class="text-3xl font-black text-white mb-2 uppercase tracking-wide">
@@ -22,11 +22,17 @@
       </p>
     </div>
 
-    <div class="px-6 mb-8 flex gap-3 overflow-x-auto no-scrollbar pb-2 w-full flex-nowrap">
+    <div
+      class="relative z-10 px-6 mb-8 flex gap-3 overflow-x-auto no-scrollbar pb-2 w-full flex-nowrap"
+      role="tablist"
+      :aria-label="t('food.title')"
+    >
       <button 
         v-for="cat in categories" 
         :key="cat.id"
+        type="button"
         @click="activeCategory = cat.id"
+        :aria-pressed="activeCategory === cat.id"
         class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border shrink-0 hover:scale-105 active:scale-95"
         :class="activeCategory === cat.id 
           ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/50' 
@@ -50,8 +56,11 @@
       </div>
     </div>
 
-    <div class="px-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <TransitionGroup name="list">
+    <TransitionGroup
+      name="list"
+      tag="div"
+      class="px-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+    >
         <div 
           v-for="spot in filteredSpots" 
           :key="spot.id"
@@ -70,15 +79,15 @@
             <div class="absolute top-3 right-3 z-20">
               <div 
                 class="px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md border flex items-center gap-2"
-                :class="spot.status === 'Ouvert' 
+                :class="spot.isOpen
                   ? 'bg-green-500/20 border-green-500/30 text-green-400' 
                   : 'bg-red-500/20 border-red-500/30 text-red-400'"
               >
-                <span v-if="spot.status === 'Ouvert'" class="relative flex h-2 w-2">
+                <span v-if="spot.isOpen" class="relative flex h-2 w-2">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                {{ spot.status }}
+                {{ spot.isOpen ? t('common.open') : t('common.closed') }}
               </div>
             </div>
 
@@ -113,8 +122,7 @@
             </div>
           </div>
         </div>
-      </TransitionGroup>
-    </div>
+    </TransitionGroup>
 
     <div v-if="filteredSpots.length === 0" class="px-6 py-12 text-center">
       <div class="inline-flex h-16 w-16 rounded-full bg-white/5 items-center justify-center mb-4">
@@ -149,7 +157,7 @@ const foodSpots = computed(() => [
     type: t('food.spots.cantine.type'),
     description: t('food.spots.cantine.description'),
     icon: "fluent:food-24-filled",
-    status: t('common.open'),
+    isOpen: true,
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800",
     menu: [
       { item: t('food.menu.steakFrites'), price: "18.-" },
@@ -164,7 +172,7 @@ const foodSpots = computed(() => [
     type: t('food.spots.burger.type'),
     description: t('food.spots.burger.description'),
     icon: "fluent:food-24-filled",
-    status: t('common.open'),
+    isOpen: true,
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800",
     menu: [
       { item: t('food.menu.classicBurger'), price: "15.-" },
@@ -179,7 +187,7 @@ const foodSpots = computed(() => [
     type: t('food.spots.raclette.type'),
     description: t('food.spots.raclette.description'),
     icon: "fluent:food-toast-24-filled",
-    status: t('common.open'),
+    isOpen: true,
     image: "https://images.unsplash.com/photo-1706363447064-1ae8d6d3bc5d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     menu: [
       { item: t('food.menu.raclettePortion'), price: "7.-" },
@@ -194,7 +202,7 @@ const foodSpots = computed(() => [
     type: t('food.spots.bar.type'),
     description: t('food.spots.bar.description'),
     icon: "fluent:drink-beer-24-filled",
-    status: t('common.open'),
+    isOpen: true,
     image: "https://images.unsplash.com/photo-1575444758702-4a6b9222336e?auto=format&fit=crop&q=80&w=800",
     menu: [
       { item: t('food.menu.beer'), price: "5.-" },
@@ -216,19 +224,17 @@ const filteredSpots = computed(() => {
 .list-move,
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.4s cubic-bezier(0.55, 0, 0.1, 1);
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease;
 }
 
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(8px) scale(0.98);
 }
 
-/* Position absolue pour que les éléments qui partent ne cassent pas la grille pendant l'anim */
 .list-leave-active {
-  position: absolute;
-  width: 50%;
+  pointer-events: none;
 }
 
 /* Hide scrollbar */

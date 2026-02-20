@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { PublicService } from '../services/public.service'
-import { useSocket } from '../composables/useSocket'
+import HomeQuickActionButton from '~/components/home/HomeQuickActionButton.vue'
+import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
@@ -15,10 +16,21 @@ interface Group {
   streamId?: string
 }
 
+type QuickActionAccent = 'cyan' | 'emerald' | 'pink' | 'orange' | 'violet'
+
+interface QuickAction {
+  id: string
+  to: string
+  label: string
+  icon: string
+  accent: QuickActionAccent
+  badge?: string | null
+}
+
 const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
 // Fetch live passages to populate "En piste maintenant"
-const { data: liveResp, refresh: refreshLive } = await PublicService.getLive()
+const { data: liveResp, pending: livePending, refresh: refreshLive } = await PublicService.getLive()
 
 const happeningNow = computed<Group[]>(() => {
   return (liveResp.value?.passages || []).map((p: any) => {
@@ -40,6 +52,16 @@ const happeningNow = computed<Group[]>(() => {
     }
   })
 })
+
+const hasLiveLoadedOnce = ref(false)
+
+watch([livePending, liveResp], ([isPending, response]) => {
+  if (!isPending && response) {
+    hasLiveLoadedOnce.value = true
+  }
+}, { immediate: true })
+
+const showHappeningNowSkeleton = computed(() => livePending.value && !hasLiveLoadedOnce.value)
 
 // First live passage (used for hero)
 const firstLivePassage = computed<any>(() => {
@@ -79,7 +101,54 @@ const heroImage = computed(() => {
 })
 
 // Weather (Yverdon-les-Bains)
-const { data: weatherResp, pending: weatherPending, refresh: refreshWeather } = await PublicService.getWeather()
+const { data: weatherResp, pending: weatherPending } = await PublicService.getWeather()
+
+const weatherBadge = computed(() => {
+  if (weatherPending.value) return '--'
+  if (weatherResp.value && typeof weatherResp.value.temperature === 'number') {
+    return `${Math.round(weatherResp.value.temperature)}°`
+  }
+  return '—'
+})
+
+const quickActions = computed<QuickAction[]>(() => [
+  {
+    id: 'infos',
+    to: '/infos',
+    label: t('home.info'),
+    icon: 'fluent:info-24-regular',
+    accent: 'emerald'
+  },
+  {
+    id: 'weather',
+    to: '/weather',
+    label: t('home.weather'),
+    icon: 'fluent:weather-partly-cloudy-day-24-regular',
+    accent: 'cyan',
+    badge: weatherBadge.value
+  },
+  {
+    id: 'food',
+    to: '/food',
+    label: t('home.restaurant'),
+    icon: 'fluent:food-24-regular',
+    accent: 'orange'
+  },
+  {
+    id: 'plan',
+    to: '/plan',
+    label: t('home.plan'),
+    icon: 'fluent:location-24-regular',
+    accent: 'violet'
+  },
+  {
+    id: 'afterparty',
+    to: '/afterparty',
+    label: t('home.afterParty'),
+    icon: 'fluent:drink-beer-24-regular',
+    accent: 'pink'
+  }
+])
 
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails?.(groupId, apparatusCode)
@@ -157,77 +226,68 @@ useSocketRoom('schedule-updates', [
     <!-- Happening Now Carousel -->
     <div>
       <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('home.happeningNow') }}</h3>
-      <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-        <div 
-          v-for="group in happeningNow"
-          :key="group.id"
-          class="glass-card p-4 min-w-[200px] flex-shrink-0 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
-          @click="handleGroupClick(group.id, group.apparatusCode)"
-          role="button"
-          tabindex="0"
-          :aria-label="t('results.openGroupDetails', { group: group.name })"
-          @keydown.enter="handleGroupClick(group.id, group.apparatusCode)"
-          @keydown.space.prevent="handleGroupClick(group.id, group.apparatusCode)"
+      <Transition name="premium-swap" mode="out-in">
+        <CascadeSkeletonList
+          v-if="showHappeningNowSkeleton"
+          key="happening-now-skeleton"
+          :count="4"
+          layout="horizontal"
+          container-class="-mx-4 px-4"
+          item-class="min-w-[200px] flex-shrink-0"
+          :aria-label="t('common.loading')"
         >
-          <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
-          <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>
-          <p class="text-white/60 text-sm">{{ group.apparatus }}</p>
-          
-          <NuxtLink
-            v-if="group.streamId"
-            :to="`/stream/${group.streamId}`"
-            @click.stop
-            class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
+          <template #default>
+            <div class="p-4 space-y-3 min-h-[138px]">
+              <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-20"></div>
+              <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-3/4"></div>
+              <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-2/3"></div>
+              <div class="premium-skeleton-surface premium-skeleton-shimmer h-9 w-full rounded-lg mt-2"></div>
+            </div>
+          </template>
+        </CascadeSkeletonList>
+
+        <div v-else key="happening-now-content" class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+          <div 
+            v-for="group in happeningNow"
+            :key="group.id"
+            class="glass-card p-4 min-w-[200px] flex-shrink-0 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
+            @click="handleGroupClick(group.id, group.apparatusCode)"
+            role="button"
+            tabindex="0"
+            :aria-label="t('results.openGroupDetails', { group: group.name })"
+            @keydown.enter="handleGroupClick(group.id, group.apparatusCode)"
+            @keydown.space.prevent="handleGroupClick(group.id, group.apparatusCode)"
           >
-            <Icon name="fluent:play-24-filled" class="w-4 h-4" />
-            <span class="text-sm">{{ t('common.watch') }}</span>
-          </NuxtLink>
+            <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
+            <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>
+            <p class="text-white/60 text-sm">{{ group.apparatus }}</p>
+            
+            <NuxtLink
+              v-if="group.streamId"
+              :to="`/stream/${group.streamId}`"
+              @click.stop
+              class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
+            >
+              <Icon name="fluent:play-24-filled" class="w-4 h-4" />
+              <span class="text-sm">{{ t('common.watch') }}</span>
+            </NuxtLink>
+          </div>
         </div>
-      </div>
+      </Transition>
     </div>
 
     <!-- Info Tiles -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-      <NuxtLink to="/weather" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
-        <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
-          <Icon name="fluent:weather-partly-cloudy-day-24-regular" class="w-6 h-6 text-cyan-400" />
-        </div>
-        <span class="text-white/80 text-sm">{{ t('home.weather') }}</span>
-        <span class="text-white font-bold mt-1">
-          <template v-if="weatherPending">--</template>
-          <template v-else-if="weatherResp && typeof weatherResp.temperature === 'number'">{{ Math.round(weatherResp.temperature) }}°C</template>
-          <template v-else>—</template>
-        </span>
-      </NuxtLink>
-
-      <!-- button quick access map and food -->
-      <NuxtLink to="/plan" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
-        <div class="w-12 h-12 rounded-full bg-purple-400/20 flex items-center justify-center mb-3">
-          <Icon name="fluent:location-24-regular" class="w-6 h-6 text-purple-400" />
-        </div>
-        <span class="text-white/80 text-sm">{{ t('home.plan') }}</span>
-      </NuxtLink>
-
-      <NuxtLink to="/infos" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
-        <div class="w-12 h-12 rounded-full bg-emerald-400/20 flex items-center justify-center mb-3">
-          <Icon name="fluent:info-24-regular" class="w-6 h-6 text-emerald-300" />
-        </div>
-        <span class="text-white/80 text-sm">{{ t('home.info') }}</span>
-      </NuxtLink>
-      
-      <NuxtLink to="/food" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
-        <div class="w-12 h-12 rounded-full bg-cyan-400/20 flex items-center justify-center mb-3">
-          <Icon name="fluent:food-24-regular" class="w-6 h-6 text-cyan-400" />
-        </div>
-        <span class="text-white/80 text-sm">{{ t('home.restaurant') }}</span>
-      </NuxtLink>
-
-      <NuxtLink to="/afterparty" class="glass-card p-4 flex flex-col items-center text-center hover:bg-white/10 transition-colors rounded-lg focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
-        <div class="w-12 h-12 rounded-full bg-pink-800/20 flex items-center justify-center mb-3">
-          <Icon name="fluent:drink-beer-24-regular" class="w-6 h-6 text-pink-300" />
-        </div>
-        <span class="text-white/80 text-sm">{{ t('home.afterParty') }}</span>
-      </NuxtLink>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 auto-rows-fr">
+      <HomeQuickActionButton
+        v-for="action in quickActions"
+        :key="action.id"
+        :to="action.to"
+        :label="action.label"
+        :icon="action.icon"
+        :accent="action.accent"
+        :badge="action.badge ?? null"
+        :aria-label="action.label"
+      />
     </div>
   </div>
 </template>

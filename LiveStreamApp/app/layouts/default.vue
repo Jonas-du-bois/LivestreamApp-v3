@@ -198,30 +198,35 @@ provide('openGroupDetails', openGroupDetails)
       </main>
 
       <!-- Bottom Navigation Dock - Fixed with safe area support -->
-      <nav v-if="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-2 nav-safe-area">
-        <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-3 py-1 flex items-center justify-around">
+      <nav v-show="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-2 nav-safe-area">
+        <div class="nav-dock glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-3 py-1.5 flex items-center justify-around">
           <NuxtLink
             v-for="item in navItems"
             :key="item.id"
             :to="item.to"
-        class="relative flex flex-col items-center justify-center transition-all group"
-            :class="{ 'scale-125': item.isCenter }"
+            class="nav-item relative flex items-center justify-center group transition-colors"
+            :class="{ 'nav-item-center': item.isCenter }"
             :aria-label="t(item.labelKey)"
           >
             <div 
-          class="p-2 rounded-xl transition-all duration-300 group-hover:-translate-y-1 group-active:scale-90"
+              class="nav-icon-wrap p-2 rounded-xl transition-colors duration-200"
               :class="[
-            isActive(item.to) ? 'text-cyan-400' : 'text-white/60 group-hover:text-cyan-200',
+                isActive(item.to) ? 'text-cyan-400' : 'text-white/60 group-hover:text-cyan-200',
                 isActive(item.to) && item.isCenter ? 'glow-cyan' : '',
               ]"
             >
-              <Icon 
-                :name="isActive(item.to) ? item.iconFilled : item.icon"
-            :class="[
-              item.isCenter ? 'w-7 h-7' : 'w-6 h-6',
-              isActive(item.to) ? 'animate-nav-pop' : ''
-            ]"
-              />
+              <span :class="[item.isCenter ? 'w-7 h-7' : 'w-6 h-6']" class="nav-icon-stack relative block">
+                <Icon
+                  :name="item.icon"
+                  class="nav-icon-layer absolute inset-0 w-full h-full"
+                  :class="isActive(item.to) ? 'opacity-0' : 'opacity-100'"
+                />
+                <Icon
+                  :name="item.iconFilled"
+                  class="nav-icon-layer absolute inset-0 w-full h-full"
+                  :class="isActive(item.to) ? 'opacity-100' : 'opacity-0'"
+                />
+              </span>
             </div>
           </NuxtLink>
         </div>
@@ -286,20 +291,37 @@ provide('openGroupDetails', openGroupDetails)
   }
 }
 
-/* Nav Item Pop Animation */
-@keyframes nav-pop {
-  0% {
-    transform: scale(0.8);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
+.nav-dock {
+  min-height: 64px;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
-.animate-nav-pop {
-  animation: nav-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+.nav-item {
+  min-width: 52px;
+  min-height: 48px;
+}
+
+.nav-item-center {
+  min-width: 60px;
+  min-height: 52px;
+}
+
+.nav-icon-wrap {
+  transform: translateZ(0);
+}
+
+.nav-icon-stack {
+  transform: translateZ(0);
+}
+
+.nav-icon-layer {
+  transition: opacity 0.18s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-icon-layer {
+    transition: none;
+  }
 }
 </style>

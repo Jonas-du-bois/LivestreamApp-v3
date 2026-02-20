@@ -3,6 +3,7 @@ import { PublicService } from '~/services/public.service'
 import { useFavoritesStore } from '~/stores/favorites'
 import { storeToRefs } from 'pinia'
 import type { PassageEnriched } from '~/types/api'
+import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
 const { t } = useI18n()
 const { translateApparatus, formatLocalizedTime, formatLocalizedDate } = useTranslatedData()
@@ -12,7 +13,16 @@ const { favorites } = storeToRefs(favoritesStore)
 
 // Fetch Schedule (we filter client-side for favorites for simplicity, or we could add an API endpoint)
 // Since we have getSchedule, we can use it.
-const { data: scheduleData, refresh: refreshSchedule } = await PublicService.getSchedule()
+const { data: scheduleData, pending, refresh: refreshSchedule } = await PublicService.getSchedule()
+const hasLoadedOnce = ref(false)
+
+watch([pending, scheduleData], ([isPending, data]) => {
+  if (!isPending && data) {
+    hasLoadedOnce.value = true
+  }
+}, { immediate: true })
+
+const showSkeleton = computed(() => pending.value && !hasLoadedOnce.value)
 
 const favoritePassages = computed<PassageEnriched[]>(() => {
   if (!scheduleData.value?.data) return []
@@ -130,122 +140,148 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
 <template>
   <div class="px-4 space-y-6 pb-6">
-    <!-- Next Event Card -->
-    <ClientOnly>
-      <div v-if="nextEvent" class="glass-card p-6 relative overflow-hidden">
-        <div class="absolute top-0 right-0 p-4 opacity-10">
-          <Icon name="fluent:timer-24-filled" class="w-24 h-24" />
-        </div>
-
-        <p class="text-white/60 text-sm mb-2">{{ t('favorites.nextFavorite') }}</p>
-        <div class="flex items-baseline gap-2 mb-4">
-          <h2 class="text-4xl font-bold text-white">{{ timeToNext }}</h2>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-cyan-400/20 flex items-center justify-center">
-             <Icon v-if="nextEvent.apparatus?.icon" :name="nextEvent.apparatus.icon" class="w-5 h-5 text-cyan-400" />
+    <Transition name="premium-swap" mode="out-in">
+      <CascadeSkeletonList
+        v-if="showSkeleton"
+        key="favorites-skeleton"
+        :count="6"
+        layout="vertical"
+        :aria-label="t('common.loading')"
+      >
+        <template #default>
+          <div class="p-4 flex items-center gap-4">
+            <div class="min-w-[60px] space-y-2">
+              <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-12"></div>
+              <div class="premium-skeleton-line premium-skeleton-shimmer h-3 w-10"></div>
+            </div>
+            <div class="flex-1 min-w-0 space-y-2">
+              <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-2/3"></div>
+              <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-1/2"></div>
+            </div>
+            <div class="w-8 h-8 rounded-full premium-skeleton-surface premium-skeleton-shimmer flex-shrink-0"></div>
           </div>
-          <div>
-            <h3 class="text-white font-bold">{{ nextEvent.group?.name }}</h3>
-            <p class="text-white/60 text-sm">{{ translateApparatus(nextEvent.apparatus?.code, nextEvent.apparatus?.name) }} • {{ nextEvent.location }}</p>
-          </div>
-        </div>
-      </div>
-    </ClientOnly>
+        </template>
+      </CascadeSkeletonList>
 
-    <!-- Upcoming Events List -->
-    <ClientOnly>
-      <div v-if="upcomingPassages.length > 0">
-        <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.mySchedule') }}</h3>
-        <div class="space-y-3">
-          <div
-            v-for="passage in upcomingPassages"
-            :key="passage._id"
-            class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
-            @click="handleGroupClick(passage.group?._id || '')"
-          >
-            <div class="text-center min-w-[60px]">
-               <div class="text-cyan-400 font-bold text-lg">{{ formatTime(passage.startTime) }}</div>
-               <div class="text-white/40 text-xs uppercase">{{ formatDate(passage.startTime).split(' ')[0] }}</div>
+      <div v-else key="favorites-content" class="space-y-6">
+        <!-- Next Event Card -->
+        <ClientOnly>
+          <div v-if="nextEvent" class="glass-card p-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+              <Icon name="fluent:timer-24-filled" class="w-24 h-24" />
             </div>
 
-            <div class="flex-1 min-w-0">
-              <h4 class="text-white font-bold mb-1">{{ passage.group?.name }}</h4>
-              <div class="flex items-center gap-2 text-sm">
-                 <span class="text-white/60">{{ passage.location }}</span>
-                 <span class="text-white/40">•</span>
-                 <span class="text-purple-400">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }}</span>
+            <p class="text-white/60 text-sm mb-2">{{ t('favorites.nextFavorite') }}</p>
+            <div class="flex items-baseline gap-2 mb-4">
+              <h2 class="text-4xl font-bold text-white">{{ timeToNext }}</h2>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-cyan-400/20 flex items-center justify-center">
+                 <Icon v-if="nextEvent.apparatus?.icon" :name="nextEvent.apparatus.icon" class="w-5 h-5 text-cyan-400" />
+              </div>
+              <div>
+                <h3 class="text-white font-bold">{{ nextEvent.group?.name }}</h3>
+                <p class="text-white/60 text-sm">{{ translateApparatus(nextEvent.apparatus?.code, nextEvent.apparatus?.name) }} • {{ nextEvent.location }}</p>
               </div>
             </div>
-
-            <div class="flex items-start pt-0.5 flex-shrink-0">
-              <SparkHeart
-                :active="true"
-                :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
-                @click.stop="passage._id && toggleFavorite(passage._id, $event)"
-              />
-            </div>
           </div>
-        </div>
-      </div>
-    </ClientOnly>
+        </ClientOnly>
 
-    <!-- Past Events List -->
-    <ClientOnly>
-      <div v-if="pastPassages.length > 0">
-        <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.pastEvents') }}</h3>
-        <div class="space-y-3">
-          <div
-            v-for="passage in pastPassages"
-            :key="passage._id"
-            class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all opacity-70"
-            @click="handleGroupClick(passage.group?._id || '')"
-          >
-            <div class="text-center min-w-[60px]">
-               <div class="text-cyan-400 font-bold text-lg">{{ formatTime(passage.startTime) }}</div>
-               <div class="text-white/40 text-xs uppercase">{{ formatDate(passage.startTime).split(' ')[0] }}</div>
-            </div>
+        <!-- Upcoming Events List -->
+        <ClientOnly>
+          <div v-if="upcomingPassages.length > 0">
+            <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.mySchedule') }}</h3>
+            <div class="space-y-3">
+              <div
+                v-for="passage in upcomingPassages"
+                :key="passage._id"
+                class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+                @click="handleGroupClick(passage.group?._id || '')"
+              >
+                <div class="text-center min-w-[60px]">
+                   <div class="text-cyan-400 font-bold text-lg">{{ formatTime(passage.startTime) }}</div>
+                   <div class="text-white/40 text-xs uppercase">{{ formatDate(passage.startTime).split(' ')[0] }}</div>
+                </div>
 
-            <div class="flex-1 min-w-0">
-              <h4 class="text-white font-bold mb-1">{{ passage.group?.name }}</h4>
-              <div class="flex items-center gap-2 text-sm">
-                 <span class="text-white/60">{{ passage.location }}</span>
-                 <span class="text-white/40">•</span>
-                 <span class="text-purple-400">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }}</span>
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-white font-bold mb-1">{{ passage.group?.name }}</h4>
+                  <div class="flex items-center gap-2 text-sm">
+                     <span class="text-white/60">{{ passage.location }}</span>
+                     <span class="text-white/40">•</span>
+                     <span class="text-purple-400">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start pt-0.5 flex-shrink-0">
+                  <SparkHeart
+                    :active="true"
+                    :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
+                    @click.stop="passage._id && toggleFavorite(passage._id, $event)"
+                  />
+                </div>
               </div>
             </div>
+          </div>
+        </ClientOnly>
 
-            <div class="flex items-start pt-0.5 flex-shrink-0">
-              <SparkHeart
-                :active="true"
-                :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
-                @click.stop="passage._id && toggleFavorite(passage._id, $event)"
-              />
+        <!-- Past Events List -->
+        <ClientOnly>
+          <div v-if="pastPassages.length > 0">
+            <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.pastEvents') }}</h3>
+            <div class="space-y-3">
+              <div
+                v-for="passage in pastPassages"
+                :key="passage._id"
+                class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all opacity-70"
+                @click="handleGroupClick(passage.group?._id || '')"
+              >
+                <div class="text-center min-w-[60px]">
+                   <div class="text-cyan-400 font-bold text-lg">{{ formatTime(passage.startTime) }}</div>
+                   <div class="text-white/40 text-xs uppercase">{{ formatDate(passage.startTime).split(' ')[0] }}</div>
+                </div>
+
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-white font-bold mb-1">{{ passage.group?.name }}</h4>
+                  <div class="flex items-center gap-2 text-sm">
+                     <span class="text-white/60">{{ passage.location }}</span>
+                     <span class="text-white/40">•</span>
+                     <span class="text-purple-400">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-start pt-0.5 flex-shrink-0">
+                  <SparkHeart
+                    :active="true"
+                    :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
+                    @click.stop="passage._id && toggleFavorite(passage._id, $event)"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </ClientOnly>
+        </ClientOnly>
 
-    <!-- Empty State -->
-    <ClientOnly>
-      <div v-if="favoritePassages.length === 0" class="glass-card p-8 text-center mt-10">
-         <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-            <Icon name="fluent:heart-broken-24-regular" class="w-8 h-8 text-white/40" />
-         </div>
-         <h3 class="text-white font-bold text-lg mb-2">{{ t('favorites.noFavorites') }}</h3>
-         <p class="text-white/60 text-sm">
-           {{ t('favorites.noFavoritesHint') }}
-         </p>
+        <!-- Empty State -->
+        <ClientOnly>
+          <div v-if="favoritePassages.length === 0" class="glass-card p-8 text-center mt-10">
+             <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+                <Icon name="fluent:heart-broken-24-regular" class="w-8 h-8 text-white/40" />
+             </div>
+             <h3 class="text-white font-bold text-lg mb-2">{{ t('favorites.noFavorites') }}</h3>
+             <p class="text-white/60 text-sm">
+               {{ t('favorites.noFavoritesHint') }}
+             </p>
 
-         <NuxtLink
-           to="/schedule"
-           class="mt-6 inline-block bg-cyan-400 text-[#0B1120] px-6 py-3 rounded-xl font-bold transition-all hover:bg-cyan-300 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-[#0B1120] outline-none"
-         >
-           {{ t('favorites.browseSchedule') }}
-         </NuxtLink>
+             <NuxtLink
+               to="/schedule"
+               class="mt-6 inline-block bg-cyan-400 text-[#0B1120] px-6 py-3 rounded-xl font-bold transition-all hover:bg-cyan-300 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-[#0B1120] outline-none"
+             >
+               {{ t('favorites.browseSchedule') }}
+             </NuxtLink>
+          </div>
+        </ClientOnly>
       </div>
-    </ClientOnly>
+    </Transition>
   </div>
 </template>

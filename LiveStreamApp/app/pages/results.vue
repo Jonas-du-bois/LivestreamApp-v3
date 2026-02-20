@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PassageEnriched } from '~/types/api'
+import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
 const { t, locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
@@ -10,7 +11,7 @@ type PassageResult = PassageEnriched & { rank: number }
 const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
 // Fetch data from API with caching to avoid refetch on tab clicks
-const { data: apiResultsMap, refresh } = await useAsyncData(
+const { data: apiResultsMap, pending, refresh } = await useAsyncData(
   'results-data',
   async () => {
     const config = useRuntimeConfig()
@@ -32,6 +33,16 @@ const { data: apiResultsMap, refresh } = await useAsyncData(
     }
   }
 )
+
+const hasLoadedOnce = ref(false)
+
+watch([pending, apiResultsMap], ([isPending, data]) => {
+  if (!isPending && data) {
+    hasLoadedOnce.value = true
+  }
+}, { immediate: true })
+
+const showSkeleton = computed(() => pending.value && !hasLoadedOnce.value)
 
 // Create a local reactive copy that we can mutate properly
 const resultsMap = ref<Record<string, PassageResult[]>>({})
@@ -242,127 +253,150 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
 <template>
   <div class="min-h-screen">
-    
+    <Transition name="premium-swap" mode="out-in">
+      <div v-if="showSkeleton" key="results-skeleton" class="px-4 mt-6 space-y-4">
+        <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
+          <div v-for="chip in 4" :key="`results-chip-skeleton-${chip}`" class="premium-cascade-item" :style="{ '--cascade-index': String(chip - 1) }">
+            <div class="premium-skeleton-pill premium-skeleton-shimmer w-24 h-9 rounded-full"></div>
+          </div>
+        </div>
 
-    <!-- Empty State -->
-    <div v-if="!resultsSections.length" class="text-center py-10 text-white/50 px-4">
-      <p>{{ t('results.noResults') }}</p>
-    </div>
-
-    <!-- Tabs Navigation -->
-    <div v-if="resultsSections.length" class="px-4">
-      <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4" role="tablist" :aria-label="t('filters.apparatus')">
-        <button
-          v-for="section in resultsSections"
-          :key="section.code"
-          @click="activeTab = section.code"
-          class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
-          :class="activeTab === section.code 
-            ? 'bg-cyan-400 text-[#0B1120]' 
-            : 'glass-card text-white/80'"
-          role="tab"
-          :aria-selected="activeTab === section.code"
-          :aria-controls="'panel-' + section.code"
-          :id="'tab-' + section.code"
-        >
-          {{ section.name }}
-        </button>
+        <CascadeSkeletonList :count="6" layout="vertical" :aria-label="t('common.loading')">
+          <template #default>
+            <div class="p-4 flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full premium-skeleton-surface premium-skeleton-shimmer flex-shrink-0"></div>
+              <div class="flex-1 min-w-0 space-y-2">
+                <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-2/3"></div>
+                <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-1/2"></div>
+              </div>
+              <div class="premium-skeleton-line premium-skeleton-shimmer h-8 w-16 rounded-lg"></div>
+            </div>
+          </template>
+        </CascadeSkeletonList>
       </div>
-    </div>
 
-    <!-- Content for active tab -->
-    <Transition name="page" mode="out-in">
-      <div
-        v-if="activeSection"
-        :key="activeSection.code"
-        class="px-4 mt-6 space-y-6"
-        role="tabpanel"
-        :id="'panel-' + activeSection.code"
-        :aria-labelledby="'tab-' + activeSection.code"
-      >
-        <!-- Podium Section -->
-        <div v-if="podiumResults.length > 0">
-          <h2 class="text-white text-xl font-bold mb-4">{{ t('results.podium') }}</h2>
-          <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-            <div
-              v-for="result in podiumResults"
-            :key="result._id"
-            :id="'result-' + result._id"
-            class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-            :class="getPodiumBorderClass(result.rank)"
-            @click="handleGroupClick(result.group._id, activeSection.code)"
-            role="button"
-            tabindex="0"
-            @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
-            @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
+      <div v-else key="results-content">
+        <!-- Empty State -->
+        <div v-if="!resultsSections.length" class="text-center py-10 text-white/50 px-4">
+          <p>{{ t('results.noResults') }}</p>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div v-if="resultsSections.length" class="px-4">
+          <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4" role="tablist" :aria-label="t('filters.apparatus')">
+            <button
+              v-for="section in resultsSections"
+              :key="section.code"
+              @click="activeTab = section.code"
+              class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
+              :class="activeTab === section.code 
+                ? 'bg-cyan-400 text-[#0B1120]' 
+                : 'glass-card text-white/80'"
+              role="tab"
+              :aria-selected="activeTab === section.code"
+              :aria-controls="'panel-' + section.code"
+              :id="'tab-' + section.code"
+            >
+              {{ section.name }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Content for active tab -->
+        <Transition name="page" mode="out-in">
+          <div
+            v-if="activeSection"
+            :key="activeSection.code"
+            class="px-4 mt-6 space-y-6"
+            role="tabpanel"
+            :id="'panel-' + activeSection.code"
+            :aria-labelledby="'tab-' + activeSection.code"
           >
-            <div class="flex items-center gap-4">
-              <!-- Medal Icon -->
-              <div class="flex items-center justify-center w-12 h-12">
-                <span class="sr-only">#{{ result.rank }}</span>
-                <Icon
-                  v-if="getMedalIcon(result.rank)"
-                  :name="getMedalIcon(result.rank)!.name"
-                  class="w-8 h-8"
-                  :class="getMedalIcon(result.rank)!.class"
-                />
-              </div>
+            <!-- Podium Section -->
+            <div v-if="podiumResults.length > 0">
+              <h2 class="text-white text-xl font-bold mb-4">{{ t('results.podium') }}</h2>
+              <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
+                <div
+                  v-for="result in podiumResults"
+                  :key="result._id"
+                  :id="'result-' + result._id"
+                  class="glass-card p-4 rounded-2xl border-2 cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  :class="getPodiumBorderClass(result.rank)"
+                  @click="handleGroupClick(result.group._id, activeSection.code)"
+                  role="button"
+                  tabindex="0"
+                  @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
+                  @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
+                >
+                  <div class="flex items-center gap-4">
+                    <!-- Medal Icon -->
+                    <div class="flex items-center justify-center w-12 h-12">
+                      <span class="sr-only">#{{ result.rank }}</span>
+                      <Icon
+                        v-if="getMedalIcon(result.rank)"
+                        :name="getMedalIcon(result.rank)!.name"
+                        class="w-8 h-8"
+                        :class="getMedalIcon(result.rank)!.class"
+                      />
+                    </div>
 
-              <!-- Group Info -->
-              <div class="flex-1 min-w-0">
-                <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('ACTIFS') }}</p>
-              </div>
+                    <!-- Group Info -->
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
+                      <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('ACTIFS') }}</p>
+                    </div>
 
-              <!-- Score -->
-              <div class="text-cyan-400 font-bold text-3xl">
-                {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
-              </div>
-              </div>
+                    <!-- Score -->
+                    <div class="text-cyan-400 font-bold text-3xl">
+                      {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
+                    </div>
+                  </div>
+                </div>
+              </TransitionGroup>
             </div>
-          </TransitionGroup>
-        </div>
 
-        <!-- Full Ranking Section -->
-        <div v-if="fullRanking.length > 0">
-          <h2 class="text-white text-xl font-bold mb-4">{{ t('results.fullRanking') }}</h2>
-          <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-            <div
-              v-for="result in fullRanking"
-            :key="result._id"
-            :id="'result-' + result._id"
-            class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-            @click="handleGroupClick(result.group._id, activeSection.code)"
-            role="button"
-            tabindex="0"
-            @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
-            @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
-          >
-            <div class="flex items-center gap-4">
-              <!-- Rank Number -->
-              <div class="flex items-center justify-center w-12">
-                <span class="text-white/40 font-bold text-xl">#{{ result.rank }}</span>
-              </div>
+            <!-- Full Ranking Section -->
+            <div v-if="fullRanking.length > 0">
+              <h2 class="text-white text-xl font-bold mb-4">{{ t('results.fullRanking') }}</h2>
+              <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
+                <div
+                  v-for="result in fullRanking"
+                  :key="result._id"
+                  :id="'result-' + result._id"
+                  class="glass-card p-4 rounded-2xl cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  @click="handleGroupClick(result.group._id, activeSection.code)"
+                  role="button"
+                  tabindex="0"
+                  @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
+                  @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
+                >
+                  <div class="flex items-center gap-4">
+                    <!-- Rank Number -->
+                    <div class="flex items-center justify-center w-12">
+                      <span class="text-white/40 font-bold text-xl">#{{ result.rank }}</span>
+                    </div>
 
-              <!-- Group Info -->
-              <div class="flex-1 min-w-0">
-                <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('MIXTE') }}</p>
-              </div>
+                    <!-- Group Info -->
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
+                      <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('MIXTE') }}</p>
+                    </div>
 
-              <!-- Score -->
-              <div class="text-white font-bold text-2xl">
-                {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
-              </div>
-              </div>
+                    <!-- Score -->
+                    <div class="text-white font-bold text-2xl">
+                      {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
+                    </div>
+                  </div>
+                </div>
+              </TransitionGroup>
             </div>
-          </TransitionGroup>
-        </div>
 
-        <!-- No results for this apparatus -->
-        <div v-if="activeSection.results.length === 0" class="text-center py-10 text-white/50">
-          <p>{{ t('results.noApparatusResults') }}</p>
-        </div>
+            <!-- No results for this apparatus -->
+            <div v-if="activeSection.results.length === 0" class="text-center py-10 text-white/50">
+              <p>{{ t('results.noApparatusResults') }}</p>
+            </div>
+          </div>
+        </Transition>
       </div>
     </Transition>
   </div>
@@ -382,23 +416,19 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 }
 
 /* List Transitions (Reordering & Entrance) */
-.list-move,
+.list-move {
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
 }
 
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: scale(0.95) translate(0, 30px);
-}
-
-/* Ensure smooth removal from flow */
-.list-leave-active {
-  position: absolute;
-  width: 100%;
-  z-index: -1;
+  transform: translateX(-14px);
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -422,6 +452,19 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
   100% {
     background-color: transparent;
     box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list-enter-active,
+  .list-leave-active,
+  .list-move {
+    transition: opacity 0.14s ease;
+  }
+
+  .list-enter-from,
+  .list-leave-to {
+    transform: none;
   }
 }
 </style>

@@ -2,6 +2,7 @@
 import { PublicService } from '../services/public.service'
 import { useFavoritesStore } from '../stores/favorites'
 import { storeToRefs } from 'pinia'
+import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
 const { t, locale } = useI18n()
 const { translateApparatus, translateDay, formatLocalizedTime } = useTranslatedData()
@@ -50,7 +51,25 @@ watch(apiParams, (newParams) => {
 }, { immediate: true, deep: true })
 
 // 2. Appel Réactif (useFetch surveille apiParams)
-const { data: scheduleResponse, refresh } = await PublicService.getSchedule(apiParams)
+const { data: scheduleResponse, pending, refresh } = await PublicService.getSchedule(apiParams)
+const hasLoadedOnce = ref(false)
+const isFilterLoading = ref(false)
+
+const apiParamsSignature = computed(() => JSON.stringify(apiParams.value || {}))
+
+watch(apiParamsSignature, (nextValue, previousValue) => {
+  if (!previousValue || nextValue === previousValue || !hasLoadedOnce.value) return
+  isFilterLoading.value = true
+})
+
+watch([pending, scheduleResponse], ([isPending, response]) => {
+  if (!isPending && response) {
+    hasLoadedOnce.value = true
+    isFilterLoading.value = false
+  }
+}, { immediate: true })
+
+const showSkeleton = computed(() => pending.value && (!hasLoadedOnce.value || isFilterLoading.value))
 
 // Store initial metadata separately to avoid filter chips reorganization on refetch
 const initialMeta = useState<{
@@ -234,67 +253,97 @@ useSocketRoom('schedule-updates', [
 
     <!-- Schedule List -->
     <div class="min-h-[50vh]">
-      <Transition name="fade" mode="out-in">
-        <ScheduleEmptyState
-          v-if="filteredSchedule.length === 0"
-          key="empty"
-          :title="t('schedule.noPassagesTitle')"
-          :description="t('schedule.noPassagesHint')"
-          :button-label="t('schedule.clearFilters')"
-          @clear-filters="clearScheduleFilters"
-        />
-
-        <TransitionGroup
-          v-else
-          name="list"
-          tag="div"
-          class="flex flex-col gap-2 relative"
-          key="list"
+      <Transition name="premium-swap" mode="out-in">
+        <CascadeSkeletonList
+          v-if="showSkeleton"
+          key="schedule-skeleton"
+          :count="6"
+          layout="vertical"
+          :aria-label="t('common.loading')"
         >
-          <div
-            v-for="(item, index) in filteredSchedule"
-            :key="item._id || 'unknown'"
-            class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
-            :style="{ '--enter-delay': `${Math.min(index * 50, 300)}ms` }"
-            @click="handleGroupClick(item.group._id, item.apparatus.code)"
-            role="button"
-            tabindex="0"
-            @keydown.enter="handleGroupClick(item.group._id, item.apparatus.code)"
-            @keydown.space.prevent="handleGroupClick(item.group._id, item.apparatus.code)"
-            :aria-label="t('schedule.openGroupDetails', {
-              group: item.group.name,
-              apparatus: translateApparatus(item.apparatus.code, item.apparatus.name),
-              time: formatTime(item.startTime)
-            })"
-          >
-            <div class="flex items-start gap-4">
-          <!-- Time & Location -->
-          <div class="text-left min-w-[70px] flex-shrink-0">
-            <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
-            <div class="text-white/50 text-xs mt-0.5">{{ item.location }}</div>
-          </div>
+          <template #default>
+            <div class="p-4 flex items-start gap-4">
+              <div class="text-left min-w-[70px] flex-shrink-0 space-y-2">
+                <div class="premium-skeleton-line premium-skeleton-shimmer h-6 w-14"></div>
+                <div class="premium-skeleton-line premium-skeleton-shimmer h-3 w-12"></div>
+              </div>
 
-          <!-- Group Info -->
-          <div class="flex-1 min-w-0 pt-0.5">
-            <h4 class="text-white font-bold text-base leading-tight mb-1.5">{{ item.group.name }}</h4>
-            <div class="flex items-center gap-2 text-sm">
-              <span class="text-white/60">{{ t('schedule.group') }}</span>
-              <span class="text-white/40">•</span>
-              <span class="text-purple-400">{{ translateApparatus(item.apparatus.code, item.apparatus.name) }}</span>
+              <div class="flex-1 min-w-0 pt-0.5 space-y-2">
+                <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-2/3"></div>
+                <div class="flex items-center gap-2">
+                  <div class="premium-skeleton-pill premium-skeleton-shimmer w-20"></div>
+                  <div class="premium-skeleton-pill premium-skeleton-shimmer w-28"></div>
+                </div>
+              </div>
+
+              <div class="w-8 h-8 rounded-full premium-skeleton-surface premium-skeleton-shimmer flex-shrink-0"></div>
             </div>
-          </div>
+          </template>
+        </CascadeSkeletonList>
 
-          <!-- Favorite Button -->
-          <div class="flex items-start pt-0.5 flex-shrink-0">
-            <SparkHeart
-              :active="!!(item._id && isFavorite(item._id))"
-              :label="(item._id && isFavorite(item._id)) ? t('schedule.removeFromFavorites', { name: item.group?.name || '' }) : t('schedule.addToFavorites', { name: item.group?.name || '' })"
-              @click.stop="item._id && toggleFavorite(item._id, $event)"
+        <div v-else key="schedule-content">
+          <Transition name="fade" mode="out-in">
+            <ScheduleEmptyState
+              v-if="filteredSchedule.length === 0"
+              key="empty"
+              :title="t('schedule.noPassagesTitle')"
+              :description="t('schedule.noPassagesHint')"
+              :button-label="t('schedule.clearFilters')"
+              @clear-filters="clearScheduleFilters"
             />
-          </div>
+
+            <TransitionGroup
+              v-else
+              name="list"
+              tag="div"
+              class="flex flex-col gap-2 relative"
+              key="list"
+            >
+              <div
+                v-for="(item, index) in filteredSchedule"
+                :key="item._id || `${item.group?._id || 'group'}-${item.startTime || 'start'}-${item.apparatus?.code || 'apparatus'}-${index}`"
+                class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
+                @click="handleGroupClick(item.group._id, item.apparatus.code)"
+                role="button"
+                tabindex="0"
+                @keydown.enter="handleGroupClick(item.group._id, item.apparatus.code)"
+                @keydown.space.prevent="handleGroupClick(item.group._id, item.apparatus.code)"
+                :aria-label="t('schedule.openGroupDetails', {
+                  group: item.group.name,
+                  apparatus: translateApparatus(item.apparatus.code, item.apparatus.name),
+                  time: formatTime(item.startTime)
+                })"
+              >
+                <div class="flex items-start gap-4">
+                  <!-- Time & Location -->
+                  <div class="text-left min-w-[70px] flex-shrink-0">
+                    <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
+                    <div class="text-white/50 text-xs mt-0.5">{{ item.location }}</div>
+                  </div>
+
+                  <!-- Group Info -->
+                  <div class="flex-1 min-w-0 pt-0.5">
+                    <h4 class="text-white font-bold text-base leading-tight mb-1.5">{{ item.group.name }}</h4>
+                    <div class="flex items-center gap-2 text-sm">
+                      <span class="text-white/60">{{ t('schedule.group') }}</span>
+                      <span class="text-white/40">•</span>
+                      <span class="text-purple-400">{{ translateApparatus(item.apparatus.code, item.apparatus.name) }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Favorite Button -->
+                  <div class="flex items-start pt-0.5 flex-shrink-0">
+                    <SparkHeart
+                      :active="!!(item._id && isFavorite(item._id))"
+                      :label="(item._id && isFavorite(item._id)) ? t('schedule.removeFromFavorites', { name: item.group?.name || '' }) : t('schedule.addToFavorites', { name: item.group?.name || '' })"
+                      @click.stop="item._id && toggleFavorite(item._id, $event)"
+                    />
+                  </div>
+                </div>
+              </div>
+            </TransitionGroup>
+          </Transition>
         </div>
-      </div>
-        </TransitionGroup>
       </Transition>
     </div>
   </div>
@@ -302,26 +351,19 @@ useSocketRoom('schedule-updates', [
 
 <style scoped>
 /* List Transitions */
-.list-move,
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+.list-move {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.list-enter-active {
-  transition-delay: var(--enter-delay);
+.list-enter-active,
+.list-leave-active {
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
 }
 
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateY(20px);
-}
-
-/* Ensure leaving items are taken out of layout flow so others can move smoothly */
-.list-leave-active {
-  position: absolute;
-  width: 100%;
+  transform: translateX(-14px);
 }
 
 /* Fade Transition for Empty State switch */
@@ -333,5 +375,18 @@ useSocketRoom('schedule-updates', [
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list-enter-active,
+  .list-leave-active,
+  .list-move {
+    transition: opacity 0.14s ease;
+  }
+
+  .list-enter-from,
+  .list-leave-to {
+    transform: none;
+  }
 }
 </style>
