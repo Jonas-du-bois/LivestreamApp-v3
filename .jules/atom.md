@@ -56,3 +56,10 @@
 - **Pattern:** Centralized section headings with consistent typography (`text-white`, `font-bold`, `px-1`).
 - **Rule:** Use for all section titles to maintain visual consistency. Supports `tag` (h1-h6) and `size` (base, lg, xl, 2xl) props.
 - **Logic:** Defaults to `h3` and `text-lg`. `px-1` ensures alignment with cards in some layouts.
+
+## 20/02 - Extension de `<UiInfoTile>`
+
+- **Component:** `app/components/ui/InfoTile.vue`
+- **Action:** Extended with polymorphic `variant` support ('stat' vs 'feature').
+- **Reasoning:** Merged similar "glass card with icon" patterns found in `food.vue` and `afterparty.vue` to avoid creating a redundant `GlassCard.vue`.
+- **Logic:** Added `iconShape` ('square' vs 'circle') and `accent` color ('blue') to support broader use cases.
