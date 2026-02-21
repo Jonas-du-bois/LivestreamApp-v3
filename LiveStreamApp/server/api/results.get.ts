@@ -31,6 +31,21 @@ export default defineCachedEventHandler(async (event) => {
         }
       },
 
+      // OPTIMIZATION: Project only necessary fields to reduce memory usage and network payload
+      // BOLT: Removed large arrays (history, monitors) and internal fields before grouping
+      {
+        $project: {
+          _id: 1,
+          score: 1,
+          status: 1,
+          group: 1, // Already projected in lookup
+          apparatus: 1, // ObjectId, needed for grouping
+          startTime: 1,
+          endTime: 1,
+          location: 1
+        }
+      },
+
       // OPTIMIZATION: Group by Apparatus ID immediately to avoid looking up apparatus details for every passage
       {
         $group: {
