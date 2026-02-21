@@ -1,0 +1,61 @@
+
+> dev
+> nuxt dev
+
+│
+●  Nuxt 4.3.0 (with Nitro 2.13.1, Vite 7.3.1 and Vue 3.5.27)
+[get-port] Unable to find an available port (tried 3000 on host "localhost"). Using alternative port 3001.
+
+  ➜ Local:    http://localhost:3001/
+  ➜ Network:  use --host to expose
+
+[nuxt:tailwindcss] ℹ Using default Tailwind CSS file
+[nuxt:tailwindcss] ℹ Tailwind Viewer: http://localhost:3001/_tailwind/
+✔ Vite client built in 73ms
+✔ Vite server built in 124ms
+[nitro] ✔ Nuxt Nitro server built in 3757ms
+ℹ Vite server warmed up in 1ms
+ℹ Vite client warmed up in 4ms
+[db] Connecting to MongoDB (masked): mongodb+sr...
+WARN  [Scheduler] WebPush init failed (invalid keys) - Notifications disabled Vapid private key must be a URL safe Base 64 (without "=")
+
+    at Object.validatePrivateKey (node_modules/web-push/src/vapid-helper.js:126:11)
+    at WebPushLib.setVapidDetails (node_modules/web-push/src/web-push-lib.js:61:17)
+    at .nuxt/dev/index.mjs:3269:15
+    at runNitroPlugins (.nuxt/dev/index.mjs:4345:7)
+    at .nuxt/dev/index.mjs:4356:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+[Scheduler] Starting scheduler for status updates...
+ERROR  [db] Connection error: bad auth : authentication failed
+
+    at Connection.sendCommand (node_modules/mongoose/node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (node_modules/mongoose/node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (node_modules/mongoose/node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (node_modules/mongoose/node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (node_modules/mongoose/node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (node_modules/mongoose/node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (node_modules/mongoose/node_modules/mongodb/lib/cmap/connect.js:24:9)
+ERROR  [db] mongoose connection error bad auth : authentication failed
+
+    at Connection.sendCommand (node_modules/mongoose/node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (node_modules/mongoose/node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (node_modules/mongoose/node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (node_modules/mongoose/node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (node_modules/mongoose/node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (node_modules/mongoose/node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (node_modules/mongoose/node_modules/mongodb/lib/cmap/connect.js:24:9)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
