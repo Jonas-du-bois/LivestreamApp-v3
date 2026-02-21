@@ -1,0 +1,127 @@
+
+> coupe-des-bains@ dev /app/LiveStreamApp
+> nuxt dev
+
+│
+●  Nuxt 4.3.1 (with Nitro 2.13.1, Vite 7.3.1 and Vue 3.5.28)
+
+  ➜ Local:    http://localhost:3000/
+  ➜ Network:  use --host to expose
+
+[nuxt:tailwindcss] ℹ Using default Tailwind CSS file
+[nuxt:tailwindcss] ℹ Tailwind Viewer: http://localhost:3000/_tailwind/
+✔ Vite client built in 83ms
+✔ Vite server built in 136ms
+[nitro] ✔ Nuxt Nitro server built in 3103ms
+ℹ Vite server warmed up in 1ms
+ℹ Vite client warmed up in 4ms
+[db] Connecting to MongoDB (masked): mongodb+sr...
+WARN  [Scheduler] WebPush init failed (invalid keys) - Notifications disabled Vapid private key must be a URL safe Base 64 (without "=")
+
+    at Object.validatePrivateKey (node_modules/.pnpm/web-push@3.6.7/node_modules/web-push/src/vapid-helper.js:126:11)
+    at WebPushLib.setVapidDetails (node_modules/.pnpm/web-push@3.6.7/node_modules/web-push/src/web-push-lib.js:61:17)
+    at .nuxt/dev/index.mjs:4620:15
+    at runNitroPlugins (.nuxt/dev/index.mjs:5681:7)
+    at .nuxt/dev/index.mjs:5692:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+[Scheduler] Starting scheduler for status updates...
+ERROR  [db] Connection error: bad auth : authentication failed
+
+    at Connection.sendCommand (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/connect.js:24:9)
+ERROR  [db] mongoose connection error bad auth : authentication failed
+
+    at Connection.sendCommand (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/connection.js:320:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/connection.js:344:26)
+    at async continueScramConversation (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/auth/scram.js:131:15)
+    at async executeScram (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/auth/scram.js:80:5)
+    at async ScramSHA1.auth (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/auth/scram.js:39:16)
+    at async performInitialHandshake (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/connect.js:104:13)
+    at async connect (node_modules/.pnpm/mongodb@7.0.0/node_modules/mongodb/lib/cmap/connect.js:24:9)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+✅ [Socket.io] Serveur initialisé avec succès
+ℹ ✨ new dependencies optimized: socket.io-client, @khmyznikov/pwa-install, @capacitor/core, @capacitor/preferences
+ℹ ✨ optimized dependencies changed. reloading
+[Socket.io] Client connecté : fTVrOjRNrT-iEZXMAAAB
+ℹ ✨ new dependencies optimized: vue-chartjs, chart.js, workbox-precaching, workbox-core, workbox-routing, workbox-strategies, workbox-expiration
+ℹ ✨ optimized dependencies changed. reloading
+[Socket.io] Socket fTVrOjRNrT-iEZXMAAAB déconnecté: transport close
+[Socket.io] Client connecté : Kxy02Vra9pIwKuc8AAAD
+[Socket.io] Socket Kxy02Vra9pIwKuc8AAAD a rejoint la salle : streams
+[Socket.io] Socket Kxy02Vra9pIwKuc8AAAD rooms: [ 'Kxy02Vra9pIwKuc8AAAD', 'streams' ]
+[Socket.io] Socket Kxy02Vra9pIwKuc8AAAD a rejoint la salle : live-scores
+[Socket.io] Socket Kxy02Vra9pIwKuc8AAAD rooms: [ 'Kxy02Vra9pIwKuc8AAAD', 'streams', 'live-scores' ]
+[Socket.io] Socket Kxy02Vra9pIwKuc8AAAD a rejoint la salle : schedule-updates
+[Socket.io] Socket Kxy02Vra9pIwKuc8AAAD rooms: [ 'Kxy02Vra9pIwKuc8AAAD', 'streams', 'live-scores', 'schedule-updates' ]
+[Socket.io] Socket Kxy02Vra9pIwKuc8AAAD déconnecté: transport close
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+[Socket.io] Client connecté : thU-UnXF_aeaGeOoAAAF
+[Socket.io] Socket thU-UnXF_aeaGeOoAAAF a rejoint la salle : streams
+[Socket.io] Socket thU-UnXF_aeaGeOoAAAF rooms: [ 'thU-UnXF_aeaGeOoAAAF', 'streams' ]
+[weather] Fetching https://api.open-meteo.com/v1/forecast?latitude=46.7785&longitude=6.6412&current_weather=true&temperature_unit=celsius
+[Socket.io] Socket thU-UnXF_aeaGeOoAAAF a rejoint la salle : live-scores
+[Socket.io] Socket thU-UnXF_aeaGeOoAAAF rooms: [ 'thU-UnXF_aeaGeOoAAAF', 'streams', 'live-scores' ]
+[Socket.io] Socket thU-UnXF_aeaGeOoAAAF a rejoint la salle : schedule-updates
+[Socket.io] Socket thU-UnXF_aeaGeOoAAAF rooms: [ 'thU-UnXF_aeaGeOoAAAF', 'streams', 'live-scores', 'schedule-updates' ]
+[Socket.io] Socket thU-UnXF_aeaGeOoAAAF déconnecté: transport close
+[Socket.io] Client connecté : Bjwspv0Fidk3LWyeAAAH
+[Socket.io] Socket Bjwspv0Fidk3LWyeAAAH a rejoint la salle : streams
+[Socket.io] Socket Bjwspv0Fidk3LWyeAAAH rooms: [ 'Bjwspv0Fidk3LWyeAAAH', 'streams' ]
+[Socket.io] Socket Bjwspv0Fidk3LWyeAAAH a rejoint la salle : live-scores
+[Socket.io] Socket Bjwspv0Fidk3LWyeAAAH rooms: [ 'Bjwspv0Fidk3LWyeAAAH', 'streams', 'live-scores' ]
+[Socket.io] Socket Bjwspv0Fidk3LWyeAAAH a rejoint la salle : schedule-updates
+[Socket.io] Socket Bjwspv0Fidk3LWyeAAAH rooms: [ 'Bjwspv0Fidk3LWyeAAAH', 'streams', 'live-scores', 'schedule-updates' ]
+[Socket.io] Socket Bjwspv0Fidk3LWyeAAAH déconnecté: transport close
+ERROR  [live] Error fetching live data Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [live] Error fetching live data Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+ERROR  [Scheduler] Error in job: Operation passages.find() buffering timed out after 10000ms
+
+    at Timeout._onTimeout (node_modules/.pnpm/mongoose@9.2.1/node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:131:25)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)

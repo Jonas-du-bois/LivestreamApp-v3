@@ -314,7 +314,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           >
             <!-- Podium Section -->
             <div v-if="podiumResults.length > 0">
-              <h2 class="text-white text-xl font-bold mb-4">{{ t('results.podium') }}</h2>
+              <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.podium') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
                 <UiGlassCard
                   v-for="result in podiumResults"
@@ -355,7 +355,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
             <!-- Full Ranking Section -->
             <div v-if="fullRanking.length > 0">
-              <h2 class="text-white text-xl font-bold mb-4">{{ t('results.fullRanking') }}</h2>
+              <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.fullRanking') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
                 <UiGlassCard
                   v-for="result in fullRanking"

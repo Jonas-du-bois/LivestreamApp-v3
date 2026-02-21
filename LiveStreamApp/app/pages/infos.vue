@@ -108,7 +108,7 @@ const usefulLinks = [
         </section>
 
         <section class="space-y-3">
-          <h3 class="text-white text-lg font-bold px-1">Organisation du week-end</h3>
+          <UiSectionTitle>Organisation du week-end</UiSectionTitle>
           <div class="grid grid-cols-1 gap-3">
             <article
               v-for="item in weekendOrganization"
@@ -123,7 +123,7 @@ const usefulLinks = [
         </section>
 
         <section class="space-y-3">
-          <h3 class="text-white text-lg font-bold px-1">Acces et parking</h3>
+          <UiSectionTitle>Acces et parking</UiSectionTitle>
           <div class="glass-card p-4 space-y-3">
             <div
               v-for="line in parkingInfo"
@@ -137,7 +137,7 @@ const usefulLinks = [
         </section>
 
         <section class="space-y-3">
-          <h3 class="text-white text-lg font-bold px-1">Samaritains et premiers secours</h3>
+          <UiSectionTitle>Samaritains et premiers secours</UiSectionTitle>
           <div class="glass-card p-4 space-y-3">
             <div
               v-for="line in samaritansInfo"
@@ -151,7 +151,7 @@ const usefulLinks = [
         </section>
 
         <section class="space-y-3">
-          <h3 class="text-white text-lg font-bold px-1">Infos importantes</h3>
+          <UiSectionTitle>Infos importantes</UiSectionTitle>
           <div class="glass-card p-4 space-y-2">
             <p
               v-for="line in importantInfo"
@@ -165,7 +165,7 @@ const usefulLinks = [
         </section>
 
         <section class="space-y-3">
-          <h3 class="text-white text-lg font-bold px-1">Liens utiles</h3>
+          <UiSectionTitle>Liens utiles</UiSectionTitle>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <a
               v-for="link in usefulLinks"
