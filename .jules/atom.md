@@ -49,3 +49,10 @@
 - **Pattern:** Standardized container for content using the Glassmorphism theme.
 - **Rule:** Automatically handles interaction states (`hover`, `active scale`) and correctly wraps as a `NuxtLink` if the `to` prop is provided.
 - **Logic:** Centralizes the visual feedback consistency across the app while allowing flexible padding and content.
+
+## 20/02 - Création de `<UiSectionTitle>`
+
+- **Component:** `app/components/ui/SectionTitle.vue`
+- **Pattern:** Centralized section headings with consistent typography (`text-white`, `font-bold`, `px-1`).
+- **Rule:** Use for all section titles to maintain visual consistency. Supports `tag` (h1-h6) and `size` (base, lg, xl, 2xl) props.
+- **Logic:** Defaults to `h3` and `text-lg`. `px-1` ensures alignment with cards in some layouts.
