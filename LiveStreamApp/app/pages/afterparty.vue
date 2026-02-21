@@ -209,20 +209,18 @@ const drinkMenu = computed(() => [
 
           <!-- Infos pratiques -->
           <div class="grid grid-cols-1 gap-4 mb-8">
-            <div 
+            <UiInfoTile
               v-for="item in highlights" 
               :key="item.label"
-              class="flex items-center gap-4 p-4 rounded-2xl border backdrop-blur-md transition-all hover:scale-[1.02] active:scale-95 bg-black/70"
+              variant="stat"
+              size="lg"
+              accent="violet"
+              :icon="item.icon"
+              :label="item.label"
+              :value="item.value"
+              class="bg-black/70 transition-all hover:scale-[1.02] active:scale-95"
               :class="item.bg"
-            >
-              <div class="h-14 w-14 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0 shadow-lg border border-violet-500/30">
-                <Icon :name="item.icon" size="28" :class="item.color" />
-              </div>
-              <div>
-                <p class="text-white/60 text-[11px] font-bold uppercase tracking-[0.2em]">{{ item.label }}</p>
-                <p class="text-white text-xl font-bold leading-tight">{{ item.value }}</p>
-              </div>
-            </div>
+            />
           </div>
 
           <!-- Menu des boissons avec prix -->
