@@ -277,8 +277,20 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
       <div v-else key="results-content">
         <!-- Empty State -->
-        <div v-if="!resultsSections.length" class="text-center py-10 text-white/50 px-4">
-          <p>{{ t('results.noResults') }}</p>
+        <div v-if="!resultsSections.length" class="glass-card p-8 text-center mx-4 flex flex-col items-center justify-center min-h-[300px]">
+          <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6 animate-pulse-slow">
+            <Icon name="fluent:trophy-24-regular" class="w-8 h-8 text-white/40" />
+          </div>
+          <h3 class="text-white font-bold text-lg mb-2">{{ t('results.noResults') }}</h3>
+          <p class="text-white/60 max-w-xs mx-auto mb-6">{{ t('results.noResultsHint', "Les résultats apparaîtront ici dès qu'ils seront publiés.") }}</p>
+
+          <button
+            @click="refresh()"
+            class="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white font-medium flex items-center gap-2 group"
+          >
+            <Icon name="fluent:arrow-sync-24-regular" class="w-5 h-5 transition-transform group-hover:rotate-180" :class="{ 'animate-spin': pending }" />
+            <span>{{ t('weather.refresh') }}</span>
+          </button>
         </div>
 
         <!-- Tabs Navigation -->
@@ -302,7 +314,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           >
             <!-- Podium Section -->
             <div v-if="podiumResults.length > 0">
-              <h2 class="text-white text-xl font-bold mb-4">{{ t('results.podium') }}</h2>
+              <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.podium') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
                 <UiGlassCard
                   v-for="result in podiumResults"
@@ -343,7 +355,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
             <!-- Full Ranking Section -->
             <div v-if="fullRanking.length > 0">
-              <h2 class="text-white text-xl font-bold mb-4">{{ t('results.fullRanking') }}</h2>
+              <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.fullRanking') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
                 <UiGlassCard
                   v-for="result in fullRanking"
@@ -376,8 +388,11 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             </div>
 
             <!-- No results for this apparatus -->
-            <div v-if="activeSection.results.length === 0" class="text-center py-10 text-white/50">
-              <p>{{ t('results.noApparatusResults') }}</p>
+            <div v-if="activeSection.results.length === 0" class="glass-card p-8 text-center flex flex-col items-center justify-center min-h-[200px]">
+              <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                <Icon name="fluent:clipboard-bullet-list-24-regular" class="w-6 h-6 text-white/30" />
+              </div>
+              <p class="text-white/50 font-medium">{{ t('results.noApparatusResults') }}</p>
             </div>
           </div>
         </Transition>

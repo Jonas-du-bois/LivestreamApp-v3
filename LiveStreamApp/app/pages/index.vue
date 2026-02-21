@@ -240,7 +240,7 @@ useSocketRoom('schedule-updates', [
 
         <!-- Happening Now Carousel -->
         <div>
-          <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('home.happeningNow') }}</h3>
+          <UiSectionTitle class="mb-4">{{ t('home.happeningNow') }}</UiSectionTitle>
           <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
             <UiGlassCard 
               v-for="group in happeningNow"
