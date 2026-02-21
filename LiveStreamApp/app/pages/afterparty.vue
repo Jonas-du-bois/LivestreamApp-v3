@@ -135,13 +135,9 @@ const drinkMenu = computed(() => [
       </UiBackButton>
       
       <!-- Chip Coming Soon -->
-      <div class="glass-panel px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-violet-400/30 flex items-center gap-2 shadow-lg">
-        <span class="relative flex h-2 w-2">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
-        </span>
-        <span class="text-xs font-bold tracking-widest uppercase text-white">{{ t('afterparty.comingSoon') }}</span>
-      </div>
+      <UiStatusBadge variant="violet" show-dot pulse>
+        {{ t('afterparty.comingSoon') }}
+      </UiStatusBadge>
     </div>
 
     <!-- Contenu scrollable -->

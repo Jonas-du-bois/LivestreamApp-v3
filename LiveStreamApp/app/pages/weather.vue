@@ -167,10 +167,9 @@ const stats = computed(() => [
 <template>
   <div class="px-4 space-y-6 pb-6">
     <div class="px-2 pt-2">
-      <NuxtLink to="/" class="inline-flex items-center gap-2 glass-panel px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
-        <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
-        <span class="text-white text-sm font-medium">{{ t('common.back') }}</span>
-      </NuxtLink>
+      <UiBackButton to="/">
+        {{ t('common.back') }}
+      </UiBackButton>
     </div>
 
     <Transition name="premium-swap" mode="out-in">
@@ -224,19 +223,15 @@ const stats = computed(() => [
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div
+          <UiInfoTile
             v-for="stat in stats"
             :key="stat.key"
-            class="glass-card p-4 flex items-center gap-3"
-          >
-            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/15">
-              <Icon :name="stat.icon" class="w-5 h-5 text-white/80" />
-            </div>
-            <div>
-              <p class="text-xs text-white/60 uppercase tracking-wide">{{ stat.label }}</p>
-              <p class="text-white font-bold">{{ stat.value }}</p>
-            </div>
-          </div>
+            :icon="stat.icon"
+            :label="stat.label"
+            :value="stat.value"
+            accent="white"
+            size="sm"
+          />
         </div>
       </div>
     </Transition>

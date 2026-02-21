@@ -76,18 +76,13 @@
             />
             
             <div class="absolute top-3 right-3 z-20">
-              <div 
-                class="px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md border flex items-center gap-2"
-                :class="spot.isOpen
-                  ? 'bg-green-500/20 border-green-500/30 text-green-400' 
-                  : 'bg-red-500/20 border-red-500/30 text-red-400'"
+              <UiStatusBadge 
+                :variant="spot.isOpen ? 'green' : 'red'" 
+                :show-dot="spot.isOpen" 
+                :pulse="spot.isOpen"
               >
-                <span v-if="spot.isOpen" class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
                 {{ spot.isOpen ? t('common.open') : t('common.closed') }}
-              </div>
+              </UiStatusBadge>
             </div>
 
             <div class="absolute bottom-3 left-4 z-20 flex items-end gap-3">

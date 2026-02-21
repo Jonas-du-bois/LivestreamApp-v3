@@ -235,21 +235,11 @@ useSocketRoom('schedule-updates', [
     </div>
 
     <!-- Filter Chips -->
-    <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scroll-smooth" role="group" :aria-label="t('filters.title')">
-      <button
-        v-for="filter in filters"
-        :key="`${filter.code || filter}-${locale}`"
-        @click.stop="selectedFilter = filter.code || filter"
-        class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none hover:scale-105 active:scale-95"
-        :class="selectedFilter === (filter.code || filter)
-          ? 'bg-cyan-400 text-[#0B1120] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
-          : 'glass-card text-white/80'"
-        type="button"
-        :aria-pressed="selectedFilter === (filter.code || filter)"
-      >
-        {{ filter.label || filter }}
-      </button>
-    </div>
+    <UiFilterChips
+      v-model="selectedFilter"
+      :items="filters.map(f => ({ id: f.code || f, label: f.label || f }))"
+      :aria-label="t('filters.title')"
+    />
 
     <!-- Schedule List -->
     <div class="min-h-[50vh]">
@@ -283,14 +273,24 @@ useSocketRoom('schedule-updates', [
 
         <div v-else key="schedule-content">
           <Transition name="fade" mode="out-in">
-            <ScheduleEmptyState
+            <UiEmptyState
               v-if="filteredSchedule.length === 0"
               key="empty"
               :title="t('schedule.noPassagesTitle')"
               :description="t('schedule.noPassagesHint')"
-              :button-label="t('schedule.clearFilters')"
-              @clear-filters="clearScheduleFilters"
-            />
+              icon="fluent:filter-dismiss-24-regular"
+            >
+              <template #actions>
+                <button
+                  class="inline-flex items-center gap-2 rounded-full gradient-cyan-purple px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90 active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  type="button"
+                  @click="clearScheduleFilters"
+                >
+                  <Icon name="fluent:arrow-reset-24-regular" class="h-4 w-4" />
+                  <span>{{ t('schedule.clearFilters') }}</span>
+                </button>
+              </template>
+            </UiEmptyState>
 
             <TransitionGroup
               v-else
@@ -299,13 +299,10 @@ useSocketRoom('schedule-updates', [
               class="flex flex-col gap-2 relative"
               key="list"
             >
-              <div
+              <UiGlassCard
                 v-for="(item, index) in filteredSchedule"
                 :key="item._id || `${item.group?._id || 'group'}-${item.startTime || 'start'}-${item.apparatus?.code || 'apparatus'}-${index}`"
-                class="glass-card p-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
                 @click="handleGroupClick(item.group._id, item.apparatus.code)"
-                role="button"
-                tabindex="0"
                 @keydown.enter="handleGroupClick(item.group._id, item.apparatus.code)"
                 @keydown.space.prevent="handleGroupClick(item.group._id, item.apparatus.code)"
                 :aria-label="t('schedule.openGroupDetails', {
@@ -340,7 +337,7 @@ useSocketRoom('schedule-updates', [
                     />
                   </div>
                 </div>
-              </div>
+              </UiGlassCard>
             </TransitionGroup>
           </Transition>
         </div>

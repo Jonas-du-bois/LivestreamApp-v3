@@ -242,16 +242,14 @@ useSocketRoom('schedule-updates', [
         <div>
           <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('home.happeningNow') }}</h3>
           <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-            <div 
+            <UiGlassCard 
               v-for="group in happeningNow"
               :key="group.id"
-              class="glass-card p-4 min-w-[200px] flex-shrink-0 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
+              class="min-w-[200px] flex-shrink-0"
               @click="handleGroupClick(group.id, group.apparatusCode)"
-              role="button"
-              tabindex="0"
-              :aria-label="t('results.openGroupDetails', { group: group.name })"
               @keydown.enter="handleGroupClick(group.id, group.apparatusCode)"
               @keydown.space.prevent="handleGroupClick(group.id, group.apparatusCode)"
+              :aria-label="t('results.openGroupDetails', { group: group.name })"
             >
               <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
               <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>
@@ -266,7 +264,7 @@ useSocketRoom('schedule-updates', [
                 <Icon name="fluent:play-24-filled" class="w-4 h-4" />
                 <span class="text-sm">{{ t('common.watch') }}</span>
               </NuxtLink>
-            </div>
+            </UiGlassCard>
           </div>
         </div>
 

@@ -193,10 +193,10 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           <div v-if="upcomingPassages.length > 0">
             <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.mySchedule') }}</h3>
             <TransitionGroup name="list" tag="div" class="space-y-3 relative">
-              <div
+              <UiGlassCard
                 v-for="passage in upcomingPassages"
                 :key="passage._id"
-                class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all"
+                class="flex items-center gap-4"
                 @click="handleGroupClick(passage.group?._id || '')"
               >
                 <div class="text-center min-w-[60px]">
@@ -220,7 +220,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
                     @click.stop="passage._id && toggleFavorite(passage._id, $event)"
                   />
                 </div>
-              </div>
+              </UiGlassCard>
             </TransitionGroup>
           </div>
         </ClientOnly>
@@ -230,10 +230,10 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           <div v-if="pastPassages.length > 0">
             <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.pastEvents') }}</h3>
             <TransitionGroup name="list" tag="div" class="space-y-3 relative">
-              <div
+              <UiGlassCard
                 v-for="passage in pastPassages"
                 :key="passage._id"
-                class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/15 active:scale-[0.98] transition-all opacity-70"
+                class="flex items-center gap-4 opacity-70"
                 @click="handleGroupClick(passage.group?._id || '')"
               >
                 <div class="text-center min-w-[60px]">
@@ -257,29 +257,29 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
                     @click.stop="passage._id && toggleFavorite(passage._id, $event)"
                   />
                 </div>
-              </div>
+              </UiGlassCard>
             </TransitionGroup>
           </div>
         </ClientOnly>
 
         <!-- Empty State -->
         <ClientOnly>
-          <div v-if="favoritePassages.length === 0" class="glass-card p-8 text-center mt-10">
-             <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-                <Icon name="fluent:heart-broken-24-regular" class="w-8 h-8 text-white/40" />
-             </div>
-             <h3 class="text-white font-bold text-lg mb-2">{{ t('favorites.noFavorites') }}</h3>
-             <p class="text-white/60 text-sm">
-               {{ t('favorites.noFavoritesHint') }}
-             </p>
-
-             <NuxtLink
-               to="/schedule"
-               class="mt-6 inline-block bg-cyan-400 text-[#0B1120] px-6 py-3 rounded-xl font-bold transition-all hover:bg-cyan-300 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-[#0B1120] outline-none"
-             >
-               {{ t('favorites.browseSchedule') }}
-             </NuxtLink>
-          </div>
+          <UiEmptyState
+            v-if="favoritePassages.length === 0"
+            class="mt-10"
+            :title="t('favorites.noFavorites')"
+            :description="t('favorites.noFavoritesHint')"
+            icon="fluent:heart-broken-24-regular"
+          >
+            <template #actions>
+              <NuxtLink
+                to="/schedule"
+                class="bg-cyan-400 text-[#0B1120] px-6 py-3 rounded-xl font-bold transition-all hover:bg-cyan-300 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-[#0B1120] outline-none"
+              >
+                {{ t('favorites.browseSchedule') }}
+              </NuxtLink>
+            </template>
+          </UiEmptyState>
         </ClientOnly>
       </div>
     </Transition>

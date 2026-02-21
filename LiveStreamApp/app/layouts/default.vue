@@ -135,45 +135,36 @@ provide('openGroupDetails', openGroupDetails)
                 <Icon name="fluent:globe-24-regular" class="w-4 h-4 text-white/70" />
               </button>
               
-              <!-- PWA Install Button - Visible only when installation is available -->
+              <!-- PWA Install Button -->
               <Transition name="badge-pop">
-                <button 
+                <UiIconButton
                   v-if="isInstallAvailable && !isStandalone"
+                  icon="fluent:arrow-download-24-regular"
+                  :label="t('pwa.installApp')"
+                  class="animate-pulse text-cyan-400"
                   @click="showInstallPrompt(true)"
-                  class="p-2 hover:bg-white/10 rounded-lg transition-colors relative animate-pulse"
-                  :aria-label="t('pwa.installApp')"
-                >
-                  <Icon name="fluent:arrow-download-24-regular" class="w-5 h-5 text-cyan-400" />
-                </button>
+                />
               </Transition>
               
-              <button 
+              <UiIconButton
+                icon="fluent:search-24-regular"
+                label="Rechercher"
                 @click="openSearch"
-                class="p-2 hover:bg-white/10 rounded-lg transition-colors relative"
-                aria-label="Rechercher"
-                title="Rechercher"
-              >
-                <Icon name="fluent:search-24-regular" class="w-5 h-5 text-white" />
-              </button>
+              />
               
-              <button 
+              <UiIconButton
                 v-if="route.path === '/schedule'"
+                icon="fluent:options-24-regular"
+                label="Filtrer"
                 @click="openFilter"
-                class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                aria-label="Filtrer"
-                title="Filtrer"
-              >
-                <Icon name="fluent:options-24-regular" class="w-5 h-5 text-white" />
-              </button>
+              />
               
-              <button 
+              <UiIconButton
+                icon="fluent:alert-24-regular"
+                label="Notifications"
                 @click="openNotifications"
-                class="p-2 hover:bg-white/10 rounded-lg transition-colors relative group"
-                aria-label="Notifications"
-                title="Notifications"
               >
-                <Icon name="fluent:alert-24-regular" class="w-5 h-5 text-white" />
-                <!-- Badge with count -->
+                <!-- Badge avec count (Slot pour garder la logique complexe du badge) -->
                 <Transition name="badge-pop">
                   <span 
                     v-if="hasUnreadNotifications"
@@ -182,7 +173,7 @@ provide('openGroupDetails', openGroupDetails)
                     {{ unreadCount > 99 ? '99+' : unreadCount }}
                   </span>
                 </Transition>
-              </button>
+              </UiIconButton>
             </div>
           </div>
         </div>

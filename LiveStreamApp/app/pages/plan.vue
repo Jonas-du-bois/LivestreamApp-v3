@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref, shallowRef, computed } from 'vue';
 import 'leaflet/dist/leaflet.css'; // Import CSS Leaflet
+import { useRouter } from 'vue-router';
 
 const { t } = useI18n()
+const router = useRouter()
 
 // Masquer header/footer globaux pour cette page "Plein écran"
 definePageMeta({ header: false, footer: false })
+
+const goBack = () => {
+  try { router.back() } catch (e) { router.push('/') }
+}
 
 const mapContainer = ref<HTMLElement | null>(null);
 const map = shallowRef<any>(null); // Référence à l'instance Leaflet

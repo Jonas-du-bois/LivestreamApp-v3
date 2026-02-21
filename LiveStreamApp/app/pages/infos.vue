@@ -82,10 +82,9 @@ const usefulLinks = [
 <template>
   <div class="px-4 space-y-6 pb-6">
     <div class="px-2 pt-2">
-      <NuxtLink to="/" class="inline-flex items-center gap-2 glass-panel px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
-        <Icon name="fluent:chevron-left-24-regular" class="w-5 h-5 text-white" />
-        <span class="text-white text-sm font-medium">{{ t('common.back') }}</span>
-      </NuxtLink>
+      <UiBackButton to="/">
+        {{ t('common.back') }}
+      </UiBackButton>
     </div>
 
     <Transition name="premium-swap" appear>
@@ -183,27 +182,24 @@ const usefulLinks = [
         </section>
 
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <NuxtLink
+          <UiInfoTile
             to="/schedule"
-            class="glass-card p-4 flex items-center gap-3 hover:bg-white/10 transition-colors"
-          >
-            <Icon name="fluent:calendar-24-regular" class="w-5 h-5 text-cyan-400" />
-            <span class="text-white text-sm">Programme</span>
-          </NuxtLink>
-          <NuxtLink
+            icon="fluent:calendar-24-regular"
+            label="Programme"
+            size="sm"
+          />
+          <UiInfoTile
             to="/plan"
-            class="glass-card p-4 flex items-center gap-3 hover:bg-white/10 transition-colors"
-          >
-            <Icon name="fluent:location-24-regular" class="w-5 h-5 text-cyan-400" />
-            <span class="text-white text-sm">Plan</span>
-          </NuxtLink>
-          <NuxtLink
+            icon="fluent:location-24-regular"
+            label="Plan"
+            size="sm"
+          />
+          <UiInfoTile
             to="/food"
-            class="glass-card p-4 flex items-center gap-3 hover:bg-white/10 transition-colors"
-          >
-            <Icon name="fluent:food-24-regular" class="w-5 h-5 text-cyan-400" />
-            <span class="text-white text-sm">Restauration</span>
-          </NuxtLink>
+            icon="fluent:food-24-regular"
+            label="Restauration"
+            size="sm"
+          />
         </section>
       </div>
     </Transition>

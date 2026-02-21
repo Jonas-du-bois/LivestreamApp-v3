@@ -291,13 +291,13 @@ const maxHistoryScore = computed(() => {
               </svg>
 
               <!-- Close button -->
-              <button
+              <UiIconButton
+                icon="fluent:dismiss-24-regular"
+                variant="dark"
+                class="absolute top-4 left-4 z-20"
+                :label="t('common.close')"
                 @click="emit('close')"
-                class="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
-                :aria-label="t('common.close')"
-              >
-                <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white" />
-              </button>
+              />
 
               <!-- Title & Category -->
               <div class="absolute bottom-6 left-6 right-6 z-10">
