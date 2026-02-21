@@ -21,3 +21,7 @@
 ## 2025-05-30 - Async Feedback in Modals
 **Learning:** In modal contexts where actions (like toggling favorites) involve network latency (push subscriptions), the lack of immediate feedback can lead to confusion or double-submissions.
 **Action:** Always wrap async actions in a `try/finally` block to manage a loading state, and visually reflect this state on the button (spinner + `disabled` + `aria-busy`).
+
+## 2024-05-22 - Empty State Delight
+**Learning:** Glassmorphism empty states with subtle animations (pulse) significantly improve perceived quality over static text, even when no data is available.
+**Action:** Apply this pattern (Icon + Title + Hint + Action) to other list views like Schedule or Favorites.
