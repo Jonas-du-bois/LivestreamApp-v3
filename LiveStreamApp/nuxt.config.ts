@@ -202,10 +202,19 @@ export default defineNuxtConfig({
     adminPassword: process.env.NUXT_ADMIN_PASSWORD,
     mongodbUri: process.env.MONGODB_URI,
     vapidPrivateKey: process.env.NUXT_VAPID_PRIVATE_KEY,
+    /** JSON stringifié du Service Account Firebase (pour FCM côté serveur) */
+    firebaseServiceAccount: process.env.FIREBASE_SERVICE_ACCOUNT,
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       socketUrl: process.env.NUXT_PUBLIC_SOCKET_URL || '',
-      vapidPublicKey: process.env.NUXT_PUBLIC_VAPID_PUBLIC_KEY
+      vapidPublicKey: process.env.NUXT_PUBLIC_VAPID_PUBLIC_KEY,
+      // Firebase Web SDK (Analytics + FCM web)
+      firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
+      firebaseAuthDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
+      firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
+      firebaseMeasurementId: process.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
     }
   },
 

@@ -1,23 +1,12 @@
 <script setup lang="ts">
-import type { Stream, Passage, Group, Apparatus } from '../../types/api'
+import type { Stream, Passage, Group, Apparatus, PopulatedPassage, PopulatedStream } from '../../types/api'
 import { ref, watch, onBeforeUnmount, onMounted, computed } from 'vue'
+import { PublicService } from '../../services/public.service'
 
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
 const route = useRoute()
 const router = useRouter()
-const config = useRuntimeConfig()
-const apiBase = config.public.apiBase as string
-
-// Define populated types for this view
-interface PopulatedPassage extends Omit<Passage, 'group' | 'apparatus'> {
-  group: Group;
-  apparatus: Apparatus;
-}
-
-interface PopulatedStream extends Omit<Stream, 'currentPassage'> {
-  currentPassage?: PopulatedPassage | null;
-}
 
 // Use refs for reactive data that updates in real-time
 const stream = ref<PopulatedStream | null>(null)
@@ -29,7 +18,7 @@ const error = ref<any>(null)
 // Fetch stream
 const fetchStream = async () => {
   try {
-    stream.value = await $fetch<PopulatedStream>(`/streams/${route.params.id}`, { baseURL: apiBase })
+    stream.value = await PublicService.fetchStream(route.params.id as string)
     console.log('[stream/id] Stream fetched:', stream.value?.name, 'location:', stream.value?.location)
   } catch (err: any) {
     console.error('[stream/id] Error fetching stream:', err)
@@ -40,7 +29,7 @@ const fetchStream = async () => {
 // Fetch live passages to get current group/apparatus info
 const fetchLivePassages = async () => {
   try {
-    const liveData = await $fetch<{ passages: any[]; streams: any[] }>('/live', { baseURL: apiBase })
+    const liveData = await PublicService.fetchLive()
     livePassages.value = liveData.passages || []
     console.log('[stream/id] Live passages fetched:', livePassages.value.length)
   } catch (err: any) {
@@ -51,7 +40,7 @@ const fetchLivePassages = async () => {
 // Fetch full group details when we have a current passage
 const fetchGroupDetails = async (groupId: string) => {
   try {
-    const details = await $fetch<any>(`/groups/${groupId}/details`, { baseURL: apiBase })
+    const details = await PublicService.fetchGroupDetails(groupId)
     groupDetails.value = details
     console.log('[stream/id] Group details fetched:', details?.info?.name)
   } catch (err: any) {

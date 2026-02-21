@@ -1,15 +1,64 @@
 import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime';
 
 import webPush from 'web-push';
+import admin from 'firebase-admin';
 import PassageModel from '../models/Passage';
 import StreamModel from '../models/Stream';
 import SubscriptionModel from '../models/Subscription';
 
+// --- Helpers for sending push notifications ---
+
+/** Envoie une notification Web Push à un abonné */
+async function sendWebPush(
+  sub: { endpoint: string; keys?: { p256dh: string; auth: string } },
+  payload: string
+): Promise<boolean> {
+  if (!sub.keys?.p256dh || !sub.keys?.auth) return false;
+  await webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys as any }, payload);
+  return true;
+}
+
+/** Envoie une notification FCM (Firebase Cloud Messaging) à un device natif */
+async function sendFcm(
+  messaging: any,
+  fcmToken: string,
+  payloadObj: { title: string; body: string; icon?: string; url?: string }
+): Promise<boolean> {
+  await messaging.send({
+    token: fcmToken,
+    notification: {
+      title: payloadObj.title,
+      body: payloadObj.body,
+      imageUrl: payloadObj.icon,
+    },
+    android: {
+      notification: {
+        icon: 'ic_notification',
+        color: '#06B6D4',
+        clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+      },
+      data: { url: payloadObj.url || '/schedule' },
+    },
+    apns: {
+      payload: {
+        aps: {
+          sound: 'default',
+          badge: 1,
+        },
+      },
+      fcmOptions: { analyticsLabel: 'push_reminder' },
+    },
+    webpush: {
+      fcmOptions: { link: payloadObj.url || '/schedule' },
+    },
+  });
+  return true;
+}
 
 export default defineNitroPlugin((nitroApp) => {
   const config = useRuntimeConfig();
 
-  // Initialize WebPush (optional - notifications will be disabled if keys are missing)
+  // --- Initialize WebPush (Web / PWA) ---
   let webPushEnabled = false;
   if (config.vapidPrivateKey && config.public.vapidPublicKey) {
     try {
@@ -25,6 +74,26 @@ export default defineNitroPlugin((nitroApp) => {
     }
   } else {
     console.warn('[Scheduler] WebPush keys missing - Notifications disabled');
+  }
+
+  // --- Initialize Firebase Admin (Android / iOS natif) ---
+  let fcmMessaging: any = null;
+  const serviceAccountRaw = config.firebaseServiceAccount as string | undefined;
+  if (serviceAccountRaw) {
+    try {
+      // Évite la double initialisation (ex: HMR en dev)
+      const existingApp = admin.apps?.find((a) => a?.name === 'scheduler');
+      const app = existingApp ?? admin.initializeApp(
+        { credential: admin.credential.cert(JSON.parse(serviceAccountRaw)) },
+        'scheduler'
+      );
+      fcmMessaging = admin.messaging(app);
+      console.log('[Scheduler] Firebase Admin (FCM) initialized');
+    } catch (e) {
+      console.warn('[Scheduler] Firebase Admin init failed - FCM disabled', e);
+    }
+  } else {
+    console.warn('[Scheduler] FIREBASE_SERVICE_ACCOUNT not set - FCM disabled (native push won\'t work)');
   }
 
   console.log('[Scheduler] Starting scheduler for status updates...');
@@ -156,8 +225,8 @@ export default defineNitroPlugin((nitroApp) => {
         }
       }
 
-      // --- 2. NOTIFICATIONS LOGIC (only if webPush is enabled) ---
-      if (!webPushEnabled) return;
+      // --- 2. NOTIFICATIONS LOGIC (web push + fcm natif) ---
+      if (!webPushEnabled && !fcmMessaging) return;
       
       // === NOTIFICATION 15 MINUTES AVANT ===
       await sendReminderNotifications(now, 15, 'notifiedAt15');
@@ -171,8 +240,8 @@ export default defineNitroPlugin((nitroApp) => {
   }, 30000); // Check every 30s
 
   /**
-   * Envoie des notifications de rappel pour les passages à X minutes
-   * Utilise un champ de tracking pour éviter les doublons
+   * Envoie des notifications de rappel pour les passages à X minutes.
+   * Supporte les deux canaux : Web Push (PWA) et FCM (Android/iOS natif).
    */
   async function sendReminderNotifications(
     now: Date, 
@@ -197,11 +266,21 @@ export default defineNitroPlugin((nitroApp) => {
 
     console.log(`[Scheduler] Found ${passages.length} passages for ${minutesBefore}min reminder`);
 
+    const payloadTitle = minutesBefore === 3 ? '⏰ Passage imminent !' : '📣 Passage bientôt';
+
     // BOLT: Parallelize notification sending per passage
     const passagePromises = passages.map(async (passage) => {
       const group = passage.group as any;
       const apparatus = passage.apparatus as any;
       if (!group) return;
+
+      const payloadBody = `${group.name} passe au ${apparatus?.name || 'sol'} dans ${minutesBefore} minutes !`;
+      const payloadObj = {
+        title: payloadTitle,
+        body: payloadBody,
+        icon: '/icons/logo_livestreamappv3-192.png',
+        url: '/schedule',
+      };
 
       // Trouver les abonnés qui ont ce passage en favoris
       const subscriptions = await SubscriptionModel.find({
@@ -209,29 +288,37 @@ export default defineNitroPlugin((nitroApp) => {
       });
 
       if (subscriptions.length === 0) {
-        // Même sans abonnés, marquer comme notifié pour éviter de le retraiter
         await PassageModel.findByIdAndUpdate(passage._id, {
           $set: { [trackingField]: now }
         });
         return;
       }
 
-      const payload = JSON.stringify({
-        title: minutesBefore === 3 ? '⏰ Passage imminent !' : '📣 Passage bientôt',
-        body: `${group.name} passe au ${apparatus?.name || 'sol'} dans ${minutesBefore} minutes !`,
-        icon: '/icons/logo_livestreamappv3-192.png',
-        url: '/schedule'
-      });
-
-      const notifications = subscriptions.map(sub => {
-        return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload)
-          .catch(err => {
-            if (err.statusCode === 410 || err.statusCode === 404) {
-              console.log(`[Scheduler] Removing expired subscription ${sub._id}`);
-              return SubscriptionModel.findByIdAndDelete(sub._id);
-            }
-            console.error('[Scheduler] Error sending push:', err);
-          });
+      const notifications = subscriptions.map(async (sub) => {
+        try {
+          if (sub.type === 'fcm' && fcmMessaging) {
+            // --- Canal FCM (Android / iOS natif) ---
+            await sendFcm(fcmMessaging, sub.endpoint, payloadObj);
+          } else if (sub.type === 'web' && webPushEnabled && sub.keys) {
+            // --- Canal Web Push (PWA / navigateur) ---
+            const payload = JSON.stringify(payloadObj);
+            await sendWebPush({ endpoint: sub.endpoint, keys: sub.keys as any }, payload);
+          }
+        } catch (err: any) {
+          // Supprimer les subscriptions expirées (Web Push 410/404) ou FCM invalide
+          const code = err?.statusCode ?? err?.errorInfo?.code ?? '';
+          const isExpired =
+            err?.statusCode === 410 ||
+            err?.statusCode === 404 ||
+            code === 'messaging/registration-token-not-registered' ||
+            code === 'messaging/invalid-registration-token';
+          if (isExpired) {
+            console.log(`[Scheduler] Removing expired subscription ${sub._id} (${sub.type})`);
+            await SubscriptionModel.findByIdAndDelete(sub._id);
+          } else {
+            console.error(`[Scheduler] Error sending ${sub.type} push:`, err?.message ?? err);
+          }
+        }
       });
 
       await Promise.all(notifications);

@@ -257,6 +257,16 @@ const maxHistoryScore = computed(() => {
         aria-modal="true"
         aria-labelledby="group-details-title"
       >
+        <!-- Close button – toujours visible –-->
+        <div class="absolute top-3 right-3 z-[100]">
+          <UiIconButton
+            icon="fluent:dismiss-24-regular"
+            variant="dark"
+            :label="t('common.close')"
+            @click="emit('close')"
+          />
+        </div>
+
         <div v-if="isLoading && !details" class="p-12 text-center text-white/60">
            <Icon name="fluent:spinner-ios-20-filled" class="w-8 h-8 animate-spin mx-auto mb-4" />
            <p>{{ t('group.loadingDashboard') }}</p>
@@ -289,15 +299,6 @@ const maxHistoryScore = computed(() => {
                   fill="#0B1120"
                 />
               </svg>
-
-              <!-- Close button -->
-              <UiIconButton
-                icon="fluent:dismiss-24-regular"
-                variant="dark"
-                class="absolute top-4 left-4 z-20"
-                :label="t('common.close')"
-                @click="emit('close')"
-              />
 
               <!-- Title & Category -->
               <div class="absolute bottom-6 left-6 right-6 z-10">

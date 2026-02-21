@@ -67,6 +67,15 @@ export interface PassageEnriched extends Omit<Passage, 'group' | 'apparatus'> {
   apparatus: EnrichedApparatus;
 }
 
+export interface PopulatedPassage extends Omit<Passage, 'group' | 'apparatus'> {
+  group: Group;
+  apparatus: Apparatus;
+}
+
+export interface PopulatedStream extends Omit<Stream, 'currentPassage'> {
+  currentPassage?: PopulatedPassage | null;
+}
+
 export interface ScheduleResponse {
   meta: {
     availableApparatus: string[];
@@ -77,12 +86,28 @@ export interface ScheduleResponse {
   data: PassageEnriched[];
 }
 
+// --- Subscriptions (Web Push / FCM natif) ---
+
+export interface WebSubscription {
+  type: 'web';
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+}
+
+export interface FcmSubscription {
+  type: 'fcm';
+  /** FCM Registration Token (device token) */
+  endpoint: string;
+}
+
+/** Union de tous les types de subscriptions push */
+export type Subscription = WebSubscription | FcmSubscription;
+
+/** @deprecated Utiliser WebSubscription / FcmSubscription */
 export interface SubscriptionKeys {
   p256dh?: string;
   auth?: string;
-}
-
-export interface Subscription {
-  endpoint?: string;
-  keys?: SubscriptionKeys;
 }

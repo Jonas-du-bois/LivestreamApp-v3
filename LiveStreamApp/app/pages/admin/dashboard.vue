@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, shallowRef, computed, watch, triggerRef, onMounted, onBeforeUnmount } from 'vue'
 import { AdminService } from '../../services/admin.service'
 import { PublicService } from '../../services/public.service'
 import type { PassageEnriched, Stream, PassageStatus } from '../../types/api'
 import type { NotificationType } from '../../types/notifications'
+import type { StreamUpdatePayload, ScoreUpdatePayload } from '../../types/socket'
+import type { PassageSearchable } from '../../types/ui'
 import { useAdminAuth } from '../../composables/useAdminAuth'
 import { useSocketRoom } from '../../composables/useSocketRoom'
-import { useNotificationsStore } from '#imports'
+import { usePassageFilters, type PassageFilterOptions } from '../../composables/usePassageFilters'
 
 definePageMeta({ header: false, footer: false })
 
@@ -15,41 +16,6 @@ const { translateApparatus, translateDay, translateCategory, formatLocalizedTime
 const { token: adminToken, login, logout, loginError, isLoggingIn } = useAdminAuth()
 const notificationsStore = useNotificationsStore()
 const passwordInput = ref('')
-
-type PassageUI = PassageEnriched & {
-  _dayKey: string
-  _apparatusCodeKey: string
-  _apparatusNameKey: string
-  _groupNameKey: string
-  _locationKey: string
-  _categoryKey: string
-  _searchIndex: string
-}
-
-const normalize = (value: string | null | undefined) => (value ?? '').toString().toLowerCase()
-
-const buildPassageUI = (p: PassageEnriched): PassageUI => {
-  const groupName = p.group?.name ?? ''
-  const apparatusName = p.apparatus?.name ?? ''
-  const apparatusCode = p.apparatus?.code ?? ''
-  const location = p.location ?? ''
-  const category = p.group?.category ?? ''
-  const dayKey = p.startTime
-    ? new Date(p.startTime).toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase()
-    : ''
-
-  return {
-    ...p,
-    score: p.score ?? null,
-    _dayKey: dayKey,
-    _apparatusCodeKey: normalize(apparatusCode),
-    _apparatusNameKey: normalize(apparatusName),
-    _groupNameKey: normalize(groupName),
-    _locationKey: normalize(location),
-    _categoryKey: normalize(category),
-    _searchIndex: normalize(`${groupName} ${apparatusName} ${apparatusCode} ${location} ${category}`)
-  }
-}
 
 // ===== UI State =====
 const activeView = ref<'passages' | 'streams'>('passages')
@@ -62,6 +28,9 @@ const debouncedSearchQuery = ref('')
 const searchCategory = ref<'all' | 'group' | 'apparatus' | 'location'>('all')
 
 let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
+let notificationTimer: ReturnType<typeof setTimeout> | null = null
+let scoreSaveTimer: ReturnType<typeof setTimeout> | null = null
+
 watch(searchQuery, (val) => {
   if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
   searchDebounceTimer = setTimeout(() => {
@@ -83,6 +52,72 @@ const advancedFilters = ref({
   category: ''
 })
 
+// ===== Data Fetching =====
+const { data: scheduleData, pending: schedulePending, refresh: refreshSchedule } = await PublicService.getSchedule()
+const { data: streamsData, pending: streamsPending, refresh: refreshStreams } = await PublicService.getStreams()
+
+const passages = shallowRef<PassageEnriched[]>([])
+const streams = shallowRef<Stream[]>([])
+
+// ===== Filtering Composable =====
+const filterOptions = computed<PassageFilterOptions>(() => ({
+  searchQuery: debouncedSearchQuery.value,
+  searchCategory: searchCategory.value,
+  day: selectedDay.value,
+  apparatus: selectedApparatus.value,
+  status: advancedFilters.value.status,
+  location: advancedFilters.value.location,
+  category: advancedFilters.value.category,
+  hideFinished: advancedFilters.value.hideFinished,
+  onlyWithScore: advancedFilters.value.onlyWithScore,
+  onlyWithoutScore: advancedFilters.value.onlyWithoutScore
+}))
+
+const { filteredPassages } = usePassageFilters(passages, filterOptions)
+
+// ===== Computed Filter Options =====
+const availableDays = computed(() => {
+  return scheduleData.value?.meta?.availableDays || []
+})
+
+const availableApparatus = computed(() => {
+  // Use passages.value directly (PassageEnriched[])
+  const seen = new Map<string, { code: string; name: string }>()
+  for (const p of passages.value) {
+    if (p.apparatus?.code && !seen.has(p.apparatus.code)) {
+      seen.set(p.apparatus.code, { code: p.apparatus.code, name: p.apparatus.name })
+    }
+  }
+  return Array.from(seen.values())
+})
+
+const availableLocations = computed(() => {
+  return scheduleData.value?.meta?.availableLocations || []
+})
+
+const availableCategories = computed(() => {
+  return scheduleData.value?.meta?.availableCategories || []
+})
+
+// ===== Watchers =====
+watch(scheduleData, (data) => {
+  if (data?.data) {
+    passages.value = data.data
+    if (!selectedDay.value && availableDays.value.length) {
+      selectedDay.value = availableDays.value[0] || ''
+    }
+  }
+}, { immediate: true })
+
+watch(streamsData, (data) => {
+  if (data) {
+    streams.value = data
+  }
+}, { immediate: true })
+
+const isPassagesLoading = computed(() => schedulePending.value && passages.value.length === 0)
+const isStreamsLoading = computed(() => streamsPending.value && streams.value.length === 0)
+
 // ===== Test Notifications =====
 const showTestNotificationMenu = ref(false)
 const isSendingNotification = ref(false)
@@ -99,7 +134,8 @@ const sendTestNotification = async (type: NotificationType) => {
       success: true, 
       message: t('admin.notificationSent', { type })
     }
-    setTimeout(() => {
+    if (notificationTimer) clearTimeout(notificationTimer)
+    notificationTimer = setTimeout(() => {
       notificationResult.value = null
       showTestNotificationMenu.value = false
     }, 1500)
@@ -152,6 +188,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', closeMenus)
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
+  if (notificationTimer) clearTimeout(notificationTimer)
+  if (scoreSaveTimer) clearTimeout(scoreSaveTimer)
 })
 
 const isAuthenticated = computed(() => !!adminToken.value)
@@ -165,128 +204,19 @@ const handleLogin = async () => {
   }
 }
 
-// ===== Data Fetching =====
-const { data: scheduleData, pending: schedulePending, refresh: refreshSchedule } = await PublicService.getSchedule()
-const { data: streamsData, pending: streamsPending, refresh: refreshStreams } = await PublicService.getStreams()
-
-const passages = shallowRef<PassageUI[]>([])
-const streams = shallowRef<Stream[]>([])
-
-// ===== Computed Filter Options =====
-const availableDays = computed(() => {
-  return scheduleData.value?.meta?.availableDays || []
-})
-
-const availableApparatus = computed(() => {
-  const seen = new Map<string, { code: string; name: string }>()
-  for (const p of passages.value) {
-    if (p.apparatus?.code && !seen.has(p.apparatus.code)) {
-      seen.set(p.apparatus.code, { code: p.apparatus.code, name: p.apparatus.name })
-    }
-  }
-  return Array.from(seen.values())
-})
-
-const availableLocations = computed(() => {
-  return scheduleData.value?.meta?.availableLocations || []
-})
-
-const availableCategories = computed(() => {
-  return scheduleData.value?.meta?.availableCategories || []
-})
-
-// ===== Watchers =====
-watch(scheduleData, (data) => {
-  if (data?.data) {
-    passages.value = data.data.map((p: PassageEnriched) => buildPassageUI(p))
-    if (!selectedDay.value && availableDays.value.length) {
-      selectedDay.value = availableDays.value[0] || ''
-    }
-  }
-}, { immediate: true })
-
-watch(streamsData, (data) => {
-  if (data) {
-    streams.value = data
-  }
-}, { immediate: true })
-
-const isPassagesLoading = computed(() => schedulePending.value && passages.value.length === 0)
-const isStreamsLoading = computed(() => streamsPending.value && streams.value.length === 0)
-
-// ===== Filtered Passages =====
-const filteredPassages = computed(() => {
-  let result = [...passages.value]
-  
-  if (selectedDay.value) {
-    const dayKey = normalize(selectedDay.value)
-    result = result.filter(p => p._dayKey === dayKey)
-  }
-  
-  if (selectedApparatus.value) {
-    const appKey = normalize(selectedApparatus.value)
-    result = result.filter(p => p._apparatusCodeKey === appKey || p._apparatusNameKey === appKey)
-  }
-  
-  if (advancedFilters.value.hideFinished) {
-    result = result.filter(p => p.status !== 'FINISHED')
-  }
-  
-  if (advancedFilters.value.onlyWithScore) {
-    result = result.filter(p => p.score !== undefined && p.score !== null)
-  }
-  
-  if (advancedFilters.value.onlyWithoutScore) {
-    result = result.filter(p => p.score === undefined || p.score === null)
-  }
-  
-  if (advancedFilters.value.status) {
-    result = result.filter(p => p.status === advancedFilters.value.status)
-  }
-  
-  if (advancedFilters.value.location) {
-    const locKey = normalize(advancedFilters.value.location)
-    result = result.filter(p => p._locationKey === locKey)
-  }
-  
-  if (advancedFilters.value.category) {
-    const catKey = normalize(advancedFilters.value.category)
-    result = result.filter(p => p._categoryKey === catKey)
-  }
-  
-  const query = normalize(debouncedSearchQuery.value.trim())
-  if (query) {
-    result = result.filter(p => {
-      switch (searchCategory.value) {
-        case 'group':
-          return p._groupNameKey.includes(query)
-        case 'apparatus':
-          return p._apparatusNameKey.includes(query) || 
-                 p._apparatusCodeKey.includes(query)
-        case 'location':
-          return p._locationKey.includes(query)
-        default:
-          return p._searchIndex.includes(query)
-      }
-    })
-  }
-  
-  return result
-})
-
 // ===== Socket Room Connection =====
 // Join admin-dashboard room when authenticated
-const handleStreamUpdate = (data: any) => {
+const handleStreamUpdate = (data: StreamUpdatePayload) => {
   console.log('[Dashboard] Stream update received:', data)
   const idx = streams.value.findIndex(s => s._id === data._id)
   if (idx !== -1) {
     const updated = [...streams.value]
-    updated[idx] = { ...updated[idx], ...data }
+    updated[idx] = { ...updated[idx], ...data } as Stream
     streams.value = updated
   }
 }
 
-const handleScoreUpdate = (data: any) => {
+const handleScoreUpdate = (data: ScoreUpdatePayload) => {
   console.log('[Dashboard] Score update received:', data)
   const idx = passages.value.findIndex(p => p._id === data.passageId)
   if (idx !== -1) {
@@ -332,7 +262,8 @@ const updateScore = async (passage: PassageEnriched) => {
   try {
     await AdminService.updateScore({ passageId: passage._id!, score: passage.score })
     triggerRef(passages)
-    setTimeout(() => { savingScoreId.value = null }, 1000)
+    if (scoreSaveTimer) clearTimeout(scoreSaveTimer)
+    scoreSaveTimer = setTimeout(() => { savingScoreId.value = null }, 1000)
   } catch (e) {
     console.error('[Dashboard] Failed to update score:', e)
     savingScoreId.value = null
@@ -349,7 +280,7 @@ const updateStreamUrl = async (stream: Stream) => {
 
 const reseedDatabase = async () => {
   if (isReseeding.value) return
-  if (typeof window === 'undefined') return
+  if (!import.meta.client) return
 
   const confirmed = window.confirm(t('admin.reseedWarning'))
   if (!confirmed) return

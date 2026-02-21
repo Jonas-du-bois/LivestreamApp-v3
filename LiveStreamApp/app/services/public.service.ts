@@ -1,4 +1,4 @@
-import type { ScheduleResponse, PassageEnriched, Stream } from '../types/api'
+import type { ScheduleResponse, PassageEnriched, Stream, PopulatedStream } from '../types/api'
 import { type MaybeRef, toValue } from 'vue'
 
 export const PublicService = {
@@ -31,6 +31,22 @@ export const PublicService = {
     })
   },
 
+  fetchLive() {
+    return apiClient<{ passages: PassageEnriched[]; streams: Stream[] }>('/live')
+  },
+
+  fetchStreams() {
+    return apiClient<Stream[]>('/streams')
+  },
+
+  fetchStream(id: string) {
+    return apiClient<PopulatedStream>(`/streams/${id}`)
+  },
+
+  fetchWeather() {
+    return apiClient<{ temperature: number; raw?: any }>('/weather')
+  },
+
   getWeather() {
     // Returns current temperature for Yverdon-les-Bains (proxy to external weather API)
     return useApiClient<{ temperature: number; raw?: any }>('/weather', {
@@ -47,9 +63,6 @@ export const PublicService = {
   },
 
   fetchGroupDetails(groupId: string) {
-    const config = useRuntimeConfig()
-    return $fetch<any>(`/groups/${groupId}/details`, {
-      baseURL: config.public.apiBase as string
-    })
+    return apiClient<any>(`/groups/${groupId}/details`)
   }
 }

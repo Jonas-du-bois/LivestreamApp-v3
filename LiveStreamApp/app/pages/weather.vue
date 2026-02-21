@@ -2,23 +2,38 @@
 import { PublicService } from '../services/public.service'
 
 const { t } = useI18n()
+const { formatLocalizedTime } = useTranslatedData()
 
 type WeatherKind =
-  | 'sunny'
-  | 'partly_cloudy'
-  | 'cloudy'
-  | 'rain'
-  | 'snow'
-  | 'thunder'
-  | 'fog'
-  | 'windy'
+// ... existing types
   | 'unknown'
 
-const { data: weatherResp, pending, refresh } = await PublicService.getWeather()
+// Fetch weather data using useAsyncData for better control over SSR/Client hydration
+const { data: weatherResp, pending, refresh, error } = await useAsyncData('weather-data', () => PublicService.fetchWeather(), {
+  lazy: false,
+  server: true
+})
+
+const isRefreshing = ref(false)
+const lastRefreshedAt = ref(new Date())
+
+const handleRefresh = async () => {
+  isRefreshing.value = true
+  try {
+    await refresh()
+    lastRefreshedAt.value = new Date()
+  } finally {
+    // Add a small delay to show the spinner/feedback
+    setTimeout(() => {
+      isRefreshing.value = false
+    }, 500)
+  }
+}
 
 const current = computed(() => weatherResp.value?.raw?.current_weather ?? null)
 
 const temperature = computed(() => {
+// ... existing computed
   const value = weatherResp.value?.temperature
   return typeof value === 'number' ? Math.round(value) : null
 })
@@ -34,12 +49,10 @@ const windDirection = computed(() => {
   return `${Math.round(value)}°`
 })
 
-const updatedAt = computed(() => {
-  const value = current.value?.time
-  if (typeof value !== 'string') return null
-  const parts = value.split('T')
-  if (parts.length === 2) return parts[1].slice(0, 5)
-  return value
+// Display the local time of the last successful fetch/refresh
+const updatedDisplay = computed(() => {
+  if (pending.value && !weatherResp.value) return '--'
+  return formatLocalizedTime(lastRefreshedAt.value.toISOString())
 })
 
 const weatherKind = computed<WeatherKind>(() => {
@@ -109,59 +122,58 @@ const WEATHER_META: Record<WeatherKind, { icon: string; gradient: string; accent
 const weatherMeta = computed(() => WEATHER_META[weatherKind.value])
 
 const tempDisplay = computed(() => {
-  if (pending.value) return '--'
+  if (pending.value && !weatherResp.value) return '--'
   if (temperature.value === null) return '—'
   return `${temperature.value}°C`
 })
 
 const conditionLabel = computed(() => {
-  if (pending.value) return '--'
+  if (pending.value && !weatherResp.value) return '--'
   return t(`weather.conditions.${weatherKind.value}`)
 })
 
 const humorText = computed(() => {
-  if (pending.value) return t('common.loading')
+  if (pending.value && !weatherResp.value) return t('common.loading')
   return t(`weather.humor.${weatherKind.value}`)
 })
 
 const windDisplay = computed(() => {
-  if (pending.value) return '--'
+  if (pending.value && !weatherResp.value) return '--'
   if (windSpeed.value === null) return '—'
   const dir = windDirection.value
   return dir ? `${windSpeed.value} km/h • ${dir}` : `${windSpeed.value} km/h`
 })
 
-const updatedDisplay = computed(() => {
-  if (pending.value) return '--'
-  return updatedAt.value || '—'
-})
 
-const stats = computed(() => [
-  {
-    key: 'temp',
-    label: t('weather.temperature'),
-    value: tempDisplay.value,
-    icon: 'fluent:temperature-24-regular'
-  },
-  {
-    key: 'cond',
-    label: t('weather.condition'),
-    value: conditionLabel.value,
-    icon: weatherMeta.value.icon
-  },
-  {
-    key: 'wind',
-    label: t('weather.wind'),
-    value: windDisplay.value,
-    icon: 'fluent:arrow-swap-24-regular'
-  },
-  {
-    key: 'update',
-    label: t('weather.updated'),
-    value: updatedDisplay.value,
-    icon: 'fluent:clock-24-regular'
-  }
-])
+
+const stats = computed(() => {
+  return [
+    {
+      key: 'temp',
+      label: t('weather.temperature'),
+      value: tempDisplay.value,
+      icon: 'fluent:temperature-24-regular'
+    },
+    {
+      key: 'cond',
+      label: t('weather.condition'),
+      value: conditionLabel.value,
+      icon: weatherMeta.value.icon
+    },
+    {
+      key: 'wind',
+      label: t('weather.wind'),
+      value: windDisplay.value,
+      icon: 'fluent:arrow-swap-24-regular'
+    },
+    {
+      key: 'update',
+      label: t('weather.updated'),
+      value: updatedDisplay.value,
+      icon: 'fluent:clock-24-regular'
+    }
+  ]
+})
 </script>
 
 <template>
@@ -173,11 +185,21 @@ const stats = computed(() => [
     </div>
 
     <Transition name="premium-swap" mode="out-in">
-      <div v-if="pending" key="weather-loading" class="space-y-6">
+      <div v-if="pending && !weatherResp" key="weather-loading" class="space-y-6">
         <div class="glass-card h-48 premium-skeleton-surface premium-skeleton-shimmer opacity-50 rounded-xl"></div>
         <div class="grid grid-cols-2 gap-3">
           <div v-for="i in 4" :key="i" class="glass-card h-24 premium-skeleton-surface premium-skeleton-shimmer opacity-50 rounded-xl"></div>
         </div>
+      </div>
+      
+      <div v-else-if="error" key="weather-error" class="glass-card p-8 text-center">
+        <Icon name="fluent:cloud-error-24-regular" class="w-16 h-16 text-red-400 mx-auto mb-4" />
+        <h2 class="text-white font-bold text-xl mb-2">{{ t('weather.errorTitle') || 'Erreur Météo' }}</h2>
+        <p class="text-white/60 mb-6">{{ t('weather.errorDescription') || 'Impossible de charger la météo.' }}</p>
+        <button @click="handleRefresh" class="btn-secondary mx-auto">
+          <Icon name="fluent:arrow-clockwise-24-regular" class="w-5 h-5" />
+          {{ t('weather.retry') || 'Réessayer' }}
+        </button>
       </div>
 
       <div v-else key="weather-content" class="space-y-6">
@@ -198,11 +220,11 @@ const stats = computed(() => [
 
               <button
                 class="glass-card px-3 py-2 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-colors"
-                :class="{ 'opacity-60 pointer-events-none': pending }"
-                @click="refresh"
+                :class="{ 'opacity-60 pointer-events-none': isRefreshing }"
+                @click="handleRefresh"
               >
-                <Icon name="fluent:arrow-clockwise-24-regular" class="w-4 h-4 text-white" />
-                <span class="text-white text-xs font-semibold">{{ t('weather.refresh') }}</span>
+                <Icon :name="isRefreshing ? 'svg-spinners:ring-resize' : 'fluent:arrow-clockwise-24-regular'" class="w-4 h-4 text-white" />
+                <span class="text-white text-xs font-semibold">{{ isRefreshing ? t('common.loading') : t('weather.refresh') }}</span>
               </button>
             </div>
 

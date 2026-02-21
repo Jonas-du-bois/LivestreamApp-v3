@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
+import { PublicService } from '../../services/public.service'
 
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
@@ -22,13 +23,10 @@ const allStreamsData = ref<any[] | null>(null)
 const loading = ref(true)
 const hasLoadedOnce = ref(false)
 
-const config = useRuntimeConfig()
-const apiBase = config.public.apiBase as string
-
-// Fetch functions using $fetch for real-time updates
+// Fetch functions using PublicService for real-time updates
 const fetchLive = async () => {
   try {
-    liveData.value = await $fetch<{ passages: any[]; streams: any[] }>('/live', { baseURL: apiBase })
+    liveData.value = await PublicService.fetchLive()
     console.log('[stream/index] Live data fetched:', liveData.value?.streams?.length, 'streams')
   } catch (err) {
     console.error('[stream/index] Error fetching live:', err)
@@ -37,7 +35,7 @@ const fetchLive = async () => {
 
 const fetchStreams = async () => {
   try {
-    allStreamsData.value = await $fetch<any[]>('/streams', { baseURL: apiBase })
+    allStreamsData.value = await PublicService.fetchStreams()
     console.log('[stream/index] All streams fetched:', allStreamsData.value?.length)
   } catch (err) {
     console.error('[stream/index] Error fetching streams:', err)

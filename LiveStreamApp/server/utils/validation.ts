@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-export const SubscriptionSchema = z.object({
+// --- Subscription schemas (union discriminée web | fcm) ---
+
+const WebSubscriptionSchema = z.object({
+  type: z.literal('web'),
   endpoint: z.string().url().max(500),
   keys: z.object({
     p256dh: z.string().max(200),
@@ -8,8 +11,20 @@ export const SubscriptionSchema = z.object({
   }),
 });
 
+const FcmSubscriptionSchema = z.object({
+  type: z.literal('fcm'),
+  /** FCM registration token (device token) */
+  endpoint: z.string().min(10).max(4096),
+});
+
+export const SubscriptionSchema = z.discriminatedUnion('type', [
+  WebSubscriptionSchema,
+  FcmSubscriptionSchema,
+]);
+
 export const SyncFavoritesSchema = z.object({
-  endpoint: z.string().url().max(500),
+  /** Web Push URL ou FCM token selon le type de subscription */
+  endpoint: z.string().min(10).max(4096),
   favorites: z.array(
     z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId')
   ).max(50),

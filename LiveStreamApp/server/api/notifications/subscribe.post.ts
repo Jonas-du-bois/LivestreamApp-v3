@@ -11,14 +11,20 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // Validate input using Zod schema
-  const { endpoint, keys } = await readValidatedBody(event, (body) => SubscriptionSchema.parse(body));
+  // Validate input: union type web | fcm
+  const body = await readValidatedBody(event, (b) => SubscriptionSchema.parse(b));
+  const { type, endpoint } = body;
 
   try {
-    // Upsert subscription
+    // Upsert subscription (web ou fcm)
     await SubscriptionModel.findOneAndUpdate(
       { endpoint },
-      { endpoint, keys },
+      {
+        endpoint,
+        type,
+        // keys uniquement pour les subscriptions Web Push
+        ...(type === 'web' ? { keys: body.keys } : { $unset: { 'keys.p256dh': '', 'keys.auth': '' } }),
+      },
       { upsert: true, new: true }
     );
     return { success: true };

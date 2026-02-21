@@ -22,6 +22,11 @@ const config: CapacitorConfig = {
     // Config du plugin Preferences (stockage natif du token auth)
     Preferences: {
       group: 'CoupeDesBainsStorage'
+    },
+    // Config du plugin PushNotifications (FCM - Android/iOS)
+    PushNotifications: {
+      // Afficher le badge sur l'icône de l'app (iOS)
+      presentationOptions: ['badge', 'sound', 'alert']
     }
   }
 };

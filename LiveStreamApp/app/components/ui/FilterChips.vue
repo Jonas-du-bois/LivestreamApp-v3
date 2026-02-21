@@ -36,7 +36,7 @@ const select = (id: string | number) => {
 
 <template>
   <div 
-    class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scroll-smooth no-scrollbar scrollbar-hide"
+    class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scroll-smooth no-scrollbar scrollbar-hide pt-2"
     role="tablist"
     :aria-label="ariaLabel"
   >

@@ -252,7 +252,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen px-4 space-y-4 pb-6">
     <Transition name="premium-swap" mode="out-in">
       <div v-if="showSkeleton" key="results-skeleton" class="px-4 mt-6 space-y-4">
         <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
