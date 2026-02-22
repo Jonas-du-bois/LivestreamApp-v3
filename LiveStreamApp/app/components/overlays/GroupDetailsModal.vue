@@ -1,6 +1,7 @@
 <script lang="ts">
+import type { GroupDetailsResponse } from '../../types/api'
 // Static cache to persist across component instances
-const detailsCache = new Map<string, any>()
+const detailsCache = new Map<string, GroupDetailsResponse>()
 </script>
 
 <script setup lang="ts">
@@ -8,6 +9,7 @@ import { PublicService } from '../../services/public.service'
 import { useSocket } from '../../composables/useSocket'
 import { useFavoritesStore } from '../../stores/favorites'
 import type { PassageEnriched, HistoryEntry } from '../../types/api'
+import type { ScoreUpdatePayload } from '../../types/socket'
 
 interface Props {
   isOpen: boolean
@@ -28,7 +30,7 @@ const favoritesStore = useFavoritesStore()
 const isLoading = ref(false)
 const isTogglingFavorite = ref(false)
 const error = ref<string | null>(null)
-const details = ref<any>(null)
+const details = ref<GroupDetailsResponse | null>(null)
 const activeTab = ref<'timeline' | 'stats'>('timeline')
 
 const fetchData = async () => {
@@ -68,12 +70,12 @@ watch(() => props.groupId, (newId) => {
 })
 
 // Real-time updates
-const handleScoreUpdate = (payload: any) => {
+const handleScoreUpdate = (payload: ScoreUpdatePayload) => {
   if (!details.value || !details.value.timeline) return
 
-  const passage = details.value.timeline.find((p: any) => p._id === payload.passageId)
+  const passage = details.value.timeline.find((p) => p._id === payload.passageId)
   if (passage) {
-    if (payload.score !== undefined) {
+    if (payload.score !== undefined && payload.score !== null) {
       passage.score = payload.score;
       passage.status = 'FINISHED';
       recomputeStats();
@@ -87,12 +89,13 @@ useSocketRoom('live-scores', [
 
 const recomputeStats = () => {
    if (!details.value) return
-   const finished = details.value.timeline.filter((p: any) => p.status === 'FINISHED' && typeof p.score === 'number')
-   const total = finished.reduce((acc: number, curr: any) => acc + (curr.score || 0), 0)
+   const finished = details.value.timeline.filter((p) => p.status === 'FINISHED' && typeof p.score === 'number')
+   const total = finished.reduce((acc, curr) => acc + (curr.score || 0), 0)
    const count = finished.length
 
    details.value.stats.completedPassages = count
-   details.value.stats.currentTotalScore = count > 0 ? (total / count).toFixed(2) : '0.00'
+   // Ensure currentTotalScore is a number as per type definition
+   details.value.stats.currentTotalScore = count > 0 ? Number((total / count).toFixed(2)) : 0
 }
 
 const handleKeydown = (e: KeyboardEvent) => {
@@ -102,11 +105,15 @@ const handleKeydown = (e: KeyboardEvent) => {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
+  if (import.meta.client) {
+    window.addEventListener('keydown', handleKeydown)
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
+  if (import.meta.client) {
+    window.removeEventListener('keydown', handleKeydown)
+  }
 })
 
 const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -114,7 +121,7 @@ const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour:
 // Get all passage IDs from the same group and category
 const groupPassageIds = computed(() => {
   if (!details.value?.timeline) return []
-  return details.value.timeline.map((p: any) => p._id).filter(Boolean)
+  return details.value.timeline.map((p) => p._id).filter(Boolean)
 })
 
 // Check if all group passages are favorited
@@ -173,7 +180,7 @@ interface HistoryPoint {
 const historyByYear = computed<HistoryPoint[]>(() => {
   if (!details.value?.history) return []
 
-  let rawHistory = details.value.history as any[]
+  let rawHistory = details.value.history
 
   // Filter by apparatus if provided
   if (props.apparatusCode) {
@@ -201,7 +208,7 @@ const historyByYear = computed<HistoryPoint[]>(() => {
 const averageHistoryScore = computed(() => {
   const list = historyByYear.value
   if (!list.length) return '0.00'
-  const sum = list.reduce((acc: number, curr: any) => acc + (Number(curr.score) || 0), 0)
+  const sum = list.reduce((acc: number, curr) => acc + (Number(curr.score) || 0), 0)
   return (sum / list.length).toFixed(2)
 })
 
@@ -235,7 +242,7 @@ const historyEvolutionValue = computed(() => {
 const maxHistoryScore = computed(() => {
   const list = historyByYear.value
   if (!list.length) return '0.00'
-  return Math.max(...list.map((d: any) => d.score ?? 0)).toFixed(2)
+  return Math.max(...list.map((d) => d.score ?? 0)).toFixed(2)
 })
 </script>
 
