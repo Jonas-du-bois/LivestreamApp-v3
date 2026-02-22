@@ -246,6 +246,7 @@ useSocketRoom('schedule-updates', [
               v-for="group in happeningNow"
               :key="group.id"
               class="min-w-[200px] flex-shrink-0"
+              :interactive="true"
               @click="handleGroupClick(group.id, group.apparatusCode)"
               @keydown.enter="handleGroupClick(group.id, group.apparatusCode)"
               @keydown.space.prevent="handleGroupClick(group.id, group.apparatusCode)"

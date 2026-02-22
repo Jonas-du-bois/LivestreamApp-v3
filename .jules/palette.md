@@ -25,3 +25,7 @@
 ## 2024-05-22 - Empty State Delight
 **Learning:** Glassmorphism empty states with subtle animations (pulse) significantly improve perceived quality over static text, even when no data is available.
 **Action:** Apply this pattern (Icon + Title + Hint + Action) to other list views like Schedule or Favorites.
+
+## 2025-06-03 - Interactive Components Without Semantic Roles
+**Learning:** `UiGlassCard` relies on the `to` prop (NuxtLink) to infer interactivity, failing to apply `tabindex="0"` and `role="button"` when only `@click` is used. This leaves major UI elements (Result cards, Schedule items) completely inaccessible to keyboard users.
+**Action:** Always verify if a component handles non-link interactivity. If using `@click` on a custom component that doesn't render a `<button>` or `<a>` by default, explicitly pass the prop (e.g., `:interactive="true"`) to enable keyboard support.
