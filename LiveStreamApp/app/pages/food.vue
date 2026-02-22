@@ -42,17 +42,16 @@
     </div>
     
     <div class="px-6 mb-8">
-      <div class="glass-panel p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 flex gap-4 items-center">
-        <div class="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-          <Icon name="fluent:wallet-credit-card-24-regular" class="text-blue-400" size="20" />
-        </div>
-        <div>
-          <h3 class="text-white font-bold text-sm">{{ t('food.paymentMethods') }}</h3>
-          <p class="text-blue-200/70 text-xs mt-0.5">
-            {{ t('food.paymentInfo') }}
-          </p>
-        </div>
-      </div>
+      <UiInfoTile
+        variant="feature"
+        icon-shape="circle"
+        accent="blue"
+        icon="fluent:wallet-credit-card-24-regular"
+        :label="t('food.paymentMethods')"
+        class="bg-blue-500/5 border-blue-500/20 rounded-xl"
+      >
+        <span class="text-blue-200/70">{{ t('food.paymentInfo') }}</span>
+      </UiInfoTile>
     </div>
 
     <TransitionGroup
