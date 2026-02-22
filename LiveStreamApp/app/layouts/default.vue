@@ -71,9 +71,14 @@ const isActive = (path: string) => {
 const isNotificationsOpen = ref(false)
 const isSearchOpen = ref(false)
 const isFilterOpen = ref(false)
-const isGroupDetailsOpen = ref(false)
-const selectedGroupId = ref('')
-const selectedApparatusCode = ref<string | undefined>(undefined)
+
+// Group Details State (Global)
+const {
+  isOpen: isGroupDetailsOpen,
+  groupId: selectedGroupId,
+  apparatusCode: selectedApparatusCode,
+  close: closeGroupDetails
+} = useGroupDetails()
 
 // Notifications from store
 const hasUnreadNotifications = computed(() => notificationsStore.hasUnread)
@@ -90,15 +95,6 @@ const openFilter = () => {
 const openNotifications = () => {
   isNotificationsOpen.value = true
 }
-
-const openGroupDetails = (groupId: string, apparatusCode?: string) => {
-  selectedGroupId.value = groupId
-  selectedApparatusCode.value = apparatusCode
-  isGroupDetailsOpen.value = true
-}
-
-// Provide to child components
-provide('openGroupDetails', openGroupDetails)
 </script>
 
 <template>
@@ -244,7 +240,7 @@ provide('openGroupDetails', openGroupDetails)
       :is-open="isGroupDetailsOpen"
       :group-id="selectedGroupId"
       :apparatus-code="selectedApparatusCode"
-      @close="isGroupDetailsOpen = false"
+      @close="closeGroupDetails"
     />
   </div>
 </template>

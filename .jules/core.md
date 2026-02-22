@@ -31,3 +31,14 @@
   - **UX:** Changed "Last updated" to display the client-side fetch time (`lastRefreshedAt`) instead of API data time, providing better feedback.
   - **Service:** Added `fetchWeather()` to `PublicService`.
 - **Outcome:** Weather page now correctly handles loading, errors, manual refresh, and displays local time of last check.
+
+## 2026-02-21: Group Details Modal Logic Abstraction
+
+- **Logic Extracted:** Duplicated `provide/inject` pattern and wrapper functions for opening the "Group Details" modal in `app/layouts/default.vue`, `app/pages/schedule.vue`, `app/pages/results.vue`, `app/pages/favorites.vue`, and `app/pages/stream/[id].vue`.
+- **Destination:** `app/composables/useGroupDetails.ts`
+- **Changes:**
+  - Created `useGroupDetails` composable using `useState` for global UI state (`isOpen`, `groupId`, `apparatusCode`).
+  - Removed `provide('openGroupDetails')` from `default.vue` layout.
+  - Removed `inject('openGroupDetails')` and local `handleGroupClick` wrappers from pages.
+  - Updated templates to use `useGroupDetails().open()` directly or via simplified handlers.
+- **Outcome:** Eliminated "prop drilling" (via inject) and loose coupling. Enforced strict typing for modal interactions. Centralized modal state management.
