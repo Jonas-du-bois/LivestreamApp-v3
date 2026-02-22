@@ -111,3 +111,44 @@ export interface SubscriptionKeys {
   p256dh?: string;
   auth?: string;
 }
+
+// --- Group Details ---
+
+export interface TimelineEntry {
+  _id: string;
+  apparatus: {
+    name: string;
+    icon?: string;
+    code: string;
+  };
+  startTime: string;
+  endTime: string;
+  status: PassageStatus;
+  score?: number;
+  monitors: string[];
+  location?: string;
+}
+
+export interface GroupDetailsResponse {
+  info: {
+    _id: string;
+    name: string;
+    canton?: string;
+    category?: string;
+    logo?: string;
+    description?: string;
+    gymnastsCount: number;
+  };
+  stats: {
+    completedPassages: number;
+    totalPassages: number;
+    currentTotalScore: number; // The API returns number here, although formatted as string in some places, let's double check.
+  };
+  monitors: string[];
+  history: {
+    year: number;
+    score: number;
+    apparatus: string;
+  }[];
+  timeline: TimelineEntry[];
+}

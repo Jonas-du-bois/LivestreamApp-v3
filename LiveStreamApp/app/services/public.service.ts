@@ -1,4 +1,4 @@
-import type { ScheduleResponse, PassageEnriched, Stream, PopulatedStream } from '../types/api'
+import type { ScheduleResponse, PassageEnriched, Stream, PopulatedStream, GroupDetailsResponse } from '../types/api'
 import { type MaybeRef, toValue } from 'vue'
 
 export const PublicService = {
@@ -59,10 +59,10 @@ export const PublicService = {
   },
 
   getGroupDetails(groupId: string) {
-    return useApiClient<any>(`/groups/${groupId}/details`)
+    return useApiClient<GroupDetailsResponse>(`/groups/${groupId}/details`)
   },
 
   fetchGroupDetails(groupId: string) {
-    return apiClient<any>(`/groups/${groupId}/details`)
+    return apiClient<GroupDetailsResponse>(`/groups/${groupId}/details`)
   }
 }
