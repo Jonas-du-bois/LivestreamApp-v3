@@ -124,7 +124,7 @@ const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl
 const currentApparatus = computed(() => currentPassage.value?.apparatus || null)
 const passageMonitors = computed(() => currentPassage.value?.monitors || [])
 
-const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
+const { open: openGroupDetails } = useGroupDetails()
 
 // Detect iframe load failures (e.g., blocked by extensions) and show fallback
 const playerLoaded = ref(false)
@@ -309,7 +309,7 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
         <!-- Context Section -->
         <div v-if="currentGroup">
           <h3 class="text-white/60 font-medium mb-3 ml-1">{{ t('stream.onPracticable') }}</h3>
-          <div @click="openGroupDetails && currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
+          <div @click="currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
              <GroupInfoCard :group="currentGroup" :passage-monitors="passageMonitors" />
           </div>
         </div>

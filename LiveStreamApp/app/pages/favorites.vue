@@ -7,7 +7,7 @@ import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
 const { t } = useI18n()
 const { translateApparatus, formatLocalizedTime, formatLocalizedDate } = useTranslatedData()
-const openGroupDetails = inject<(name: string) => void>('openGroupDetails')
+const { open: openGroupDetails } = useGroupDetails()
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
 
@@ -111,7 +111,7 @@ const toggleFavorite = (passageId: string, event: Event) => {
 }
 
 const handleGroupClick = (groupId: string) => {
-  openGroupDetails?.(groupId)
+  openGroupDetails(groupId)
 }
 
 // Handle score updates for favorite passages

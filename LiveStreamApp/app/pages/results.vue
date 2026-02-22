@@ -8,7 +8,7 @@ const { translateApparatus, translateCategory } = useTranslatedData()
 // Extended type including rank
 type PassageResult = PassageEnriched & { rank: number }
 
-const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
+const { open: openGroupDetails } = useGroupDetails()
 
 // Fetch data from API with caching to avoid refetch on tab clicks
 const { data: apiResultsMap, pending, refresh } = await useAsyncData(
@@ -127,7 +127,7 @@ const getPodiumBorderClass = (rank: number) => {
 }
 
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
-  openGroupDetails?.(groupId, apparatusCode)
+  openGroupDetails(groupId, apparatusCode)
 }
 
 const handleScoreUpdate = (data: any) => {

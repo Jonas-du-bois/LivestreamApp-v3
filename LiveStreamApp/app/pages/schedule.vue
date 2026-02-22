@@ -6,7 +6,7 @@ import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
 const { t, locale } = useI18n()
 const { translateApparatus, translateDay, formatLocalizedTime } = useTranslatedData()
-const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
+const { open: openGroupDetails } = useGroupDetails()
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
 
@@ -194,7 +194,7 @@ const isFavorite = (passageId: string) => {
 }
 
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
-  openGroupDetails?.(groupId, apparatusCode)
+  openGroupDetails(groupId, apparatusCode)
 }
 
 // Handle schedule updates
