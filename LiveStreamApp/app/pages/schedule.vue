@@ -302,6 +302,7 @@ useSocketRoom('schedule-updates', [
               <UiGlassCard
                 v-for="(item, index) in filteredSchedule"
                 :key="item._id || `${item.group?._id || 'group'}-${item.startTime || 'start'}-${item.apparatus?.code || 'apparatus'}-${index}`"
+                :interactive="true"
                 @click="handleGroupClick(item.group._id, item.apparatus.code)"
                 @keydown.enter="handleGroupClick(item.group._id, item.apparatus.code)"
                 @keydown.space.prevent="handleGroupClick(item.group._id, item.apparatus.code)"

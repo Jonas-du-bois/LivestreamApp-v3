@@ -26,9 +26,9 @@ const props = withDefaults(defineProps<Props>(), {
 const isInteractive = computed(() => props.interactive ?? !!props.to)
 
 const cardClasses = computed(() => [
-  'glass-card transition-all duration-200 block outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
+  'glass-card transition-all duration-300 block outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
   props.padding,
-  isInteractive.value ? 'cursor-pointer hover:bg-white/15 active:scale-[0.98]' : '',
+  isInteractive.value ? 'cursor-pointer hover:bg-white/15 hover:border-white/30 hover:shadow-lg hover:shadow-cyan-900/10 active:scale-[0.97] active:bg-white/20 active:border-cyan-400/50 active:shadow-cyan-500/20' : '',
   props.class
 ])
 </script>
