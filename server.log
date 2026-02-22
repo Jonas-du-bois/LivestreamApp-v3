@@ -1,0 +1,66 @@
+
+> dev
+> nuxt dev
+
+│
+●  Nuxt 4.3.1 (with Nitro 2.13.1, Vite 7.3.1 and Vue 3.5.28)
+
+  ➜ Local:    http://localhost:3000/
+  ➜ Network:  use --host to expose
+
+[nuxt:tailwindcss] ℹ Using default Tailwind CSS file
+[nuxt:tailwindcss] ℹ Tailwind Viewer: http://localhost:3000/_tailwind/
+✔ Vite client built in 75ms
+✔ Vite server built in 95ms
+[nitro] ✔ Nuxt Nitro server built in 2662ms
+ℹ Vite server warmed up in 1ms
+ℹ Vite client warmed up in 4ms
+WARN  [db] No MONGODB_URI provided. Starting MongoMemoryServer (Development Mode)...
+[Scheduler] Starting scheduler for status updates...
+WARN  [Scheduler] WebPush init failed (invalid keys) - Notifications disabled Vapid private key must be a URL safe Base 64 (without "=")
+
+    at Object.validatePrivateKey (node_modules/.pnpm/web-push@3.6.7/node_modules/web-push/src/vapid-helper.js:126:11)
+    at WebPushLib.setVapidDetails (node_modules/.pnpm/web-push@3.6.7/node_modules/web-push/src/web-push-lib.js:61:17)
+    at .nuxt/dev/index.mjs:4679:15
+    at runNitroPlugins (.nuxt/dev/index.mjs:5770:7)
+    at .nuxt/dev/index.mjs:5781:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+WARN  [Scheduler] FIREBASE_SERVICE_ACCOUNT not set - FCM disabled (native push won't work)
+Downloading MongoDB "8.2.1": 0% (0mb / 122mb)
+Downloading MongoDB "8.2.1": 100% (122mb / 122mb)
+Downloading MongoDB "8.2.1": 100% (0mb / 0mb)
+[db] MongoMemoryServer started at: mongodb://127.0.0.1:46635/
+[db] Connecting to MongoDB (masked): mongodb://...
+[db] mongoose connected, readyState= 1
+[db] Connected to MongoDB
+✅ [Socket.io] Serveur initialisé avec succès
+WARN  [intlify] Not found 'results.noResultsHint' key in 'fr' locale messages.
+[Socket.io] Client connecté : _5PeusZnB7XUzPTfAAAB
+[Socket.io] Socket _5PeusZnB7XUzPTfAAAB a rejoint la salle : streams
+[Socket.io] Socket _5PeusZnB7XUzPTfAAAB rooms: [ '_5PeusZnB7XUzPTfAAAB', 'streams' ]
+[Socket.io] Socket _5PeusZnB7XUzPTfAAAB a rejoint la salle : live-scores
+[Socket.io] Socket _5PeusZnB7XUzPTfAAAB rooms: [ '_5PeusZnB7XUzPTfAAAB', 'streams', 'live-scores' ]
+[Socket.io] Socket _5PeusZnB7XUzPTfAAAB a rejoint la salle : schedule-updates
+[Socket.io] Socket _5PeusZnB7XUzPTfAAAB rooms: [ '_5PeusZnB7XUzPTfAAAB', 'streams', 'live-scores', 'schedule-updates' ]
+[Socket.io] Socket _5PeusZnB7XUzPTfAAAB déconnecté: transport close
+WARN  [intlify] Not found 'results.noResultsHint' key in 'fr' locale messages.
+[Socket.io] Client connecté : yJ6Z55M7YnO5iKF0AAAD
+[Socket.io] Socket yJ6Z55M7YnO5iKF0AAAD a rejoint la salle : streams
+[Socket.io] Socket yJ6Z55M7YnO5iKF0AAAD rooms: [ 'yJ6Z55M7YnO5iKF0AAAD', 'streams' ]
+[Socket.io] Socket yJ6Z55M7YnO5iKF0AAAD a rejoint la salle : live-scores
+[Socket.io] Socket yJ6Z55M7YnO5iKF0AAAD rooms: [ 'yJ6Z55M7YnO5iKF0AAAD', 'streams', 'live-scores' ]
+[Socket.io] Socket yJ6Z55M7YnO5iKF0AAAD a rejoint la salle : schedule-updates
+[Socket.io] Socket yJ6Z55M7YnO5iKF0AAAD rooms: [ 'yJ6Z55M7YnO5iKF0AAAD', 'streams', 'live-scores', 'schedule-updates' ]
+[Socket.io] Socket yJ6Z55M7YnO5iKF0AAAD déconnecté: transport close
+WARN  [intlify] Not found 'results.noResultsHint' key in 'fr' locale messages.
+[Socket.io] Client connecté : DUnRpKPiWs07WACXAAAF
+[Socket.io] Socket DUnRpKPiWs07WACXAAAF a rejoint la salle : streams
+[Socket.io] Socket DUnRpKPiWs07WACXAAAF rooms: [ 'DUnRpKPiWs07WACXAAAF', 'streams' ]
+[Socket.io] Socket DUnRpKPiWs07WACXAAAF a rejoint la salle : live-scores
+[Socket.io] Socket DUnRpKPiWs07WACXAAAF rooms: [ 'DUnRpKPiWs07WACXAAAF', 'streams', 'live-scores' ]
+[Socket.io] Socket DUnRpKPiWs07WACXAAAF a rejoint la salle : schedule-updates
+[Socket.io] Socket DUnRpKPiWs07WACXAAAF rooms: [ 'DUnRpKPiWs07WACXAAAF', 'streams', 'live-scores', 'schedule-updates' ]
+[Socket.io] Socket DUnRpKPiWs07WACXAAAF déconnecté: transport close

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PassageEnriched } from '~/types/api'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
+import DomainResultRow from '~/components/domain/ResultRow.vue'
 
 const { t, locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
@@ -99,32 +100,6 @@ const fullRanking = computed(() => {
   if (!activeSection.value) return []
   return activeSection.value.results.slice(3)
 })
-
-const getMedalIcon = (rank: number) => {
-  switch (rank) {
-    case 1:
-      return { name: 'fluent:trophy-24-filled', class: 'text-yellow-400' }
-    case 2:
-      return { name: 'fluent:ribbon-24-filled', class: 'text-gray-300' }
-    case 3:
-      return { name: 'fluent:ribbon-24-filled', class: 'text-amber-600' }
-    default:
-      return null
-  }
-}
-
-const getPodiumBorderClass = (rank: number) => {
-  switch (rank) {
-    case 1:
-      return 'border-yellow-400'
-    case 2:
-      return 'border-gray-300'
-    case 3:
-      return 'border-amber-600'
-    default:
-      return 'border-white/10'
-  }
-}
 
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails?.(groupId, apparatusCode)
@@ -316,40 +291,18 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <div v-if="podiumResults.length > 0">
               <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.podium') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-                <UiGlassCard
+                <DomainResultRow
                   v-for="result in podiumResults"
                   :key="result._id"
                   :id="'result-' + result._id"
-                  class="rounded-2xl border-2"
-                  :class="getPodiumBorderClass(result.rank)"
+                  :rank="result.rank"
+                  :group-name="result.group.name"
+                  :category="translateCategory(result.group.category) || translateCategory('ACTIFS')"
+                  :score="result.score"
                   @click="handleGroupClick(result.group._id, activeSection.code)"
                   @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
                   @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
-                >
-                  <div class="flex items-center gap-4">
-                    <!-- Medal Icon -->
-                    <div class="flex items-center justify-center w-12 h-12">
-                      <span class="sr-only">#{{ result.rank }}</span>
-                      <Icon
-                        v-if="getMedalIcon(result.rank)"
-                        :name="getMedalIcon(result.rank)!.name"
-                        class="w-8 h-8"
-                        :class="getMedalIcon(result.rank)!.class"
-                      />
-                    </div>
-
-                    <!-- Group Info -->
-                    <div class="flex-1 min-w-0">
-                      <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                      <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('ACTIFS') }}</p>
-                    </div>
-
-                    <!-- Score -->
-                    <div class="text-cyan-400 font-bold text-3xl">
-                      {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
-                    </div>
-                  </div>
-                </UiGlassCard>
+                />
               </TransitionGroup>
             </div>
 
@@ -357,33 +310,18 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <div v-if="fullRanking.length > 0">
               <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.fullRanking') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-                <UiGlassCard
+                <DomainResultRow
                   v-for="result in fullRanking"
                   :key="result._id"
                   :id="'result-' + result._id"
-                  class="rounded-2xl"
+                  :rank="result.rank"
+                  :group-name="result.group.name"
+                  :category="translateCategory(result.group.category) || translateCategory('MIXTE')"
+                  :score="result.score"
                   @click="handleGroupClick(result.group._id, activeSection.code)"
                   @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
                   @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
-                >
-                  <div class="flex items-center gap-4">
-                    <!-- Rank Number -->
-                    <div class="flex items-center justify-center w-12">
-                      <span class="text-white/40 font-bold text-xl">#{{ result.rank }}</span>
-                    </div>
-
-                    <!-- Group Info -->
-                    <div class="flex-1 min-w-0">
-                      <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                      <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('MIXTE') }}</p>
-                    </div>
-
-                    <!-- Score -->
-                    <div class="text-white font-bold text-2xl">
-                      {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
-                    </div>
-                  </div>
-                </UiGlassCard>
+                />
               </TransitionGroup>
             </div>
 
