@@ -1,7 +1,10 @@
-import { randomBytes } from 'node:crypto';
+import { randomBytes, createHash } from 'node:crypto';
 import SessionModel from '../models/Session';
 
 const SESSION_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+// Helper to hash session tokens (Defense in Depth)
+const hashToken = (token: string) => createHash('sha256').update(token).digest('hex');
 
 /**
  * Creates a new admin session and returns the session token.
@@ -9,11 +12,13 @@ const SESSION_TTL = 24 * 60 * 60 * 1000; // 24 hours
  */
 export const createAdminSession = async (): Promise<string> => {
   const token = randomBytes(32).toString('hex');
+  const hashedToken = hashToken(token);
   const expiresAt = new Date(Date.now() + SESSION_TTL);
   
-  await SessionModel.create({ token, expiresAt });
+  // Store only the hash in the database
+  await SessionModel.create({ token: hashedToken, expiresAt });
   
-  return token;
+  return token; // Return raw token to client
 };
 
 /**
@@ -22,8 +27,9 @@ export const createAdminSession = async (): Promise<string> => {
  */
 export const verifyAdminSession = async (token: string): Promise<boolean> => {
   try {
+    const hashedToken = hashToken(token);
     const session = await SessionModel.findOne({ 
-      token, 
+      token: hashedToken,
       expiresAt: { $gt: new Date() } 
     });
     
