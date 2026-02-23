@@ -23,16 +23,11 @@ export default defineCachedEventHandler(async (event) => {
     // 2. Filter Lookups (Apparatus IDs)
     // 3. Filter Lookups (Group IDs)
 
+    // BOLT: Optimized aggregation - merged $project into $group to avoid redundant document creation
     const dayAggregationPromise = PassageModel.aggregate([
       {
-        $project: {
-          dayISO: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
-          startTime: 1
-        }
-      },
-      {
         $group: {
-          _id: "$dayISO",
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
           sampleDate: { $first: "$startTime" }
         }
       },
