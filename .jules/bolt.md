@@ -9,3 +9,7 @@
 ## 2026-02-17 - Aggregation Pipeline Projection Optimization
 **Learning:** In MongoDB aggregations involving grouping, pushing `$$ROOT` into an array includes all fields from the original document, including large unused arrays (like `history` or `monitors`). This significantly increases memory usage during the aggregation and payload size.
 **Action:** Always add a `$project` stage *before* a `$group` stage that pushes `$$ROOT`, to strictly whitelist only the necessary fields. This reduces memory pressure and network transfer.
+
+## 2026-02-18 - Aggregation Pipeline Simplification
+**Learning:** Combining `$project` and `$group` stages when transforming data (like date formatting) into a group key avoids creating intermediate documents, saving memory and CPU cycles (~6% faster).
+**Action:** Audit aggregation pipelines for sequential `$project` + `$group` stages where the projection is only used for the grouping key.
