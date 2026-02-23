@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PassageEnriched } from '~/types/api'
+import type { ScoreUpdatePayload } from '~/types/socket'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
 const { t, locale } = useI18n()
@@ -51,7 +52,7 @@ const resultsMap = ref<Record<string, PassageResult[]>>({})
 watch(apiResultsMap, (newData) => {
   if (newData) {
     // Deep clone to ensure full reactivity
-    resultsMap.value = JSON.parse(JSON.stringify(newData))
+    resultsMap.value = structuredClone(toRaw(newData))
   }
 }, { immediate: true, deep: true })
 
@@ -130,7 +131,7 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails(groupId, apparatusCode)
 }
 
-const handleScoreUpdate = (data: any) => {
+const handleScoreUpdate = (data: ScoreUpdatePayload) => {
   // Data payload: { passageId, score, rank, apparatusCode, ... }
   if (!resultsMap.value) return
 
@@ -170,12 +171,14 @@ const handleScoreUpdate = (data: any) => {
 
       // Trigger Flash Effect
       nextTick(() => {
+        if (import.meta.client) {
           const el = document.getElementById(`result-${data.passageId}`)
           if (el) {
             el.classList.remove('score-flash')
             void el.offsetWidth
             el.classList.add('score-flash')
           }
+        }
       })
 
       found = true
@@ -195,7 +198,7 @@ const handleScoreUpdate = (data: any) => {
         _id: data.passageId,
         group: data.group,
         apparatus: data.apparatus,
-        score: data.score,
+        score: data.score ?? null,
         rank: 0,
         status: data.status || 'FINISHED',
         startTime: data.startTime || '',
@@ -218,7 +221,7 @@ const handleScoreUpdate = (data: any) => {
   }
 }
 
-const handleStatusUpdate = (data: any) => {
+const handleStatusUpdate = (data: ScoreUpdatePayload) => {
   if (!resultsMap.value) return
   
   const keys = Object.keys(resultsMap.value)
