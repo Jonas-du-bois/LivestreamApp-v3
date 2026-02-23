@@ -29,3 +29,7 @@
 ## 2025-06-03 - Interactive Components Without Semantic Roles
 **Learning:** `UiGlassCard` relies on the `to` prop (NuxtLink) to infer interactivity, failing to apply `tabindex="0"` and `role="button"` when only `@click` is used. This leaves major UI elements (Result cards, Schedule items) completely inaccessible to keyboard users.
 **Action:** Always verify if a component handles non-link interactivity. If using `@click` on a custom component that doesn't render a `<button>` or `<a>` by default, explicitly pass the prop (e.g., `:interactive="true"`) to enable keyboard support.
+
+## 2025-06-03 - Encapsulated Keyboard Accessibility in UI Components
+**Learning:** Manually adding `@keydown.enter` and `@keydown.space` handlers to every instance of a reusable interactive component (like `UiGlassCard`) is error-prone and leads to inconsistent accessibility (e.g., forgotten in `favorites.vue`).
+**Action:** Encapsulate keyboard interaction logic directly within the base UI component (`UiGlassCard.vue`). Detect if it's interactive and not a native link/button, then handle `Enter`/`Space` internally to trigger a click event. This ensures accessibility by default for all consumers.

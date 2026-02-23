@@ -31,6 +31,17 @@ const cardClasses = computed(() => [
   isInteractive.value ? 'cursor-pointer hover:bg-white/15 hover:border-white/30 hover:shadow-lg hover:shadow-cyan-900/10 active:scale-[0.97] active:bg-white/20 active:border-cyan-400/50 active:shadow-cyan-500/20' : '',
   props.class
 ])
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (props.to) return // Let NuxtLink handle it
+  if (!isInteractive.value) return
+
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    // Trigger click on the element itself
+    (event.currentTarget as HTMLElement).click()
+  }
+}
 </script>
 
 <template>
@@ -40,6 +51,7 @@ const cardClasses = computed(() => [
     :class="cardClasses"
     :role="isInteractive ? 'button' : undefined"
     :tabindex="isInteractive ? 0 : undefined"
+    @keydown="handleKeyDown"
   >
     <slot />
   </component>
