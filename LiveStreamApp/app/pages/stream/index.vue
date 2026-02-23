@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 import { PublicService } from '../../services/public.service'
+import { getStreamThumbnail, resolveStreamPassage } from '~/utils/stream'
 
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
@@ -108,46 +109,21 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
   let currentApparatusName = ''
   let currentApparatusCode = ''
   
-  // Find live passage by stream's location (most reliable method)
-  const livePassage = s.location ? passagesByLocation.get(s.location) : null
+  // Find live passage by stream's location as a candidate
+  const livePassageAtLocation = s.location ? passagesByLocation.get(s.location) : null
   
-  if (livePassage) {
-    currentGroupName = livePassage.group?.name || '—'
-    currentApparatusName = livePassage.apparatus?.name || ''
-    currentApparatusCode = livePassage.apparatus?.code || ''
-  } else if (s.currentPassage) {
-    // Fallback to currentPassage if no live passage found by location
-    const cp = s.currentPassage
-    if (typeof cp === 'object' && cp.group) {
-      currentGroupName = cp.group.name || '—'
-      currentApparatusName = cp.apparatus?.name || ''
-      currentApparatusCode = cp.apparatus?.code || ''
-    }
+  // Resolve the actual passage using our utility
+  // (Prioritizes stream.currentPassage if explicitly set, otherwise falls back to location)
+  const resolvedPassage = resolveStreamPassage(s, livePassageAtLocation)
+
+  if (resolvedPassage && resolvedPassage.group) {
+    currentGroupName = resolvedPassage.group.name || '—'
+    currentApparatusName = resolvedPassage.apparatus?.name || ''
+    currentApparatusCode = resolvedPassage.apparatus?.code || ''
   }
 
-  // Determine thumbnail
-  const defaultImg = 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-
-  let thumb = s.thumbnail || ''
-  if (!thumb && s.url) {
-    const url: string = s.url
-    const embedMatch = url.match(/embed\/([a-zA-Z0-9_-]{11})/)
-    const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/)
-    const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
-
-    const ytId = embedMatch?.[1] || watchMatch?.[1] || shortMatch?.[1]
-    if (ytId) {
-      thumb = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`
-    } else if (url.includes('twitch.tv')) {
-      const twMatch = url.match(/twitch\.tv\/(.+?)(?:$|\/|\?)/)
-      const channel = twMatch?.[1]
-      if (channel) {
-        thumb = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel}-1280x720.jpg`
-      }
-    }
-  }
-
-  if (!thumb) thumb = defaultImg
+  // Determine thumbnail using utility
+  const thumb = getStreamThumbnail(s.url, s.thumbnail)
 
   return {
     id: s._id,

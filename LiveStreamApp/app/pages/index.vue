@@ -3,10 +3,10 @@ import { ref, computed, watch, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { PublicService } from '~/services/public.service'
 import { useSocketRoom } from '~/composables/useSocketRoom'
-import { translateApparatus, translateCategory } from '~/utils/translate'
 import type { Group } from '~/types/api'
 
 const { t } = useI18n()
+const { translateApparatus, translateCategory } = useTranslatedData()
 
 interface QuickAction {
   id: string

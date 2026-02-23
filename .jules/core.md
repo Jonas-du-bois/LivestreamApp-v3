@@ -42,3 +42,14 @@
   - Removed `inject('openGroupDetails')` and local `handleGroupClick` wrappers from pages.
   - Updated templates to use `useGroupDetails().open()` directly or via simplified handlers.
 - **Outcome:** Eliminated "prop drilling" (via inject) and loose coupling. Enforced strict typing for modal interactions. Centralized modal state management.
+
+## 2026-02-21: Stream Logic Centralization
+
+- **Logic Extracted:** Stream thumbnail generation, embeddability checks, and "Current Passage" resolution logic from `pages/stream/index.vue` and `pages/stream/[id].vue`.
+- **Destination:** `app/utils/stream.ts`
+- **Changes:**
+  - Created `getStreamThumbnail`, `resolveStreamPassage`, and `isStreamEmbeddable` utilities.
+  - Refactored `pages/stream/index.vue` to use these utilities, removing duplicate regex and mapping logic.
+  - Refactored `pages/stream/[id].vue` to use these utilities, unifying the priority logic for resolving the current passage (Stream explicit > Location fallback).
+  - Fixed a broken import in `pages/index.vue` (`~/utils/translate` -> `useTranslatedData`).
+- **Outcome:** Centralized domain logic for streams. Consistent behavior across list and detail views. Fixed build.

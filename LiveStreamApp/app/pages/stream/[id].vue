@@ -2,6 +2,7 @@
 import type { Stream, Passage, Group, Apparatus, PopulatedPassage, PopulatedStream } from '../../types/api'
 import { ref, watch, onBeforeUnmount, onMounted, computed } from 'vue'
 import { PublicService } from '../../services/public.service'
+import { resolveStreamPassage, isStreamEmbeddable } from '~/utils/stream'
 
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
@@ -65,13 +66,15 @@ onMounted(() => {
 // Use current passage directly from stream (already populated by API)
 // Falls back to matching from livePassages if stream.currentPassage is not set
 const currentPassage = computed(() => {
-  // Primary: use the populated currentPassage from stream
-  if (stream.value?.currentPassage) {
-    return stream.value.currentPassage as PopulatedPassage
-  }
-  // Fallback: match by location from live passages
-  if (!stream.value?.location) return null
-  return livePassages.value.find(p => p.location === stream.value?.location) || null
+  if (!stream.value) return null
+
+  // Find live passage by location as candidate
+  const livePassageAtLocation = stream.value.location
+    ? (livePassages.value.find(p => p.location === stream.value?.location) || null)
+    : null
+
+  // Use utility to resolve
+  return resolveStreamPassage(stream.value, livePassageAtLocation)
 })
 
 // Watch for current passage changes to fetch group details
@@ -120,7 +123,7 @@ if (stream.value && !stream.value.isLive) {
 
 // Computeds for safe access
 const streamUrl = computed(() => stream.value?.url)
-const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl.value?.includes('vimeo'))
+const isEmbed = computed(() => isStreamEmbeddable(streamUrl.value))
 const currentApparatus = computed(() => currentPassage.value?.apparatus || null)
 const passageMonitors = computed(() => currentPassage.value?.monitors || [])
 
