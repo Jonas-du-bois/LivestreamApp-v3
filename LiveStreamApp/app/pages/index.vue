@@ -1,29 +1,19 @@
 <script setup lang="ts">
-import { PublicService } from '../services/public.service'
-import HomeQuickActionButton from '~/components/home/HomeQuickActionButton.vue'
-import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
+import { ref, computed, watch, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { PublicService } from '~/services/public.service'
+import { useSocketRoom } from '~/composables/useSocketRoom'
+import { translateApparatus, translateCategory } from '~/utils/translate'
+import type { Group } from '~/types/api'
 
 const { t } = useI18n()
-const { translateApparatus } = useTranslatedData()
-
-interface Group {
-  id: string
-  name: string
-  apparatus: string
-  apparatusCode?: string
-  salle: string
-  category?: string
-  streamId?: string
-}
-
-type QuickActionAccent = 'cyan' | 'emerald' | 'pink' | 'orange' | 'violet'
 
 interface QuickAction {
   id: string
   to: string
   label: string
   icon: string
-  accent: QuickActionAccent
+  accent: 'cyan' | 'emerald' | 'pink' | 'orange' | 'violet'
   badge?: string | null
 }
 
@@ -73,7 +63,7 @@ const heroSubtitle = computed(() => {
   if (!firstLivePassage.value) return 'Salle 1 • Sol'
   const loc = firstLivePassage.value.location || '—'
   const app = translateApparatus(firstLivePassage.value.apparatus?.code, firstLivePassage.value.apparatus?.name)
-  return `${loc} • ${app}`
+  return ' • '
 })
 
 const firstLiveStream = computed(() => {
@@ -183,34 +173,38 @@ useSocketRoom('schedule-updates', [
 
       <div v-else key="home-content" class="space-y-6">
         <!-- Hero Live Card -->
-        <NuxtLink
+        <UiMediaCard
           v-if="firstLiveStream"
           :to="'/stream/' + firstLiveStream._id"
-          class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
+          :image="heroImage"
+          :alt="heroTitle"
+          variant="cover"
+          image-height="h-64"
+          gradient="gradient-overlay"
+          class="rounded-xl"
         >
-          <ImageWithFallback
-            :src="heroImage"
-            :alt="heroTitle"
-            class="w-full h-full object-cover"
-          />
-          <div class="absolute inset-0 gradient-overlay" />
-
-          <div class="absolute bottom-0 left-0 right-0 p-6">
-            <div class="flex items-center gap-2 mb-3">
-              <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
-                <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-                <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
+          <template #image-bottom>
+            <div class="pointer-events-auto">
+              <div class="flex items-center gap-2 mb-3">
+                <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
+                  <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
+                  <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
+                </div>
               </div>
+              <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
+              <p class="text-white/80">{{ heroSubtitle }}</p>
             </div>
+          </template>
+        </UiMediaCard>
 
-            <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
-            <p class="text-white/80">{{ heroSubtitle }}</p>
-          </div>
-        </NuxtLink>
-
-        <div 
+        <UiMediaCard
           v-else
-          class="glass-card overflow-hidden relative h-64 cursor-pointer active:scale-[0.98] transition-transform block focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none rounded-xl"
+          :image="heroImage"
+          :alt="heroTitle"
+          variant="cover"
+          image-height="h-64"
+          gradient="gradient-overlay"
+          class="rounded-xl cursor-pointer"
           @click="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
           role="button"
           tabindex="0"
@@ -218,25 +212,19 @@ useSocketRoom('schedule-updates', [
           @keydown.enter="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
           @keydown.space.prevent="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
         >
-          <ImageWithFallback 
-            :src="heroImage"
-            :alt="heroTitle"
-            class="w-full h-full object-cover"
-          />
-          <div class="absolute inset-0 gradient-overlay" />
-          
-          <div class="absolute bottom-0 left-0 right-0 p-6">
-            <div class="flex items-center gap-2 mb-3">
-              <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
-                <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-                <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
+          <template #image-bottom>
+            <div class="pointer-events-auto">
+              <div class="flex items-center gap-2 mb-3">
+                <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
+                  <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
+                  <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
+                </div>
               </div>
+              <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
+              <p class="text-white/80">{{ heroSubtitle }}</p>
             </div>
-            
-            <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
-            <p class="text-white/80">{{ heroSubtitle }}</p>
-          </div>
-        </div>
+          </template>
+        </UiMediaCard>
 
         <!-- Happening Now Carousel -->
         <div>

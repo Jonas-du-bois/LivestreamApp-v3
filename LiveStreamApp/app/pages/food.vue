@@ -59,62 +59,59 @@
       tag="div"
       class="px-6 grid grid-cols-1 md:grid-cols-2 gap-6"
     >
-        <div 
-          v-for="spot in filteredSpots" 
-          :key="spot.id"
-          class="group relative overflow-hidden rounded-2xl bg-gray-900 border border-white/5 shadow-xl transition-all duration-300 hover:border-blue-500/30 hover:shadow-blue-900/10 active:scale-[0.98] active:border-blue-500/50 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-          tabindex="0"
-          role="button"
-        >
-          <div class="h-40 w-full relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent z-10"></div>
-            <img 
-              :src="spot.image" 
-              alt="Food" 
-              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-active:scale-105 opacity-80"
-            />
-            
-            <div class="absolute top-3 right-3 z-20">
-              <UiStatusBadge 
-                :variant="spot.isOpen ? 'green' : 'red'" 
-                :show-dot="spot.isOpen" 
-                :pulse="spot.isOpen"
-              >
-                {{ spot.isOpen ? t('common.open') : t('common.closed') }}
-              </UiStatusBadge>
-            </div>
+      <UiMediaCard
+        v-for="spot in filteredSpots"
+        :key="spot.id"
+        :image="spot.image"
+        :alt="spot.name"
+        variant="split"
+        :interactive="true"
+        class="rounded-2xl bg-gray-900 border-white/5 shadow-xl hover:border-blue-500/30 hover:shadow-blue-900/10 active:border-blue-500/50"
+      >
+        <template #image-top>
+          <div class="ml-auto pointer-events-auto">
+            <UiStatusBadge
+              :variant="spot.isOpen ? 'green' : 'red'"
+              :show-dot="spot.isOpen"
+              :pulse="spot.isOpen"
+            >
+              {{ spot.isOpen ? t('common.open') : t('common.closed') }}
+            </UiStatusBadge>
+          </div>
+        </template>
 
-            <div class="absolute bottom-3 left-4 z-20 flex items-end gap-3">
-              <div class="h-10 w-10 rounded-lg bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-lg">
-                <Icon :name="spot.icon" class="text-white" size="20" />
-              </div>
-              <div>
-                <p class="text-blue-400 text-xs font-bold uppercase tracking-wider mb-0.5">{{ spot.type }}</p>
-                <h2 class="text-xl font-bold text-white leading-none">{{ spot.name }}</h2>
-              </div>
+        <template #image-bottom>
+          <div class="flex items-end gap-3 pointer-events-auto">
+            <div class="h-10 w-10 rounded-lg bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-lg">
+              <Icon :name="spot.icon" class="text-white" size="20" />
+            </div>
+            <div>
+              <p class="text-blue-400 text-xs font-bold uppercase tracking-wider mb-0.5">{{ spot.type }}</p>
+              <h2 class="text-xl font-bold text-white leading-none">{{ spot.name }}</h2>
             </div>
           </div>
+        </template>
 
-          <div class="p-5">
-            <p class="text-white/60 text-sm mb-6 leading-relaxed">
-              {{ spot.description }}
-            </p>
+        <template #default>
+          <p class="text-white/60 text-sm mb-6 leading-relaxed">
+            {{ spot.description }}
+          </p>
 
-            <div class="bg-white/5 rounded-xl p-4 border border-white/5">
-              <h4 class="text-xs font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Icon name="fluent:options-20-filled" />
-                {{ t('food.onTheMenu') }}
-              </h4>
-              <ul class="space-y-3">
-                <li v-for="(item, idx) in spot.menu" :key="idx" class="flex items-end justify-between text-sm group/item">
-                  <span class="text-white/90 font-medium relative pr-2 z-10">{{ item.item }}</span>
-                  <span class="flex-grow border-b border-dashed border-white/10 mb-1 mx-1"></span>
-                  <span class="text-blue-400 font-bold pl-2 z-10">{{ item.price }}</span>
-                </li>
-              </ul>
-            </div>
+          <div class="bg-white/5 rounded-xl p-4 border border-white/5">
+            <h4 class="text-xs font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <Icon name="fluent:options-20-filled" />
+              {{ t('food.onTheMenu') }}
+            </h4>
+            <ul class="space-y-3">
+              <li v-for="(item, idx) in spot.menu" :key="idx" class="flex items-end justify-between text-sm group/item">
+                <span class="text-white/90 font-medium relative pr-2 z-10">{{ item.item }}</span>
+                <span class="flex-grow border-b border-dashed border-white/10 mb-1 mx-1"></span>
+                <span class="text-blue-400 font-bold pl-2 z-10">{{ item.price }}</span>
+              </li>
+            </ul>
           </div>
-        </div>
+        </template>
+      </UiMediaCard>
     </TransitionGroup>
 
     <div v-if="filteredSpots.length === 0" class="px-6 py-12 text-center">

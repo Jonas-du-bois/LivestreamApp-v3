@@ -1,65 +1,27 @@
-# Atom's Architecture Journal ⚛️
+# Journal d'Atom ⚛️ - Architecture UI
 
-## 03/11 - Création de `<UiBackButton>`
+## 2024-05-24 - Création de `UiMediaCard`
 
-- **Component:** `app/components/ui/BackButton.vue`
-- **Pattern:** Abstracted the "Back Button" logic (Glassmorphism, Icon, Text) into a reusable component.
-- **Rule:** All generic UI components (buttons, badges, cards) must be prefixed with `Ui` and placed in `app/components/ui/`.
-- **Logic:** The component handles both `NuxtLink` (via `to` prop) and history navigation (via `router.back()`).
+**Problème identifié :**
+Duplication du pattern "Carte avec Image" (Hero Card, Food Spot Card) dans `index.vue` et `food.vue`. Les implémentations variaient légèrement (background image vs image tag, overlay gradient).
 
-## 19/02 - Création de `<UiStatusBadge>`
+**Solution :**
+Extraction d'un composant flexible `<UiMediaCard>`.
 
-- **Component:** `app/components/ui/StatusBadge.vue`
-- **Pattern:** Abstracted the status indicators (Open/Closed, Live, Coming Soon) with their pulse/ping animations.
-- **Rule:** Use slots for label content to allow internationalization and flexibility.
-- **Logic:** Centralizes variant mapping (colors/borders) and consistent animation timings.
+**Caractéristiques :**
+- **Variantes :**
+  - `split` (défaut) : Image en haut, contenu en bas (ex: Food spots).
+  - `cover` : Image en background complet, contenu en overlay (ex: Hero Live).
+- **Slots :**
+  - `image-top` : Pour les badges ou actions en haut de l'image.
+  - `image-bottom` : Pour les titres ou infos sur l'image (overlay bas).
+  - `default` : Pour le contenu principal (sous l'image en mode split).
+- **Intégration :** Utilise `<UiGlassCard>` en interne pour maintenir la cohérence visuelle (Glassmorphism).
 
-## 19/02 - Création de `<UiInfoTile>`
+**Règles d'utilisation :**
+1. Utiliser `<UiMediaCard>` pour tout élément de liste ou de mise en avant contenant une image principale.
+2. Préférer le mode `cover` pour les éléments "Hero" ou immersifs.
+3. Préférer le mode `split` pour les listes d'objets (produits, lieux).
 
-- **Component:** `app/components/ui/InfoTile.vue`
-- **Pattern:** Standardized info cards with icons (used for stats, links, highlights).
-- **Rule:** Supports both static `div` and `NuxtLink` via the `to` prop.
-- **Logic:** Dynamic sizing (`sm`, `md`, `lg`) and themeable accent colors.
-
-## 19/02 - Création de `<UiIconButton>`
-
-- **Component:** `app/components/ui/IconButton.vue`
-- **Pattern:** Unified icon-only buttons with Glassmorphism and hover states.
-- **Rule:** Mandates `label` for accessibility (renamed from ariaLabel to avoid TS conflicts). Supports variants (`ghost`, `glass`, `dark`).
-- **Logic:** Centralizes click animations (`active:scale-90`) and feedback (badges, active state).
-- **UX Note:** For modals, preferred position is top-left for navigation consistency in this app.
-
-## 19/02 - Création de `<UiEmptyState>`
-
-- **Component:** `app/components/ui/EmptyState.vue`
-- **Pattern:** Abstracted "No Results" or "Empty List" containers.
-- **Rule:** Uses slots for actions (`#actions`) to allow custom buttons/links.
-- **Logic:** Centralizes the iconic circle style and consistent spacing/typography for empty states.
-
-## 19/02 - Création de `<UiFilterChips>`
-
-- **Component:** `app/components/ui/FilterChips.vue`
-- **Pattern:** Horizontal scrolling list of buttons for filtering or tab switching.
-- **Rule:** Uses `v-model` for two-way binding. Unifies the scrollbar hiding and accessibility attributes.
-- **Logic:** Centralizes the active/inactive state styling and hover/active animations.
-
-## 19/02 - Création de `<UiGlassCard>`
-
-- **Component:** `app/components/ui/GlassCard.vue`
-- **Pattern:** Standardized container for content using the Glassmorphism theme.
-- **Rule:** Automatically handles interaction states (`hover`, `active scale`) and correctly wraps as a `NuxtLink` if the `to` prop is provided.
-- **Logic:** Centralizes the visual feedback consistency across the app while allowing flexible padding and content.
-
-## 20/02 - Création de `<UiSectionTitle>`
-
-- **Component:** `app/components/ui/SectionTitle.vue`
-- **Pattern:** Centralized section headings with consistent typography (`text-white`, `font-bold`, `px-1`).
-- **Rule:** Use for all section titles to maintain visual consistency. Supports `tag` (h1-h6) and `size` (base, lg, xl, 2xl) props.
-- **Logic:** Defaults to `h3` and `text-lg`. `px-1` ensures alignment with cards in some layouts.
-
-## 20/02 - Extension de `<UiInfoTile>`
-
-- **Component:** `app/components/ui/InfoTile.vue`
-- **Action:** Extended with polymorphic `variant` support ('stat' vs 'feature').
-- **Reasoning:** Merged similar "glass card with icon" patterns found in `food.vue` and `afterparty.vue` to avoid creating a redundant `GlassCard.vue`.
-- **Logic:** Added `iconShape` ('square' vs 'circle') and `accent` color ('blue') to support broader use cases.
+**Convention de nommage :**
+Tous les composants UI génériques doivent être préfixés par `Ui` et placés dans `app/components/ui/`.
