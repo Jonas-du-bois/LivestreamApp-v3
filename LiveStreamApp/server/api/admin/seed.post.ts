@@ -321,6 +321,19 @@ export default defineEventHandler(async (event) => {
     const insertedStreams = await StreamModel.insertMany(streamsData);
     console.log(`[seed] Created ${insertedStreams.length} Streams (Caméras)`);
 
+    // Invalidate Nitro server-side cache so that the next requests to /api/schedule
+    // and /api/results return fresh data instead of the stale SWR-cached responses.
+    try {
+      const cacheStorage = useStorage('cache')
+      const allCacheKeys = await cacheStorage.getKeys()
+      if (allCacheKeys.length > 0) {
+        await Promise.all(allCacheKeys.map(key => cacheStorage.removeItem(key)))
+        console.log(`[seed] Cleared ${allCacheKeys.length} Nitro cache entries`)
+      }
+    } catch (cacheErr) {
+      console.warn('[seed] Could not clear Nitro cache:', cacheErr)
+    }
+
     return { 
       success: true, 
       summary: { 

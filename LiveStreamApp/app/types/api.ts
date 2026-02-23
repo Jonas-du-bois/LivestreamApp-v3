@@ -76,9 +76,14 @@ export interface PopulatedStream extends Omit<Stream, 'currentPassage'> {
   currentPassage?: PopulatedPassage | null;
 }
 
+export interface ScheduleApparatusMeta {
+  code: string;
+  name: string;
+}
+
 export interface ScheduleResponse {
   meta: {
-    availableApparatus: string[];
+    availableApparatus: ScheduleApparatusMeta[];
     availableDays: string[];
     availableCategories?: string[];
     availableLocations?: string[];

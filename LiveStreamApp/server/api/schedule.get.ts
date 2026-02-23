@@ -1,6 +1,7 @@
 import PassageModel from '../models/Passage';
 import ApparatusModel from '../models/Apparatus';
 import GroupModel from '../models/Group';
+import { SCHEDULE_CACHE_MAX_AGE, SCHEDULE_CACHE_STALE_MAX_AGE } from '../utils/timings';
 
 export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event);
@@ -246,5 +247,6 @@ export default defineCachedEventHandler(async (event) => {
   }
 }, {
   swr: true,
-  maxAge: 10
+  maxAge: SCHEDULE_CACHE_MAX_AGE,
+  staleMaxAge: SCHEDULE_CACHE_STALE_MAX_AGE
 });

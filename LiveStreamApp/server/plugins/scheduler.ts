@@ -1,4 +1,5 @@
 import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime';
+import { SCHEDULER_INTERVAL } from '../utils/timings';
 
 import webPush from 'web-push';
 import admin from 'firebase-admin';
@@ -98,7 +99,7 @@ export default defineNitroPlugin((nitroApp) => {
 
   console.log('[Scheduler] Starting scheduler for status updates...');
 
-  // Schedule Job: Check every 30 seconds
+  // Schedule Job: Check at configured interval
   setInterval(async () => {
     try {
       const now = new Date();
@@ -237,7 +238,7 @@ export default defineNitroPlugin((nitroApp) => {
     } catch (err) {
       console.error('[Scheduler] Error in job:', err);
     }
-  }, 30000); // Check every 30s
+  }, SCHEDULER_INTERVAL);
 
   /**
    * Envoie des notifications de rappel pour les passages à X minutes.

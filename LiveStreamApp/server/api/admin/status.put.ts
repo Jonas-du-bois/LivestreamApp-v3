@@ -126,6 +126,68 @@ export default defineEventHandler(async (event) => {
       console.warn('[status] io instance not found, skipping emit');
     }
 
+    // ─── Auto-promote: when a passage is FINISHED, promote the next
+    // SCHEDULED passage in the SAME location whose startTime has passed ───
+    if (status === 'FINISHED' && passage.location) {
+      const now = new Date();
+      const nextPassage = await PassageModel.findOne({
+        status: 'SCHEDULED',
+        location: passage.location,
+        startTime: { $lte: now }
+      })
+        .sort({ startTime: 1 })
+        .populate('group', 'name')
+        .populate('apparatus', 'name code icon')
+        .exec();
+
+      if (nextPassage) {
+        nextPassage.status = 'LIVE';
+        await nextPassage.save();
+        console.log(`[status.put] Auto-promoted passage ${nextPassage._id} to LIVE (same location: ${passage.location})`);
+
+        // Update stream to point to the new LIVE passage
+        if (stream) {
+          stream.currentPassage = nextPassage._id as any;
+          await stream.save();
+
+          const nextStreamPayload = {
+            _id: stream._id,
+            name: stream.name,
+            url: stream.url,
+            location: stream.location,
+            isLive: stream.isLive,
+            currentPassage: {
+              _id: nextPassage._id,
+              group: nextPassage.group,
+              apparatus: nextPassage.apparatus,
+              status: nextPassage.status,
+              location: nextPassage.location
+            }
+          };
+
+          if (io) {
+            io.to(`stream-${stream._id}`).emit('stream-update', nextStreamPayload);
+            io.to('streams').emit('stream-update', nextStreamPayload);
+          }
+        }
+
+        // Emit status-update for the newly promoted passage
+        const nextPayload = {
+          passageId: nextPassage._id,
+          status: 'LIVE',
+          location: nextPassage.location || (nextPassage.apparatus as any)?.name || 'Unknown',
+          groupName: (nextPassage.group as any)?.name || null,
+          group: nextPassage.group,
+          apparatus: nextPassage.apparatus
+        };
+
+        if (io) {
+          console.log(`[status.put] Emitting status-update for auto-promoted passage:`, nextPayload);
+          io.to('schedule-updates').emit('status-update', nextPayload);
+        }
+      }
+    }
+
     return { ok: true, payload };
   } catch (err) {
     console.error('[status] error', err);

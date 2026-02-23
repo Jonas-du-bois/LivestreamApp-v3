@@ -1,7 +1,8 @@
 <script lang="ts">
 import type { GroupDetailsResponse } from '../../types/api'
-// Static cache to persist across component instances
-const detailsCache = new Map<string, GroupDetailsResponse>()
+import { GROUP_DETAILS_CACHE_TTL } from '../../utils/timings'
+// TTL-based cache: persist across instances but auto-expire
+const detailsCache = new Map<string, { data: GroupDetailsResponse; ts: number }>()
 </script>
 
 <script setup lang="ts">
@@ -33,13 +34,16 @@ const error = ref<string | null>(null)
 const details = ref<GroupDetailsResponse | null>(null)
 const activeTab = ref<'timeline' | 'stats'>('timeline')
 
-const fetchData = async () => {
+const fetchData = async (force = false) => {
   if (!props.groupId) return
 
-  // Check cache first
-  if (detailsCache.has(props.groupId)) {
-    details.value = detailsCache.get(props.groupId)
-    return
+  // Check cache (with TTL)
+  if (!force) {
+    const cached = detailsCache.get(props.groupId)
+    if (cached && Date.now() - cached.ts < GROUP_DETAILS_CACHE_TTL) {
+      details.value = cached.data
+      return
+    }
   }
 
   isLoading.value = true
@@ -47,7 +51,7 @@ const fetchData = async () => {
   try {
     const data = await PublicService.fetchGroupDetails(props.groupId)
     details.value = data
-    detailsCache.set(props.groupId, data)
+    detailsCache.set(props.groupId, { data, ts: Date.now() })
   } catch (err) {
     console.error(err)
     error.value = t('group.loadError')
@@ -69,22 +73,68 @@ watch(() => props.groupId, (newId) => {
   }
 })
 
-// Real-time updates
-const handleScoreUpdate = (payload: ScoreUpdatePayload) => {
-  if (!details.value || !details.value.timeline) return
+// ─── Real-time updates ───────────────────────────────────────────
 
-  const passage = details.value.timeline.find((p) => p._id === payload.passageId)
-  if (passage) {
-    if (payload.score !== undefined && payload.score !== null) {
-      passage.score = payload.score;
-      passage.status = 'FINISHED';
-      recomputeStats();
-    }
+// Score update: a passage got scored
+const handleScoreUpdate = (payload: ScoreUpdatePayload) => {
+  if (!details.value?.timeline) return
+
+  const idx = details.value.timeline.findIndex((p) => p._id === payload.passageId)
+  if (idx === -1) return
+
+  // Immutable update for reliable reactivity
+  const updated = { ...details.value.timeline[idx] }
+  if (payload.score !== undefined && payload.score !== null) {
+    updated.score = payload.score
+    updated.status = 'FINISHED'
+  }
+  const newTimeline = [...details.value.timeline]
+  newTimeline[idx] = updated
+  details.value = { ...details.value, timeline: newTimeline }
+  recomputeStats()
+
+  // Invalidate cache so next open gets fresh data
+  if (props.groupId) detailsCache.delete(props.groupId)
+}
+
+// Status update: a passage went LIVE or FINISHED
+const handleStatusUpdate = (payload: { passageId?: string; status?: string; score?: number | null }) => {
+  console.log('[GroupDetails] status-update:', payload)
+  if (!payload?.passageId || !payload?.status) return
+  if (!details.value?.timeline) return
+
+  const idx = details.value.timeline.findIndex((p) => p._id === payload.passageId)
+  if (idx === -1) return
+
+  // Immutable update
+  const updated = { ...details.value.timeline[idx], status: payload.status as any }
+  if (payload.score !== undefined) {
+    updated.score = payload.score
+  }
+  const newTimeline = [...details.value.timeline]
+  newTimeline[idx] = updated
+  details.value = { ...details.value, timeline: newTimeline }
+  recomputeStats()
+
+  // Invalidate cache
+  if (props.groupId) detailsCache.delete(props.groupId)
+}
+
+// Schedule update: general refresh (from scheduler)
+const handleScheduleUpdate = () => {
+  console.log('[GroupDetails] schedule-update → refetch')
+  // Invalidate all cache entries (any group could have changed)
+  detailsCache.clear()
+  // If modal is open, refetch
+  if (props.isOpen && props.groupId) {
+    fetchData(true)
   }
 }
 
-useSocketRoom('live-scores', [
-  { event: 'score-update', handler: handleScoreUpdate }
+useSocketRoom(['live-scores', 'schedule-updates'], [
+  { event: 'score-update', handler: handleScoreUpdate },
+  { event: 'status-update', handler: handleStatusUpdate },
+  { event: 'schedule-update', handler: handleScheduleUpdate }
 ])
 
 const recomputeStats = () => {
@@ -93,9 +143,15 @@ const recomputeStats = () => {
    const total = finished.reduce((acc, curr) => acc + (curr.score || 0), 0)
    const count = finished.length
 
-   details.value.stats.completedPassages = count
-   // Ensure currentTotalScore is a number as per type definition
-   details.value.stats.currentTotalScore = count > 0 ? Number((total / count).toFixed(2)) : 0
+   // Immutable stats update
+   details.value = {
+     ...details.value,
+     stats: {
+       ...details.value.stats,
+       completedPassages: count,
+       currentTotalScore: count > 0 ? Number((total / count).toFixed(2)) : 0
+     }
+   }
 }
 
 const handleKeydown = (e: KeyboardEvent) => {

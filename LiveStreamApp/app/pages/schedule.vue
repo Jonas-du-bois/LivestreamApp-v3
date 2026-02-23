@@ -3,9 +3,14 @@ import { PublicService } from '../services/public.service'
 import { useFavoritesStore } from '../stores/favorites'
 import { storeToRefs } from 'pinia'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
+import {
+  SCHEDULE_AUTO_REFRESH,
+  NOW_REFRESH_INTERVAL,
+  STATUS_OVERRIDE_DEFER
+} from '~/utils/timings'
 
 const { t, locale } = useI18n()
-const { translateApparatus, translateDay, formatLocalizedTime } = useTranslatedData()
+const { translateApparatus, translateDay } = useTranslatedData()
 const { open: openGroupDetails } = useGroupDetails()
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
@@ -15,43 +20,78 @@ const selectedFilter = useState('schedule-selected-filter', () => '')
 const filtersStore = useScheduleFilters()
 const nowTimestamp = ref(Date.now())
 let nowRefreshTimer: ReturnType<typeof setInterval> | null = null
+let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
+
+// ─── Realtime status overrides ───────────────────────────────────
+// Instead of mutating useFetch's data ref (unreliable), we keep a
+// separate reactive overlay that is merged into the computed output.
+// This guarantees Vue sees the change regardless of useFetch internals.
+const statusOverrides = new Map<string, { status: string; score?: number | null }>()
+const statusVersion = ref(0) // bump → forces filteredSchedule recompute
+
+// All known translations of "all" to detect stale locale values
+const ALL_LOCALE_VALUES = ['Tout', 'Alli', 'Tutto', '']
+
+/** Check if current selectedFilter represents "all" (any locale or empty) */
+const isAllFilter = (value: string) =>
+  !value || value === t('common.all') || ALL_LOCALE_VALUES.includes(value)
 
 // Initialize selectedFilter with translated 'all' on mount
 onMounted(() => {
-  if (!selectedFilter.value) {
+  // Always sync filter value to current locale's "all" if it was a stale "all"
+  if (isAllFilter(selectedFilter.value)) {
     selectedFilter.value = t('common.all')
   }
 
-  nowRefreshTimer = window.setInterval(() => {
+  nowRefreshTimer = setInterval(() => {
     nowTimestamp.value = Date.now()
-  }, 60_000)
-})
+  }, NOW_REFRESH_INTERVAL)
 
-onUnmounted(() => {
-  if (nowRefreshTimer) {
-    clearInterval(nowRefreshTimer)
-    nowRefreshTimer = null
+  // PWA fallback: periodic auto-refresh for when socket is down
+  autoRefreshTimer = setInterval(() => {
+    refresh()
+  }, SCHEDULE_AUTO_REFRESH)
+
+  // PWA: refresh when app comes back to foreground
+  if (import.meta.client) {
+    document.addEventListener('visibilitychange', handleVisibility)
   }
 })
 
-// 1. Paramètres réactifs (Computed) - Smart Fetching
-const apiParams = computed(() => ({
-  day: selectedDay.value,
-  // On priorise le filtre local "Agrès", sinon on prend ceux du FilterSheet
-  apparatus: selectedFilter.value !== t('common.all')
-    ? selectedFilter.value
-    : (filtersStore.value.apparatus.length ? filtersStore.value.apparatus.join(',') : undefined),
-  // Filtres dynamiques provenant du store (FilterSheet)
-  division: filtersStore.value.division.length ? filtersStore.value.division.join(',') : undefined,
-  salle: filtersStore.value.salle.length ? filtersStore.value.salle.join(',') : undefined
-}))
+onUnmounted(() => {
+  if (nowRefreshTimer) { clearInterval(nowRefreshTimer); nowRefreshTimer = null }
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null }
+  if (import.meta.client) {
+    document.removeEventListener('visibilitychange', handleVisibility)
+  }
+})
 
-watch(apiParams, (newParams) => {
-  console.log('📡 API Params:', newParams)
-}, { immediate: true, deep: true })
+const handleVisibility = () => {
+  if (document.visibilityState === 'visible') {
+    statusOverrides.clear()
+    statusVersion.value++
+    refresh()
+  }
+}
+
+// 1. Paramètres réactifs (Computed) - Smart Fetching
+const apiParams = computed(() => {
+  // Résoudre le filtre d'agrès : si c'est "all" (toute locale) ou vide → pas de filtre
+  const filterIsAll = isAllFilter(selectedFilter.value)
+  const apparatus = filterIsAll
+    ? (filtersStore.value.apparatus.length ? filtersStore.value.apparatus.join(',') : undefined)
+    : (selectedFilter.value || undefined) // Éviter d'envoyer '' comme valeur de filtre
+
+  return {
+    day: selectedDay.value || undefined, // Ne pas envoyer '' comme jour
+    apparatus,
+    division: filtersStore.value.division.length ? filtersStore.value.division.join(',') : undefined,
+    salle: filtersStore.value.salle.length ? filtersStore.value.salle.join(',') : undefined
+  }
+})
 
 // 2. Appel Réactif (useFetch surveille apiParams)
-const { data: scheduleResponse, pending, refresh } = await PublicService.getSchedule(apiParams)
+const { data: scheduleResponse, pending, error: fetchError, refresh } = await PublicService.getSchedule(apiParams)
 const hasLoadedOnce = ref(false)
 const isFilterLoading = ref(false)
 
@@ -62,14 +102,25 @@ watch(apiParamsSignature, (nextValue, previousValue) => {
   isFilterLoading.value = true
 })
 
-watch([pending, scheduleResponse], ([isPending, response]) => {
-  if (!isPending && response) {
-    hasLoadedOnce.value = true
+// Reset loading on BOTH success and error — prevents infinite skeleton
+watch([pending, scheduleResponse, fetchError], ([isPending, response, err]) => {
+  if (!isPending) {
+    if (response) {
+      hasLoadedOnce.value = true
+      // Clear overrides: fresh API data supersedes socket patches
+      statusOverrides.clear()
+      statusVersion.value++
+    }
+    // Always reset loading when fetch completes (success or error)
     isFilterLoading.value = false
   }
 }, { immediate: true })
 
-const showSkeleton = computed(() => pending.value && (!hasLoadedOnce.value || isFilterLoading.value))
+// showSkeleton: always show skeleton until first data arrives.
+// Critical for SSR→client consistency: with server:false, both SSR and client
+// start with hasLoadedOnce=false and data=null, so both render skeleton.
+// This prevents hydration mismatches that crash nested <Transition> components.
+const showSkeleton = computed(() => isFilterLoading.value || !hasLoadedOnce.value)
 
 // Store initial metadata separately to avoid filter chips reorganization on refetch
 const initialMeta = useState<{
@@ -101,13 +152,20 @@ watchEffect(() => {
     
     // Only set initial meta once (first load)
     if (!metaInitialized.value && scheduleResponse.value.meta.availableApparatus?.length) {
-      initialMeta.value = { ...scheduleResponse.value.meta }
+      initialMeta.value = {
+        availableApparatus: scheduleResponse.value.meta.availableApparatus || [],
+        availableDays: scheduleResponse.value.meta.availableDays || [],
+        availableCategories: scheduleResponse.value.meta.availableCategories || [],
+        availableLocations: scheduleResponse.value.meta.availableLocations || []
+      }
       metaInitialized.value = true
     }
     
-    // If no day selected yet, pick the first available day from meta
-    if (!selectedDay.value && meta.value.availableDays?.length) {
-      selectedDay.value = meta.value.availableDays[0] ?? ''
+    // If no day selected, or selected day is no longer in available days → pick the first
+    const availDays = meta.value.availableDays
+    if (availDays?.length && (!selectedDay.value || !availDays.includes(selectedDay.value))) {
+      isFilterLoading.value = true  // flag dès maintenant pour éviter le flash de l'état vide
+      selectedDay.value = availDays[0] ?? ''
     }
   }
 })
@@ -117,31 +175,52 @@ const availableDays = computed(() => {
   const days = initialMeta.value.availableDays?.length 
     ? initialMeta.value.availableDays 
     : (scheduleResponse.value?.meta?.availableDays || [])
-  return days.length > 0 ? days : ['samedi', 'dimanche']
+  return days
 })
 
 // Filters - use initialMeta to prevent chips from reorganizing on refetch
-const filters = computed(() => {
+interface FilterChipItem {
+  code: string
+  label: string
+}
+
+const filters = computed((): FilterChipItem[] => {
+  const allItem: FilterChipItem = { code: t('common.all'), label: t('common.all') }
   const apparatus = initialMeta.value.availableApparatus?.length
     ? initialMeta.value.availableApparatus
     : (scheduleResponse.value?.meta?.availableApparatus || [])
-  const apparatusFilters = apparatus.map((a: { code: string; name: string }) => ({
+  const apparatusFilters: FilterChipItem[] = apparatus.map((a) => ({
     code: a.name, // On utilise le name pour le filtre API (compatibilité)
     label: translateApparatus(a.code, a.name)
   }))
-  return [t('common.all'), ...apparatusFilters]
+  return [allItem, ...apparatusFilters]
 })
 
-// Reset selectedFilter when locale changes (if it was "Tout"/"Alli")
+// Reset selectedFilter when locale changes (handles ALL locales)
 watch(locale, () => {
-  // Reset to translated "all" if current filter is the old "all" value
-  if (selectedFilter.value === 'Tout' || selectedFilter.value === 'Alli') {
+  if (isAllFilter(selectedFilter.value)) {
     selectedFilter.value = t('common.all')
   }
 })
 
 const filteredSchedule = computed(() => {
-  const schedule = scheduleResponse.value?.data || []
+  // Touch statusVersion to establish reactive dependency on socket overrides
+  const _v = statusVersion.value
+
+  const schedule = (scheduleResponse.value?.data || [])
+    .filter((item: any) => item.group && item.apparatus)
+    .map((item: any) => {
+      // Merge any socket-received status override on top of API data
+      const override = statusOverrides.get(item._id)
+      if (override) {
+        return {
+          ...item,
+          status: override.status,
+          ...(override.score !== undefined ? { score: override.score } : {})
+        }
+      }
+      return item
+    })
 
   if (!filtersStore.value.hidePast) {
     return schedule
@@ -180,10 +259,6 @@ const clearScheduleFilters = () => {
   filtersStore.value.hidePast = false
 }
 
-const formatTime = (isoString: string) => {
-  return formatLocalizedTime(isoString)
-}
-
 const toggleFavorite = (id: string, event: Event) => {
   event.stopPropagation()
   favoritesStore.toggleFavorite(id)
@@ -197,14 +272,42 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails(groupId, apparatusCode)
 }
 
-// Handle schedule updates
+// ─── Socket handlers ─────────────────────────────────────────────
+// schedule-update: scheduler changed data, no payload → refresh API
 const handleScheduleUpdate = () => {
+  console.log('[Schedule] schedule-update → refresh')
+  statusOverrides.clear()
+  statusVersion.value++
   refresh()
 }
 
-// Handle status updates (when a passage goes LIVE or FINISHED)
-const handleStatusUpdate = () => {
-  refresh()
+// status-update: admin set passage LIVE/FINISHED → instant UI update via overlay
+let statusDeferTimer: ReturnType<typeof setTimeout> | null = null
+
+const handleStatusUpdate = (payload: { passageId?: string; status?: string; score?: number | null }) => {
+  console.log('[Schedule] status-update:', payload)
+
+  if (!payload?.passageId || !payload?.status) {
+    refresh()
+    return
+  }
+
+  // Instant: store override — filteredSchedule recomputes immediately
+  statusOverrides.set(payload.passageId, {
+    status: payload.status,
+    ...(payload.score !== undefined ? { score: payload.score } : {})
+  })
+  statusVersion.value++
+
+  // Debounced deferred sync: reset timer on each event so that
+  // cascading updates (FINISHED + auto-promoted LIVE) are batched
+  if (statusDeferTimer) clearTimeout(statusDeferTimer)
+  statusDeferTimer = setTimeout(() => {
+    statusOverrides.clear()
+    statusVersion.value++
+    refresh()
+    statusDeferTimer = null
+  }, STATUS_OVERRIDE_DEFER)
 }
 
 // Use the composable for proper socket room management
@@ -237,7 +340,7 @@ useSocketRoom('schedule-updates', [
     <!-- Filter Chips -->
     <UiFilterChips
       v-model="selectedFilter"
-      :items="filters.map(f => ({ id: f.code || f, label: f.label || f }))"
+      :items="filters.map(f => ({ id: f.code, label: f.label }))"
       :aria-label="t('filters.title')"
     />
 
@@ -299,44 +402,14 @@ useSocketRoom('schedule-updates', [
               class="flex flex-col gap-2 relative"
               key="list"
             >
-              <UiGlassCard
+              <SchedulePassageCard
                 v-for="(item, index) in filteredSchedule"
-                :key="item._id || `${item.group?._id || 'group'}-${item.startTime || 'start'}-${item.apparatus?.code || 'apparatus'}-${index}`"
-                :interactive="true"
-                @click="handleGroupClick(item.group._id, item.apparatus.code)"
-                :aria-label="t('schedule.openGroupDetails', {
-                  group: item.group.name,
-                  apparatus: translateApparatus(item.apparatus.code, item.apparatus.name),
-                  time: formatTime(item.startTime)
-                })"
-              >
-                <div class="flex items-start gap-4">
-                  <!-- Time & Location -->
-                  <div class="text-left min-w-[70px] flex-shrink-0">
-                    <div class="text-cyan-400 font-bold text-xl leading-tight">{{ formatTime(item.startTime) }}</div>
-                    <div class="text-white/50 text-xs mt-0.5">{{ item.location }}</div>
-                  </div>
-
-                  <!-- Group Info -->
-                  <div class="flex-1 min-w-0 pt-0.5">
-                    <h4 class="text-white font-bold text-base leading-tight mb-1.5">{{ item.group.name }}</h4>
-                    <div class="flex items-center gap-2 text-sm">
-                      <span class="text-white/60">{{ t('schedule.group') }}</span>
-                      <span class="text-white/40">•</span>
-                      <span class="text-purple-400">{{ translateApparatus(item.apparatus.code, item.apparatus.name) }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Favorite Button -->
-                  <div class="flex items-start pt-0.5 flex-shrink-0">
-                    <SparkHeart
-                      :active="!!(item._id && isFavorite(item._id))"
-                      :label="(item._id && isFavorite(item._id)) ? t('schedule.removeFromFavorites', { name: item.group?.name || '' }) : t('schedule.addToFavorites', { name: item.group?.name || '' })"
-                      @click.stop="item._id && toggleFavorite(item._id, $event)"
-                    />
-                  </div>
-                </div>
-              </UiGlassCard>
+                :key="item._id || `${item.group?._id || 'g'}-${item.startTime || 's'}-${item.apparatus?.code || 'a'}-${index}`"
+                :passage="item"
+                :is-favorite="!!(item._id && isFavorite(item._id))"
+                @click:group="handleGroupClick"
+                @toggle:favorite="(id, event) => toggleFavorite(id, event)"
+              />
             </TransitionGroup>
           </Transition>
         </div>

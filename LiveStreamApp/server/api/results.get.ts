@@ -1,6 +1,7 @@
 import PassageModel from '../models/Passage';
 import ApparatusModel from '../models/Apparatus';
 import GroupModel from '../models/Group';
+import { RESULTS_CACHE_MAX_AGE } from '../utils/timings';
 
 export default defineCachedEventHandler(async (event) => {
   try {
@@ -98,7 +99,7 @@ export default defineCachedEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: 'Failed to fetch results' });
   }
 }, {
-  maxAge: 10,
+  maxAge: RESULTS_CACHE_MAX_AGE,
   swr: true,
   name: 'api-results'
 });

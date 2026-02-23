@@ -3,10 +3,19 @@ import { ref, computed, watch, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { PublicService } from '~/services/public.service'
 import { useSocketRoom } from '~/composables/useSocketRoom'
-import { translateApparatus, translateCategory } from '~/utils/translate'
-import type { Group } from '~/types/api'
+import { HOME_AUTO_REFRESH } from '~/utils/timings'
 
 const { t } = useI18n()
+const { translateApparatus, translateCategory } = useTranslatedData()
+
+interface HappeningNowItem {
+  id: string
+  name: string
+  apparatus: string
+  apparatusCode?: string
+  salle: string
+  streamId?: string
+}
 
 interface QuickAction {
   id: string
@@ -22,7 +31,7 @@ const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => voi
 // Fetch live passages to populate "En piste maintenant"
 const { data: liveResp, pending: livePending, refresh: refreshLive } = await PublicService.getLive()
 
-const happeningNow = computed<Group[]>(() => {
+const happeningNow = computed<HappeningNowItem[]>(() => {
   return (liveResp.value?.passages || []).map((p: any) => {
     // Find stream for this passage
     const stream = (liveResp.value?.streams || []).find((s: any) => {
@@ -51,7 +60,7 @@ watch([livePending, liveResp], ([isPending, response]) => {
   }
 }, { immediate: true })
 
-const showHappeningNowSkeleton = computed(() => livePending.value && !hasLiveLoadedOnce.value)
+const showHappeningNowSkeleton = computed(() => !hasLiveLoadedOnce.value)
 
 // First live passage (used for hero)
 const firstLivePassage = computed<any>(() => {
@@ -144,9 +153,38 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails?.(groupId, apparatusCode)
 }
 
-// Handle real-time updates
-const handleScheduleUpdate = () => refreshLive()
-const handleStatusUpdate = () => refreshLive()
+// ─── Real-time + PWA resilience ──────────────────────────────────
+let autoRefreshTimer: any = null
+
+const handleScheduleUpdate = () => {
+  console.log('[Home] schedule-update → refreshLive')
+  refreshLive()
+}
+const handleStatusUpdate = () => {
+  console.log('[Home] status-update → refreshLive')
+  refreshLive()
+}
+
+const handleVisibility = () => {
+  if (document.visibilityState === 'visible') {
+    refreshLive()
+  }
+}
+
+onMounted(() => {
+  // PWA fallback: auto-refresh (home page shows LIVE data)
+  autoRefreshTimer = setInterval(() => refreshLive(), HOME_AUTO_REFRESH)
+  if (import.meta.client) {
+    document.addEventListener('visibilitychange', handleVisibility)
+  }
+})
+
+onUnmounted(() => {
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer)
+  if (import.meta.client) {
+    document.removeEventListener('visibilitychange', handleVisibility)
+  }
+})
 
 // Use the composable for proper socket room management
 useSocketRoom('schedule-updates', [
@@ -158,7 +196,7 @@ useSocketRoom('schedule-updates', [
 <template>
   <div class="px-4 space-y-6 pb-6">
     <Transition name="premium-swap" mode="out-in">
-      <div v-if="showHappeningNowSkeleton && !hasLiveLoadedOnce" key="home-loading" class="space-y-6">
+      <div v-if="showHappeningNowSkeleton" key="home-loading" class="space-y-6">
         <!-- Hero Skeleton -->
         <div class="glass-card overflow-hidden relative h-64 rounded-xl premium-skeleton-shimmer premium-skeleton-surface opacity-50"></div>
         

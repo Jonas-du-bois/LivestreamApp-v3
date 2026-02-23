@@ -1,3 +1,5 @@
+import { WEATHER_CACHE_MAX_AGE } from '../utils/timings';
+
 export default defineCachedEventHandler(async (event) => {
   try {
     // Coordinates for Yverdon-les-Bains
@@ -35,7 +37,7 @@ export default defineCachedEventHandler(async (event) => {
     })
   }
 }, {
-  maxAge: 60 * 15, // 15 minutes
+  maxAge: WEATHER_CACHE_MAX_AGE,
   swr: true,
   name: 'weather-forecast',
   getKey: () => 'yverdon' // Single key as coordinates are hardcoded

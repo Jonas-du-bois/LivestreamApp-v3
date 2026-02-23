@@ -29,6 +29,9 @@ export const useSocketRoom = (
       wrappedHandlers.set(event, wrappedHandler)
       socket.on(event, wrappedHandler)
     })
+    if (import.meta.dev) {
+      console.log(`[SocketRoom] Registered events: [${events.map(e => e.event).join(', ')}] for rooms [${roomList.join(', ')}]`)
+    }
   }
 
   const unregisterEvents = () => {
@@ -42,7 +45,7 @@ export const useSocketRoom = (
   }
 
   const handleConnect = () => {
-    // En cas de reconnexion, le store renverra les ordres join-room nécessaires
+    console.log(`[SocketRoom] Reconnected → re-subscribing rooms [${roomList.join(', ')}]`)
     socketStore.subscribeToRooms(roomList)
   }
 

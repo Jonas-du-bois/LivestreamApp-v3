@@ -4,6 +4,11 @@ import { useFavoritesStore } from '~/stores/favorites'
 import { storeToRefs } from 'pinia'
 import type { PassageEnriched } from '~/types/api'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
+import {
+  FAVORITES_AUTO_REFRESH,
+  COUNTDOWN_TICK,
+  STATUS_OVERRIDE_DEFER
+} from '~/utils/timings'
 
 const { t } = useI18n()
 const { translateApparatus, formatLocalizedTime, formatLocalizedDate } = useTranslatedData()
@@ -11,23 +16,43 @@ const { open: openGroupDetails } = useGroupDetails()
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
 
-// Fetch Schedule (we filter client-side for favorites for simplicity, or we could add an API endpoint)
-// Since we have getSchedule, we can use it.
+// Fetch Schedule
 const { data: scheduleData, pending, refresh: refreshSchedule } = await PublicService.getSchedule()
 const hasLoadedOnce = ref(false)
+
+// ─── Realtime status overrides (same pattern as schedule.vue) ───
+const statusOverrides = new Map<string, { status: string; score?: number | null }>()
+const statusVersion = ref(0)
 
 watch([pending, scheduleData], ([isPending, data]) => {
   if (!isPending && data) {
     hasLoadedOnce.value = true
+    statusOverrides.clear()
+    statusVersion.value++
   }
 }, { immediate: true })
 
-const showSkeleton = computed(() => pending.value && !hasLoadedOnce.value)
+const showSkeleton = computed(() => !hasLoadedOnce.value)
+
+// Helper to apply overrides to a passage
+const applyOverride = (p: any) => {
+  const override = statusOverrides.get(p._id)
+  if (override) {
+    return {
+      ...p,
+      status: override.status,
+      ...(override.score !== undefined ? { score: override.score } : {})
+    }
+  }
+  return p
+}
 
 const favoritePassages = computed<PassageEnriched[]>(() => {
+  const _v = statusVersion.value // reactive dep on overrides
   if (!scheduleData.value?.data) return []
   return scheduleData.value.data
     .filter((p: any) => p._id && favorites.value.includes(p._id))
+    .map(applyOverride)
     .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
 })
 
@@ -71,11 +96,9 @@ const updateTimer = () => {
   const m = Math.floor((totalSeconds % 3600) / 60)
   const s = totalSeconds % 60
 
-  // Si moins d'une minute, afficher les secondes
   if (h === 0 && m === 0) {
     timeToNext.value = `${s}s`
   } else if (h === 0) {
-    // Moins d'une heure : afficher minutes et secondes si < 2 minutes
     if (m < 2) {
       timeToNext.value = `${m}m ${s}s`
     } else {
@@ -87,15 +110,34 @@ const updateTimer = () => {
 }
 
 let timer: any = null
+let autoRefreshTimer: any = null
+
 onMounted(() => {
   updateTimer()
-  // Mise à jour chaque seconde pour un compte à rebours précis
-  timer = setInterval(updateTimer, 1000)
+  timer = setInterval(updateTimer, COUNTDOWN_TICK)
+  // PWA fallback: periodic auto-refresh
+  autoRefreshTimer = setInterval(() => refreshSchedule(), FAVORITES_AUTO_REFRESH)
+  // PWA: refresh on foreground
+  if (import.meta.client) {
+    document.addEventListener('visibilitychange', handleVisibility)
+  }
 })
 
 onUnmounted(() => {
   if (timer) clearInterval(timer)
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer)
+  if (import.meta.client) {
+    document.removeEventListener('visibilitychange', handleVisibility)
+  }
 })
+
+const handleVisibility = () => {
+  if (document.visibilityState === 'visible') {
+    statusOverrides.clear()
+    statusVersion.value++
+    refreshSchedule()
+  }
+}
 
 const formatTime = (dateStr: string) => {
   return formatLocalizedTime(dateStr)
@@ -114,19 +156,42 @@ const handleGroupClick = (groupId: string) => {
   openGroupDetails(groupId)
 }
 
-// Handle score updates for favorite passages
+// ─── Socket handlers ─────────────────────────────────────────────
 const handleScoreUpdate = (data: any) => {
-  if (!scheduleData.value?.data) return
-  
-  const passage = scheduleData.value.data.find((p: any) => p._id === data.passageId)
-  if (passage) {
-    if (data.score !== undefined) passage.score = data.score
-    if (data.status) passage.status = data.status
-  }
+  if (!data?.passageId) return
+  const existing = statusOverrides.get(data.passageId)
+  statusOverrides.set(data.passageId, {
+    status: data.status || existing?.status || 'FINISHED',
+    score: data.score ?? existing?.score
+  })
+  statusVersion.value++
 }
 
-// Handle status updates
-const handleStatusUpdate = () => {
+let statusDeferTimer: ReturnType<typeof setTimeout> | null = null
+
+const handleStatusUpdate = (payload: { passageId?: string; status?: string; score?: number | null }) => {
+  console.log('[Favorites] status-update:', payload)
+  if (payload?.passageId && payload?.status) {
+    statusOverrides.set(payload.passageId, {
+      status: payload.status,
+      ...(payload.score !== undefined ? { score: payload.score } : {})
+    })
+    statusVersion.value++
+  }
+  // Debounced deferred sync: cascading events (FINISHED + auto-LIVE) are batched
+  if (statusDeferTimer) clearTimeout(statusDeferTimer)
+  statusDeferTimer = setTimeout(() => {
+    statusOverrides.clear()
+    statusVersion.value++
+    refreshSchedule()
+    statusDeferTimer = null
+  }, STATUS_OVERRIDE_DEFER)
+}
+
+const handleScheduleUpdate = () => {
+  console.log('[Favorites] schedule-update → refresh')
+  statusOverrides.clear()
+  statusVersion.value++
   refreshSchedule()
 }
 
@@ -134,7 +199,7 @@ const handleStatusUpdate = () => {
 useSocketRoom(['live-scores', 'schedule-updates'], [
   { event: 'score-update', handler: handleScoreUpdate },
   { event: 'status-update', handler: handleStatusUpdate },
-  { event: 'schedule-update', handler: () => refreshSchedule() }
+  { event: 'schedule-update', handler: handleScheduleUpdate }
 ])
 </script>
 
