@@ -304,8 +304,6 @@ useSocketRoom('schedule-updates', [
                 :key="item._id || `${item.group?._id || 'group'}-${item.startTime || 'start'}-${item.apparatus?.code || 'apparatus'}-${index}`"
                 :interactive="true"
                 @click="handleGroupClick(item.group._id, item.apparatus.code)"
-                @keydown.enter="handleGroupClick(item.group._id, item.apparatus.code)"
-                @keydown.space.prevent="handleGroupClick(item.group._id, item.apparatus.code)"
                 :aria-label="t('schedule.openGroupDetails', {
                   group: item.group.name,
                   apparatus: translateApparatus(item.apparatus.code, item.apparatus.name),

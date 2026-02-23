@@ -324,8 +324,6 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
                   :class="getPodiumBorderClass(result.rank)"
                   :interactive="true"
                   @click="handleGroupClick(result.group._id, activeSection.code)"
-                  @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
-                  @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
                 >
                   <div class="flex items-center gap-4">
                     <!-- Medal Icon -->
@@ -365,8 +363,6 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
                   class="rounded-2xl"
                   :interactive="true"
                   @click="handleGroupClick(result.group._id, activeSection.code)"
-                  @keydown.enter="handleGroupClick(result.group._id, activeSection.code)"
-                  @keydown.space.prevent="handleGroupClick(result.group._id, activeSection.code)"
                 >
                   <div class="flex items-center gap-4">
                     <!-- Rank Number -->

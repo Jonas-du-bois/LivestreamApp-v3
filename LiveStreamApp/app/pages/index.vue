@@ -248,8 +248,6 @@ useSocketRoom('schedule-updates', [
               class="min-w-[200px] flex-shrink-0"
               :interactive="true"
               @click="handleGroupClick(group.id, group.apparatusCode)"
-              @keydown.enter="handleGroupClick(group.id, group.apparatusCode)"
-              @keydown.space.prevent="handleGroupClick(group.id, group.apparatusCode)"
               :aria-label="t('results.openGroupDetails', { group: group.name })"
             >
               <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
