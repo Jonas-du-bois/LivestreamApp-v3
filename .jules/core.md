@@ -42,3 +42,13 @@
   - Removed `inject('openGroupDetails')` and local `handleGroupClick` wrappers from pages.
   - Updated templates to use `useGroupDetails().open()` directly or via simplified handlers.
 - **Outcome:** Eliminated "prop drilling" (via inject) and loose coupling. Enforced strict typing for modal interactions. Centralized modal state management.
+
+## 2026-02-21: First Load Skeleton & Public Service Refactoring
+
+- **Logic Extracted:** Duplicated skeleton loading logic (`hasLoadedOnce`) and direct `useFetch` configuration in `app/pages/results.vue` and `app/pages/schedule.vue`.
+- **Destination:** `app/composables/useFirstLoad.ts` and `app/services/public.service.ts`
+- **Changes:**
+  - Enhanced `PublicService.getResults` and `PublicService.getSchedule` to accept `useFetch` options (`server`, `watch`, `lazy`).
+  - Created `useFirstLoad` composable to manage the "show skeleton only on initial load" state, preventing flickering on background refreshes.
+  - Refactored `results.vue` and `schedule.vue` to use these abstractions.
+- **Outcome:** Removed ~40 lines of boilerplate from components. Centralized API configuration and loading state logic. strictly typed.
