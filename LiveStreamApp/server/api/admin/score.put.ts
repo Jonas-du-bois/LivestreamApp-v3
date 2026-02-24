@@ -13,6 +13,15 @@ const schema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
+  // Security: Rate Limit (60 req/min) to prevent notification spam/DoS
+  const ip = getRequestIP(event) || 'unknown';
+  if (isRateLimited(`${ip}:score`, 60, 60000)) {
+    throw createError({
+      statusCode: 429,
+      statusMessage: 'Too Many Requests',
+    });
+  }
+
   const result = await useSafeValidatedBody(event, schema);
   if (!result.success) {
     throw createError({ statusCode: 400, statusMessage: 'Validation Failed', data: result.error });
