@@ -115,12 +115,13 @@
       </UiMediaCard>
     </TransitionGroup>
 
-    <div v-if="filteredSpots.length === 0" class="px-6 py-12 text-center">
-      <div class="inline-flex h-16 w-16 rounded-full bg-white/5 items-center justify-center mb-4 animate-pulse">
-        <Icon name="fluent:food-24-regular" class="text-white/20" size="32" />
-      </div>
-      <p class="text-white/40">{{ t('food.noFilterMatch') }}</p>
-    </div>
+    <UiEmptyState
+      v-if="filteredSpots.length === 0"
+      :description="t('food.noFilterMatch')"
+      icon="fluent:food-24-regular"
+      :glass="false"
+      class="px-6 py-12"
+    />
   </div>
 </template>
 
