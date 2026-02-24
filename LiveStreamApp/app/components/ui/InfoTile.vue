@@ -59,15 +59,17 @@ const iconSize = computed(() => {
   if (props.size === 'lg') return '28'
   return '24'
 })
+
+const NuxtLink = resolveComponent('NuxtLink')
 </script>
 
 <template>
   <component
-    :is="to ? 'NuxtLink' : 'div'"
+    :is="to ? NuxtLink : 'div'"
     :to="to"
     class="glass-card p-4 flex items-center gap-4 transition-all"
     :class="[
-      to ? 'hover:bg-white/15 active:scale-[0.98] cursor-pointer' : '',
+      to ? 'hover:bg-white/15 active:scale-[0.98] cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]' : '',
       size === 'lg' ? 'p-5' : 'p-4'
     ]"
   >
