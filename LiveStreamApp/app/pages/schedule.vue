@@ -205,6 +205,8 @@ watch(locale, () => {
 const filteredSchedule = computed(() => {
   // Touch statusVersion to establish reactive dependency on socket overrides
   const _v = statusVersion.value
+  // Establish dependency on time for reactive status updates (~2s precision)
+  const nowTime = nowTimestamp.value
 
   const schedule = (scheduleResponse.value?.data || [])
     .filter((item: any) => item.group && item.apparatus)
@@ -218,14 +220,33 @@ const filteredSchedule = computed(() => {
           ...(override.score !== undefined ? { score: override.score } : {})
         }
       }
-      return item
+
+      // Client-side status calculation for reactivity
+      // This overrides stale server status based on start/end times
+      const start = new Date(item.startTime).getTime()
+      const end = new Date(item.endTime).getTime()
+      let status = item.status
+
+      if (nowTime >= start && nowTime <= end) {
+        status = 'LIVE'
+      } else if (nowTime > end) {
+        status = 'FINISHED'
+      } else if (nowTime < start && (status === 'LIVE' || status === 'FINISHED')) {
+        // If time says upcoming but server says LIVE/FINISHED (stale), reset it
+        status = 'SCHEDULED'
+      }
+
+      return {
+        ...item,
+        status
+      }
     })
 
   if (!filtersStore.value.hidePast) {
     return schedule
   }
 
-  const now = new Date(nowTimestamp.value)
+  const now = new Date(nowTime)
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
   return schedule.filter((item) => {

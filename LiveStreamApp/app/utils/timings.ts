@@ -19,7 +19,7 @@ export const HOME_AUTO_REFRESH = 30_000
 
 // ─── Clock / display refresh ────────────────────────────────────────
 /** How often we refresh "now" timestamp for time-based filtering (ms) */
-export const NOW_REFRESH_INTERVAL = 60_000
+export const NOW_REFRESH_INTERVAL = 2_000
 
 /** Favorites countdown timer tick (ms) */
 export const COUNTDOWN_TICK = 1_000
