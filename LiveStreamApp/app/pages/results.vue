@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import type { PassageEnriched } from '~/types/api'
+import type { PassageEnriched, PassageResult } from '~/types/api'
+import type { ScoreUpdatePayload, StatusUpdatePayload } from '~/types/socket'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
 const { t, locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
-
-// Extended type including rank
-type PassageResult = PassageEnriched & { rank: number }
 
 const { open: openGroupDetails } = useGroupDetails()
 
@@ -51,7 +49,7 @@ const resultsMap = ref<Record<string, PassageResult[]>>({})
 watch(apiResultsMap, (newData) => {
   if (newData) {
     // Deep clone to ensure full reactivity
-    resultsMap.value = JSON.parse(JSON.stringify(newData))
+    resultsMap.value = structuredClone(toRaw(newData))
   }
 }, { immediate: true, deep: true })
 
@@ -130,7 +128,7 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails(groupId, apparatusCode)
 }
 
-const handleScoreUpdate = (data: any) => {
+const handleScoreUpdate = (data: ScoreUpdatePayload) => {
   // Data payload: { passageId, score, rank, apparatusCode, ... }
   if (!resultsMap.value) return
 
@@ -170,12 +168,14 @@ const handleScoreUpdate = (data: any) => {
 
       // Trigger Flash Effect
       nextTick(() => {
+        if (import.meta.client) {
           const el = document.getElementById(`result-${data.passageId}`)
           if (el) {
             el.classList.remove('score-flash')
             void el.offsetWidth
             el.classList.add('score-flash')
           }
+        }
       })
 
       found = true
@@ -218,7 +218,7 @@ const handleScoreUpdate = (data: any) => {
   }
 }
 
-const handleStatusUpdate = (data: any) => {
+const handleStatusUpdate = (data: StatusUpdatePayload) => {
   if (!resultsMap.value) return
   
   const keys = Object.keys(resultsMap.value)

@@ -1,4 +1,4 @@
-import type { PassageStatus } from './api'
+import type { PassageStatus, EnrichedGroup, EnrichedApparatus } from './api'
 
 export interface StreamUpdatePayload {
   _id: string
@@ -11,7 +11,19 @@ export interface StreamUpdatePayload {
 export interface ScoreUpdatePayload {
   passageId: string
   score?: number | null
+  rank?: number
   status?: PassageStatus
+  group?: EnrichedGroup
+  apparatus?: EnrichedApparatus
+  apparatusCode?: string
+  startTime?: string
+  endTime?: string
+  location?: string
+}
+
+export interface StatusUpdatePayload {
+  passageId: string
+  status: PassageStatus
 }
 
 export interface ScheduleUpdatePayload {

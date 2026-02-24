@@ -22,3 +22,15 @@
     - Defined `GroupDetailsResponse` and `TimelineEntry` in `app/types/api.ts`.
     - Updated `PublicService` to return typed responses.
     - Refactored `GroupDetailsModal` to use strict types and removed all `any` casts.
+
+## 2026-02-21: Results Page Strict Typing & SSR Safety
+
+- **Target:** `app/pages/results.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced `any` in socket event handlers (`handleScoreUpdate`, `handleStatusUpdate`) with strict `ScoreUpdatePayload` and `StatusUpdatePayload` interfaces.
+    - **Performance & Reactivity:** Replaced `JSON.parse(JSON.stringify(newData))` with `structuredClone(toRaw(newData))` for optimized deep cloning.
+    - **SSR Safety:** Wrapped direct DOM access (`document.getElementById`) in `import.meta.client` check.
+- **Solution:**
+    - Updated `app/types/api.ts` with `PassageResult`.
+    - Updated `app/types/socket.ts` with typed payloads.
+    - Refactored `results.vue` to use strict types and best practices.

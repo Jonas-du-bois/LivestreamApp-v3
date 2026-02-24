@@ -91,6 +91,8 @@ export interface ScheduleResponse {
   data: PassageEnriched[];
 }
 
+export type PassageResult = PassageEnriched & { rank: number };
+
 // --- Subscriptions (Web Push / FCM natif) ---
 
 export interface WebSubscription {
