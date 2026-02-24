@@ -33,3 +33,7 @@
 ## 2025-06-03 - Encapsulated Keyboard Accessibility in UI Components
 **Learning:** Manually adding `@keydown.enter` and `@keydown.space` handlers to every instance of a reusable interactive component (like `UiGlassCard`) is error-prone and leads to inconsistent accessibility (e.g., forgotten in `favorites.vue`).
 **Action:** Encapsulate keyboard interaction logic directly within the base UI component (`UiGlassCard.vue`). Detect if it's interactive and not a native link/button, then handle `Enter`/`Space` internally to trigger a click event. This ensures accessibility by default for all consumers.
+
+## 2025-06-03 - Consistent Focus States on Secondary Elements
+**Learning:** Secondary interactive elements (like `UiBackButton` or `UiInfoTile`) often miss the detailed focus styles applied to primary cards, creating an inconsistent keyboard navigation experience where some elements show a clear ring and others just the browser default (or nothing if `outline-none` is used without replacement).
+**Action:** Systematically apply the design system's focus ring classes (`focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]`) to ALL interactive components, including back buttons, info tiles (when linked), and icon buttons.

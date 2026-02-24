@@ -32,10 +32,10 @@
         type="button"
         @click="activeCategory = cat.id"
         :aria-pressed="activeCategory === cat.id"
-        class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border shrink-0 hover:scale-105 active:scale-95"
+        class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border shrink-0 hover:scale-105 active:scale-95 backdrop-blur-md"
         :class="activeCategory === cat.id 
-          ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/50' 
-          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'"
+          ? 'bg-blue-600/80 border-blue-400/50 text-white shadow-lg shadow-blue-500/20 ring-1 ring-blue-400/50'
+          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 ring-1 ring-white/5'"
       >
         {{ cat.label }}
       </button>
@@ -60,13 +60,14 @@
       class="px-6 grid grid-cols-1 md:grid-cols-2 gap-6"
     >
       <UiMediaCard
-        v-for="spot in filteredSpots"
+        v-for="(spot, index) in filteredSpots"
         :key="spot.id"
         :image="spot.image"
         :alt="spot.name"
         variant="split"
         :interactive="true"
-        class="rounded-2xl bg-gray-900 border-white/5 shadow-xl hover:border-blue-500/30 hover:shadow-blue-900/10 active:border-blue-500/50"
+        class="premium-cascade-item rounded-2xl bg-gray-900/40 backdrop-blur-xl border-white/10 shadow-xl hover:border-blue-400/30 hover:shadow-blue-900/20 active:border-blue-400/60 active:bg-gray-800/60 active:scale-[0.98] transition-all duration-300"
+        :style="{ '--cascade-index': index }"
       >
         <template #image-top>
           <div class="ml-auto pointer-events-auto">
@@ -218,5 +219,21 @@ const filteredSpots = computed(() => {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@keyframes cascade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.premium-cascade-item {
+  animation: cascade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--cascade-index) * 100ms);
 }
 </style>

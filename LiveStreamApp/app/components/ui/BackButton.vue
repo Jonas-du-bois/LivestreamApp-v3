@@ -46,7 +46,7 @@ const handleClick = (event: MouseEvent) => {
 }
 
 const commonClasses = computed(() => [
-  'inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 active:scale-95 text-white shadow-lg group',
+  'inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 active:scale-95 text-white shadow-lg group outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
   props.glass ? 'glass-panel bg-black/40 border border-white/10 hover:bg-white/20' : 'hover:bg-white/10'
 ])
 </script>

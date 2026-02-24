@@ -98,6 +98,15 @@ const RAW_SCHEDULE = {
 };
 
 export default defineEventHandler(async (event) => {
+  // Security: Rate Limit (1 req/10min) to prevent DoS via DB exhaustion
+  const ip = getRequestIP(event) || 'unknown';
+  if (isRateLimited(`${ip}:seed`, 1, 600000)) {
+    throw createError({
+      statusCode: 429,
+      statusMessage: 'Too Many Requests: Seed is rate limited.',
+    });
+  }
+
   try {
     console.log("[seed] Starting DB seed — clearing collections...");
 
