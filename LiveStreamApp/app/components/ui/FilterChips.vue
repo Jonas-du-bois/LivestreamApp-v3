@@ -46,11 +46,11 @@ const select = (id: string | number) => {
       type="button"
       role="tab"
       :aria-selected="isSelected(item.id)"
-      class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-all outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] hover:scale-105 active:scale-95"
+      class="relative px-4 py-2 rounded-full text-sm font-bold flex-shrink-0 transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)] outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] active:scale-95 border"
       :class="[
         isSelected(item.id)
-          ? 'bg-cyan-400 text-[#0B1120]'
-          : 'glass-card text-white/80 hover:bg-white/10'
+          ? 'bg-cyan-500 border-cyan-400 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)]'
+          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white backdrop-blur-xl'
       ]"
       @click="select(item.id)"
     >
