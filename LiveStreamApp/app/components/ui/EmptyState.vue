@@ -5,35 +5,42 @@
  */
 
 interface Props {
-  /** Titre principal */
-  title: string
+  /** Titre principal (optionnel) */
+  title?: string
   /** Description détaillée */
   description?: string
   /** Icône Fluent (ex: 'fluent:search-24-regular') */
   icon?: string
   /** Affiche une bordure glass-card (par défaut: true) */
   glass?: boolean
+  /** Active l'animation de pulsation lente sur l'icône */
+  pulse?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
+  title: undefined,
   description: '',
   icon: 'fluent:info-24-regular',
-  glass: true
+  glass: true,
+  pulse: false
 })
 </script>
 
 <template>
   <div 
-    class="text-center p-8 transition-all"
+    class="text-center p-8 transition-all flex flex-col items-center justify-center"
     :class="[glass ? 'glass-card' : '']"
   >
     <!-- Icon Circle -->
-    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5 border border-white/5">
+    <div
+      class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5 border border-white/5"
+      :class="{ 'animate-pulse-slow': pulse }"
+    >
       <Icon :name="icon" class="h-8 w-8 text-white/40" />
     </div>
 
     <!-- Text Content -->
-    <h3 class="text-white text-lg font-bold">
+    <h3 v-if="title" class="text-white text-lg font-bold">
       {{ title }}
     </h3>
 

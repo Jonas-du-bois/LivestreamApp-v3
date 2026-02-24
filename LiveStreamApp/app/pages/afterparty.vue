@@ -301,16 +301,6 @@ const drinkMenu = computed(() => [
   padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
-/* Pulse lent */
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 4s ease-in-out infinite;
-}
-
 /* Défilement horizontal (Marquee) */
 @keyframes scroll {
   0% { transform: translateX(0); }

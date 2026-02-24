@@ -1,27 +1,18 @@
-# Journal d'Atom ⚛️ - Architecture UI
+# Atom ⚛️ - Architecture Log
 
-## 2024-05-24 - Création de `UiMediaCard`
+## 03/11 - Standardisation des États Vides (Empty States)
 
-**Problème identifié :**
-Duplication du pattern "Carte avec Image" (Hero Card, Food Spot Card) dans `index.vue` et `food.vue`. Les implémentations variaient légèrement (background image vs image tag, overlay gradient).
+**Problème :** Plusieurs pages (`results.vue`, `food.vue`) implémentaient des blocs HTML "Empty State" dupliqués avec de légères variations (icônes, textes, animations).
 
 **Solution :**
-Extraction d'un composant flexible `<UiMediaCard>`.
+- Amélioration de `<UiEmptyState>` pour supporter :
+  - `title` optionnel (pour les cas où seul le texte de description suffit).
+  - `pulse` prop (animation de l'icône).
+  - Flexbox centering par défaut.
+- Extraction de l'animation `animate-pulse-slow` de `afterparty.vue` vers `main.css` (Global).
+- Refactoring de `results.vue` et `food.vue` pour utiliser `<UiEmptyState>`.
 
-**Caractéristiques :**
-- **Variantes :**
-  - `split` (défaut) : Image en haut, contenu en bas (ex: Food spots).
-  - `cover` : Image en background complet, contenu en overlay (ex: Hero Live).
-- **Slots :**
-  - `image-top` : Pour les badges ou actions en haut de l'image.
-  - `image-bottom` : Pour les titres ou infos sur l'image (overlay bas).
-  - `default` : Pour le contenu principal (sous l'image en mode split).
-- **Intégration :** Utilise `<UiGlassCard>` en interne pour maintenir la cohérence visuelle (Glassmorphism).
-
-**Règles d'utilisation :**
-1. Utiliser `<UiMediaCard>` pour tout élément de liste ou de mise en avant contenant une image principale.
-2. Préférer le mode `cover` pour les éléments "Hero" ou immersifs.
-3. Préférer le mode `split` pour les listes d'objets (produits, lieux).
-
-**Convention de nommage :**
-Tous les composants UI génériques doivent être préfixés par `Ui` et placés dans `app/components/ui/`.
+**Règle établie :**
+Tout état "vide" (liste vide, aucun résultat, etc.) DOIT utiliser le composant `<UiEmptyState>`.
+- Si c'est une carte en verre : `<UiEmptyState>` (défaut).
+- Si c'est juste du texte/icône sans fond : `<UiEmptyState :glass="false">`.
