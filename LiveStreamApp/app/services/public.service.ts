@@ -1,5 +1,6 @@
 import type { ScheduleResponse, PassageEnriched, Stream, PopulatedStream, GroupDetailsResponse } from '../types/api'
 import { type MaybeRef, toValue } from 'vue'
+import type { UseFetchOptions } from '#app'
 
 export const PublicService = {
   getSchedule(filters?: MaybeRef<{ day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[] }>) {
@@ -9,9 +10,10 @@ export const PublicService = {
     })
   },
 
-  getResults() {
+  getResults(options: UseFetchOptions<Record<string, (PassageEnriched & { rank: number })[]>> = {}) {
     return useApiClient<Record<string, (PassageEnriched & { rank: number })[]>>('/results', {
-      key: 'results'
+      key: 'results',
+      ...options
     })
   },
 

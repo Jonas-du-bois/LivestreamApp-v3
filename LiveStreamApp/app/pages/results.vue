@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { PublicService } from '../services/public.service'
 import type { PassageEnriched } from '~/types/api'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 
@@ -11,38 +12,19 @@ type PassageResult = PassageEnriched & { rank: number }
 const { open: openGroupDetails } = useGroupDetails()
 
 // Fetch data from API with caching to avoid refetch on tab clicks
-const { data: apiResultsMap, pending, refresh } = await useAsyncData(
-  'results-data',
-  async () => {
-    const config = useRuntimeConfig()
-    return await $fetch<Record<string, PassageResult[]>>('/results', {
-      baseURL: config.public.apiBase as string
-    })
-  },
-  {
-    // Refetch only when locale changes
-    watch: [locale],
-    // Server-side rendering enabled
-    server: true,
-    // Not lazy - load immediately
-    lazy: false,
-    // Use cached data if available
-    getCachedData: (key) => {
-      const nuxtApp = useNuxtApp()
-      return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
-    }
+const { data: apiResultsMap, pending, refresh } = await PublicService.getResults({
+  key: 'results-data', // Keep original key for compatibility
+  watch: [locale],
+  server: true,
+  lazy: false,
+  getCachedData: (key: string) => {
+    const nuxtApp = useNuxtApp()
+    return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
   }
-)
+})
 
-const hasLoadedOnce = ref(false)
-
-watch([pending, apiResultsMap], ([isPending, data]) => {
-  if (!isPending && data) {
-    hasLoadedOnce.value = true
-  }
-}, { immediate: true })
-
-const showSkeleton = computed(() => pending.value && !hasLoadedOnce.value)
+// Manage First Load Skeleton State
+const { showSkeleton } = useFirstLoad(pending, apiResultsMap)
 
 // Create a local reactive copy that we can mutate properly
 const resultsMap = ref<Record<string, PassageResult[]>>({})

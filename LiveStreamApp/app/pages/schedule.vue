@@ -92,7 +92,7 @@ const apiParams = computed(() => {
 
 // 2. Appel Réactif (useFetch surveille apiParams)
 const { data: scheduleResponse, pending, error: fetchError, refresh } = await PublicService.getSchedule(apiParams)
-const hasLoadedOnce = ref(false)
+const { hasLoadedOnce } = useFirstLoad(pending, scheduleResponse)
 const isFilterLoading = ref(false)
 
 const apiParamsSignature = computed(() => JSON.stringify(apiParams.value || {}))
@@ -106,7 +106,6 @@ watch(apiParamsSignature, (nextValue, previousValue) => {
 watch([pending, scheduleResponse, fetchError], ([isPending, response, err]) => {
   if (!isPending) {
     if (response) {
-      hasLoadedOnce.value = true
       // Clear overrides: fresh API data supersedes socket patches
       statusOverrides.clear()
       statusVersion.value++
