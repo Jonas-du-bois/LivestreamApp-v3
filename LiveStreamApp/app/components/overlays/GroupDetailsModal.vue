@@ -28,6 +28,10 @@ const { t } = useI18n()
 const { translateCategory, translateApparatus } = useTranslatedData()
 const socket = useSocket()
 const favoritesStore = useFavoritesStore()
+
+// Shared reactive time and realtime status
+const { now: nowTimestamp } = useNow()
+
 const isLoading = ref(false)
 const isTogglingFavorite = ref(false)
 const error = ref<string | null>(null)
@@ -60,8 +64,11 @@ const fetchData = async (force = false) => {
   }
 }
 
+const { version, apply, handleStatusUpdate, handleScoreUpdate, handleScheduleUpdate, reset } = useRealtimeStatus(() => fetchData(true))
+
 watch(() => props.isOpen, (newVal) => {
   if (newVal && props.groupId) {
+    reset() // Clear overrides when opening a new group
     fetchData()
     activeTab.value = 'timeline' // Reset to timeline on open
   }
@@ -69,67 +76,42 @@ watch(() => props.isOpen, (newVal) => {
 
 watch(() => props.groupId, (newId) => {
   if (props.isOpen && newId) {
+    reset()
     fetchData()
   }
 })
 
-// ─── Real-time updates ───────────────────────────────────────────
+// ─── Real-time & Reactive Timeline ───────────────────────────────
 
-// Score update: a passage got scored
-const handleScoreUpdate = (payload: ScoreUpdatePayload) => {
-  if (!details.value?.timeline) return
+const enrichedTimeline = computed(() => {
+  if (!details.value?.timeline) return []
+  
+  const _v = version.value // reactive dep
+  const now = nowTimestamp.value
 
-  const idx = details.value.timeline.findIndex((p) => p._id === payload.passageId)
-  if (idx === -1) return
+  return details.value.timeline.map((item) => {
+    // 1. Apply socket overrides
+    const merged = apply(item)
+    
+    // 2. Client-side status calculation for reactivity (past/live/upcoming)
+    const startTime = new Date(merged.startTime).getTime()
+    const endTime = new Date(merged.endTime).getTime()
+    let status = merged.status
 
-  // Immutable update for reliable reactivity
-  const updated = { ...details.value.timeline[idx] }
-  if (payload.score !== undefined && payload.score !== null) {
-    updated.score = payload.score
-    updated.status = 'FINISHED'
-  }
-  const newTimeline = [...details.value.timeline]
-  newTimeline[idx] = updated
-  details.value = { ...details.value, timeline: newTimeline }
-  recomputeStats()
+    if (now >= startTime && now <= endTime) {
+      status = 'LIVE'
+    } else if (now > endTime) {
+      status = 'FINISHED'
+    } else if (now < startTime && (status === 'LIVE' || status === 'FINISHED')) {
+      status = 'SCHEDULED'
+    }
 
-  // Invalidate cache so next open gets fresh data
-  if (props.groupId) detailsCache.delete(props.groupId)
-}
-
-// Status update: a passage went LIVE or FINISHED
-const handleStatusUpdate = (payload: { passageId?: string; status?: string; score?: number | null }) => {
-  console.log('[GroupDetails] status-update:', payload)
-  if (!payload?.passageId || !payload?.status) return
-  if (!details.value?.timeline) return
-
-  const idx = details.value.timeline.findIndex((p) => p._id === payload.passageId)
-  if (idx === -1) return
-
-  // Immutable update
-  const updated = { ...details.value.timeline[idx], status: payload.status as any }
-  if (payload.score !== undefined) {
-    updated.score = payload.score
-  }
-  const newTimeline = [...details.value.timeline]
-  newTimeline[idx] = updated
-  details.value = { ...details.value, timeline: newTimeline }
-  recomputeStats()
-
-  // Invalidate cache
-  if (props.groupId) detailsCache.delete(props.groupId)
-}
-
-// Schedule update: general refresh (from scheduler)
-const handleScheduleUpdate = () => {
-  console.log('[GroupDetails] schedule-update → refetch')
-  // Invalidate all cache entries (any group could have changed)
-  detailsCache.clear()
-  // If modal is open, refetch
-  if (props.isOpen && props.groupId) {
-    fetchData(true)
-  }
-}
+    return {
+      ...merged,
+      status
+    }
+  })
+})
 
 useSocketRoom(['live-scores', 'schedule-updates'], [
   { event: 'score-update', handler: handleScoreUpdate },
@@ -138,21 +120,29 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 ])
 
 const recomputeStats = () => {
-   if (!details.value) return
-   const finished = details.value.timeline.filter((p) => p.status === 'FINISHED' && typeof p.score === 'number')
-   const total = finished.reduce((acc, curr) => acc + (curr.score || 0), 0)
-   const count = finished.length
+   // 1. Passages completed according to time/status
+   const finishedPassages = enrichedTimeline.value.filter((p) => p.status === 'FINISHED')
+   
+   // 2. Passages that actually have a numeric score for the average
+   const scoredPassages = finishedPassages.filter((p) => typeof p.score === 'number')
+   
+   const totalScore = scoredPassages.reduce((acc, curr) => acc + (curr.score || 0), 0)
+   const finishedCount = finishedPassages.length
+   const scoredCount = scoredPassages.length
 
-   // Immutable stats update
-   details.value = {
-     ...details.value,
-     stats: {
+   if (details.value) {
+     details.value.stats = {
        ...details.value.stats,
-       completedPassages: count,
-       currentTotalScore: count > 0 ? Number((total / count).toFixed(2)) : 0
+       completedPassages: finishedCount,
+       currentTotalScore: scoredCount > 0 ? Number((totalScore / scoredCount).toFixed(2)) : 0
      }
    }
 }
+
+// Watch timeline changes to sync stats (including client-side status transitions)
+watch(enrichedTimeline, () => {
+  recomputeStats()
+}, { deep: true })
 
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && props.isOpen) {
@@ -441,45 +431,11 @@ const maxHistoryScore = computed(() => {
                   <!-- Vertical Line -->
                   <div class="absolute left-[19px] top-2 bottom-2 w-0.5 bg-white/10" />
 
-                  <div 
-                    v-for="item in details.timeline"
+                  <GroupTimelineItem 
+                    v-for="item in enrichedTimeline"
                     :key="item._id"
-                    class="relative pl-12"
-                  >
-                    <!-- Icon Bubble -->
-                    <div
-                      class="absolute left-0 top-0 w-10 h-10 rounded-full flex items-center justify-center border-2 z-10 bg-[#0B1120]"
-                      :class="item.status === 'LIVE' ? 'border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' :
-                              item.status === 'FINISHED' ? 'border-cyan-400 text-cyan-400' : 'border-white/20 text-white/40'"
-                    >
-                      <Icon :name="item.apparatus.icon || 'fluent:circle-24-regular'" class="w-5 h-5" />
-                    </div>
-
-                    <!-- Content Card -->
-                    <div class="glass-card p-4 hover:bg-white/10 transition-colors">
-                      <div class="flex justify-between items-start mb-2">
-                        <div>
-                          <div class="font-bold text-white text-lg leading-tight mb-0.5">{{ translateApparatus(item.apparatus.code, item.apparatus.name) }}</div>
-                          <div class="text-xs text-white/50 flex items-center gap-1.5">
-                            <Icon name="fluent:clock-24-regular" class="w-3.5 h-3.5" />
-                            <span>{{ formatTime(item.startTime) }}</span>
-                            <span>•</span>
-                            <Icon name="fluent:location-24-regular" class="w-3.5 h-3.5" />
-                            <span>{{ item.location || 'Salle 1' }}</span>
-                          </div>
-                        </div>
-                        <div v-if="item.status === 'FINISHED'" class="text-right">
-                          <div class="text-2xl font-bold text-cyan-400 leading-none">{{ item.score?.toFixed(2) || '0.00' }}</div>
-                        </div>
-                        <div v-else-if="item.status === 'LIVE'" class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/20 animate-pulse">
-                          🔴 {{ t('group.inProgress') }}
-                        </div>
-                        <div v-else class="text-white/40 text-sm italic">
-                          {{ t('group.upcoming') }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    :item="item"
+                  />
                 </div>
               </div>
 

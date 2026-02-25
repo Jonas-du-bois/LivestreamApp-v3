@@ -44,3 +44,16 @@ Tout chargement de liste (CascadeSkeletonList) DOIT utiliser `<UiSkeletonCard>` 
 
 **Règle établie :**
 Les listes de résultats doivent utiliser `<ResultCard>` pour garantir l'uniformité avec le reste de l'application (notamment le Programme).
+
+## 03/11 - Centralisation de la Réactivité Temporelle
+
+**Problème :** Plusieurs composants recalculaient le statut "Live" des passages (SCHEDULED -> LIVE -> FINISHED) à l'aide de timers locaux, créant une désynchronisation et une duplication de logique (ex: `schedule.vue` vs `GroupDetailsModal.vue`). De plus, le modal ne mettait pas à jour les statuts passés.
+
+**Solution :**
+- Création du composable `useNow()` : Fournit un timestamp réactif partagé, mis à jour toutes les 2 secondes.
+- Création du composant `<GroupTimelineItem />` : Extrait la structure visuelle des passages dans la timeline du groupe.
+- Refactorisation de `GroupDetailsModal.vue` pour calculer les statuts côté client via `useNow()`, garantissant une mise à jour instantanée sans attendre le serveur.
+
+**Règle établie :**
+Tout calcul basé sur l'heure actuelle (pour les changements de statut en temps réel) DOIT passer par le composable `useNow()`.
+Les items de timeline complexes doivent être extraits en composants atomiques dans `app/components/domain/`.

@@ -17,15 +17,11 @@ const { favorites } = storeToRefs(favoritesStore)
 const selectedDay = useState<string>('schedule-selected-day', () => '')
 const selectedFilter = useState('schedule-selected-filter', () => '')
 const filtersStore = useScheduleFilters()
-const nowTimestamp = ref(Date.now())
-let nowRefreshTimer: ReturnType<typeof setInterval> | null = null
-let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
 
-// ─── Realtime status overrides ───────────────────────────────────
-// Instead of mutating useFetch's data ref (unreliable), we keep a
-// separate reactive overlay that is merged into the computed output.
-// This guarantees Vue sees the change regardless of useFetch internals.
-const { version, apply, handleStatusUpdate, handleScheduleUpdate, reset } = useRealtimeStatus(refresh)
+// Shared reactive time
+const { now: nowTimestamp } = useNow()
+
+let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
 
 // All known translations of "all" to detect stale locale values
 const ALL_LOCALE_VALUES = ['Tout', 'Alli', 'Tutto', '']
@@ -33,43 +29,6 @@ const ALL_LOCALE_VALUES = ['Tout', 'Alli', 'Tutto', '']
 /** Check if current selectedFilter represents "all" (any locale or empty) */
 const isAllFilter = (value: string) =>
   !value || value === t('common.all') || ALL_LOCALE_VALUES.includes(value)
-
-// Initialize selectedFilter with translated 'all' on mount
-onMounted(() => {
-  // Always sync filter value to current locale's "all" if it was a stale "all"
-  if (isAllFilter(selectedFilter.value)) {
-    selectedFilter.value = t('common.all')
-  }
-
-  nowRefreshTimer = setInterval(() => {
-    nowTimestamp.value = Date.now()
-  }, NOW_REFRESH_INTERVAL)
-
-  // PWA fallback: periodic auto-refresh for when socket is down
-  autoRefreshTimer = setInterval(() => {
-    refresh()
-  }, SCHEDULE_AUTO_REFRESH)
-
-  // PWA: refresh when app comes back to foreground
-  if (import.meta.client) {
-    document.addEventListener('visibilitychange', handleVisibility)
-  }
-})
-
-onUnmounted(() => {
-  if (nowRefreshTimer) { clearInterval(nowRefreshTimer); nowRefreshTimer = null }
-  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null }
-  if (import.meta.client) {
-    document.removeEventListener('visibilitychange', handleVisibility)
-  }
-})
-
-const handleVisibility = () => {
-  if (document.visibilityState === 'visible') {
-    reset()
-    refresh()
-  }
-}
 
 // 1. Paramètres réactifs (Computed) - Smart Fetching
 const apiParams = computed(() => {
@@ -89,6 +48,44 @@ const apiParams = computed(() => {
 
 // 2. Appel Réactif (useFetch surveille apiParams)
 const { data: scheduleResponse, pending, error: fetchError, refresh } = await PublicService.getSchedule(apiParams)
+
+// ─── Realtime status overrides ───────────────────────────────────
+// Instead of mutating useFetch's data ref (unreliable), we keep a
+// separate reactive overlay that is merged into the computed output.
+// This guarantees Vue sees the change regardless of useFetch internals.
+const { version, apply, handleStatusUpdate, handleScheduleUpdate, reset } = useRealtimeStatus(refresh)
+
+const handleVisibility = () => {
+  if (document.visibilityState === 'visible') {
+    reset()
+    refresh()
+  }
+}
+
+// Initialize selectedFilter with translated 'all' on mount
+onMounted(() => {
+  // Always sync filter value to current locale's "all" if it was a stale "all"
+  if (isAllFilter(selectedFilter.value)) {
+    selectedFilter.value = t('common.all')
+  }
+
+  // PWA fallback: periodic auto-refresh for when socket is down
+  autoRefreshTimer = setInterval(() => {
+    refresh()
+  }, SCHEDULE_AUTO_REFRESH)
+
+  // PWA: refresh when app comes back to foreground
+  if (import.meta.client) {
+    document.addEventListener('visibilitychange', handleVisibility)
+  }
+})
+
+onUnmounted(() => {
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null }
+  if (import.meta.client) {
+    document.removeEventListener('visibilitychange', handleVisibility)
+  }
+})
 const { hasLoadedOnce } = useFirstLoad(pending, scheduleResponse)
 const isFilterLoading = ref(false)
 
