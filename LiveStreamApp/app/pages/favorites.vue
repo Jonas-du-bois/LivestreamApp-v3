@@ -6,8 +6,7 @@ import type { PassageEnriched } from '~/types/api'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 import {
   FAVORITES_AUTO_REFRESH,
-  COUNTDOWN_TICK,
-  STATUS_OVERRIDE_DEFER
+  COUNTDOWN_TICK
 } from '~/utils/timings'
 
 const { t } = useI18n()
@@ -21,38 +20,23 @@ const { data: scheduleData, pending, refresh: refreshSchedule } = await PublicSe
 const hasLoadedOnce = ref(false)
 
 // ─── Realtime status overrides (same pattern as schedule.vue) ───
-const statusOverrides = new Map<string, { status: string; score?: number | null }>()
-const statusVersion = ref(0)
+const { version, apply, handleStatusUpdate, handleScheduleUpdate, handleScoreUpdate, reset } = useRealtimeStatus(refreshSchedule)
 
 watch([pending, scheduleData], ([isPending, data]) => {
   if (!isPending && data) {
     hasLoadedOnce.value = true
-    statusOverrides.clear()
-    statusVersion.value++
+    reset()
   }
 }, { immediate: true })
 
 const showSkeleton = computed(() => !hasLoadedOnce.value)
 
-// Helper to apply overrides to a passage
-const applyOverride = (p: any) => {
-  const override = statusOverrides.get(p._id)
-  if (override) {
-    return {
-      ...p,
-      status: override.status,
-      ...(override.score !== undefined ? { score: override.score } : {})
-    }
-  }
-  return p
-}
-
 const favoritePassages = computed<PassageEnriched[]>(() => {
-  const _v = statusVersion.value // reactive dep on overrides
+  const _v = version.value // reactive dep on overrides
   if (!scheduleData.value?.data) return []
   return scheduleData.value.data
     .filter((p: any) => p._id && favorites.value.includes(p._id))
-    .map(applyOverride)
+    .map(apply)
     .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
 })
 
@@ -133,8 +117,7 @@ onUnmounted(() => {
 
 const handleVisibility = () => {
   if (document.visibilityState === 'visible') {
-    statusOverrides.clear()
-    statusVersion.value++
+    reset()
     refreshSchedule()
   }
 }
@@ -154,45 +137,6 @@ const toggleFavorite = (passageId: string, event: Event) => {
 
 const handleGroupClick = (groupId: string) => {
   openGroupDetails(groupId)
-}
-
-// ─── Socket handlers ─────────────────────────────────────────────
-const handleScoreUpdate = (data: any) => {
-  if (!data?.passageId) return
-  const existing = statusOverrides.get(data.passageId)
-  statusOverrides.set(data.passageId, {
-    status: data.status || existing?.status || 'FINISHED',
-    score: data.score ?? existing?.score
-  })
-  statusVersion.value++
-}
-
-let statusDeferTimer: ReturnType<typeof setTimeout> | null = null
-
-const handleStatusUpdate = (payload: { passageId?: string; status?: string; score?: number | null }) => {
-  console.log('[Favorites] status-update:', payload)
-  if (payload?.passageId && payload?.status) {
-    statusOverrides.set(payload.passageId, {
-      status: payload.status,
-      ...(payload.score !== undefined ? { score: payload.score } : {})
-    })
-    statusVersion.value++
-  }
-  // Debounced deferred sync: cascading events (FINISHED + auto-LIVE) are batched
-  if (statusDeferTimer) clearTimeout(statusDeferTimer)
-  statusDeferTimer = setTimeout(() => {
-    statusOverrides.clear()
-    statusVersion.value++
-    refreshSchedule()
-    statusDeferTimer = null
-  }, STATUS_OVERRIDE_DEFER)
-}
-
-const handleScheduleUpdate = () => {
-  console.log('[Favorites] schedule-update → refresh')
-  statusOverrides.clear()
-  statusVersion.value++
-  refreshSchedule()
 }
 
 // Use the composable for proper socket room management

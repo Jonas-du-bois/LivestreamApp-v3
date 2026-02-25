@@ -52,3 +52,13 @@
   - Created `useFirstLoad` composable to manage the "show skeleton only on initial load" state, preventing flickering on background refreshes.
   - Refactored `results.vue` and `schedule.vue` to use these abstractions.
 - **Outcome:** Removed ~40 lines of boilerplate from components. Centralized API configuration and loading state logic. strictly typed.
+
+## 2026-02-21: Realtime Status Logic Extraction
+
+- **Logic Extracted:** Duplicated logic for handling realtime socket updates (status overrides, scores, versioning, refresh debouncing) in `app/pages/schedule.vue` and `app/pages/favorites.vue`.
+- **Destination:** `app/composables/useRealtimeStatus.ts`
+- **Changes:**
+  - Created `useRealtimeStatus` composable.
+  - Extracted `statusOverrides`, `statusVersion`, `handleStatusUpdate`, `handleScoreUpdate`, and debounce logic.
+  - Refactored `schedule.vue` and `favorites.vue` to use the composable.
+- **Outcome:** Removed ~60 lines of duplicated code. Centralized tricky debounce logic and map management.
