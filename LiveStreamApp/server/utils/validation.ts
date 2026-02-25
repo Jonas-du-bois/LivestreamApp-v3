@@ -4,7 +4,15 @@ import { z } from 'zod';
 
 const WebSubscriptionSchema = z.object({
   type: z.literal('web'),
-  endpoint: z.string().url().max(500),
+  endpoint: z.string()
+    .url()
+    .max(500)
+    // Security: Enforce HTTPS for Web Push to prevent MitM and mixed content issues
+    .startsWith('https://', { message: 'Endpoint must use HTTPS' })
+    // Security: Prevent SSRF by blocking localhost and private IP loopbacks
+    .refine((url) => !url.includes('localhost') && !url.includes('127.0.0.1') && !url.includes('[::1]'), {
+      message: 'Invalid endpoint domain (localhost not allowed)',
+    }),
   keys: z.object({
     p256dh: z.string().max(200),
     auth: z.string().max(100),

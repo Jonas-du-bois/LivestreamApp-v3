@@ -12,3 +12,8 @@
 **Vulnerability:** Critical admin endpoints (`seed.post.ts` and `score.put.ts`) lacked rate limiting. Although authenticated, a compromised admin account or a script could exploit this to trigger Denial of Service (DoS) by repeatedly wiping the database or spamming push notifications to all users.
 **Learning:** Authentication is not a substitute for rate limiting. Resource-intensive or user-impacting operations must be throttled regardless of the user's privilege level to contain damage in case of compromise or bugs.
 **Prevention:** Implement strict rate limiting (e.g., 1 req/10min for destructive actions, 60 req/min for operational actions) on all sensitive endpoints.
+
+## 2026-03-08 - Blind SSRF in Web Push Subscription
+**Vulnerability:** The `WebSubscriptionSchema` allowed arbitrary URLs (including `http://localhost`) in the `endpoint` field. This could be exploited to perform Blind Server-Side Request Forgery (SSRF) attacks against internal services when the server sends push notifications.
+**Learning:** Zod's `.url()` validation only checks the format, not the protocol or destination. Explicit checks are needed to prevent SSRF in schemas that accept URLs for outbound requests.
+**Prevention:** Use `.startsWith('https://')` to enforce secure protocols and explicit deny-lists (e.g., `localhost`, private IPs) in Zod `.refine()` blocks for any user-provided URL that the server will connect to.
