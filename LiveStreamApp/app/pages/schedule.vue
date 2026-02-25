@@ -5,8 +5,7 @@ import { storeToRefs } from 'pinia'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 import {
   SCHEDULE_AUTO_REFRESH,
-  NOW_REFRESH_INTERVAL,
-  STATUS_OVERRIDE_DEFER
+  NOW_REFRESH_INTERVAL
 } from '~/utils/timings'
 
 const { t, locale } = useI18n()
@@ -26,8 +25,7 @@ let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
 // Instead of mutating useFetch's data ref (unreliable), we keep a
 // separate reactive overlay that is merged into the computed output.
 // This guarantees Vue sees the change regardless of useFetch internals.
-const statusOverrides = new Map<string, { status: string; score?: number | null }>()
-const statusVersion = ref(0) // bump → forces filteredSchedule recompute
+const { version, apply, handleStatusUpdate, handleScheduleUpdate, reset } = useRealtimeStatus(refresh)
 
 // All known translations of "all" to detect stale locale values
 const ALL_LOCALE_VALUES = ['Tout', 'Alli', 'Tutto', '']
@@ -68,8 +66,7 @@ onUnmounted(() => {
 
 const handleVisibility = () => {
   if (document.visibilityState === 'visible') {
-    statusOverrides.clear()
-    statusVersion.value++
+    reset()
     refresh()
   }
 }
@@ -107,8 +104,7 @@ watch([pending, scheduleResponse, fetchError], ([isPending, response, err]) => {
   if (!isPending) {
     if (response) {
       // Clear overrides: fresh API data supersedes socket patches
-      statusOverrides.clear()
-      statusVersion.value++
+      reset()
     }
     // Always reset loading when fetch completes (success or error)
     isFilterLoading.value = false
@@ -204,7 +200,7 @@ watch(locale, () => {
 
 const filteredSchedule = computed(() => {
   // Touch statusVersion to establish reactive dependency on socket overrides
-  const _v = statusVersion.value
+  const _v = version.value
   // Establish dependency on time for reactive status updates (~2s precision)
   const nowTime = nowTimestamp.value
 
@@ -212,13 +208,9 @@ const filteredSchedule = computed(() => {
     .filter((item: any) => item.group && item.apparatus)
     .map((item: any) => {
       // Merge any socket-received status override on top of API data
-      const override = statusOverrides.get(item._id)
-      if (override) {
-        return {
-          ...item,
-          status: override.status,
-          ...(override.score !== undefined ? { score: override.score } : {})
-        }
+      const merged = apply(item)
+      if (merged !== item) {
+        return merged
       }
 
       // Client-side status calculation for reactivity
@@ -290,44 +282,6 @@ const isFavorite = (passageId: string) => {
 
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails(groupId, apparatusCode)
-}
-
-// ─── Socket handlers ─────────────────────────────────────────────
-// schedule-update: scheduler changed data, no payload → refresh API
-const handleScheduleUpdate = () => {
-  console.log('[Schedule] schedule-update → refresh')
-  statusOverrides.clear()
-  statusVersion.value++
-  refresh()
-}
-
-// status-update: admin set passage LIVE/FINISHED → instant UI update via overlay
-let statusDeferTimer: ReturnType<typeof setTimeout> | null = null
-
-const handleStatusUpdate = (payload: { passageId?: string; status?: string; score?: number | null }) => {
-  console.log('[Schedule] status-update:', payload)
-
-  if (!payload?.passageId || !payload?.status) {
-    refresh()
-    return
-  }
-
-  // Instant: store override — filteredSchedule recomputes immediately
-  statusOverrides.set(payload.passageId, {
-    status: payload.status,
-    ...(payload.score !== undefined ? { score: payload.score } : {})
-  })
-  statusVersion.value++
-
-  // Debounced deferred sync: reset timer on each event so that
-  // cascading updates (FINISHED + auto-promoted LIVE) are batched
-  if (statusDeferTimer) clearTimeout(statusDeferTimer)
-  statusDeferTimer = setTimeout(() => {
-    statusOverrides.clear()
-    statusVersion.value++
-    refresh()
-    statusDeferTimer = null
-  }, STATUS_OVERRIDE_DEFER)
 }
 
 // Use the composable for proper socket room management
