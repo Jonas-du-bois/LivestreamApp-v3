@@ -4,21 +4,69 @@ import GroupModel from '../models/Group';
 import { RESULTS_CACHE_MAX_AGE } from '../utils/timings';
 
 export default defineCachedEventHandler(async (event) => {
+  const query = getQuery(event);
+  let dayFilter = query.day;
+  if (Array.isArray(dayFilter)) dayFilter = dayFilter[0];
+  if (typeof dayFilter !== 'string') dayFilter = undefined;
+
   try {
-    // OPTIMIZATION: Use Aggregation Pipeline instead of find() + in-memory processing
-    // This reduces memory usage and leverages DB for sorting and grouping
-    // BOLT: Optimized to group by Apparatus ID first, reducing Apparatus lookups from O(N) to O(M)
-    const pipeline: any[] = [
+    // 1. Metadata: Available Days
+    const dayAggregation = await PassageModel.aggregate([
       { $match: { isPublished: true } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
+          sampleDate: { $first: "$startTime" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    const dayMap = new Map<string, string[]>();
+    const availableDaysSet = new Set<string>();
+
+    dayAggregation.forEach((d: any) => {
+      if (!d.sampleDate) return;
+      const date = new Date(d.sampleDate);
+      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+      const key = dayName.toLowerCase();
+      availableDaysSet.add(dayName);
+      if (!dayMap.has(key)) dayMap.set(key, []);
+      dayMap.get(key)?.push(d._id);
+    });
+
+    const availableDays = Array.from(availableDaysSet);
+
+    // 2. Build Filter Query
+    const matchQuery: any = { isPublished: true };
+
+    if (dayFilter && dayFilter !== 'Tout') {
+      const targetDateStrings = dayMap.get(dayFilter.toLowerCase());
+      if (targetDateStrings && targetDateStrings.length > 0) {
+        const ranges = targetDateStrings.map((ds: string) => {
+          const start = new Date(`${ds}T00:00:00.000Z`);
+          const end = new Date(`${ds}T23:59:59.999Z`);
+          return { startTime: { $gte: start, $lte: end } };
+        });
+        if (ranges.length === 1 && ranges[0]) {
+          matchQuery.startTime = ranges[0].startTime;
+        } else {
+          matchQuery.$or = ranges;
+        }
+      }
+    }
+
+    // 3. Aggregation Pipeline
+    const pipeline: any[] = [
+      { $match: matchQuery },
       { $sort: { score: -1 } },
 
-      // Lookup Group FIRST (needed for each passage)
+      // Lookup Group FIRST
       {
         $lookup: {
           from: GroupModel.collection.name,
           localField: 'group',
           foreignField: '_id',
-          // OPTIMIZATION: Project early to avoid fetching large history/description fields
           pipeline: [
             { $project: { _id: 1, name: 1, category: 1, canton: 1, logo: 1 } }
           ],
@@ -32,30 +80,26 @@ export default defineCachedEventHandler(async (event) => {
         }
       },
 
-      // OPTIMIZATION: Project only necessary fields to reduce memory usage and network payload
-      // BOLT: Removed large arrays (history, monitors) and internal fields before grouping
       {
         $project: {
           _id: 1,
           score: 1,
           status: 1,
-          group: 1, // Already projected in lookup
-          apparatus: 1, // ObjectId, needed for grouping
+          group: 1,
+          apparatus: 1,
           startTime: 1,
           endTime: 1,
           location: 1
         }
       },
 
-      // OPTIMIZATION: Group by Apparatus ID immediately to avoid looking up apparatus details for every passage
       {
         $group: {
-          _id: "$apparatus", // Group by ObjectId
+          _id: "$apparatus",
           passages: { $push: "$$ROOT" }
         }
       },
 
-      // Now Lookup Apparatus for the GROUP (only ~6 times instead of hundreds)
       {
         $lookup: {
           from: ApparatusModel.collection.name,
@@ -76,23 +120,23 @@ export default defineCachedEventHandler(async (event) => {
 
     result.forEach((item: any) => {
        if (!item.apparatusInfo || !item.apparatusInfo.code) return;
-
        const appInfo = item.apparatusInfo;
        const code = appInfo.code;
 
-       // Add rank (since passages are already sorted by score desc in the group)
-       // And inject the apparatus info back into each passage object
        grouped[code] = item.passages.map((p: any, index: number) => ({
          ...p,
-         // Ensure group is null if missing (orphaned passage), matching original behavior
          group: (p.group && p.group._id) ? p.group : null,
-         // Inject the looked-up info to match the expected API response structure
          apparatus: appInfo,
          rank: index + 1
        }));
     });
 
-    return grouped;
+    return {
+      meta: {
+        availableDays
+      },
+      data: grouped
+    };
 
   } catch (err) {
     console.error('[results] Error fetching results', err);
@@ -101,5 +145,5 @@ export default defineCachedEventHandler(async (event) => {
 }, {
   maxAge: RESULTS_CACHE_MAX_AGE,
   swr: true,
-  name: 'api-results'
+  name: 'api-results-v2'
 });

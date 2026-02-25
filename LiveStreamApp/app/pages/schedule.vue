@@ -306,22 +306,10 @@ useSocketRoom('schedule-updates', [
 <template>
   <div class="px-4 space-y-4 pb-6">
     <!-- Day Switcher -->
-    <div class="glass-card p-1 flex overflow-x-auto" role="tablist" :aria-label="t('pages.schedule')">
-      <button
-        v-for="day in availableDays"
-        :key="`${day}-${locale}`"
-        @click="selectedDay = day"
-        class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none hover:-translate-y-0.5 active:scale-95"
-        :class="selectedDay === day
-          ? 'bg-white/20 text-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
-          : 'text-white/60 hover:bg-white/10'"
-        type="button"
-        role="tab"
-        :aria-selected="selectedDay === day"
-      >
-        {{ translateDay(day) }}
-      </button>
-    </div>
+    <UiDaySwitcher
+      v-model="selectedDay"
+      :days="availableDays"
+    />
 
     <!-- Filter Chips -->
     <UiFilterChips

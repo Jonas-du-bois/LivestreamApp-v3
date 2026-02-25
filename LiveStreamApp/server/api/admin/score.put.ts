@@ -56,13 +56,15 @@ export default defineEventHandler(async (event) => {
     const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
 
     const payload = {
-      passageId: updated._id,
+      passageId: updated._id.toString(),
       score: updated.score,
       rank,
       status: updated.status,
       group: updated.group,
       apparatus: updated.apparatus,
-      // Keep flat props for legacy/simplified consumers if needed
+      startTime: updated.startTime,
+      endTime: updated.endTime,
+      location: updated.location,
       groupName: (updated.group as any)?.name,
       apparatusCode: (updated.apparatus as any)?.code,
     };

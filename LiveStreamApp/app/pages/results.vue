@@ -3,6 +3,7 @@ import { PublicService } from '../services/public.service'
 import type { PassageEnriched } from '~/types/api'
 import type { ScoreUpdatePayload } from '~/types/socket'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
+import ResultCard from '~/components/results/ResultCard.vue'
 
 const { t, locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
@@ -12,29 +13,34 @@ type PassageResult = PassageEnriched & { rank: number }
 
 const { open: openGroupDetails } = useGroupDetails()
 
+// Active day state
+const selectedDay = useState<string>('results-selected-day', () => '')
+
 // Fetch data from API with caching to avoid refetch on tab clicks
-const { data: apiResultsMap, pending, refresh } = await PublicService.getResults({
-  key: 'results-data', // Keep original key for compatibility
-  watch: [locale],
+const { data: resultsResponse, pending, refresh } = await PublicService.getResults({
+  day: selectedDay,
+  watch: [locale, selectedDay],
   server: true,
-  lazy: false,
-  getCachedData: (key: string) => {
-    const nuxtApp = useNuxtApp()
-    return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
-  }
+  lazy: false
 })
 
 // Manage First Load Skeleton State
-const { showSkeleton } = useFirstLoad(pending, apiResultsMap)
+const { showSkeleton } = useFirstLoad(pending, resultsResponse)
 
 // Create a local reactive copy that we can mutate properly
 const resultsMap = ref<Record<string, PassageResult[]>>({})
+const availableDays = computed(() => resultsResponse.value?.meta?.availableDays || [])
 
 // Sync API data to local reactive state
-watch(apiResultsMap, (newData) => {
-  if (newData) {
+watch(resultsResponse, (newData) => {
+  if (newData?.data) {
     // Deep clone to ensure full reactivity
-    resultsMap.value = structuredClone(toRaw(newData))
+    resultsMap.value = structuredClone(toRaw(newData.data))
+
+    // Initialize selected day if not set
+    if (!selectedDay.value && newData.meta?.availableDays?.length) {
+      selectedDay.value = newData.meta.availableDays[0]
+    }
   }
 }, { immediate: true, deep: true })
 
@@ -146,7 +152,17 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
   // Handle new entry dynamically (e.g. first score for an apparatus)
   if (!found && data.group && data.apparatus) {
     const code = data.apparatus.code
-    if (code) {
+    
+    // Check if the passage belongs to the currently selected day
+    let belongsToSelectedDay = true
+    if (data.startTime && selectedDay.value) {
+      const passageDay = new Date(data.startTime).toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase()
+      if (passageDay !== selectedDay.value.toLowerCase()) {
+        belongsToSelectedDay = false
+      }
+    }
+
+    if (code && belongsToSelectedDay) {
       console.log('[results] Adding new entry for apparatus:', code)
       
       const existingList = resultsMap.value[code] || []
@@ -233,6 +249,14 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
       </div>
 
       <div v-else key="results-content">
+        <!-- Day Switcher -->
+        <div class="px-4 mb-4">
+          <UiDaySwitcher
+            v-model="selectedDay"
+            :days="availableDays"
+          />
+        </div>
+
         <!-- Empty State -->
         <UiEmptyState
           v-if="!resultsSections.length"
@@ -278,7 +302,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <div v-if="podiumResults.length > 0">
               <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.podium') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-                <ResultsResultCard
+                <ResultCard
                   v-for="result in podiumResults"
                   :key="result._id"
                   :passage="result"
@@ -292,7 +316,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <div v-if="fullRanking.length > 0">
               <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.fullRanking') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-                <ResultsResultCard
+                <ResultCard
                   v-for="result in fullRanking"
                   :key="result._id"
                   :passage="result"

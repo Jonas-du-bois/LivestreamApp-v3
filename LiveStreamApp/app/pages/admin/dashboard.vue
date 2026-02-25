@@ -214,7 +214,7 @@ const handleLogin = async () => {
 }
 
 // ===== Socket Room Connection =====
-// Join admin-dashboard room when authenticated
+// Join admin-dashboard room
 const handleStreamUpdate = (data: StreamUpdatePayload) => {
   console.log('[Dashboard] Stream update received:', data)
   const idx = streams.value.findIndex(s => s._id === data._id)
@@ -242,14 +242,12 @@ const handleScheduleUpdate = () => {
   handleForceRefresh()
 }
 
-// Only setup socket room when authenticated
-if (isAuthenticated.value) {
-  useSocketRoom(['admin-dashboard', 'streams', 'live-scores'], [
-    { event: 'stream-update', handler: handleStreamUpdate },
-    { event: 'score-update', handler: handleScoreUpdate },
-    { event: 'schedule-update', handler: handleScheduleUpdate }
-  ])
-}
+// Always setup socket room for real-time reactivity
+useSocketRoom(['admin-dashboard', 'streams', 'live-scores'], [
+  { event: 'stream-update', handler: handleStreamUpdate },
+  { event: 'score-update', handler: handleScoreUpdate },
+  { event: 'schedule-update', handler: handleScheduleUpdate }
+])
 
 // ===== Actions =====
 const savingScoreId = ref<string | null>(null)
@@ -257,7 +255,13 @@ const savingScoreId = ref<string | null>(null)
 const updateStatus = async (passage: PassageEnriched, status: PassageStatus) => {
   try {
     await AdminService.updateStatus({ passageId: passage._id!, status })
+    // Update the local copy immediately
     passage.status = status
+    // CRITICAL: Update the original source array so usePassageFilters doesn't revert it
+    const sourcePassage = passages.value.find(p => p._id === passage._id)
+    if (sourcePassage) {
+      sourcePassage.status = status
+    }
     triggerRef(passages)
   } catch (e) {
     console.error('[Dashboard] Failed to update status:', e)
@@ -270,6 +274,11 @@ const updateScore = async (passage: PassageEnriched) => {
   savingScoreId.value = passage._id || null
   try {
     await AdminService.updateScore({ passageId: passage._id!, score: passage.score })
+    // CRITICAL: Update the original source array so usePassageFilters doesn't revert it
+    const sourcePassage = passages.value.find(p => p._id === passage._id)
+    if (sourcePassage) {
+      sourcePassage.score = passage.score
+    }
     triggerRef(passages)
     if (scoreSaveTimer) clearTimeout(scoreSaveTimer)
     scoreSaveTimer = setTimeout(() => { savingScoreId.value = null }, 1000)

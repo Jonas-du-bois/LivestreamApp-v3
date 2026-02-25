@@ -10,9 +10,12 @@ export const PublicService = {
     })
   },
 
-  getResults(options: UseFetchOptions<Record<string, (PassageEnriched & { rank: number })[]>> = {}) {
-    return useApiClient<Record<string, (PassageEnriched & { rank: number })[]>>('/results', {
-      key: 'results',
+  getResults(options: UseFetchOptions<any> & { day?: MaybeRef<string> } = {}) {
+    return useApiClient<any>('/results', {
+      key: 'results-' + JSON.stringify(toValue(options.day) || 'all'),
+      query: computed(() => ({
+        day: toValue(options.day) || undefined
+      })),
       ...options
     })
   },

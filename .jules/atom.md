@@ -36,14 +36,14 @@ Tout chargement de liste (CascadeSkeletonList) DOIT utiliser `<UiSkeletonCard>` 
 **Problème :** La page `results.vue` utilisait des blocs `UiGlassCard` avec une structure HTML ad-hoc qui différait visuellement des `SchedulePassageCard` (alignement, padding, taille des colonnes), créant une incohérence dans l'UI.
 
 **Solution :**
-- Création de `<ResultCard>` (`app/components/results/ResultCard.vue`) :
+- Création de `<ResultsResultCard>` (`app/components/results/ResultCard.vue`) :
   - Encapsule la logique d'affichage des médailles, rangs, scores et bordures de podium.
   - Utilise la même structure Flexbox et les mêmes paddings que `SchedulePassageCard` pour l'uniformité.
   - Intègre l'animation "Flash" lors de la mise à jour des scores.
 - Refactoring de `results.vue` pour utiliser ce composant.
 
 **Règle établie :**
-Les listes de résultats doivent utiliser `<ResultCard>` pour garantir l'uniformité avec le reste de l'application (notamment le Programme).
+Les listes de résultats doivent utiliser `<ResultsResultCard>` pour garantir l'uniformité avec le reste de l'application (notamment le Programme).
 
 ## 03/11 - Centralisation de la Réactivité Temporelle
 
@@ -57,3 +57,16 @@ Les listes de résultats doivent utiliser `<ResultCard>` pour garantir l'uniform
 **Règle établie :**
 Tout calcul basé sur l'heure actuelle (pour les changements de statut en temps réel) DOIT passer par le composable `useNow()`.
 Les items de timeline complexes doivent être extraits en composants atomiques dans `app/components/domain/`.
+
+## 03/11 - Abstraction du Sélecteur de Jour
+
+**Problème :** La logique de sélection de jour était codée en dur dans `schedule.vue` et devait être répliquée dans `results.vue` pour séparer les podiums par jour (Actifs vs Jeunesse).
+
+**Solution :**
+- Création de `<UiDaySwitcher>` (`app/components/ui/DaySwitcher.vue`) : Un composant atomique gérant l'affichage horizontal scrollable des jours et la sélection.
+- Mise à jour de l'API `/results` pour supporter le filtrage par jour.
+- Refactoring de `schedule.vue` et `results.vue` pour utiliser ce composant commun.
+
+**Règle établie :**
+Toute navigation temporelle par jour au sein des listes DOIT utiliser `<UiDaySwitcher>`.
+L'état du jour sélectionné doit être géré via `useState` pour persister lors de la navigation entre les onglets si nécessaire.
