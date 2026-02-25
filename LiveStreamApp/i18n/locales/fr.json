@@ -212,6 +212,8 @@
   },
   "plan": {
     "back": "Retour",
+    "showMap": "Afficher le plan",
+    "showSatellite": "Afficher la vue satellite",
     "competition": "Concours",
     "food": "Food",
     "info": "Infos",

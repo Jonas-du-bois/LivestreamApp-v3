@@ -136,19 +136,24 @@ onMounted(async () => {
       <div class="absolute bottom-24 right-4 z-[500]">
         <button 
           @click="toggleMapStyle" 
-          class="glass-panel w-12 h-12 rounded-full flex items-center justify-center shadow-xl border border-white/20 transition-all active:scale-95 pointer-events-auto"
-          :class="isSatellite ? 'bg-blue-600/80' : 'bg-gray-900/60'"
+          class="glass-panel w-12 h-12 rounded-full flex items-center justify-center shadow-xl border border-white/20 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] active:scale-90 pointer-events-auto overflow-hidden relative"
+          :class="isSatellite ? 'bg-blue-600/90 shadow-[0_0_20px_rgba(37,99,235,0.6)] ring-1 ring-blue-400/50' : 'bg-gray-900/60 hover:bg-gray-800/80'"
+          :aria-label="isSatellite ? t('plan.showMap') : t('plan.showSatellite')"
         >
-          <Icon 
-            v-if="isSatellite" 
-            name="fluent:map-24-regular" 
-            class="w-6 h-6 text-white" 
-          />
-          <Icon 
-            v-else 
-            name="fluent:earth-24-regular" 
-            class="w-6 h-6 text-white" 
-          />
+          <Transition name="rotate-scale" mode="out-in">
+            <Icon
+              v-if="isSatellite"
+              name="fluent:map-24-filled"
+              class="w-6 h-6 text-white"
+              key="map"
+            />
+            <Icon
+              v-else
+              name="fluent:earth-24-filled"
+              class="w-6 h-6 text-white"
+              key="satellite"
+            />
+          </Transition>
         </button>
       </div>
     </Transition>
@@ -302,5 +307,23 @@ onMounted(async () => {
   font-weight: 600;
   color: white;
   white-space: nowrap; /* Empêche le texte de passer à la ligne */
+}
+
+/* 3. ANIMATIONS SPARK ✨ */
+.rotate-scale-enter-active,
+.rotate-scale-leave-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.rotate-scale-enter-from {
+  opacity: 0;
+  transform: rotate(-120deg) scale(0.5);
+  filter: blur(4px);
+}
+
+.rotate-scale-leave-to {
+  opacity: 0;
+  transform: rotate(120deg) scale(0.5);
+  filter: blur(4px);
 }
 </style>

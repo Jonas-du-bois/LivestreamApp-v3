@@ -212,6 +212,8 @@
   },
   "plan": {
     "back": "Zrugg",
+    "showMap": "Charte azeige",
+    "showSatellite": "Satellit azeige",
     "competition": "Wettkampf",
     "food": "Esse",
     "info": "Infos",
