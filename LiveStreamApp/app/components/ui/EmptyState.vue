@@ -28,13 +28,17 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <div 
-    class="text-center p-8 transition-all flex flex-col items-center justify-center"
+    class="text-center p-8 transition-all flex flex-col items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] rounded-xl"
     :class="[glass ? 'glass-card' : '']"
+    role="status"
+    aria-live="polite"
+    tabindex="0"
   >
     <!-- Icon Circle -->
     <div
       class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5 border border-white/5"
       :class="{ 'animate-pulse-slow': pulse }"
+      aria-hidden="true"
     >
       <Icon :name="icon" class="h-8 w-8 text-white/40" />
     </div>
