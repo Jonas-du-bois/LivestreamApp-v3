@@ -26,7 +26,7 @@
   --header-safe-extra: 1rem;
   --nav-safe-extra: 1rem;
   --main-content-top-base: 7rem;
-  --main-content-bottom-base: 100px;
+  --main-content-bottom-base: 90px;
 }
 
 /* Base Styles */
@@ -53,7 +53,7 @@ body {
       --header-safe-extra: 0px;
       --nav-safe-extra: -10px; /* keep current iOS PWA visual spacing */
       --main-content-top-base: 6.25rem;
-      --main-content-bottom-base: 52px;
+      --main-content-bottom-base: 45px;
     }
   }
 }

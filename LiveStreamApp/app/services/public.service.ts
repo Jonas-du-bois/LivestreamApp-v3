@@ -3,7 +3,7 @@ import { type MaybeRef, toValue } from 'vue'
 import type { UseFetchOptions } from '#app'
 
 export const PublicService = {
-  getSchedule(filters?: MaybeRef<{ day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[] }>) {
+  getSchedule(filters?: MaybeRef<{ day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[]; [key: string]: any }>) {
     return useApiClient<ScheduleResponse>('/schedule', {
       query: filters,
       key: 'schedule-' + JSON.stringify(toValue(filters) || {})
@@ -17,7 +17,7 @@ export const PublicService = {
     })
   },
 
-  getStreams(filters?: MaybeRef<{ isLive?: boolean }>) {
+  getStreams(filters?: MaybeRef<{ isLive?: boolean; [key: string]: any }>) {
     return useApiClient<Stream[]>('/streams', {
       query: filters,
       key: 'streams-' + JSON.stringify(toValue(filters) || {}),

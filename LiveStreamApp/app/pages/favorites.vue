@@ -214,17 +214,12 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
         :aria-label="t('common.loading')"
       >
         <template #default>
-          <div class="p-4 flex items-center gap-4">
-            <div class="min-w-[60px] space-y-2">
-              <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-12"></div>
-              <div class="premium-skeleton-line premium-skeleton-shimmer h-3 w-10"></div>
-            </div>
-            <div class="flex-1 min-w-0 space-y-2">
-              <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-2/3"></div>
-              <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-1/2"></div>
-            </div>
-            <div class="w-8 h-8 rounded-full premium-skeleton-surface premium-skeleton-shimmer flex-shrink-0"></div>
-          </div>
+          <UiSkeletonCard
+            layout="time"
+            content="text"
+            action="circle"
+            align="center"
+          />
         </template>
       </CascadeSkeletonList>
 

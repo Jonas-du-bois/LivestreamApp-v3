@@ -166,7 +166,7 @@ const drinkMenu = computed(() => [
           </div>
 
           <!-- Thème BAD TASTE - Mise en avant -->
-          <div class="mb-8">
+          <div class="mb-8 pt-6">
             <div class="relative group">
               <div class="absolute -inset-0.5 bg-violet-500/50 rounded-3xl blur-md opacity-70 group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
               <div class="relative bg-black/90 backdrop-blur-md rounded-3xl border-2 border-violet-500/40 p-6 overflow-hidden">
@@ -224,7 +224,7 @@ const drinkMenu = computed(() => [
           </div>
 
           <!-- Menu des boissons avec prix -->
-          <div class="mb-8">
+          <div class="mb-8 py-6">
             <div class="bg-black/80 backdrop-blur-md rounded-3xl border border-violet-500/30 p-6 shadow-2xl">
               <div class="flex items-center justify-between mb-6">
                 <div>
@@ -235,7 +235,7 @@ const drinkMenu = computed(() => [
                   <p class="text-white/60 text-xs uppercase tracking-wider">{{ t('afterparty.drinksSubtitle') }}</p>
                 </div>
                 <div class="px-3 py-1.5 rounded-lg bg-violet-500/20 border border-violet-400/40">
-                  <span class="text-[10px] font-bold text-white uppercase tracking-wider">{{ t('afterparty.paymentMethods') }}</span>
+                  <span class="text-[8px] font-bold text-white uppercase tracking-wider">{{ t('afterparty.paymentMethods') }}</span>
                 </div>
               </div>
 

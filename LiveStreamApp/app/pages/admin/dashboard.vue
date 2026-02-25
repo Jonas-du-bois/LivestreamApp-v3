@@ -53,8 +53,17 @@ const advancedFilters = ref({
 })
 
 // ===== Data Fetching =====
-const { data: scheduleData, pending: schedulePending, refresh: refreshSchedule } = await PublicService.getSchedule()
-const { data: streamsData, pending: streamsPending, refresh: refreshStreams } = await PublicService.getStreams()
+const refreshTrigger = ref(0)
+const refreshParams = computed(() => ({
+  _t: refreshTrigger.value
+}))
+
+const { data: scheduleData, pending: schedulePending, refresh: refreshSchedule } = await PublicService.getSchedule(refreshParams)
+const { data: streamsData, pending: streamsPending, refresh: refreshStreams } = await PublicService.getStreams(refreshParams)
+
+const handleForceRefresh = () => {
+  refreshTrigger.value++
+}
 
 const passages = shallowRef<PassageEnriched[]>([])
 const streams = shallowRef<Stream[]>([])
@@ -230,7 +239,7 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
 
 const handleScheduleUpdate = () => {
   console.log('[Dashboard] Schedule update received, refreshing...')
-  refreshSchedule()
+  handleForceRefresh()
 }
 
 // Only setup socket room when authenticated
@@ -289,7 +298,9 @@ const reseedDatabase = async () => {
   try {
     const response = await AdminService.seedDatabase()
     if (response?.success) {
-      await Promise.all([refreshSchedule(), refreshStreams()])
+      handleForceRefresh()
+      // Wait a bit for the refresh to trigger
+      await nextTick()
       const passagesCount = response.summary?.passages ?? 0
       const streamsCount = response.summary?.streams ?? 0
       window.alert(t('admin.reseedSuccess', { passages: passagesCount, streams: streamsCount }))
@@ -498,7 +509,7 @@ const hasActiveFilters = computed(() => {
               </div>
               
               <!-- Refresh -->
-              <button @click="refreshSchedule(); refreshStreams()" class="btn-secondary">
+              <button @click="handleForceRefresh()" class="btn-secondary">
                 <Icon name="fluent:arrow-clockwise-24-regular" class="w-5 h-5" />
                 <span class="hidden xl:inline">{{ t('admin.refresh') }}</span>
               </button>
@@ -557,7 +568,7 @@ const hasActiveFilters = computed(() => {
                   <Icon name="fluent:translate-24-regular" class="w-5 h-5" />
                   {{ locale.toUpperCase() }}
                 </button>
-                <button @click="refreshSchedule(); refreshStreams()" class="flex-1 btn-secondary">
+                <button @click="handleForceRefresh()" class="flex-1 btn-secondary">
                   <Icon name="fluent:arrow-clockwise-24-regular" class="w-5 h-5" />
                   {{ t('admin.refresh') }}
                 </button>

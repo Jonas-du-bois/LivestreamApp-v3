@@ -83,32 +83,6 @@ const fullRanking = computed(() => {
   return activeSection.value.results.slice(3)
 })
 
-const getMedalIcon = (rank: number) => {
-  switch (rank) {
-    case 1:
-      return { name: 'fluent:trophy-24-filled', class: 'text-yellow-400' }
-    case 2:
-      return { name: 'fluent:ribbon-24-filled', class: 'text-gray-300' }
-    case 3:
-      return { name: 'fluent:ribbon-24-filled', class: 'text-amber-600' }
-    default:
-      return null
-  }
-}
-
-const getPodiumBorderClass = (rank: number) => {
-  switch (rank) {
-    case 1:
-      return 'border-yellow-400'
-    case 2:
-      return 'border-gray-300'
-    case 3:
-      return 'border-amber-600'
-    default:
-      return 'border-white/10'
-  }
-}
-
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails(groupId, apparatusCode)
 }
@@ -237,7 +211,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 </script>
 
 <template>
-  <div class="min-h-screen px-4 space-y-4 pb-6">
+  <div class="min-h-screen space-y-4 pb-6">
     <Transition name="premium-swap" mode="out-in">
       <div v-if="showSkeleton" key="results-skeleton" class="px-4 mt-6 space-y-4">
         <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
@@ -248,14 +222,12 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
         <CascadeSkeletonList :count="6" layout="vertical" :aria-label="t('common.loading')">
           <template #default>
-            <div class="p-4 flex items-center gap-4">
-              <div class="w-12 h-12 rounded-full premium-skeleton-surface premium-skeleton-shimmer flex-shrink-0"></div>
-              <div class="flex-1 min-w-0 space-y-2">
-                <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-2/3"></div>
-                <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-1/2"></div>
-              </div>
-              <div class="premium-skeleton-line premium-skeleton-shimmer h-8 w-16 rounded-lg"></div>
-            </div>
+            <UiSkeletonCard
+              layout="avatar"
+              content="text"
+              action="box"
+              align="center"
+            />
           </template>
         </CascadeSkeletonList>
       </div>
@@ -304,39 +276,13 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <div v-if="podiumResults.length > 0">
               <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.podium') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-                <UiGlassCard
+                <ResultsResultCard
                   v-for="result in podiumResults"
                   :key="result._id"
-                  :id="'result-' + result._id"
-                  class="rounded-2xl border-2"
-                  :class="getPodiumBorderClass(result.rank)"
-                  :interactive="true"
-                  @click="handleGroupClick(result.group._id, activeSection.code)"
-                >
-                  <div class="flex items-center gap-4">
-                    <!-- Medal Icon -->
-                    <div class="flex items-center justify-center w-12 h-12">
-                      <span class="sr-only">#{{ result.rank }}</span>
-                      <Icon
-                        v-if="getMedalIcon(result.rank)"
-                        :name="getMedalIcon(result.rank)!.name"
-                        class="w-8 h-8"
-                        :class="getMedalIcon(result.rank)!.class"
-                      />
-                    </div>
-
-                    <!-- Group Info -->
-                    <div class="flex-1 min-w-0">
-                      <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                      <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('ACTIFS') }}</p>
-                    </div>
-
-                    <!-- Score -->
-                    <div class="text-cyan-400 font-bold text-3xl">
-                      {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
-                    </div>
-                  </div>
-                </UiGlassCard>
+                  :passage="result"
+                  :is-podium="true"
+                  @click:group="handleGroupClick(result.group._id, activeSection.code)"
+                />
               </TransitionGroup>
             </div>
 
@@ -344,32 +290,13 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <div v-if="fullRanking.length > 0">
               <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.fullRanking') }}</UiSectionTitle>
               <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-                <UiGlassCard
+                <ResultsResultCard
                   v-for="result in fullRanking"
                   :key="result._id"
-                  :id="'result-' + result._id"
-                  class="rounded-2xl"
-                  :interactive="true"
-                  @click="handleGroupClick(result.group._id, activeSection.code)"
-                >
-                  <div class="flex items-center gap-4">
-                    <!-- Rank Number -->
-                    <div class="flex items-center justify-center w-12">
-                      <span class="text-white/40 font-bold text-xl">#{{ result.rank }}</span>
-                    </div>
-
-                    <!-- Group Info -->
-                    <div class="flex-1 min-w-0">
-                      <h3 class="text-white font-bold text-lg">{{ result.group.name }}</h3>
-                      <p class="text-white/60 text-sm">{{ translateCategory(result.group.category) || translateCategory('MIXTE') }}</p>
-                    </div>
-
-                    <!-- Score -->
-                    <div class="text-white font-bold text-2xl">
-                      {{ typeof result.score === 'number' ? result.score.toFixed(2) : '0.00' }}
-                    </div>
-                  </div>
-                </UiGlassCard>
+                  :passage="result"
+                  :is-podium="false"
+                  @click:group="handleGroupClick(result.group._id, activeSection.code)"
+                />
               </TransitionGroup>
             </div>
 
@@ -395,64 +322,5 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-.score-flash {
-  animation: premium-pop 2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-  z-index: 10;
-}
-
-.score-flash::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  transform: skewX(-20deg);
-  animation: shine-sweep 1.5s ease-out;
-  pointer-events: none;
-}
-
-@keyframes premium-pop {
-  0% {
-    transform: scale(1);
-    border-color: rgba(255, 255, 255, 0.15);
-    background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 0 rgba(34, 211, 238, 0);
-  }
-  10% {
-    transform: scale(1.02);
-    border-color: rgba(34, 211, 238, 0.8);
-    background-color: rgba(34, 211, 238, 0.15);
-    box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.5);
-  }
-  80% {
-    border-color: rgba(34, 211, 238, 0.4);
-    background-color: rgba(34, 211, 238, 0.05);
-  }
-  100% {
-    transform: scale(1);
-    border-color: rgba(255, 255, 255, 0.15);
-    background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: none;
-  }
-}
-
-@keyframes shine-sweep {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 200%;
-  }
 }
 </style>

@@ -375,22 +375,12 @@ useSocketRoom('schedule-updates', [
           :aria-label="t('common.loading')"
         >
           <template #default>
-            <div class="p-4 flex items-start gap-4">
-              <div class="text-left min-w-[70px] flex-shrink-0 space-y-2">
-                <div class="premium-skeleton-line premium-skeleton-shimmer h-6 w-14"></div>
-                <div class="premium-skeleton-line premium-skeleton-shimmer h-3 w-12"></div>
-              </div>
-
-              <div class="flex-1 min-w-0 pt-0.5 space-y-2">
-                <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-2/3"></div>
-                <div class="flex items-center gap-2">
-                  <div class="premium-skeleton-pill premium-skeleton-shimmer w-20"></div>
-                  <div class="premium-skeleton-pill premium-skeleton-shimmer w-28"></div>
-                </div>
-              </div>
-
-              <div class="w-8 h-8 rounded-full premium-skeleton-surface premium-skeleton-shimmer flex-shrink-0"></div>
-            </div>
+            <UiSkeletonCard
+              layout="time"
+              content="pills"
+              action="circle"
+              align="start"
+            />
           </template>
         </CascadeSkeletonList>
 
