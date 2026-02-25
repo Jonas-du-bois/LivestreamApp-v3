@@ -199,7 +199,7 @@ export default defineCachedEventHandler(async (event) => {
       PassageModel.aggregate(facetPipeline),
       PassageModel.find(dbQuery)
         .select('startTime endTime location status score group apparatus')
-        .populate('group', 'name category')
+        .populate('group', 'name category canton logo')
         .populate('apparatus', 'name code icon')
         .sort({ startTime: 1 }) // Sorting at DB level
         .lean()
@@ -217,7 +217,13 @@ export default defineCachedEventHandler(async (event) => {
     // 5. Format Response
     const formattedData = passages.map((p: any) => ({
       _id: p._id,
-      group: p.group ? { _id: p.group._id, name: p.group.name, category: p.group.category } : null,
+      group: p.group ? {
+        _id: p.group._id,
+        name: p.group.name,
+        category: p.group.category,
+        canton: p.group.canton,
+        logo: p.group.logo
+      } : null,
       apparatus: p.apparatus ? {
         _id: p.apparatus._id,
         name: p.apparatus.name,

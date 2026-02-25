@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PassageEnriched, Stream, Group } from '~/types/api'
+import type { PassageEnriched, Stream, EnrichedGroup, ScheduleResponse } from '~/types/api'
 
 interface Props {
   isOpen: boolean
@@ -22,7 +22,7 @@ const activeTab = ref<'all' | 'groups' | 'passages' | 'live'>('all')
 const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
 
 // Search results
-const groupResults = ref<Group[]>([])
+const groupResults = ref<EnrichedGroup[]>([])
 const passageResults = ref<PassageEnriched[]>([])
 const liveResults = ref<{ passages: PassageEnriched[], streams: Stream[] }>({ passages: [], streams: [] })
 
@@ -43,15 +43,15 @@ const performSearch = async (query: string) => {
   try {
     // Fetch all data in parallel
     const [scheduleRes, liveRes] = await Promise.all([
-      $fetch<{ meta: any; data: PassageEnriched[] }>('/api/schedule'),
+      $fetch<ScheduleResponse>('/api/schedule'),
       $fetch<{ passages: PassageEnriched[]; streams: Stream[] }>('/api/live')
     ])
 
     // Extract unique groups from passages
-    const groupsMap = new Map<string, Group>()
+    const groupsMap = new Map<string, EnrichedGroup>()
     scheduleRes.data.forEach((p) => {
       if (p.group && p.group._id) {
-        groupsMap.set(p.group._id, p.group as Group)
+        groupsMap.set(p.group._id, p.group)
       }
     })
     const allGroups = Array.from(groupsMap.values())
@@ -65,16 +65,16 @@ const performSearch = async (query: string) => {
 
     // Filter passages (by group name, apparatus name, location)
     passageResults.value = scheduleRes.data.filter((p) =>
-      (p.group as any)?.name?.toLowerCase().includes(q) ||
-      (p.apparatus as any)?.name?.toLowerCase().includes(q) ||
-      (p.apparatus as any)?.code?.toLowerCase().includes(q) ||
+      p.group?.name?.toLowerCase().includes(q) ||
+      p.apparatus?.name?.toLowerCase().includes(q) ||
+      p.apparatus?.code?.toLowerCase().includes(q) ||
       p.location?.toLowerCase().includes(q)
     ).slice(0, 15)
 
     // Filter live data
     const livePassages = liveRes.passages.filter((p) =>
-      (p.group as any)?.name?.toLowerCase().includes(q) ||
-      (p.apparatus as any)?.name?.toLowerCase().includes(q) ||
+      p.group?.name?.toLowerCase().includes(q) ||
+      p.apparatus?.name?.toLowerCase().includes(q) ||
       p.location?.toLowerCase().includes(q)
     )
     const liveStreams = liveRes.streams.filter((s) =>
@@ -124,7 +124,7 @@ const handleKeydown = (e: KeyboardEvent) => {
 }
 
 // Navigation actions
-const goToGroup = (group: Group) => {
+const goToGroup = (group: EnrichedGroup) => {
   emit('close')
   if (openGroupDetails && group._id) {
     openGroupDetails(group._id)
@@ -174,11 +174,15 @@ const tabs = computed(() => [
 ])
 
 onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
+  if (import.meta.client) {
+    window.addEventListener('keydown', handleKeydown)
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
+  if (import.meta.client) {
+    window.removeEventListener('keydown', handleKeydown)
+  }
   if (searchTimeout) clearTimeout(searchTimeout)
 })
 </script>
@@ -325,7 +329,7 @@ onUnmounted(() => {
                       <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <p class="text-white font-medium truncate">{{ (passage.group as any)?.name }}</p>
+                      <p class="text-white font-medium truncate">{{ passage.group?.name }}</p>
                       <p class="text-white/50 text-sm">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }} • {{ passage.location }}</p>
                     </div>
                     <span class="px-2 py-0.5 bg-red-500/30 text-red-300 text-xs font-medium rounded-full">LIVE</span>
@@ -376,7 +380,7 @@ onUnmounted(() => {
                       <Icon :name="passage.apparatus?.icon || 'fluent:sport-24-regular'" class="w-5 h-5 text-purple-400" />
                     </div>
                     <div class="flex-1 min-w-0">
-                      <p class="text-white font-medium truncate">{{ (passage.group as any)?.name }}</p>
+                      <p class="text-white font-medium truncate">{{ passage.group?.name }}</p>
                       <p class="text-white/50 text-sm">
                         {{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }} • {{ formatTime(passage.startTime) }} • {{ passage.location }}
                       </p>
