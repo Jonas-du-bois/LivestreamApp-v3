@@ -202,14 +202,37 @@ watch(locale, () => {
   }
 })
 
+// OPTIMIZATION: Pre-parse dates to avoid new Date() calls in the frequent filteredSchedule computation
+const parsedScheduleData = computed(() => {
+  if (!scheduleResponse.value?.data) return []
+
+  return scheduleResponse.value.data
+    .filter((item: any) => item.group && item.apparatus)
+    .map((item: any) => {
+      // Pre-calculate timestamps for efficient filtering/status checks
+      const dStart = new Date(item.startTime)
+      const dEnd = new Date(item.endTime)
+
+      // Calculate start of day (local time) for hidePast comparison
+      const dayStart = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate()).getTime()
+
+      return {
+        ...item,
+        _startTime: dStart.getTime(),
+        _endTime: dEnd.getTime(),
+        _dayStart: dayStart
+      }
+    })
+})
+
 const filteredSchedule = computed(() => {
   // Touch statusVersion to establish reactive dependency on socket overrides
   const _v = statusVersion.value
   // Establish dependency on time for reactive status updates (~2s precision)
   const nowTime = nowTimestamp.value
 
-  const schedule = (scheduleResponse.value?.data || [])
-    .filter((item: any) => item.group && item.apparatus)
+  // Use pre-parsed data
+  const schedule = parsedScheduleData.value
     .map((item: any) => {
       // Merge any socket-received status override on top of API data
       const override = statusOverrides.get(item._id)
@@ -223,8 +246,9 @@ const filteredSchedule = computed(() => {
 
       // Client-side status calculation for reactivity
       // This overrides stale server status based on start/end times
-      const start = new Date(item.startTime).getTime()
-      const end = new Date(item.endTime).getTime()
+      // OPTIMIZATION: Use pre-calculated timestamps
+      const start = item._startTime
+      const end = item._endTime
       let status = item.status
 
       if (nowTime >= start && nowTime <= end) {
@@ -247,27 +271,18 @@ const filteredSchedule = computed(() => {
   }
 
   const now = new Date(nowTime)
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
 
-  return schedule.filter((item) => {
+  return schedule.filter((item: any) => {
     if (item.status === 'FINISHED') return false
 
-    const startTime = new Date(item.startTime)
-    const endTime = new Date(item.endTime)
-    const startTimestamp = startTime.getTime()
-    const endTimestamp = endTime.getTime()
-    if (Number.isNaN(startTimestamp) || Number.isNaN(endTimestamp)) return true
+    // OPTIMIZATION: Use pre-calculated timestamps
+    if (Number.isNaN(item._startTime) || Number.isNaN(item._endTime)) return true
 
-    const passageDayStart = new Date(
-      startTime.getFullYear(),
-      startTime.getMonth(),
-      startTime.getDate()
-    )
+    if (item._dayStart < todayStart) return false
+    if (item._dayStart > todayStart) return true
 
-    if (passageDayStart.getTime() < todayStart.getTime()) return false
-    if (passageDayStart.getTime() > todayStart.getTime()) return true
-
-    return endTimestamp >= now.getTime()
+    return item._endTime >= nowTime
   })
 })
 
