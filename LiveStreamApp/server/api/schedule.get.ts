@@ -25,15 +25,8 @@ export default defineCachedEventHandler(async (event) => {
     // 3. Filter Lookups (Group IDs)
 
     // BOLT: Optimized aggregation - merged $project into $group to avoid redundant document creation
-    const dayAggregationPromise = PassageModel.aggregate([
-      {
-        $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
-          sampleDate: { $first: "$startTime" }
-        }
-      },
-      { $sort: { _id: 1 } }
-    ]);
+    // Cached for 1 hour to reduce DB load via getCachedAvailableDays()
+    const dayAggregationPromise = getCachedAvailableDays();
 
     let apparatusIdsPromise = Promise.resolve(null);
     if (apparatusFilter && apparatusFilter !== 'Tout') {
