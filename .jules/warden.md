@@ -34,3 +34,14 @@
     - Defined `ScoreUpdatePayload` and `StatusUpdatePayload` in `app/types/socket.ts` with optional fields for dynamic entries.
     - Refactored `results.vue` to use these types and `structuredClone`.
     - Ensured explicit handling of optional `score` with null coalescing.
+
+## 2026-02-21: Search Overlay Strict Typing & SSR Safety
+
+- **Target:** `app/components/overlays/SearchOverlay.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced `any` casts on `PassageEnriched` properties (`group`, `apparatus`) with strict typing. Fixed mismatched expectations between `Group` and `EnrichedGroup` interfaces.
+    - **SSR Safety:** Wrapped `window.addEventListener` in `import.meta.client` check to prevent server-side execution.
+- **Solution:**
+    - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
+    - Updated `server/api/schedule.get.ts` to return these fields.
+    - Refactored `SearchOverlay.vue` to use correct types and remove casts.

@@ -53,6 +53,8 @@ export interface EnrichedGroup {
   _id: string;
   name: string;
   category?: string;
+  canton?: string;
+  logo?: string;
 }
 
 export interface EnrichedApparatus {
