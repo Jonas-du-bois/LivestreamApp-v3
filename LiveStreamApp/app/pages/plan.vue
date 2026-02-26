@@ -134,22 +134,19 @@ onMounted(async () => {
 
     <Transition name="premium-swap" appear>
       <div class="absolute bottom-24 right-4 z-[500]">
-        <button 
-          @click="toggleMapStyle" 
-          class="glass-panel w-12 h-12 rounded-full flex items-center justify-center shadow-xl border border-white/20 transition-all active:scale-95 pointer-events-auto"
-          :class="isSatellite ? 'bg-blue-600/80' : 'bg-gray-900/60'"
-        >
-          <Icon 
-            v-if="isSatellite" 
-            name="fluent:map-24-regular" 
-            class="w-6 h-6 text-white" 
-          />
-          <Icon 
-            v-else 
-            name="fluent:earth-24-regular" 
-            class="w-6 h-6 text-white" 
-          />
-        </button>
+        <UiIconBox
+          as="button"
+          @click="toggleMapStyle"
+          :icon="isSatellite ? 'fluent:map-24-regular' : 'fluent:earth-24-regular'"
+          :variant="isSatellite ? 'solid' : 'solid'"
+          :color="isSatellite ? 'blue' : 'gray'"
+          shape="circle"
+          size="lg"
+          interactive
+          glow
+          class="pointer-events-auto"
+          :class="!isSatellite ? '!bg-gray-900/60 !border-white/20' : ''"
+        />
       </div>
     </Transition>
 

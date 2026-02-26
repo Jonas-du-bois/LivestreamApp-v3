@@ -83,9 +83,13 @@
 
         <template #image-bottom>
           <div class="flex items-end gap-3 pointer-events-auto">
-            <div class="h-10 w-10 rounded-lg bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-lg">
-              <Icon :name="spot.icon" class="text-white" size="20" />
-            </div>
+            <UiIconBox
+              :icon="spot.icon"
+              variant="solid"
+              color="blue"
+              shape="rounded"
+              size="md"
+            />
             <div>
               <p class="text-blue-400 text-xs font-bold uppercase tracking-wider mb-0.5">{{ spot.type }}</p>
               <h2 class="text-xl font-bold text-white leading-none">{{ spot.name }}</h2>
