@@ -523,24 +523,17 @@ const maxHistoryScore = computed(() => {
             
             <!-- Footer Action -->
             <div class="p-6 border-t border-white/10 flex-shrink-0 bg-[#0B1120]/50 backdrop-blur-xl">
-              <button
+              <UiButton
                 @click="toggleFavorite"
-                :disabled="isTogglingFavorite"
-                :aria-busy="isTogglingFavorite"
-                class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] disabled:active:scale-100 transition-transform focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none disabled:opacity-70 disabled:cursor-wait"
+                :loading="isTogglingFavorite"
+                variant="primary"
+                block
+                rounded="xl"
+                class="gradient-cyan-purple border-none shadow-purple-500/20 py-3.5 text-white font-bold"
+                :icon="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
               >
-                <template v-if="isTogglingFavorite">
-                  <Icon name="fluent:spinner-ios-20-regular" class="w-5 h-5 animate-spin" />
-                  <span>{{ t('common.loading') }}</span>
-                </template>
-                <template v-else>
-                  <Icon
-                    :name="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
-                    class="w-5 h-5"
-                  />
-                  {{ isFavorite ? t('group.removeFromFavorites') : t('group.addToFavorites') }}
-                </template>
-              </button>
+                {{ isTogglingFavorite ? t('common.loading') : (isFavorite ? t('group.removeFromFavorites') : t('group.addToFavorites')) }}
+              </UiButton>
             </div>
         </template>
       </div>

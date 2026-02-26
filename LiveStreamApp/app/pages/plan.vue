@@ -300,4 +300,22 @@ onMounted(async () => {
   color: white;
   white-space: nowrap; /* Empêche le texte de passer à la ligne */
 }
+
+/* 3. ANIMATIONS SPARK ✨ */
+.rotate-scale-enter-active,
+.rotate-scale-leave-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.rotate-scale-enter-from {
+  opacity: 0;
+  transform: rotate(-120deg) scale(0.5);
+  filter: blur(4px);
+}
+
+.rotate-scale-leave-to {
+  opacity: 0;
+  transform: rotate(120deg) scale(0.5);
+  filter: blur(4px);
+}
 </style>

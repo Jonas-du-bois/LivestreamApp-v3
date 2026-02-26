@@ -71,6 +71,7 @@ const commonClasses = computed(() => [
     :to="to"
     :type="to ? undefined : type"
     :disabled="disabled || loading"
+    :aria-busy="loading"
     :class="commonClasses"
     @click="emit('click', $event)"
   >
