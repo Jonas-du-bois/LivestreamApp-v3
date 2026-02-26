@@ -41,6 +41,12 @@
     "restaurant": "Beizli",
     "afterParty": "After Party"
   },
+  "network": {
+    "offlineTitle": "Sie sind offline",
+    "offlineMessage": "Die angezeigten Daten (Programm, Ergebnisse) sind möglicherweise nicht aktuell. Der Live-Videostream ist ohne Verbindung nicht verfügbar.",
+    "poorTitle": "Schwache Verbindung",
+    "poorMessage": "Ihre Verbindung ist instabil. Der Videostream kann unterbrochen werden und die Ergebnisse können sich verzögern."
+  },
   "weather": {
     "title": "Wätter",
     "subtitle": "Yverdon-les-Bains",

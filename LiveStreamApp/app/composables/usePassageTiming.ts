@@ -45,7 +45,7 @@ export const usePassageTiming = (
   // 2. Compute dynamic status based on time
   // This is reactive to `nowTimestamp`
   const passagesWithDynamicStatus = computed<PassageTimeEnriched[]>(() => {
-    const now = nowTimestamp.value.getTime()
+    const now = nowTimestamp.value
 
     return timeEnrichedPassages.value.map(p => {
       let status: PassageStatus | 'LIVE' = p.status
@@ -71,14 +71,14 @@ export const usePassageTiming = (
   // 3. Sorted Lists
 
   const upcomingPassages = computed(() => {
-    const now = nowTimestamp.value.getTime()
+    const now = nowTimestamp.value
     return passagesWithDynamicStatus.value
       .filter(p => p._startTime > now)
       .sort((a, b) => a._startTime - b._startTime)
   })
 
   const pastPassages = computed(() => {
-    const now = nowTimestamp.value.getTime()
+    const now = nowTimestamp.value
     return passagesWithDynamicStatus.value
       .filter(p => p._startTime <= now)
       .sort((a, b) => b._startTime - a._startTime) // Most recent first
@@ -98,7 +98,7 @@ export const usePassageTiming = (
   const timeToNext = computed(() => {
     if (!nextEvent.value) return ''
 
-    const now = nowTimestamp.value.getTime()
+    const now = nowTimestamp.value
     const target = nextEvent.value._startTime
     const diff = target - now
 

@@ -68,6 +68,8 @@ onBeforeUnmount(() => {
     <Transition name="splash-fade">
       <AppSplashScreen v-if="showSplash" />
     </Transition>
+
+    <UiNetworkToast />
   </div>
 </template>
 

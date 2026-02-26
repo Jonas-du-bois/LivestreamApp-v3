@@ -70,3 +70,16 @@ Les items de timeline complexes doivent être extraits en composants atomiques d
 **Règle établie :**
 Toute navigation temporelle par jour au sein des listes DOIT utiliser `<UiDaySwitcher>`.
 L'état du jour sélectionné doit être géré via `useState` pour persister lors de la navigation entre les onglets si nécessaire.
+
+## 03/11 - Gestion Globale de la Connectivité
+
+**Problème :** L'application pouvait "planter" de manière inattendue ou afficher des états illogiques lors de la perte de réseau. L'utilisateur n'était pas notifié que les flux vidéos ou les résultats en direct étaient compromis.
+
+**Solution :**
+- Création du composable réutilisable `useNetworkStatus.ts` pour centraliser l'écoute des événements `online`, `offline` et de la qualité de connexion (`navigator.connection`).
+- Création du composant atomique `<UiNetworkToast>` (`app/components/ui/NetworkToast.vue`) pour afficher une bannière non-intrusive.
+- Ajout de `<UiNetworkToast />` à la racine de l'application (`app.vue`) pour une couverture globale continue.
+
+**Règle établie :**
+Les événements liés au système ou à l'environnement global du navigateur (comme le réseau, la visibilité de la fenêtre) DOIVENT être extraits dans des composables (`useNetworkStatus`, `useNow`, etc.) pour éviter la duplication des listeners (EventListener) dans chaque composant de page.
+Les alertes globales de ce type doivent se placer à la racine (`app.vue`) avec `Teleport` si nécessaire.

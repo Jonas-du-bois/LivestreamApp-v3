@@ -151,19 +151,10 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
 
   // Handle new entry dynamically (e.g. first score for an apparatus)
   if (!found && data.group && data.apparatus) {
-    const code = data.apparatus.code
+    const code = data.apparatus.code || (data as any).apparatusCode
     
-    // Check if the passage belongs to the currently selected day
-    let belongsToSelectedDay = true
-    if (data.startTime && selectedDay.value) {
-      const passageDay = new Date(data.startTime).toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase()
-      if (passageDay !== selectedDay.value.toLowerCase()) {
-        belongsToSelectedDay = false
-      }
-    }
-
-    if (code && belongsToSelectedDay) {
-      console.log('[results] Adding new entry for apparatus:', code)
+    if (code) {
+      console.log('[results] Adding new entry for apparatus:', code, 'Score:', data.score)
       
       const existingList = resultsMap.value[code] || []
       const newEntry: PassageResult = {
@@ -189,6 +180,18 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         ...resultsMap.value,
         [code]: updatedList
       }
+
+      // Flash effect for new entry
+      nextTick(() => {
+        if (import.meta.client) {
+          const el = document.getElementById(`result-${data.passageId}`)
+          if (el) {
+            el.classList.remove('score-flash')
+            void el.offsetWidth
+            el.classList.add('score-flash')
+          }
+        }
+      })
     }
   }
 }

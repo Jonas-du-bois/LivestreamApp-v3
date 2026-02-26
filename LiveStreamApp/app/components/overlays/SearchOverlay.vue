@@ -18,8 +18,7 @@ const searchInput = ref<HTMLInputElement | null>(null)
 const isLoading = ref(false)
 const activeTab = ref<'all' | 'groups' | 'passages' | 'live'>('all')
 
-// Inject group details opener
-const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
+const { open: openGroupDetails } = useGroupDetails()
 
 // Search results
 const groupResults = ref<EnrichedGroup[]>([])

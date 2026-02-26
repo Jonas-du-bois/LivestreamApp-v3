@@ -211,7 +211,7 @@ const filteredSchedule = computed(() => {
     return schedule
   }
 
-  const now = nowTimestamp.value.getTime()
+  const now = nowTimestamp.value
   const d = new Date(now)
   const todayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
 

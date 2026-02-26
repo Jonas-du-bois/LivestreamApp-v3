@@ -41,6 +41,12 @@
     "restaurant": "Restau",
     "afterParty": "After Party"
   },
+  "network": {
+    "offlineTitle": "Vous êtes hors ligne",
+    "offlineMessage": "Les données affichées (programme, résultats) peuvent ne pas être à jour. Le flux vidéo direct est indisponible sans connexion.",
+    "poorTitle": "Connexion faible",
+    "poorMessage": "Votre connexion est instable. Le flux vidéo peut s'interrompre et les résultats mettre plus de temps à s'actualiser."
+  },
   "weather": {
     "title": "Météo",
     "subtitle": "Yverdon-les-Bains",

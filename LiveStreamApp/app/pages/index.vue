@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, inject } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { PublicService } from '~/services/public.service'
 import { useSocketRoom } from '~/composables/useSocketRoom'
@@ -26,7 +26,7 @@ interface QuickAction {
   badge?: string | null
 }
 
-const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => void>('openGroupDetails')
+const { open: openGroupDetails } = useGroupDetails()
 
 // Fetch live passages to populate "En piste maintenant"
 const { data: liveResp, pending: livePending, refresh: refreshLive } = await PublicService.getLive()
@@ -72,7 +72,7 @@ const heroSubtitle = computed(() => {
   if (!firstLivePassage.value) return 'Salle 1 • Sol'
   const loc = firstLivePassage.value.location || '—'
   const app = translateApparatus(firstLivePassage.value.apparatus?.code, firstLivePassage.value.apparatus?.name)
-  return ' • '
+  return `${loc} • ${app}`
 })
 
 const firstLiveStream = computed(() => {
@@ -273,22 +273,16 @@ useSocketRoom('schedule-updates', [
               :key="group.id"
               class="min-w-[200px] flex-shrink-0"
               :interactive="true"
-              @click="handleGroupClick(group.id, group.apparatusCode)"
-              :aria-label="t('results.openGroupDetails', { group: group.name })"
+              :to="group.streamId ? `/stream/${group.streamId}` : undefined"
+              @click="!group.streamId ? handleGroupClick(group.id, group.apparatusCode) : undefined"
+              :aria-label="group.streamId ? t('stream.openStream') : t('results.openGroupDetails', { group: group.name })"
             >
-              <div class="text-cyan-400 text-sm mb-2">{{ group.salle }}</div>
-              <h4 class="text-white font-bold mb-1">{{ group.name }}</h4>
-              <p class="text-white/60 text-sm">{{ group.apparatus }}</p>
-              
-              <NuxtLink
-                v-if="group.streamId"
-                :to="`/stream/${group.streamId}`"
-                @click.stop
-                class="mt-3 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
-              >
-                <Icon name="fluent:play-24-filled" class="w-4 h-4" />
-                <span class="text-sm">{{ t('common.watch') }}</span>
-              </NuxtLink>
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-cyan-400 text-sm">{{ group.salle }}</div>
+                <Icon v-if="group.streamId" name="fluent:play-24-filled" class="w-4 h-4 text-cyan-400" />
+              </div>
+              <h4 class="text-white font-bold mb-1 truncate">{{ group.name }}</h4>
+              <p class="text-white/60 text-sm truncate">{{ group.apparatus }}</p>
             </UiGlassCard>
           </div>
         </div>
