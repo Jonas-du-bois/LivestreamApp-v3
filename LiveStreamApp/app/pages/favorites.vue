@@ -5,8 +5,7 @@ import { storeToRefs } from 'pinia'
 import type { PassageEnriched } from '~/types/api'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 import {
-  FAVORITES_AUTO_REFRESH,
-  COUNTDOWN_TICK
+  FAVORITES_AUTO_REFRESH
 } from '~/utils/timings'
 
 const { t } = useI18n()
@@ -31,74 +30,22 @@ watch([pending, scheduleData], ([isPending, data]) => {
 
 const showSkeleton = computed(() => !hasLoadedOnce.value)
 
+// 1. Compute favorite passages (with overrides applied)
 const favoritePassages = computed<PassageEnriched[]>(() => {
   const _v = version.value // reactive dep on overrides
   if (!scheduleData.value?.data) return []
   return scheduleData.value.data
     .filter((p: any) => p._id && favorites.value.includes(p._id))
     .map(apply)
-    .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+    // Note: sorting is done in usePassageTiming for upcoming/past lists
 })
 
-// Separate upcoming and past events
-const upcomingPassages = computed<PassageEnriched[]>(() => {
-  const now = new Date()
-  return favoritePassages.value.filter(p => new Date(p.startTime) > now)
-})
+// 2. Use composable
+const { upcomingPassages, pastPassages, nextEvent, timeToNext } = usePassageTiming(favoritePassages)
 
-const pastPassages = computed<PassageEnriched[]>(() => {
-  const now = new Date()
-  return favoritePassages.value
-    .filter(p => new Date(p.startTime) <= now)
-    .reverse() // Most recent first
-})
-
-// Next Event Countdown Logic
-const nextEvent = computed(() => {
-  const now = new Date()
-  return favoritePassages.value.find(p => new Date(p.startTime) > now)
-})
-
-const timeToNext = ref('')
-
-const updateTimer = () => {
-  if (!nextEvent.value) {
-    timeToNext.value = ''
-    return
-  }
-  const now = new Date().getTime()
-  const target = new Date(nextEvent.value.startTime).getTime()
-  const diff = target - now
-
-  if (diff <= 0) {
-    timeToNext.value = t('favorites.inProgress')
-    return
-  }
-
-  const totalSeconds = Math.floor(diff / 1000)
-  const h = Math.floor(totalSeconds / 3600)
-  const m = Math.floor((totalSeconds % 3600) / 60)
-  const s = totalSeconds % 60
-
-  if (h === 0 && m === 0) {
-    timeToNext.value = `${s}s`
-  } else if (h === 0) {
-    if (m < 2) {
-      timeToNext.value = `${m}m ${s}s`
-    } else {
-      timeToNext.value = `${m}m`
-    }
-  } else {
-    timeToNext.value = `${h}h ${m}m`
-  }
-}
-
-let timer: any = null
 let autoRefreshTimer: any = null
 
 onMounted(() => {
-  updateTimer()
-  timer = setInterval(updateTimer, COUNTDOWN_TICK)
   // PWA fallback: periodic auto-refresh
   autoRefreshTimer = setInterval(() => refreshSchedule(), FAVORITES_AUTO_REFRESH)
   // PWA: refresh on foreground
@@ -108,7 +55,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (timer) clearInterval(timer)
   if (autoRefreshTimer) clearInterval(autoRefreshTimer)
   if (import.meta.client) {
     document.removeEventListener('visibilitychange', handleVisibility)
