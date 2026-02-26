@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { PublicService } from '~/services/public.service'
 import { useSocketRoom } from '~/composables/useSocketRoom'
 import { HOME_AUTO_REFRESH } from '~/utils/timings'
+import type { PassageEnriched, Stream, Passage } from '~/types/api'
 
 const { t } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
@@ -32,12 +33,12 @@ const openGroupDetails = inject<(groupId: string, apparatusCode?: string) => voi
 const { data: liveResp, pending: livePending, refresh: refreshLive } = await PublicService.getLive()
 
 const happeningNow = computed<HappeningNowItem[]>(() => {
-  return (liveResp.value?.passages || []).map((p: any) => {
+  return (liveResp.value?.passages || []).map((p: PassageEnriched) => {
     // Find stream for this passage
-    const stream = (liveResp.value?.streams || []).find((s: any) => {
+    const stream = (liveResp.value?.streams || []).find((s: Stream) => {
       if (!s.currentPassage) return false
       if (typeof s.currentPassage === 'string') return s.currentPassage === p._id
-      return s.currentPassage?._id === p._id
+      return (s.currentPassage as Passage)._id === p._id
     })
 
     return {
@@ -63,7 +64,7 @@ watch([livePending, liveResp], ([isPending, response]) => {
 const showHappeningNowSkeleton = computed(() => !hasLiveLoadedOnce.value)
 
 // First live passage (used for hero)
-const firstLivePassage = computed<any>(() => {
+const firstLivePassage = computed<PassageEnriched | null>(() => {
   return (liveResp.value?.passages && liveResp.value.passages.length > 0) ? liveResp.value.passages[0] : null
 })
 
@@ -72,17 +73,17 @@ const heroSubtitle = computed(() => {
   if (!firstLivePassage.value) return 'Salle 1 • Sol'
   const loc = firstLivePassage.value.location || '—'
   const app = translateApparatus(firstLivePassage.value.apparatus?.code, firstLivePassage.value.apparatus?.name)
-  return ' • '
+  return `${loc} • ${app}`
 })
 
-const firstLiveStream = computed(() => {
+const firstLiveStream = computed<Stream | undefined>(() => {
   const p = firstLivePassage.value
-  if (!p) return null
+  if (!p) return undefined
   const streams = liveResp.value?.streams || []
-  return streams.find((s: any) => {
+  return streams.find((s: Stream) => {
     if (!s.currentPassage) return false
     if (typeof s.currentPassage === 'string') return s.currentPassage === p._id
-    return s.currentPassage?._id === p._id
+    return (s.currentPassage as Passage)._id === p._id
   })
 })
 
@@ -154,7 +155,7 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
 }
 
 // ─── Real-time + PWA resilience ──────────────────────────────────
-let autoRefreshTimer: any = null
+let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
 
 const handleScheduleUpdate = () => {
   console.log('[Home] schedule-update → refreshLive')
@@ -180,7 +181,10 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (autoRefreshTimer) clearInterval(autoRefreshTimer)
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer)
+    autoRefreshTimer = null
+  }
   if (import.meta.client) {
     document.removeEventListener('visibilitychange', handleVisibility)
   }
