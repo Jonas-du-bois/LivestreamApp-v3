@@ -62,3 +62,16 @@
   - Extracted `statusOverrides`, `statusVersion`, `handleStatusUpdate`, `handleScoreUpdate`, and debounce logic.
   - Refactored `schedule.vue` and `favorites.vue` to use the composable.
 - **Outcome:** Removed ~60 lines of duplicated code. Centralized tricky debounce logic and map management.
+
+## 2026-02-21: Passage Timing & Status Abstraction
+
+- **Logic Extracted:** Duplicated date parsing, time-based status calculation (LIVE/FINISHED/SCHEDULED), and upcoming/past list filtering from `app/pages/schedule.vue` and `app/pages/favorites.vue`.
+- **Destination:** `app/composables/usePassageTiming.ts`
+- **Changes:**
+  - Created `usePassageTiming` composable.
+  - Implemented `PassageTimeEnriched` interface.
+  - Centralized `now` timestamp management (reactive).
+  - Centralized logic for `upcomingPassages`, `pastPassages`, `nextEvent`, and `timeToNext`.
+  - Refactored `schedule.vue` to use the composable for status calculation (preserving overrides).
+  - Refactored `favorites.vue` to use the composable, removing manual timer logic.
+- **Outcome:** Removed ~40 lines of code from `favorites.vue` and simplified `schedule.vue`. Standardized "Live" status logic across the app.

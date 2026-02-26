@@ -18,9 +18,6 @@ const selectedDay = useState<string>('schedule-selected-day', () => '')
 const selectedFilter = useState('schedule-selected-filter', () => '')
 const filtersStore = useScheduleFilters()
 
-// Shared reactive time
-const { now: nowTimestamp } = useNow()
-
 let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
 
 // All known translations of "all" to detect stale locale values
@@ -195,83 +192,39 @@ watch(locale, () => {
   }
 })
 
-// OPTIMIZATION: Pre-parse dates to avoid new Date() calls in the frequent filteredSchedule computation
-const parsedScheduleData = computed(() => {
-  if (!scheduleResponse.value?.data) return []
-
-  return scheduleResponse.value.data
-    .filter((item: any) => item.group && item.apparatus)
-    .map((item: any) => {
-      // Pre-calculate timestamps for efficient filtering/status checks
-      const dStart = new Date(item.startTime)
-      const dEnd = new Date(item.endTime)
-
-      // Calculate start of day (local time) for hidePast comparison
-      const dayStart = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate()).getTime()
-
-      return {
-        ...item,
-        _startTime: dStart.getTime(),
-        _endTime: dEnd.getTime(),
-        _dayStart: dayStart
-      }
-    })
-})
+// Use the new composable
+const rawPassages = computed(() => (scheduleResponse.value?.data || []).filter((item: any) => item.group && item.apparatus))
+const { passagesWithDynamicStatus, nowTimestamp } = usePassageTiming(rawPassages)
 
 const filteredSchedule = computed(() => {
   // Touch statusVersion to establish reactive dependency on socket overrides
   const _v = version.value
-  // Establish dependency on time for reactive status updates (~2s precision)
-  const nowTime = nowTimestamp.value
 
-  // Use pre-parsed data
-  const schedule = parsedScheduleData.value
-    .map((item: any) => {
-      // Merge any socket-received status override on top of API data
-      const merged = apply(item)
-      if (merged !== item) {
-        return merged
-      }
-
-      // Client-side status calculation for reactivity
-      // This overrides stale server status based on start/end times
-      // OPTIMIZATION: Use pre-calculated timestamps
-      const start = item._startTime
-      const end = item._endTime
-      let status = item.status
-
-      if (nowTime >= start && nowTime <= end) {
-        status = 'LIVE'
-      } else if (nowTime > end) {
-        status = 'FINISHED'
-      } else if (nowTime < start && (status === 'LIVE' || status === 'FINISHED')) {
-        // If time says upcoming but server says LIVE/FINISHED (stale), reset it
-        status = 'SCHEDULED'
-      }
-
-      return {
-        ...item,
-        status
-      }
+  // Use pre-parsed data from composable
+  const schedule = passagesWithDynamicStatus.value
+    .map((item) => {
+      // Merge any socket-received status override on top of time-based status
+      return apply(item)
     })
 
   if (!filtersStore.value.hidePast) {
     return schedule
   }
 
-  const now = new Date(nowTime)
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  const now = nowTimestamp.value.getTime()
+  const d = new Date(now)
+  const todayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
 
-  return schedule.filter((item: any) => {
+  return schedule.filter((item) => {
     if (item.status === 'FINISHED') return false
 
-    // OPTIMIZATION: Use pre-calculated timestamps
+    // OPTIMIZATION: Use pre-calculated timestamps from composable
     if (Number.isNaN(item._startTime) || Number.isNaN(item._endTime)) return true
 
     if (item._dayStart < todayStart) return false
     if (item._dayStart > todayStart) return true
 
-    return item._endTime >= nowTime
+    return item._endTime >= now
   })
 })
 
