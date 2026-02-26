@@ -13,3 +13,7 @@
 ## 2026-02-18 - Aggregation Pipeline Simplification
 **Learning:** Combining `$project` and `$group` stages when transforming data (like date formatting) into a group key avoids creating intermediate documents, saving memory and CPU cycles (~6% faster).
 **Action:** Audit aggregation pipelines for sequential `$project` + `$group` stages where the projection is only used for the grouping key.
+
+## 2026-03-05 - Granular Server Function Caching
+**Learning:** `defineCachedEventHandler` caches the entire response based on the request URL (including query params). However, internal data dependencies that are query-independent (like "available days") are re-computed on every cache miss for different filter combinations.
+**Action:** Extract query-independent data fetching logic into `defineCachedFunction` wrappers to cache them separately with longer TTLs, reducing database load even when the main handler cache misses.
