@@ -175,9 +175,15 @@ const drinkMenu = computed(() => [
                 
                 <div class="relative">
                   <div class="flex items-center gap-3 mb-3">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center animate-pulse-slow shadow-[0_0_30px_rgba(139,92,246,0.6)]">
-                      <Icon name="fluent:sparkle-24-filled" class="text-white w-6 h-6" />
-                    </div>
+                    <UiIconBox
+                      icon="fluent:sparkle-24-filled"
+                      variant="gradient"
+                      color="violet"
+                      shape="circle"
+                      size="lg"
+                      glow
+                      pulse
+                    />
                     <div>
                       <p class="text-[10px] text-white/60 uppercase tracking-[0.25em] font-bold">{{ t('afterparty.themeLabel') }}</p>
                       <h2 class="text-3xl font-black italic text-white">

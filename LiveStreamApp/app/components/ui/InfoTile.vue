@@ -9,7 +9,7 @@ interface Props {
   icon: string
   label: string
   value?: string | number
-  /** Couleur d'accentuation pour l'icône et sa bordure (ex: 'cyan', 'violet', 'orange') */
+  /** Couleur d'accentuation pour l'icône et sa bordure */
   accent?: 'cyan' | 'violet' | 'orange' | 'emerald' | 'pink' | 'white' | 'blue'
   /** Si fourni, transforme la tuile en lien NuxtLink */
   to?: string
@@ -29,35 +29,16 @@ const props = withDefaults(defineProps<Props>(), {
   iconShape: 'square'
 })
 
-const accentClasses = computed(() => {
-  const maps: Record<string, string> = {
-    cyan: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
-    violet: 'text-violet-400 bg-violet-500/10 border-violet-500/20',
-    orange: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
-    emerald: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-    pink: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
-    white: 'text-white bg-white/10 border-white/20',
-    blue: 'text-blue-400 bg-blue-500/10 border-blue-500/20'
-  }
-  return maps[props.accent] || maps.cyan
+// Mapping des tailles UiInfoTile vers UiIconBox
+const boxSize = computed(() => {
+  if (props.size === 'sm') return 'md'
+  if (props.size === 'lg') return 'xl'
+  return 'lg'
 })
 
-const iconBoxSize = computed(() => {
-  const base = (() => {
-    if (props.size === 'sm') return 'h-10 w-10'
-    if (props.size === 'lg') return 'h-14 w-14'
-    return 'h-12 w-12'
-  })()
-
-  const shape = props.iconShape === 'circle' ? 'rounded-full' : (props.size === 'sm' ? 'rounded-lg' : 'rounded-xl')
-
-  return `${base} ${shape}`
-})
-
-const iconSize = computed(() => {
-  if (props.size === 'sm') return '20'
-  if (props.size === 'lg') return '28'
-  return '24'
+// Mapping des formes
+const boxShape = computed(() => {
+  return props.iconShape === 'circle' ? 'circle' : 'rounded'
 })
 
 const NuxtLink = resolveComponent('NuxtLink')
@@ -73,13 +54,15 @@ const NuxtLink = resolveComponent('NuxtLink')
       size === 'lg' ? 'p-5' : 'p-4'
     ]"
   >
-    <!-- Icon Wrapper -->
-    <div 
-      class="flex items-center justify-center shrink-0 border shadow-lg"
-      :class="[accentClasses, iconBoxSize]"
-    >
-      <Icon :name="icon" :size="iconSize" />
-    </div>
+    <!-- Icon Wrapper (Delegated to Atom) -->
+    <UiIconBox
+      :icon="icon"
+      :size="boxSize"
+      :shape="boxShape"
+      :color="accent"
+      variant="glass"
+      :glow="false"
+    />
 
     <!-- Content -->
     <div class="flex-1 min-w-0">
