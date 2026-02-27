@@ -18,8 +18,6 @@ const selectedDay = useState<string>('schedule-selected-day', () => '')
 const selectedFilter = useState('schedule-selected-filter', () => '')
 const filtersStore = useScheduleFilters()
 
-let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
-
 // All known translations of "all" to detect stale locale values
 const ALL_LOCALE_VALUES = ['Tout', 'Alli', 'Tutto', '']
 
@@ -52,35 +50,17 @@ const { data: scheduleResponse, pending, error: fetchError, refresh } = await Pu
 // This guarantees Vue sees the change regardless of useFetch internals.
 const { version, apply, handleStatusUpdate, handleScheduleUpdate, reset } = useRealtimeStatus(refresh)
 
-const handleVisibility = () => {
-  if (document.visibilityState === 'visible') {
-    reset()
-    refresh()
-  }
-}
+// PWA fallback: periodic auto-refresh + foreground refresh
+useAutoRefresh(refresh, SCHEDULE_AUTO_REFRESH, () => {
+  reset()
+  refresh()
+})
 
 // Initialize selectedFilter with translated 'all' on mount
 onMounted(() => {
   // Always sync filter value to current locale's "all" if it was a stale "all"
   if (isAllFilter(selectedFilter.value)) {
     selectedFilter.value = t('common.all')
-  }
-
-  // PWA fallback: periodic auto-refresh for when socket is down
-  autoRefreshTimer = setInterval(() => {
-    refresh()
-  }, SCHEDULE_AUTO_REFRESH)
-
-  // PWA: refresh when app comes back to foreground
-  if (import.meta.client) {
-    document.addEventListener('visibilitychange', handleVisibility)
-  }
-})
-
-onUnmounted(() => {
-  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null }
-  if (import.meta.client) {
-    document.removeEventListener('visibilitychange', handleVisibility)
   }
 })
 const { hasLoadedOnce } = useFirstLoad(pending, scheduleResponse)

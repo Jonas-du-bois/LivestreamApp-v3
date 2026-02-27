@@ -155,8 +155,6 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
 }
 
 // ─── Real-time + PWA resilience ──────────────────────────────────
-let autoRefreshTimer: ReturnType<typeof setInterval> | null = null
-
 const handleScheduleUpdate = () => {
   console.log('[Home] schedule-update → refreshLive')
   refreshLive()
@@ -166,29 +164,8 @@ const handleStatusUpdate = () => {
   refreshLive()
 }
 
-const handleVisibility = () => {
-  if (document.visibilityState === 'visible') {
-    refreshLive()
-  }
-}
-
-onMounted(() => {
-  // PWA fallback: auto-refresh (home page shows LIVE data)
-  autoRefreshTimer = setInterval(() => refreshLive(), HOME_AUTO_REFRESH)
-  if (import.meta.client) {
-    document.addEventListener('visibilitychange', handleVisibility)
-  }
-})
-
-onUnmounted(() => {
-  if (autoRefreshTimer) {
-    clearInterval(autoRefreshTimer)
-    autoRefreshTimer = null
-  }
-  if (import.meta.client) {
-    document.removeEventListener('visibilitychange', handleVisibility)
-  }
-})
+// PWA fallback: periodic auto-refresh + foreground refresh
+useAutoRefresh(refreshLive, HOME_AUTO_REFRESH)
 
 // Use the composable for proper socket room management
 useSocketRoom('schedule-updates', [

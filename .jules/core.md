@@ -75,3 +75,13 @@
   - Refactored `schedule.vue` to use the composable for status calculation (preserving overrides).
   - Refactored `favorites.vue` to use the composable, removing manual timer logic.
 - **Outcome:** Removed ~40 lines of code from `favorites.vue` and simplified `schedule.vue`. Standardized "Live" status logic across the app.
+
+## 2026-02-21: Auto Refresh Logic Extraction
+
+- **Logic Extracted:** Duplicated `setInterval` and `visibilitychange` listener logic for periodic data refreshing (PWA resilience) in `app/pages/schedule.vue`, `app/pages/favorites.vue`, and `app/pages/index.vue`.
+- **Destination:** `app/composables/useAutoRefresh.ts`
+- **Changes:**
+  - Created `useAutoRefresh` composable.
+  - Centralized interval management and visibility handling.
+  - Refactored `schedule.vue`, `favorites.vue`, and `index.vue` to use the composable.
+- **Outcome:** Removed ~60 lines of duplicated boilerplate code. Centralized PWA background/foreground refresh strategy.

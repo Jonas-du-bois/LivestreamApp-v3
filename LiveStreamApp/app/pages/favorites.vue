@@ -43,30 +43,11 @@ const favoritePassages = computed<PassageEnriched[]>(() => {
 // 2. Use composable
 const { upcomingPassages, pastPassages, nextEvent, timeToNext } = usePassageTiming(favoritePassages)
 
-let autoRefreshTimer: any = null
-
-onMounted(() => {
-  // PWA fallback: periodic auto-refresh
-  autoRefreshTimer = setInterval(() => refreshSchedule(), FAVORITES_AUTO_REFRESH)
-  // PWA: refresh on foreground
-  if (import.meta.client) {
-    document.addEventListener('visibilitychange', handleVisibility)
-  }
+// PWA fallback: periodic auto-refresh + foreground refresh
+useAutoRefresh(refreshSchedule, FAVORITES_AUTO_REFRESH, () => {
+  reset()
+  refreshSchedule()
 })
-
-onUnmounted(() => {
-  if (autoRefreshTimer) clearInterval(autoRefreshTimer)
-  if (import.meta.client) {
-    document.removeEventListener('visibilitychange', handleVisibility)
-  }
-})
-
-const handleVisibility = () => {
-  if (document.visibilityState === 'visible') {
-    reset()
-    refreshSchedule()
-  }
-}
 
 const formatTime = (dateStr: string) => {
   return formatLocalizedTime(dateStr)
