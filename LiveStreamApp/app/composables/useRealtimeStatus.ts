@@ -1,4 +1,4 @@
-import { ref, type Ref } from 'vue'
+import type { Ref } from 'vue'
 import type { PassageStatus } from '~/types/api'
 import type { ScoreUpdatePayload, ScheduleUpdatePayload } from '~/types/socket'
 import { STATUS_OVERRIDE_DEFER } from '~/utils/timings'
@@ -12,6 +12,14 @@ export function useRealtimeStatus(refreshCallback?: () => void | Promise<void>) 
   const overrides = new Map<string, OverrideData>()
   const version = ref(0)
   let deferTimer: ReturnType<typeof setTimeout> | null = null
+
+  // Ensure timer cleanup to prevent memory leaks or callbacks after unmount
+  onUnmounted(() => {
+    if (deferTimer) {
+      clearTimeout(deferTimer)
+      deferTimer = null
+    }
+  })
 
   const apply = <T extends { _id?: string; status?: PassageStatus | string; score?: number | null }>(passage: T): T => {
     if (!passage._id) return passage
