@@ -84,6 +84,16 @@ const {
 const hasUnreadNotifications = computed(() => notificationsStore.hasUnread)
 const unreadCount = computed(() => notificationsStore.unreadCount)
 
+const refreshApp = () => {
+  // For PWA, we can use the beforeinstallprompt event to trigger a refresh
+  if (window && 'beforeinstallprompt' in window) {
+    window.location.reload()
+  } else {
+    // Fallback for non-PWA or unsupported browsers
+    window.location.reload()
+  }
+}
+
 const openSearch = () => {
   isSearchOpen.value = true
 }
@@ -115,7 +125,7 @@ const openNotifications = () => {
     <div class="relative z-10">
       <!-- Glass Header with safe area support -->
       <header v-if="showHeader" class="fixed top-0 left-0 right-0 z-50 px-2 header-safe-area">
-        <div class="glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-4 py-2">
+        <div class="glass-card !rounded-full overflow-hidden px-4 py-2">
           <div class="flex items-center justify-between">
             <h1 class="text-white text-xl font-bold">{{ currentPageTitle }}</h1>
             
@@ -128,8 +138,16 @@ const openNotifications = () => {
                 aria-label="Changer de langue"
               >
                 <span class="text-white text-sm font-bold uppercase">{{ locale.toUpperCase() }}</span>
-                <Icon name="fluent:globe-24-regular" class="w-4 h-4 text-white/70" />
+                <Icon name="fluent:globe-24-regular" class="w-4 h-4 text-white" />
               </button>
+
+              <!--- refresh app button-->
+              <UiIconButton
+                v-if="route.path === '/index'"
+                icon="fluent:arrow-clockwise-24-regular"
+                label="Actualiser l'application"
+                @click="refreshApp"
+              />
               
               <!-- PWA Install Button -->
               <Transition name="badge-pop">
@@ -186,7 +204,7 @@ const openNotifications = () => {
 
       <!-- Bottom Navigation Dock - Fixed with safe area support -->
       <nav v-show="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-2 nav-safe-area">
-        <div class="nav-dock glass-card backdrop-blur-2xl !rounded-full overflow-hidden px-3 py-1.5 flex items-center justify-around">
+        <div class="nav-dock glass-card !rounded-full overflow-hidden px-3 py-1.5 flex items-center justify-around">
           <NuxtLink
             v-for="item in navItems"
             :key="item.id"
@@ -198,7 +216,7 @@ const openNotifications = () => {
             <div 
               class="nav-icon-wrap p-2 rounded-xl transition-colors duration-200"
               :class="[
-                isActive(item.to) ? 'text-cyan-400' : 'text-white/60 group-hover:text-cyan-200',
+                isActive(item.to) ? 'text-cyan-400' : 'text-white/90 group-hover:text-cyan-200',
                 isActive(item.to) && item.isCenter ? 'glow-cyan' : '',
               ]"
             >
