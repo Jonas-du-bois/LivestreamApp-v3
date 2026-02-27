@@ -173,7 +173,7 @@ watch(locale, () => {
 })
 
 // Use the new composable
-const rawPassages = computed(() => (scheduleResponse.value?.data || []).filter((item: any) => item.group && item.apparatus))
+const rawPassages = computed(() => (scheduleResponse.value?.data || []).filter((item) => item.group && item.apparatus))
 const { passagesWithDynamicStatus, nowTimestamp } = usePassageTiming(rawPassages)
 
 const filteredSchedule = computed(() => {
