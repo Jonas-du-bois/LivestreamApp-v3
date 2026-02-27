@@ -221,22 +221,22 @@ onUnmounted(() => {
               <Icon name="fluent:spinner-ios-20-regular" class="w-5 h-5 text-white/60 animate-spin" />
             </div>
 
-            <button
+            <UiIconButton
               v-else-if="searchQuery"
+              icon="fluent:dismiss-circle-24-filled"
+              variant="ghost"
+              :label="t('search.clearSearch')"
               @click="clearSearch"
-              class="p-1 hover:text-white text-white/60 transition-colors rounded-full focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none"
-              :aria-label="t('search.clearSearch')"
-            >
-              <Icon name="fluent:dismiss-circle-24-filled" class="w-5 h-5" />
-            </button>
+              class="flex-shrink-0 text-white/60 hover:text-white"
+            />
 
-            <button
+            <UiIconButton
+              icon="fluent:dismiss-24-regular"
+              variant="ghost"
+              :label="t('search.closeSearch')"
               @click="emit('close')"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none"
-              :aria-label="t('search.closeSearch')"
-            >
-              <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/80" />
-            </button>
+              class="flex-shrink-0"
+            />
           </div>
         </div>
 

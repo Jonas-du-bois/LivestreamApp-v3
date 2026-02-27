@@ -104,13 +104,12 @@ onUnmounted(() => {
               <Icon name="fluent:options-24-regular" class="w-6 h-6 text-cyan-400" />
               <h2 id="filter-sheet-title" class="text-white font-bold text-xl">{{ t('filters.title') }}</h2>
             </div>
-            <button
+            <UiIconButton
+              icon="fluent:dismiss-24-regular"
+              variant="ghost"
+              :label="t('common.close')"
               @click="emit('close')"
-              class="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              :aria-label="t('common.close')"
-            >
-              <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/80" />
-            </button>
+            />
           </div>
         </div>
 
