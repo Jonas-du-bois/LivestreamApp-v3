@@ -21,25 +21,14 @@
       </p>
     </div>
 
-    <div
-      class="relative z-10 px-6 mb-8 flex gap-3 overflow-x-auto no-scrollbar pb-2 w-full flex-nowrap"
-      role="tablist"
+    <!-- Filtres Catégories -->
+    <UiFilterChips
+      v-model="activeCategory"
+      :items="categories"
+      color="blue"
       :aria-label="t('food.title')"
-    >
-      <button 
-        v-for="cat in categories" 
-        :key="cat.id"
-        type="button"
-        @click="activeCategory = cat.id"
-        :aria-pressed="activeCategory === cat.id"
-        class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border shrink-0 hover:scale-105 active:scale-95 backdrop-blur-md"
-        :class="activeCategory === cat.id 
-          ? 'bg-blue-600/80 border-blue-400/50 text-white shadow-lg shadow-blue-500/20 ring-1 ring-blue-400/50'
-          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 ring-1 ring-white/5'"
-      >
-        {{ cat.label }}
-      </button>
-    </div>
+      class="mb-8"
+    />
     
     <div class="px-6 mb-8">
       <UiInfoTile

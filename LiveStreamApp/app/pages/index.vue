@@ -228,9 +228,10 @@ useSocketRoom('schedule-updates', [
           <template #image-bottom>
             <div class="pointer-events-auto">
               <div class="flex items-center gap-2 mb-3">
-                <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
-                  <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-                  <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
+                <div v-if="firstLivePassage" class="flex items-center gap-2">
+                  <UiStatusBadge variant="solid-red" show-dot pulse>
+                    {{ t('home.live') }}
+                  </UiStatusBadge>
                 </div>
               </div>
               <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
@@ -257,9 +258,10 @@ useSocketRoom('schedule-updates', [
           <template #image-bottom>
             <div class="pointer-events-auto">
               <div class="flex items-center gap-2 mb-3">
-                <div v-if="firstLivePassage" class="flex items-center gap-2 bg-red-500/90 px-3 py-1.5 rounded-full">
-                  <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-                  <span class="text-white text-sm font-medium">{{ t('home.live') }}</span>
+                <div v-if="firstLivePassage" class="flex items-center gap-2">
+                  <UiStatusBadge variant="solid-red" show-dot pulse>
+                    {{ t('home.live') }}
+                  </UiStatusBadge>
                 </div>
               </div>
               <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>

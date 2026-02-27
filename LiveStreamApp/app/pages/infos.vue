@@ -89,7 +89,7 @@ const usefulLinks = [
 
     <Transition name="premium-swap" appear>
       <div class="space-y-6">
-        <section class="glass-card relative overflow-hidden p-5">
+        <UiGlassCard class="relative overflow-hidden" padding="p-5">
           <div class="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-cyan-500/20 blur-2xl" />
           <div class="relative">
             <p class="text-cyan-400 text-xs uppercase tracking-[0.2em] font-bold mb-2">Infos concours</p>
@@ -105,7 +105,7 @@ const usefulLinks = [
               </p>
             </div>
           </div>
-        </section>
+        </UiGlassCard>
 
         <section class="space-y-3">
           <UiSectionTitle>Organisation du week-end</UiSectionTitle>
@@ -124,7 +124,7 @@ const usefulLinks = [
 
         <section class="space-y-3">
           <UiSectionTitle>Acces et parking</UiSectionTitle>
-          <div class="glass-card p-4 space-y-3">
+          <UiGlassCard class="space-y-3" padding="p-4">
             <div
               v-for="line in parkingInfo"
               :key="line.label"
@@ -133,12 +133,12 @@ const usefulLinks = [
               <p class="text-white/70 text-sm min-w-36">{{ line.label }}</p>
               <p class="text-white text-sm text-right">{{ line.value }}</p>
             </div>
-          </div>
+          </UiGlassCard>
         </section>
 
         <section class="space-y-3">
           <UiSectionTitle>Samaritains et premiers secours</UiSectionTitle>
-          <div class="glass-card p-4 space-y-3">
+          <UiGlassCard class="space-y-3" padding="p-4">
             <div
               v-for="line in samaritansInfo"
               :key="line.label"
@@ -147,12 +147,12 @@ const usefulLinks = [
               <p class="text-white/70 text-sm min-w-36">{{ line.label }}</p>
               <p class="text-white text-sm text-right">{{ line.value }}</p>
             </div>
-          </div>
+          </UiGlassCard>
         </section>
 
         <section class="space-y-3">
           <UiSectionTitle>Infos importantes</UiSectionTitle>
-          <div class="glass-card p-4 space-y-2">
+          <UiGlassCard class="space-y-2" padding="p-4">
             <p
               v-for="line in importantInfo"
               :key="line"
@@ -161,7 +161,7 @@ const usefulLinks = [
               <Icon name="fluent:checkmark-circle-24-filled" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
               <span>{{ line }}</span>
             </p>
-          </div>
+          </UiGlassCard>
         </section>
 
         <section class="space-y-3">
