@@ -269,6 +269,13 @@ export default defineNitroPlugin((nitroApp) => {
 
     const payloadTitle = minutesBefore === 3 ? '⏰ Passage imminent !' : '📣 Passage bientôt';
 
+    // BOLT: Optimized query to fetch all relevant subscriptions in one go
+    // Avoids N+1 query problem when multiple passages trigger notifications simultaneously
+    const passageIds = passages.map(p => p._id.toString());
+    const allSubscriptions = await SubscriptionModel.find({
+      favorites: { $in: passageIds }
+    }).lean();
+
     // BOLT: Parallelize notification sending per passage
     const passagePromises = passages.map(async (passage) => {
       const group = passage.group as any;
@@ -283,10 +290,11 @@ export default defineNitroPlugin((nitroApp) => {
         url: '/schedule',
       };
 
-      // Trouver les abonnés qui ont ce passage en favoris
-      const subscriptions = await SubscriptionModel.find({
-        favorites: passage._id.toString()
-      });
+      // In-memory filter from the batched query result
+      // Handle both ObjectId and string formats from Mongoose lean()
+      const subscriptions = allSubscriptions.filter((sub: any) =>
+        sub.favorites.some((favId: any) => favId.toString() === passage._id.toString())
+      );
 
       if (subscriptions.length === 0) {
         await PassageModel.findByIdAndUpdate(passage._id, {
@@ -295,7 +303,7 @@ export default defineNitroPlugin((nitroApp) => {
         return;
       }
 
-      const notifications = subscriptions.map(async (sub) => {
+      const notifications = subscriptions.map(async (sub: any) => {
         try {
           if (sub.type === 'fcm' && fcmMessaging) {
             // --- Canal FCM (Android / iOS natif) ---

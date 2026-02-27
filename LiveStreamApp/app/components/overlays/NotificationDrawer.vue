@@ -120,13 +120,12 @@ const handleNotificationClick = (notification: AppNotification) => {
                 </p>
               </div>
             </div>
-            <button
+            <UiIconButton
+              icon="fluent:dismiss-24-regular"
+              variant="ghost"
+              :label="t('notifications.closeNotifications')"
               @click="emit('close')"
-              class="p-2.5 hover:bg-white/10 rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
-              :aria-label="t('notifications.closeNotifications')"
-            >
-              <Icon name="fluent:dismiss-24-regular" class="w-5 h-5 text-white/70" />
-            </button>
+            />
           </div>
 
           <!-- Actions bar -->

@@ -162,14 +162,14 @@ const openNotifications = () => {
               
               <UiIconButton
                 icon="fluent:search-24-regular"
-                label="Rechercher"
+                label="Recherche"
                 @click="openSearch"
               />
               
               <UiIconButton
                 v-if="route.path === '/schedule'"
                 icon="fluent:options-24-regular"
-                label="Filtrer"
+                label="Filtres"
                 @click="openFilter"
               />
               
