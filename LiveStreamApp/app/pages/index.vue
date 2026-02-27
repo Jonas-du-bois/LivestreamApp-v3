@@ -63,43 +63,6 @@ watch([livePending, liveResp], ([isPending, response]) => {
 
 const showHappeningNowSkeleton = computed(() => !hasLiveLoadedOnce.value)
 
-// First live passage (used for hero)
-const firstLivePassage = computed<PassageEnriched | null>(() => {
-  return (liveResp.value?.passages && liveResp.value.passages.length > 0) ? liveResp.value.passages[0] : null
-})
-
-const heroTitle = computed(() => firstLivePassage.value?.group?.name || 'FSG Yverdon')
-const heroSubtitle = computed(() => {
-  if (!firstLivePassage.value) return 'Salle 1 • Sol'
-  const loc = firstLivePassage.value.location || '—'
-  const app = translateApparatus(firstLivePassage.value.apparatus?.code, firstLivePassage.value.apparatus?.name)
-  return `${loc} • ${app}`
-})
-
-const firstLiveStream = computed<Stream | undefined>(() => {
-  const p = firstLivePassage.value
-  if (!p) return undefined
-  const streams = liveResp.value?.streams || []
-  return streams.find((s: Stream) => {
-    if (!s.currentPassage) return false
-    if (typeof s.currentPassage === 'string') return s.currentPassage === p._id
-    return (s.currentPassage as Passage)._id === p._id
-  })
-})
-
-const heroImage = computed(() => {
-  const defaultImg = 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  const s = firstLiveStream.value
-
-  // Try to extract YouTube id if present to use a thumbnail
-  if (s?.url && s.url.includes('youtube')) {
-    const m = s.url.match(/embed\/([a-zA-Z0-9_-]{11})/)
-    if (m && m[1]) return `https://img.youtube.com/vi/${m[1]}/maxresdefault.jpg`
-  }
-
-  return defaultImg
-})
-
 // Weather (Yverdon-les-Bains)
 const { data: weatherResp, pending: weatherPending } = await PublicService.getWeather()
 
@@ -120,12 +83,11 @@ const quickActions = computed<QuickAction[]>(() => [
     accent: 'emerald'
   },
   {
-    id: 'weather',
-    to: '/weather',
-    label: t('home.weather'),
-    icon: 'fluent:weather-partly-cloudy-day-24-regular',
-    accent: 'cyan',
-    badge: weatherBadge.value
+    id: 'photos',
+    to: '/photos',
+    label: t('home.photos'),
+    icon: 'fluent:camera-sparkles-24-regular',
+    accent: 'cyan'
   },
   {
     id: 'food',
@@ -149,11 +111,12 @@ const quickActions = computed<QuickAction[]>(() => [
     accent: 'pink'
   },
   {
-    id: 'photos',
-    to: '/photos',
-    label: t('home.photos'),
-    icon: 'fluent:camera-sparkles-24-regular',
-    accent: 'cyan'
+    id: 'weather',
+    to: '/weather',
+    label: t('home.weather'),
+    icon: 'fluent:weather-partly-cloudy-day-24-regular',
+    accent: 'cyan',
+    badge: weatherBadge.value
   }
 ])
 
@@ -166,14 +129,6 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
 // Navigation explicite vers un stream – plus fiable que le prop :to en cascade
 const navigateToStream = (streamId: string) => {
   router.push(`/stream/${streamId}`)
-}
-
-const handleHeroClick = () => {
-  if (firstLiveStream.value?._id) {
-    navigateToStream(firstLiveStream.value._id)
-  } else {
-    router.push('/stream')
-  }
 }
 
 const handleTileClick = (group: { id: string; streamId?: string; apparatusCode?: string }) => {
@@ -221,43 +176,12 @@ useSocketRoom('schedule-updates', [
       </div>
 
       <div v-else key="home-content" class="space-y-6">
-        <!-- Hero Live Card -->
-        <!-- Bouton natif qui wrap la MediaCard : évite la cascade :to UiMediaCard→UiGlassCard→NuxtLink -->
-        <button
-          type="button"
-          class="block w-full rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] active:scale-[0.98] transition-transform duration-200"
-          :aria-label="firstLiveStream ? t('common.watch') : t('nav.stream')"
-          @click="handleHeroClick"
-        >
-          <UiMediaCard
-            :image="heroImage"
-            :alt="heroTitle"
-            variant="cover"
-            image-height="h-64"
-            gradient="gradient-overlay"
-            :interactive="false"
-            class="rounded-xl"
-          >
-            <template #image-bottom>
-              <div>
-                <div class="flex items-center gap-2 mb-3">
-                  <div v-if="firstLivePassage" class="flex items-center gap-2">
-                    <UiStatusBadge variant="solid-red" show-dot pulse>
-                      {{ t('home.live') }}
-                    </UiStatusBadge>
-                  </div>
-                  <div v-else class="flex items-center gap-2">
-                    <UiStatusBadge variant="cyan">
-                      {{ t('nav.stream') }}
-                    </UiStatusBadge>
-                  </div>
-                </div>
-                <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
-                <p class="text-white/80">{{ heroSubtitle }}</p>
-              </div>
-            </template>
-          </UiMediaCard>
-        </button>
+        <!-- Hero Carousel Section -->
+        <HomeHeroCarousel 
+          :live-passages="liveResp?.passages"
+          :live-streams="liveResp?.streams"
+          :loading="livePending"
+        />
 
         <!-- Happening Now Carousel -->
         <div>

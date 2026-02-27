@@ -32,7 +32,7 @@ Tout état "vide" (liste vide, aucun résultat, etc.) DOIT utiliser le composant
 
 ## 03/11 - Standardisation des Skeletons de Liste
 
-**Problème :** Les pages `schedule.vue`, `favorites.vue` et `results.vue` dupliquaient manuellement le HTML des skeletons de chargement (blocs gris animés) à l'intérieur de `CascadeSkeletonList`, rendant le code verbeux et difficile à maintenir en cas de changement de style.
+**Problème :** Les pages `schedule.vue`, `favorites.vue` et `results.vue` dupliquaient manuellement le HTML des skeletons de chargement (blocs gris animés) à l'intérieur de `CascadeSkeletonList`, rendant le code verbeux et difficile à maintenir en cas de changement de style.     
 
 **Solution :**
 - Création de `<UiSkeletonCard>` : Un composant atomique flexible qui gère les variations de layout.
@@ -90,7 +90,7 @@ L'état du jour sélectionné doit être géré via `useState` pour persister lo
 
 **Solution :**
 - Création du composable réutilisable `useNetworkStatus.ts` pour centraliser l'écoute des événements `online`, `offline` et de la qualité de connexion (`navigator.connection`).
-- Création du composant atomique `<UiNetworkToast>` (`app/components/ui/NetworkToast.vue`) pour afficher une bannière non-intrusive.
+- Création du composant atomique `<UiNetworkToast>` (`app/components/ui/NetworkToast.vue`) pour afficher une bannière non-intrusive.        
 - Ajout de `<UiNetworkToast />` à la racine de l'application (`app.vue`) pour une couverture globale continue.
 
 **Règle établie :**
@@ -114,3 +114,18 @@ Les alertes globales de ce type doivent se placer à la racine (`app.vue`) avec 
 - Les titres de sections doivent utiliser `<UiSectionTitle>` pour garantir la cohérence des marges et des styles de texte.
 - Les indicateurs d'état doivent utiliser `<UiStatusBadge>`.
 - Les listes de filtres ou de sélection doivent utiliser `<UiFilterChips>`.
+
+## 03/11 - Création de la Section Hero Dynamique (Carousel)
+
+**Problème :** La section Hero de `index.vue` était statique et ne montrait que le premier direct. L'utilisateur souhaitait une expérience plus riche ("Premium") avec des informations provenant de différentes parties de l'app (Photos, Résultats, Afterparty, Restauration).
+
+**Solution :**
+- Création de `<HomeHeroCarousel>` (`app/components/home/HomeHeroCarousel.vue`) :
+  - Architecture multi-sources : Centralise les données de `PublicService` (Directs, Résultats) et `FlickrService` (Photos).
+  - Système de slides dynamique : Génère des cartes contextuelles avec badges adaptés (Live, New, Soon, Open).
+  - Animations Premium : Utilise des transitions `cubic-bezier` personnalisées, des effets de flou (blur) et un système de progression visuelle via des points (dots) animés.
+  - Autoplay intelligent : Rotation toutes les 8 secondes avec réinitialisation lors d'une interaction manuelle.
+- Refactoring de `index.vue` : Suppression de la logique Hero locale pour déléguer la responsabilité au nouveau composant atomique.
+
+**Règle établie :**
+Les sections promotionnelles ou informatives de haut niveau doivent être encapsulées dans des composants de domaine (`app/components/home/`) et ne pas polluer la logique de navigation des pages. Le Hero Carousel doit rester le point d'entrée visuel principal et refléter l'état global de l'événement.

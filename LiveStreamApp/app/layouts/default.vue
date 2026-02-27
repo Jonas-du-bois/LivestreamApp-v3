@@ -143,7 +143,7 @@ const openNotifications = () => {
 
               <!--- refresh app button-->
               <UiIconButton
-                v-if="route.path === '/index'"
+                v-if="route.path === '/'"
                 icon="fluent:arrow-clockwise-24-regular"
                 label="Actualiser l'application"
                 @click="refreshApp"
