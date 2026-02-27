@@ -21,3 +21,18 @@ Suivi des refactorisations, sécurisations et améliorations de qualité de code
 
 **Règle appliquée :**
 > "Toujours typer strictement les timers et nettoyer les intervalles dans onUnmounted pour éviter les fuites de mémoire."
+
+## Sécurisation de LiveStreamApp/app/pages/schedule.vue et useRealtimeStatus
+
+**Cible :** `app/pages/schedule.vue` et `app/composables/useRealtimeStatus.ts`
+
+**Problèmes identifiés :**
+*   Utilisation de `any` dans `schedule.vue` pour typer les éléments de `scheduleResponse` dans une computed property.
+*   Risque de fuite de mémoire dans `useRealtimeStatus.ts` : le timer `deferTimer` n'était pas nettoyé lors du démontage du composant parent.
+
+**Actions correctives :**
+*   🛡️ **Typage Strict :** Suppression du cast `(item: any)` dans `schedule.vue`. TypeScript infère désormais correctement le type `PassageEnriched`.
+*   🛡️ **Cycle de vie :** Ajout de `onUnmounted` dans `useRealtimeStatus.ts` pour nettoyer systématiquement `deferTimer` via `clearTimeout`.
+
+**Règle appliquée :**
+> "Bannir `any` pour garantir la sécurité du typage et toujours nettoyer les timers (setTimeout/setInterval) dans `onUnmounted`."
