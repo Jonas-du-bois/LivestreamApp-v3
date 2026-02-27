@@ -169,7 +169,7 @@ const drinkMenu = computed(() => [
           <div class="mb-8 pt-6">
             <div class="relative group">
               <div class="absolute -inset-0.5 bg-violet-500/50 rounded-3xl blur-md opacity-70 group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
-              <div class="relative bg-black/90 backdrop-blur-md rounded-3xl border-2 border-violet-500/40 p-6 overflow-hidden">
+              <UiGlassCard class="relative bg-black/90 backdrop-blur-md rounded-3xl border-2 border-violet-500/40 overflow-hidden" padding="p-6">
                 <!-- Motif décoratif -->
                 <div class="absolute top-0 right-0 w-32 h-32 bg-violet-500/20 rounded-full blur-3xl"></div>
                 
@@ -195,7 +195,7 @@ const drinkMenu = computed(() => [
                     {{ t('afterparty.themeDescription') }}
                   </p>
                 </div>
-              </div>
+              </UiGlassCard>
             </div>
           </div>
 
@@ -231,13 +231,13 @@ const drinkMenu = computed(() => [
 
           <!-- Menu des boissons avec prix -->
           <div class="mb-8 py-6">
-            <div class="bg-black/80 backdrop-blur-md rounded-3xl border border-violet-500/30 p-6 shadow-2xl">
+            <UiGlassCard class="bg-black/80 backdrop-blur-md rounded-3xl border border-violet-500/30 shadow-2xl" padding="p-6">
               <div class="flex items-center justify-between mb-6">
                 <div>
-                  <h2 class="text-2xl font-bold text-white flex items-center gap-3 mb-1">
+                  <UiSectionTitle tag="h2" size="xl" class="flex items-center gap-3 mb-1">
                     <Icon name="fluent:drink-bottle-24-regular" class="text-violet-400" size="28" />
                     {{ t('afterparty.drinksTitle') }}
-                  </h2>
+                  </UiSectionTitle>
                   <p class="text-white/60 text-xs uppercase tracking-wider">{{ t('afterparty.drinksSubtitle') }}</p>
                 </div>
                 <div class="px-3 py-1.5 rounded-lg bg-violet-500/20 border border-violet-400/40">
@@ -273,7 +273,7 @@ const drinkMenu = computed(() => [
                   </div>
                 </div>
               </div>
-            </div>
+            </UiGlassCard>
           </div>
 
           <!-- Footer infos -->

@@ -5,8 +5,8 @@
  */
 
 interface Props {
-  /** Variante de couleur (ex: 'green', 'red', 'violet', 'cyan') */
-  variant?: 'green' | 'red' | 'violet' | 'cyan' | 'white'
+  /** Variante de couleur (ex: 'green', 'red', 'violet', 'cyan', 'solid-red') */
+  variant?: 'green' | 'red' | 'violet' | 'cyan' | 'white' | 'solid-red'
   /** Active l'indicateur visuel (point) */
   showDot?: boolean
   /** Active l'animation de pulsation sur le point */
@@ -29,7 +29,8 @@ const variantClasses = computed(() => {
     red: 'bg-red-500/20 border-red-500/30 text-red-400',
     violet: 'bg-violet-500/20 border-violet-400/30 text-white',
     cyan: 'bg-cyan-500/20 border-cyan-400/30 text-cyan-400',
-    white: 'bg-white/10 border-white/20 text-white'
+    white: 'bg-white/10 border-white/20 text-white',
+    'solid-red': 'bg-red-500/90 border-red-400/50 text-white shadow-red-900/20'
   }
   return maps[props.variant] || maps.white
 })
@@ -40,7 +41,8 @@ const dotClasses = computed(() => {
     red: 'bg-red-500',
     violet: 'bg-violet-500',
     cyan: 'bg-cyan-400',
-    white: 'bg-white'
+    white: 'bg-white',
+    'solid-red': 'bg-white'
   }
   return maps[props.variant] || maps.white
 })
