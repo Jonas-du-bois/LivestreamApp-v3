@@ -56,12 +56,12 @@ export default defineNuxtConfig({
     }
   },
 
-  // Ignore socket.io paths in Vue Router
-  /* router: {
-    options: {
-      strict: false
+  routeRules: {
+    '/socket.io/**': { 
+      ssr: false,
+      cors: true 
     }
-  }, */
+  },
 
   // CSS Global
   css: [

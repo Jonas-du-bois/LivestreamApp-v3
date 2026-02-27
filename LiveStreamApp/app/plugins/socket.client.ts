@@ -16,7 +16,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   const socket: Socket = io(socketUrl || '', {
     path: '/socket.io',
-    transports: ['websocket', 'polling'],
+    transports: ['websocket'],
     // PWA-critical: reconnect indefinitely (live event can last hours)
     reconnection: true,
     reconnectionAttempts: Infinity,
