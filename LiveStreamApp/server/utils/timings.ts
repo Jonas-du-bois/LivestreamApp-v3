@@ -20,6 +20,9 @@ export const RESULTS_CACHE_MAX_AGE = 10
 /** /api/weather – fresh data duration (s) – weather rarely changes */
 export const WEATHER_CACHE_MAX_AGE = 60 * 15 // 15 minutes
 
+/** /api/flickr/album – cache court pour recevoir les nouvelles photos quasi en temps réel (s) */
+export const FLICKR_CACHE_MAX_AGE = 30 // 30 secondes
+
 // ─── Scheduler ──────────────────────────────────────────────────────
 /** How often the scheduler checks for status transitions (ms) */
 export const SCHEDULER_INTERVAL = 30_000

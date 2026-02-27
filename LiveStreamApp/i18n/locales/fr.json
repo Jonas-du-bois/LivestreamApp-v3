@@ -39,7 +39,8 @@
     "plan": "Plan",
     "info": "Infos",
     "restaurant": "Restau",
-    "afterParty": "After Party"
+    "afterParty": "After Party",
+    "photos": "Photos"
   },
   "network": {
     "offlineTitle": "Vous êtes hors ligne",
@@ -430,5 +431,19 @@
   "language": {
     "fr": "Français",
     "de": "Deutsch"
+  },
+
+  "photos": {
+    "title": "Photos",
+    "subtitle": "Photos officielles en direct de la compétition",
+    "live": "EN DIRECT",
+    "updatedAt": "Mis à jour à {time}",
+    "photoCount": "{count} photos",
+    "newPhotos": "{count} nouvelle(s) photo(s) disponible(s)",
+    "seeNew": "Appuyer pour remonter au début",
+    "emptyTitle": "Aucune photo pour l'instant",
+    "emptyDescription": "Le photographe n'a pas encore publié de photos. Revenez un peu plus tard !",
+    "errorTitle": "Photos indisponibles",
+    "errorDescription": "Impossible de charger les photos. Vérifie ta connexion ou réessaie dans quelques instants."
   }
 }

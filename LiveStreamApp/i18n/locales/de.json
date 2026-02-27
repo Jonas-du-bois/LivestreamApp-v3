@@ -39,7 +39,8 @@
     "plan": "Plan",
     "info": "Infos",
     "restaurant": "Beizli",
-    "afterParty": "After Party"
+    "afterParty": "After Party",
+    "photos": "Fotos"
   },
   "network": {
     "offlineTitle": "Sie sind offline",
@@ -429,5 +430,19 @@
   "language": {
     "fr": "Français",
     "de": "Deutsch"
+  },
+
+  "photos": {
+    "title": "Fotos",
+    "subtitle": "Offizielle Live-Fotos vom Wettkampf",
+    "live": "LIVE",
+    "updatedAt": "Aktualisiert um {time}",
+    "photoCount": "{count} Fotos",
+    "newPhotos": "{count} neui Fotos verfiegbar",
+    "seeNew": "Tipfe zum Ufegah",
+    "emptyTitle": "Öppe no kei Fotos",
+    "emptyDescription": "De Fotograf het no nix hochglade. Komm speter zrug!",
+    "errorTitle": "Fotos nid verfiegbar",
+    "errorDescription": "Lade nid möglich. Check dini Verbindig oder versuechs speter nomol."
   }
 }

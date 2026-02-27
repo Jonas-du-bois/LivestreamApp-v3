@@ -147,11 +147,41 @@ const quickActions = computed<QuickAction[]>(() => [
     label: t('home.afterParty'),
     icon: 'fluent:drink-beer-24-regular',
     accent: 'pink'
+  },
+  {
+    id: 'photos',
+    to: '/photos',
+    label: t('home.photos'),
+    icon: 'fluent:camera-sparkles-24-regular',
+    accent: 'cyan'
   }
 ])
 
+const router = useRouter()
+
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
   openGroupDetails?.(groupId, apparatusCode)
+}
+
+// Navigation explicite vers un stream – plus fiable que le prop :to en cascade
+const navigateToStream = (streamId: string) => {
+  router.push(`/stream/${streamId}`)
+}
+
+const handleHeroClick = () => {
+  if (firstLiveStream.value?._id) {
+    navigateToStream(firstLiveStream.value._id)
+  } else {
+    router.push('/stream')
+  }
+}
+
+const handleTileClick = (group: { id: string; streamId?: string; apparatusCode?: string }) => {
+  if (group.streamId) {
+    navigateToStream(group.streamId)
+  } else {
+    handleGroupClick(group.id, group.apparatusCode)
+  }
 }
 
 // ─── Real-time + PWA resilience ──────────────────────────────────
@@ -192,73 +222,54 @@ useSocketRoom('schedule-updates', [
 
       <div v-else key="home-content" class="space-y-6">
         <!-- Hero Live Card -->
-        <UiMediaCard
-          v-if="firstLiveStream"
-          :to="'/stream/' + firstLiveStream._id"
-          :image="heroImage"
-          :alt="heroTitle"
-          variant="cover"
-          image-height="h-64"
-          gradient="gradient-overlay"
-          class="rounded-xl"
+        <!-- Bouton natif qui wrap la MediaCard : évite la cascade :to UiMediaCard→UiGlassCard→NuxtLink -->
+        <button
+          type="button"
+          class="block w-full rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] active:scale-[0.98] transition-transform duration-200"
+          :aria-label="firstLiveStream ? t('common.watch') : t('nav.stream')"
+          @click="handleHeroClick"
         >
-          <template #image-bottom>
-            <div class="pointer-events-auto">
-              <div class="flex items-center gap-2 mb-3">
-                <div v-if="firstLivePassage" class="flex items-center gap-2">
-                  <UiStatusBadge variant="solid-red" show-dot pulse>
-                    {{ t('home.live') }}
-                  </UiStatusBadge>
+          <UiMediaCard
+            :image="heroImage"
+            :alt="heroTitle"
+            variant="cover"
+            image-height="h-64"
+            gradient="gradient-overlay"
+            :interactive="false"
+            class="rounded-xl"
+          >
+            <template #image-bottom>
+              <div>
+                <div class="flex items-center gap-2 mb-3">
+                  <div v-if="firstLivePassage" class="flex items-center gap-2">
+                    <UiStatusBadge variant="solid-red" show-dot pulse>
+                      {{ t('home.live') }}
+                    </UiStatusBadge>
+                  </div>
+                  <div v-else class="flex items-center gap-2">
+                    <UiStatusBadge variant="cyan">
+                      {{ t('nav.stream') }}
+                    </UiStatusBadge>
+                  </div>
                 </div>
+                <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
+                <p class="text-white/80">{{ heroSubtitle }}</p>
               </div>
-              <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
-              <p class="text-white/80">{{ heroSubtitle }}</p>
-            </div>
-          </template>
-        </UiMediaCard>
-
-        <UiMediaCard
-          v-else
-          :image="heroImage"
-          :alt="heroTitle"
-          variant="cover"
-          image-height="h-64"
-          gradient="gradient-overlay"
-          class="rounded-xl cursor-pointer"
-          @click="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
-          role="button"
-          tabindex="0"
-          :aria-label="t('results.openGroupDetails', { group: heroTitle })"
-          @keydown.enter="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
-          @keydown.space.prevent="firstLivePassage?.group?._id ? handleGroupClick(firstLivePassage.group._id, firstLivePassage.apparatus?.code) : undefined"
-        >
-          <template #image-bottom>
-            <div class="pointer-events-auto">
-              <div class="flex items-center gap-2 mb-3">
-                <div v-if="firstLivePassage" class="flex items-center gap-2">
-                  <UiStatusBadge variant="solid-red" show-dot pulse>
-                    {{ t('home.live') }}
-                  </UiStatusBadge>
-                </div>
-              </div>
-              <h2 class="text-white text-2xl font-bold mb-1">{{ heroTitle }}</h2>
-              <p class="text-white/80">{{ heroSubtitle }}</p>
-            </div>
-          </template>
-        </UiMediaCard>
+            </template>
+          </UiMediaCard>
+        </button>
 
         <!-- Happening Now Carousel -->
         <div>
           <UiSectionTitle class="mb-4">{{ t('home.happeningNow') }}</UiSectionTitle>
           <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-            <UiGlassCard 
+            <UiGlassCard
               v-for="group in happeningNow"
               :key="group.id"
               class="min-w-[200px] flex-shrink-0"
               :interactive="true"
-              :to="group.streamId ? `/stream/${group.streamId}` : undefined"
-              @click="!group.streamId ? handleGroupClick(group.id, group.apparatusCode) : undefined"
               :aria-label="group.streamId ? t('stream.openStream') : t('results.openGroupDetails', { group: group.name })"
+              @click="handleTileClick(group)"
             >
               <div class="flex items-center justify-between mb-2">
                 <div class="text-cyan-400 text-sm">{{ group.salle }}</div>

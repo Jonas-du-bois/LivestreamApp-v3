@@ -29,6 +29,9 @@ export const COUNTDOWN_TICK = 1_000
  *  clearing the local override and fetching fresh data from the API (ms) */
 export const STATUS_OVERRIDE_DEFER = 8_000
 
+/** Intervalle de polling de l'album Flickr (ms) – vérifie les nouvelles photos de la compétition */
+export const FLICKR_PHOTOS_REFRESH = 60_000 // 1 minute
+
 // ─── Cache TTLs ─────────────────────────────────────────────────────
 /** GroupDetailsModal in-memory cache TTL (ms) */
 export const GROUP_DETAILS_CACHE_TTL = 30_000

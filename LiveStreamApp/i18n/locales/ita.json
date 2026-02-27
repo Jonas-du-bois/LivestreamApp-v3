@@ -39,7 +39,8 @@
     "plan": "Mappa",
     "info": "Info",
     "restaurant": "Ristoro",
-    "afterParty": "After Party"
+    "afterParty": "After Party",
+    "photos": "Foto"
   },
   "network": {
     "offlineTitle": "Sei offline",
@@ -429,5 +430,19 @@
     "fr": "Français",
     "de": "Deutsch",
     "it": "Italiano"
+  },
+
+  "photos": {
+    "title": "Foto",
+    "subtitle": "Foto ufficiali in diretta dalla competizione",
+    "live": "IN DIRETTA",
+    "updatedAt": "Aggiornato alle {time}",
+    "photoCount": "{count} foto",
+    "newPhotos": "{count} nuova/e foto disponibile/i",
+    "seeNew": "Tocca per tornare in cima",
+    "emptyTitle": "Nessuna foto per ora",
+    "emptyDescription": "Il fotografo non ha ancora pubblicato foto. Riprova tra poco!",
+    "errorTitle": "Foto non disponibili",
+    "errorDescription": "Impossibile caricare le foto. Controlla la connessione o riprova tra poco."
   }
 }
