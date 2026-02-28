@@ -21,3 +21,7 @@
 ## 2026-03-20 - Batching Database Queries in Scheduler
 **Learning:** In a loop iterating over items (e.g., passages to notify), performing a database query inside the loop (N+1 pattern) scales poorly. Batching these into a single `$in` query and filtering in-memory reduced execution time by ~75% (161ms -> 40ms for 50 items).
 **Action:** Always audit loops in scheduled tasks or batch processing logic. If a DB query uses an item's ID, extract all IDs first and execute a single batch query.
+
+## 2026-03-30 - Server-side projection for Mongoose populate queries
+**Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
+**Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
