@@ -12,7 +12,7 @@ interface Props {
   /** Label pour l'accessibilité (obligatoire pour les boutons sans texte) */
   label: string
   /** Variante visuelle */
-  variant?: 'ghost' | 'glass' | 'dark'
+  variant?: 'ghost' | 'glass' | 'dark' | 'bubble'
   /** État actif (ex: pour les filtres activés) */
   active?: boolean
   /** Afficher un point de notification */
@@ -31,10 +31,11 @@ defineEmits<{
 }>()
 
 const variantClasses = computed(() => {
-  const maps = {
+  const maps: Record<string, string> = {
     ghost: 'hover:bg-white/10 text-white',
     glass: 'glass-card bg-white/10 hover:bg-white/20 text-white',
-    dark: 'bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white'
+    dark: 'bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white',
+    bubble: 'hover:bg-white/15 active:bg-white/25 text-white/90 rounded-full'
   }
   return maps[props.variant] || maps.ghost
 })
@@ -43,8 +44,8 @@ const variantClasses = computed(() => {
 <template>
   <button
     type="button"
-    class="relative p-2 rounded-lg transition-all duration-200 active:scale-90 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
-    :class="[variantClasses, active ? 'bg-white/20' : '']"
+    class="relative p-2 transition-all duration-200 active:scale-90 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
+    :class="[variantClasses, active ? 'bg-white/20' : '', variant === 'bubble' ? 'rounded-full' : 'rounded-lg']"
     :aria-label="label"
     @click="$emit('click', $event)"
   >

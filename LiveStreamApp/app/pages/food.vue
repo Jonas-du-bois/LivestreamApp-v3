@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen pb-24 pt-safe">
+  <div class="px-4 space-y-6 pb-6">
     <!-- Bouton retour -->
-    <div class="px-6 pt-4 pb-2">
+    <div class="px-2 pt-2">
       <UiBackButton to="/">
         {{ t('common.back') }}
       </UiBackButton>
     </div>
 
     <!-- Hero Section -->
-    <div class="relative px-6 py-6 mb-4">
+    <div class="relative py-6 mb-4">
       <div class="pointer-events-none absolute top-0 right-0 p-6 opacity-20" aria-hidden="true">
         <Icon name="fluent:food-pizza-24-filled" class="text-9xl text-blue-500 blur-2xl animate-pulse" />
       </div>
@@ -27,10 +27,10 @@
       :items="categories"
       color="blue"
       :aria-label="t('food.title')"
-      class="mb-8"
+      class="mb-8 px-4"
     />
     
-    <div class="px-6 mb-8">
+    <div class=" mb-8">
       <UiInfoTile
         variant="feature"
         icon-shape="circle"
@@ -46,7 +46,7 @@
     <TransitionGroup
       name="list"
       tag="div"
-      class="px-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+      class=" grid grid-cols-1 md:grid-cols-2 gap-6"
     >
       <UiMediaCard
         v-for="(spot, index) in filteredSpots"

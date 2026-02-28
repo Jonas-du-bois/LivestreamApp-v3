@@ -230,7 +230,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 </script>
 
 <template>
-  <div class="min-h-screen space-y-4 pb-6">
+  <div class="px-4 space-y-6 pb-6">
     <Transition name="premium-swap" mode="out-in">
       <div v-if="showSkeleton" key="results-skeleton" class="px-4 mt-6 space-y-4">
         <div class="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
@@ -253,7 +253,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
       <div v-else key="results-content">
         <!-- Day Switcher -->
-        <div class="px-4 mb-4">
+        <div class=" mb-4">
           <UiDaySwitcher
             v-model="selectedDay"
             :days="availableDays"
@@ -288,7 +288,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           v-model="activeTab"
           :items="resultsSections.map(s => ({ id: s.code, label: s.name }))"
           :aria-label="t('filters.apparatus')"
-          class="mb-6 px-8 overflow-x-auto scrollbar-hide"
+          class="mb-6 px-4 overflow-x-auto scrollbar-hide"
         />
 
         <!-- Content for active tab -->
@@ -296,7 +296,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           <div
             v-if="activeSection"
             :key="activeSection.code"
-            class="px-4 mt-6 space-y-6"
+            class="mt-6 space-y-6"
             role="tabpanel"
             :id="'panel-' + activeSection.code"
             :aria-labelledby="'tab-' + activeSection.code"

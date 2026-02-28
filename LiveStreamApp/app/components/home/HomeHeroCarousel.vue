@@ -273,18 +273,22 @@ const handleHeroClick = () => {
         v-for="(_, index) in slides"
         :key="index"
         @click.stop="manualChange(index)"
-        class="relative h-2 transition-all duration-500 rounded-full overflow-hidden"
-        :class="[
-          currentIndex === index ? 'w-8 bg-white/40' : 'w-2 bg-white/20 hover:bg-white/40'
-        ]"
+        class="relative flex items-center justify-center outline-none group/dot after:content-[''] after:absolute after:-inset-4"
         :aria-label="`Slide ${index + 1}`"
       >
-        <!-- Progress Fill Layer -->
-        <div 
-          v-if="currentIndex === index"
-          class="absolute inset-0 bg-white hero-dot-progress"
-          :style="{ animationDuration: `${SLIDE_DURATION}ms` }"
-        ></div>
+        <span
+          class="relative h-2 transition-all duration-500 rounded-full overflow-hidden block"
+          :class="[
+            currentIndex === index ? 'w-8 bg-white/40' : 'w-2 bg-white/20 group-hover/dot:bg-white/40'
+          ]"
+        >
+          <!-- Progress Fill Layer -->
+          <span 
+            v-if="currentIndex === index"
+            class="absolute inset-0 bg-white hero-dot-progress block"
+            :style="{ animationDuration: `${SLIDE_DURATION}ms` }"
+          ></span>
+        </span>
       </button>
     </div>
 

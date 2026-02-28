@@ -15,19 +15,49 @@ const route = useRoute()
 const notificationsStore = useNotificationsStore()
 const { t, locale, locales, setLocale } = useI18n()
 
+// téléportation vers le haut de la page à chaque changement de route
+watch(route, () => {
+  const mainContent = document.querySelector('.main-content') as HTMLElement
+  if (!mainContent) return
+
+  const startY = mainContent.scrollTop
+  if (startY === 0) return
+
+  const duration = 600
+  const startTime = performance.now()
+
+  // Ease-out cubic : démarre vite, ralentit élégamment
+  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
+  const animateScroll = (currentTime: number) => {
+    const elapsed = currentTime - startTime
+    const progress = Math.min(elapsed / duration, 1)
+    const eased = easeOutCubic(progress)
+
+    mainContent.scrollTop = startY * (1 - eased)
+
+    if (progress < 1) {
+      requestAnimationFrame(animateScroll)
+    }
+  }
+
+  requestAnimationFrame(animateScroll)
+})
+
 // PWA Install
 const { isInstallAvailable, isStandalone, showInstallPrompt } = usePwaInstall()
 
 // Setup socket listeners for real-time notifications
 useNotificationSocket()
 
-const navItems: NavItem[] = [
+const mainNavItems: NavItem[] = [
   { id: 'home', icon: 'fluent:home-24-regular', iconFilled: 'fluent:home-24-filled', labelKey: 'nav.home', to: '/' },
   { id: 'schedule', icon: 'fluent:calendar-24-regular', iconFilled: 'fluent:calendar-24-filled', labelKey: 'nav.schedule', to: '/schedule' },
   { id: 'stream', icon: 'fluent:play-circle-24-regular', iconFilled: 'fluent:play-circle-24-filled', labelKey: 'nav.stream', to: '/stream', isCenter: true },
-  { id: 'results', icon: 'fluent:trophy-24-regular', iconFilled: 'fluent:trophy-24-filled', labelKey: 'nav.results', to: '/results' },
-  { id: 'favorites', icon: 'fluent:heart-24-regular', iconFilled: 'fluent:heart-24-filled', labelKey: 'nav.favorites', to: '/favorites' }
+  { id: 'results', icon: 'fluent:trophy-24-regular', iconFilled: 'fluent:trophy-24-filled', labelKey: 'nav.results', to: '/results' }
 ]
+
+const separatedNavItem: NavItem = { id: 'favorites', icon: 'fluent:heart-24-regular', iconFilled: 'fluent:heart-24-filled', labelKey: 'nav.favorites', to: '/favorites' }
 
 const pageTitleKeys: Record<string, string> = {
   '/': 'pages.home',
@@ -85,26 +115,16 @@ const hasUnreadNotifications = computed(() => notificationsStore.hasUnread)
 const unreadCount = computed(() => notificationsStore.unreadCount)
 
 const refreshApp = () => {
-  // For PWA, we can use the beforeinstallprompt event to trigger a refresh
   if (window && 'beforeinstallprompt' in window) {
     window.location.reload()
   } else {
-    // Fallback for non-PWA or unsupported browsers
     window.location.reload()
   }
 }
 
-const openSearch = () => {
-  isSearchOpen.value = true
-}
-
-const openFilter = () => {
-  isFilterOpen.value = true
-}
-
-const openNotifications = () => {
-  isNotificationsOpen.value = true
-}
+const openSearch = () => { isSearchOpen.value = true }
+const openFilter = () => { isFilterOpen.value = true }
+const openNotifications = () => { isNotificationsOpen.value = true }
 </script>
 
 <template>
@@ -123,62 +143,74 @@ const openNotifications = () => {
     ></div>
 
     <div class="relative z-10">
-      <!-- Glass Header with safe area support -->
-      <header v-if="showHeader" class="fixed top-0 left-0 right-0 z-50 px-2 header-safe-area">
-        <div class="glass-card !rounded-full overflow-hidden px-4 py-2">
-          <div class="flex items-center justify-between">
-            <h1 class="text-white text-xl font-bold">{{ currentPageTitle }}</h1>
-            
-            <div class="flex items-center gap-2">
-              <!-- Language Toggle Button - Only on home page -->
-              <button 
-                v-if="route.path === '/'"
-                @click="toggleLocale"
-                class="p-2 hover:bg-white/10 rounded-lg transition-colors relative flex items-center gap-1"
-                aria-label="Changer de langue"
-              >
-                <span class="text-white text-sm font-bold uppercase">{{ locale.toUpperCase() }}</span>
-                <Icon name="fluent:globe-24-regular" class="w-4 h-4 text-white" />
-              </button>
+      <!-- Header -->
+      <header v-if="showHeader" class="fixed top-0 left-0 right-0 z-50 px-3 header-safe-area">
+        <div class="flex items-center justify-between gap-2 py-1">
+          <!-- Title Bubble -->
+          <div class="ios26-bubble h-14 px-5 shrink-0">
+            <h1 class="text-white text-[17px] font-semibold tracking-tight whitespace-nowrap">{{ currentPageTitle }}</h1>
+          </div>
 
-              <!--- refresh app button-->
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-1.5">
+            <!-- Language Toggle Bubble (home only) -->
+            <button 
+              v-if="route.path === '/'"
+              @click="toggleLocale"
+              class="ios26-bubble ios26-bubble-interactive h-14 px-3 gap-1.5"
+              aria-label="Changer de langue"
+            >
+              <span class="text-white text-sm font-semibold uppercase">{{ locale.toUpperCase() }}</span>
+              <Icon name="fluent:globe-24-regular" class="w-4 h-4 text-white/80" />
+            </button>
+
+            <!-- Grouped Action Buttons Bubble -->
+            <div class="ios26-bubble h-14 gap-0.5 px-1">
+              <!-- Refresh (home only) -->
               <UiIconButton
                 v-if="route.path === '/'"
                 icon="fluent:arrow-clockwise-24-regular"
                 label="Actualiser l'application"
+                variant="bubble"
                 @click="refreshApp"
               />
-              
-              <!-- PWA Install Button -->
+
+              <!-- PWA Install -->
               <Transition name="badge-pop">
                 <UiIconButton
                   v-if="isInstallAvailable && !isStandalone"
                   icon="fluent:arrow-download-24-regular"
                   :label="t('pwa.installApp')"
-                  class="animate-pulse text-cyan-400"
+                  variant="bubble"
+                  class="text-cyan-400"
                   @click="showInstallPrompt(true)"
                 />
               </Transition>
-              
+
+              <!-- Search -->
               <UiIconButton
                 icon="fluent:search-24-regular"
                 label="Recherche"
+                variant="bubble"
                 @click="openSearch"
               />
-              
+
+              <!-- Filters (schedule only) -->
               <UiIconButton
                 v-if="route.path === '/schedule'"
                 icon="fluent:options-24-regular"
                 label="Filtres"
+                variant="bubble"
                 @click="openFilter"
               />
-              
+
+              <!-- Notifications -->
               <UiIconButton
                 icon="fluent:alert-24-regular"
                 label="Notifications"
+                variant="bubble"
                 @click="openNotifications"
               >
-                <!-- Badge avec count (Slot pour garder la logique complexe du badge) -->
                 <Transition name="badge-pop">
                   <span 
                     v-if="hasUnreadNotifications"
@@ -202,37 +234,60 @@ const openNotifications = () => {
         <slot />
       </main>
 
-      <!-- Bottom Navigation Dock - Fixed with safe area support -->
-      <nav v-show="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-2 nav-safe-area">
-        <div class="nav-dock glass-card !rounded-full overflow-hidden px-3 py-1.5 flex items-center justify-around">
-          <NuxtLink
-            v-for="item in navItems"
-            :key="item.id"
-            :to="item.to"
-            class="nav-item relative flex items-center justify-center group transition-colors"
-            :class="{ 'nav-item-center': item.isCenter }"
-            :aria-label="t(item.labelKey)"
-          >
-            <div 
-              class="nav-icon-wrap p-2 rounded-xl transition-colors duration-200"
-              :class="[
-                isActive(item.to) ? 'text-cyan-400' : 'text-white/90 group-hover:text-cyan-200',
-                isActive(item.to) && item.isCenter ? 'glow-cyan' : '',
-              ]"
+      <!-- Bottom Navigation Dock -->
+      <nav v-show="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-3 nav-safe-area">
+        <div class="flex items-center gap-2 py-1">
+          <!-- Main Nav Bubble -->
+          <div class="ios26-bubble h-16 nav-dock flex-1 justify-around px-2">
+            <NuxtLink
+              v-for="item in mainNavItems"
+              :key="item.id"
+              :to="item.to"
+              class="nav-item relative flex items-center justify-center group transition-colors"
+              :class="{ 'nav-item-center': item.isCenter }"
+              :aria-label="t(item.labelKey)"
             >
-              <span :class="[item.isCenter ? 'w-7 h-7' : 'w-6 h-6']" class="nav-icon-stack relative block">
-                <Icon
-                  :name="item.icon"
-                  class="nav-icon-layer absolute inset-0 w-full h-full"
-                  :class="isActive(item.to) ? 'opacity-0' : 'opacity-100'"
-                />
-                <Icon
-                  :name="item.iconFilled"
-                  class="nav-icon-layer absolute inset-0 w-full h-full"
-                  :class="isActive(item.to) ? 'opacity-100' : 'opacity-0'"
-                />
-              </span>
-            </div>
+              <div 
+                class="nav-icon-wrap p-2 rounded-full transition-colors duration-200"
+                :class="[
+                  isActive(item.to) ? 'text-cyan-400' : 'text-white/90 group-hover:text-cyan-200',
+                  isActive(item.to) && item.isCenter ? 'glow-cyan' : '',
+                ]"
+              >
+                <span :class="[item.isCenter ? 'w-7 h-7' : 'w-6 h-6']" class="nav-icon-stack relative block">
+                  <Icon
+                    :name="item.icon"
+                    class="nav-icon-layer absolute inset-0 w-full h-full"
+                    :class="isActive(item.to) ? 'opacity-0' : 'opacity-100'"
+                  />
+                  <Icon
+                    :name="item.iconFilled"
+                    class="nav-icon-layer absolute inset-0 w-full h-full"
+                    :class="isActive(item.to) ? 'opacity-100' : 'opacity-0'"
+                  />
+                </span>
+              </div>
+            </NuxtLink>
+          </div>
+
+          <!-- Separated Favorite Bubble -->
+          <NuxtLink
+            :to="separatedNavItem.to"
+            class="ios26-bubble ios26-bubble-interactive h-16 nav-item-separated justify-center px-5 shrink-0"
+            :aria-label="t(separatedNavItem.labelKey)"
+          >
+            <span class="w-6 h-6 nav-icon-stack relative block" :class="isActive(separatedNavItem.to) ? 'text-cyan-400' : 'text-white/90'">
+              <Icon
+                :name="separatedNavItem.icon"
+                class="nav-icon-layer absolute inset-0 w-full h-full"
+                :class="isActive(separatedNavItem.to) ? 'opacity-0' : 'opacity-100'"
+              />
+              <Icon
+                :name="separatedNavItem.iconFilled"
+                class="nav-icon-layer absolute inset-0 w-full h-full"
+                :class="isActive(separatedNavItem.to) ? 'opacity-100' : 'opacity-0'"
+              />
+            </span>
           </NuxtLink>
         </div>
       </nav>
@@ -262,6 +317,7 @@ const openNotifications = () => {
     />
   </div>
 </template>
+
 <style scoped>
 /* Badge pop animation */
 .badge-pop-enter-active {
@@ -272,44 +328,28 @@ const openNotifications = () => {
 }
 
 @keyframes badge-pop-in {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes badge-pop-out {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(0);
-    opacity: 0;
-  }
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
 }
 
 .nav-dock {
-  min-height: 64px;
   will-change: transform;
   transform: translateZ(0);
 }
 
 .nav-item {
   min-width: 52px;
-  min-height: 48px;
+  height: 100%;
 }
 
 .nav-item-center {
   min-width: 60px;
-  min-height: 52px;
 }
 
 .nav-icon-wrap {

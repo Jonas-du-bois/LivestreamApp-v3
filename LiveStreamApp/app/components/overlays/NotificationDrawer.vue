@@ -104,7 +104,7 @@ const handleNotificationClick = (notification: AppNotification) => {
     <Transition name="slide-right">
       <div
         v-if="isOpen"
-        class="fixed right-0 top-0 bottom-0 w-[85%] max-w-md glass-panel z-[70] overflow-hidden flex flex-col overlay-safe-right"
+        class="fixed right-0 top-0 bottom-0 w-[85%] max-w-md glass-panel z-[70] overflow-hidden flex flex-col overlay-safe-right safe-area-top safe-area-bottom"
       >
         <!-- Header -->
         <div class="p-5 border-b border-white/10 flex-shrink-0">
