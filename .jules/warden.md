@@ -1,5 +1,15 @@
 # Warden's Refactoring Journal
 
+## 2026-02-21: Streams and Plan Strict Typing & Auto-Imports Cleanup
+
+- **Target:** `app/pages/stream/index.vue`, `app/pages/stream/[id].vue`, `app/pages/plan.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced implicit and explicit `any` usages with strict `PassageEnriched`, `Stream`, `PopulatedStream`, and Leaflet types to prevent runtime data manipulation errors.
+    - **Code Noise / Fragility:** Removed explicit Nuxt 4 auto-imports (Vue primitives like `ref`, `computed`, `watch`, `onMounted`) according to best practices.
+- **Solution:**
+    - Refactored `liveData` and mapped functions (`mapStreamToDisplay`, `liveStreams`, `offlineStreams`) to use proper interfaces from `app/types/api.ts`.
+    - Protected Leaflet map interactions with strict `import('leaflet').Map` casting instead of `any`.
+
 ## 2026-02-21: Admin Dashboard Security & Stability
 
 - **Target:** `app/pages/admin/dashboard.vue`
