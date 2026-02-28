@@ -23,6 +23,14 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  // Security: Prevent type confusion (e.g., array/object passing truthiness but crashing crypto)
+  if (typeof password !== 'string') {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid password type',
+    });
+  }
+
   // Security: Limit password length to prevent DoS via hashing of large payloads
   if (password.length > 1024) {
     throw createError({
