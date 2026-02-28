@@ -27,7 +27,7 @@ const openLightbox = (index: number) => {
 
 // ─── Horodatage de la dernière mise à jour ───────────────────────────────────
 const lastUpdated = ref<Date | null>(null)
-const { locale } = useI18n()
+const { formatLocalizedTime } = useTranslatedData()
 
 watch(photos, (val) => {
   if (val.length) lastUpdated.value = new Date()
@@ -35,11 +35,7 @@ watch(photos, (val) => {
 
 const lastUpdatedLabel = computed(() => {
   if (!lastUpdated.value) return ''
-  const loc = locale.value === 'de' ? 'de-CH' : locale.value === 'it' ? 'it-CH' : 'fr-CH'
-  return lastUpdated.value.toLocaleTimeString(loc, {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return formatLocalizedTime(lastUpdated.value.toISOString())
 })
 
 // ─── États de la page ────────────────────────────────────────────────────────

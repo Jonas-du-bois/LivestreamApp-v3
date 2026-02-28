@@ -149,8 +149,7 @@ const goToLive = () => {
 
 // Format time
 const formatTime = (date: string) => {
-  const loc = locale.value === 'de' ? 'de-CH' : 'fr-CH'
-  return new Date(date).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })
+  return formatLocalizedTime(date)
 }
 
 // Computed: has results
