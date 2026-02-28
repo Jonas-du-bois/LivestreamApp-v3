@@ -115,6 +115,11 @@ Les alertes globales de ce type doivent se placer à la racine (`app.vue`) avec 
 - Les indicateurs d'état doivent utiliser `<UiStatusBadge>`.
 - Les listes de filtres ou de sélection doivent utiliser `<UiFilterChips>`.
 
+## 2026-05-26
+*   **Création de `<StreamCard>`**: Identifié une duplication importante de code HTML/Tailwind entre les listes de streams "En direct" et "Hors ligne" dans `app/pages/stream/index.vue`.
+    *   **Règle Établie**: "Les éléments de liste complexes liés au domaine (comme les cartes de stream contenant des images, des overlays de statut et des métadonnées) doivent être encapsulés dans des composants spécifiques au domaine (`app/components/domain/`)."
+    *   **Refactoring**: Extrait la structure de la carte dans `app/components/domain/StreamCard.vue`. Le composant utilise un rendu polymorphe (`<component :is="...">`) pour générer soit un `<NuxtLink>` (pour les streams en direct) soit un simple `<div>` (pour les streams hors ligne), évitant ainsi de dupliquer la structure HTML interne.
+
 ## 03/11 - Création de la Section Hero Dynamique (Carousel)
 
 **Problème :** La section Hero de `index.vue` était statique et ne montrait que le premier direct. L'utilisateur souhaitait une expérience plus riche ("Premium") avec des informations provenant de différentes parties de l'app (Photos, Résultats, Afterparty, Restauration).

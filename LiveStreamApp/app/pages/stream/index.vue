@@ -205,47 +205,12 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
           </p>
 
           <div class="grid grid-cols-1 gap-4">
-            <NuxtLink
+            <DomainStreamCard
               v-for="stream in liveStreams" 
               :key="stream.id" 
-              :to="`/stream/${stream.id}`"
-              class="glass-card overflow-hidden cursor-pointer block hover:border-cyan-400/50 transition-colors"
-            >
-              <div class="relative aspect-video">
-                <ImageWithFallback 
-                  :src="stream.thumbnail"
-                  :alt="stream.title"
-                  class="w-full h-full object-cover"
-                />
-                
-                <div class="absolute top-3 left-3 flex gap-2">
-                  <div class="bg-red-500/90 px-3 py-1.5 rounded-full flex items-center gap-2">
-                    <span class="w-2 h-2 bg-white rounded-full animate-pulse-glow" />
-                    <span class="text-white text-xs font-bold">{{ t('stream.live') }}</span>
-                  </div>
-                  <div class="glass-card px-3 py-1.5">
-                    <span class="text-white text-xs font-medium">{{ stream.salle }}</span>
-                  </div>
-                </div>
-
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/30">
-                  <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <Icon name="fluent:play-24-filled" class="w-8 h-8 text-white" />
-                  </div>
-                </div>
-              </div>
-
-              <div class="p-4">
-                <h3 class="text-white font-bold mb-1">{{ stream.title }}</h3>
-                <p class="text-white/60 text-sm">
-                  {{ t('stream.onTrack') }}: <span class="text-cyan-400">{{ stream.currentGroup }}</span>
-                  <template v-if="stream.currentApparatusCode">
-                    <span class="text-white/40"> • </span>
-                    <span class="text-purple-400">{{ translateApparatus(stream.currentApparatusCode, stream.currentApparatus) }}</span>
-                  </template>
-                </p>
-              </div>
-            </NuxtLink>
+              :stream="stream"
+              is-live
+            />
           </div>
         </div>
 
@@ -262,38 +227,13 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
             {{ t('stream.offlineStreams') }}
           </p>
 
-          <div class="grid grid-cols-1 gap-4 opacity-60">
-            <div
+          <div class="grid grid-cols-1 gap-4">
+            <DomainStreamCard
               v-for="stream in offlineStreams" 
               :key="stream.id"
-              class="glass-card overflow-hidden cursor-not-allowed"
-            >
-              <div class="relative aspect-video">
-                <ImageWithFallback 
-                  :src="stream.thumbnail"
-                  :alt="stream.title"
-                  class="w-full h-full object-cover grayscale"
-                />
-                
-                <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                  <div class="text-center">
-                    <Icon name="fluent:video-off-24-regular" class="w-10 h-10 text-white/50 mx-auto mb-2" />
-                    <span class="text-white/50 text-sm font-medium">{{ t('stream.offline') }}</span>
-                  </div>
-                </div>
-                
-                <div class="absolute top-3 left-3">
-                  <div class="glass-card px-3 py-1.5">
-                    <span class="text-white/50 text-xs font-medium">{{ stream.salle }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="p-4">
-                <h3 class="text-white/50 font-bold mb-1">{{ stream.title }}</h3>
-                <p class="text-white/30 text-sm">{{ t('stream.streamUnavailable') }}</p>
-              </div>
-            </div>
+              :stream="stream"
+              :is-live="false"
+            />
           </div>
         </div>
       </div>
