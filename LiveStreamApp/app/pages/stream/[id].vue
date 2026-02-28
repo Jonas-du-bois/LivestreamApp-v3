@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Stream, Passage, Group, Apparatus, PopulatedPassage, PopulatedStream } from '../../types/api'
-import { ref, watch, onBeforeUnmount, onMounted, computed } from 'vue'
+import type { Stream, Passage, Group, Apparatus, PopulatedPassage, PopulatedStream, PassageEnriched, GroupDetailsResponse } from '../../types/api'
 import { PublicService } from '../../services/public.service'
 
 const { t } = useI18n()
@@ -10,17 +9,17 @@ const router = useRouter()
 
 // Use refs for reactive data that updates in real-time
 const stream = ref<PopulatedStream | null>(null)
-const livePassages = ref<any[]>([])
-const groupDetails = ref<any>(null) // Full group details from API
+const livePassages = ref<PassageEnriched[]>([])
+const groupDetails = ref<GroupDetailsResponse | null>(null) // Full group details from API
 const pending = ref(true)
-const error = ref<any>(null)
+const error = ref<unknown>(null)
 
 // Fetch stream
 const fetchStream = async () => {
   try {
     stream.value = await PublicService.fetchStream(route.params.id as string)
     console.log('[stream/id] Stream fetched:', stream.value?.name, 'location:', stream.value?.location)
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[stream/id] Error fetching stream:', err)
     error.value = err
   }
@@ -32,7 +31,7 @@ const fetchLivePassages = async () => {
     const liveData = await PublicService.fetchLive()
     livePassages.value = liveData.passages || []
     console.log('[stream/id] Live passages fetched:', livePassages.value.length)
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[stream/id] Error fetching live passages:', err)
   }
 }
@@ -43,7 +42,7 @@ const fetchGroupDetails = async (groupId: string) => {
     const details = await PublicService.fetchGroupDetails(groupId)
     groupDetails.value = details
     console.log('[stream/id] Group details fetched:', details?.info?.name)
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[stream/id] Error fetching group details:', err)
   }
 }
@@ -171,22 +170,24 @@ const handleRefresh = async (payload?: any) => {
 }
 
 // Handle stream-update with direct payload update
-const handleStreamUpdate = (payload: any) => {
+const handleStreamUpdate = (payload: unknown) => {
   console.log('[stream/id] 📺 Stream update received:', payload)
   
+  const streamPayload = payload as { _id?: string; currentPassage?: any }
+
   // Si le payload contient les données du stream actuel, les utiliser directement
-  if (payload && payload._id === route.params.id && stream.value) {
+  if (streamPayload && streamPayload._id === route.params.id && stream.value) {
     // Mise à jour directe depuis le payload
-    if (payload.currentPassage !== undefined) {
+    if (streamPayload.currentPassage !== undefined) {
       stream.value = {
         ...stream.value,
-        currentPassage: payload.currentPassage
+        currentPassage: streamPayload.currentPassage
       }
       console.log('[stream/id] ✅ Direct update from payload')
       
       // Fetch group details if needed
-      if (payload.currentPassage?.group?._id) {
-        fetchGroupDetails(payload.currentPassage.group._id)
+      if (streamPayload.currentPassage?.group?._id) {
+        fetchGroupDetails(streamPayload.currentPassage.group._id)
       }
       return
     }

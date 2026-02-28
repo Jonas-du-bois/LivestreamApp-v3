@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 import { PublicService } from '../../services/public.service'
+import type { Stream, PassageEnriched } from '../../types/api'
 
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
@@ -18,8 +18,8 @@ interface StreamDisplay {
 }
 
 // Use refs for reactive data that updates in real-time
-const liveData = ref<{ passages: any[]; streams: any[] } | null>(null)
-const allStreamsData = ref<any[] | null>(null)
+const liveData = ref<{ passages: PassageEnriched[]; streams: Stream[] } | null>(null)
+const allStreamsData = ref<Stream[] | null>(null)
 const loading = ref(true)
 const hasLoadedOnce = ref(false)
 
@@ -56,9 +56,9 @@ const showSkeleton = computed(() => loading.value && !hasLoadedOnce.value)
 
 // Build a map of live passages by LOCATION for quick lookup
 const livePassagesByLocation = computed(() => {
-  const map = new Map<string, any>()
+  const map = new Map<string, PassageEnriched>()
   if (liveData.value?.passages) {
-    liveData.value.passages.forEach((p: any) => {
+    liveData.value.passages.forEach((p: PassageEnriched) => {
       if (p.location) {
         map.set(p.location, p)
       }
@@ -90,8 +90,8 @@ const liveStreams = computed<StreamDisplay[]>(() => {
   if (!liveData.value?.streams) return []
   
   return liveData.value.streams
-    .filter((s: any) => s.isLive)
-    .map((s: any) => mapStreamToDisplay(s, livePassagesByLocation.value))
+    .filter((s: Stream) => s.isLive)
+    .map((s: Stream) => mapStreamToDisplay(s, livePassagesByLocation.value))
 })
 
 // Get offline streams from allStreamsData
@@ -99,11 +99,11 @@ const offlineStreams = computed<StreamDisplay[]>(() => {
   if (!allStreamsData.value) return []
   
   return allStreamsData.value
-    .filter((s: any) => !s.isLive)
-    .map((s: any) => mapStreamToDisplay(s, livePassagesByLocation.value))
+    .filter((s: Stream) => !s.isLive)
+    .map((s: Stream) => mapStreamToDisplay(s, livePassagesByLocation.value))
 })
 
-function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): StreamDisplay {
+function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEnriched>): StreamDisplay {
   let currentGroupName = '—'
   let currentApparatusName = ''
   let currentApparatusCode = ''
@@ -117,8 +117,8 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
     currentApparatusCode = livePassage.apparatus?.code || ''
   } else if (s.currentPassage) {
     // Fallback to currentPassage if no live passage found by location
-    const cp = s.currentPassage
-    if (typeof cp === 'object' && cp.group) {
+    const cp = s.currentPassage as any // currentPassage can be string or object depending on population, but here it might be populated or partially populated
+    if (typeof cp === 'object' && cp && cp.group) {
       currentGroupName = cp.group.name || '—'
       currentApparatusName = cp.apparatus?.name || ''
       currentApparatusCode = cp.apparatus?.code || ''
