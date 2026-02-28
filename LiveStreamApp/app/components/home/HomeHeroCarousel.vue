@@ -30,18 +30,7 @@ const router = useRouter()
 const { now } = useNow()
 
 // --- Countdown Logic for Afterparty ---
-const partyDate = new Date('2026-05-09T22:00:00')
-const afterpartyCountdown = computed(() => {
-  const diff = partyDate.getTime() - now.value
-  
-  if (diff <= 0) return t('afterparty.countdownNow')
-  
-  const d = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  
-  return `${d}j ${h}h ${m}m`
-})
+const { timeLeftShort: afterpartyCountdown } = usePartyCountdown()
 
 // --- Additional Data Fetching ---
 const { data: albumResp } = await FlickrService.getAlbum()
