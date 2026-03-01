@@ -162,8 +162,6 @@ onUnmounted(() => {
   }
 })
 
-const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-
 // Get all passage IDs from the same group and category
 const groupPassageIds = computed(() => {
   if (!details.value?.timeline) return []

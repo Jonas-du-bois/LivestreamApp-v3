@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PassageEnriched, Stream, EnrichedGroup, ScheduleResponse } from '~/types/api'
+import { formatTime as utilsFormatTime } from '~/utils/date'
 
 interface Props {
   isOpen: boolean
@@ -148,10 +149,7 @@ const goToLive = () => {
 }
 
 // Format time
-const formatTime = (date: string) => {
-  const loc = locale.value === 'de' ? 'de-CH' : 'fr-CH'
-  return new Date(date).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })
-}
+const formatTime = (date: string) => utilsFormatTime(date, locale.value)
 
 // Computed: has results
 const hasResults = computed(() => {

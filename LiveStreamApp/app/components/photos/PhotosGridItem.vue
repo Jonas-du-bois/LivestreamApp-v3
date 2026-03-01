@@ -37,13 +37,7 @@ const handleError = () => {
 // ─── Formatage de l'heure pour l'overlay hover ─────────────────────────────
 const { locale } = useI18n()
 
-const formattedTime = computed(() => {
-  const d = new Date(props.photo.dateUpload * 1000)
-  return d.toLocaleTimeString(locale.value === 'de' ? 'de-CH' : locale.value === 'it' ? 'it-CH' : 'fr-CH', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-})
+const formattedTime = computed(() => formatTime(props.photo.dateUpload * 1000, locale.value))
 </script>
 
 <template>
