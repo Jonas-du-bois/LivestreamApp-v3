@@ -35,11 +35,7 @@ watch(photos, (val) => {
 
 const lastUpdatedLabel = computed(() => {
   if (!lastUpdated.value) return ''
-  const loc = locale.value === 'de' ? 'de-CH' : locale.value === 'it' ? 'it-CH' : 'fr-CH'
-  return lastUpdated.value.toLocaleTimeString(loc, {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return formatTime(lastUpdated.value, locale.value)
 })
 
 // ─── États de la page ────────────────────────────────────────────────────────
