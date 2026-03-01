@@ -16,10 +16,12 @@ export default defineEventHandler(async (event) => {
   
   const password = body?.password;
   
-  if (!password) {
+  // Security: Enforce strict type checking on parsed JSON body to prevent
+  // DoS (TypeError exceptions) when passing objects/arrays to native crypto APIs
+  if (!password || typeof password !== 'string') {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Password is required',
+      statusMessage: 'Password must be a valid string',
     });
   }
 
