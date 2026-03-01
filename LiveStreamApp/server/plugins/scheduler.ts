@@ -112,7 +112,7 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToGoLive = await PassageModel.find({
         status: 'SCHEDULED',
         startTime: { $lte: now }
-      }).populate('group').populate('apparatus');
+      }).select('_id location').lean();
 
       if (passagesToGoLive.length > 0) {
         await PassageModel.updateMany(
@@ -131,7 +131,10 @@ export default defineNitroPlugin((nitroApp) => {
               { new: true }
             ).populate({
               path: 'currentPassage',
-              populate: [{ path: 'group' }, { path: 'apparatus' }]
+              populate: [
+                { path: 'group', select: 'name category canton logo' },
+                { path: 'apparatus', select: 'name code icon' }
+              ]
             });
             
             if (stream) {
@@ -150,7 +153,7 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToFinish = await PassageModel.find({
         status: 'LIVE',
         endTime: { $lte: now }
-      });
+      }).select('_id location').lean();
 
       if (passagesToFinish.length > 0) {
         await PassageModel.updateMany(
@@ -260,8 +263,10 @@ export default defineNitroPlugin((nitroApp) => {
     };
 
     const passages = await PassageModel.find(query)
-      .populate('group')
-      .populate('apparatus');
+      .select('_id group apparatus')
+      .populate('group', 'name logo')
+      .populate('apparatus', 'name icon')
+      .lean();
 
     if (passages.length === 0) return;
 
