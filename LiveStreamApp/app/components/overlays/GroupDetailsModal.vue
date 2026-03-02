@@ -162,7 +162,7 @@ onUnmounted(() => {
   }
 })
 
-const formatTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+const formatTime = (iso: string) => formatLocalizedTime(iso)
 
 // Get all passage IDs from the same group and category
 const groupPassageIds = computed(() => {

@@ -1,41 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed } from 'vue'
+import { usePartyCountdown } from '~/composables/usePartyCountdown'
 
 const { t } = useI18n()
+const { timeLeftFull } = usePartyCountdown()
 
 // Plein écran sans layout standard
 definePageMeta({ header: false, footer: false })
-
-// Configuration de la date (9 Mai 2026 à 22h00)
-const partyDate = new Date('2026-05-09T22:00:00')
-const timeLeft = ref('')
-
-// Timer countdown
-const updateTimer = () => {
-  const now = new Date()
-  const diff = partyDate.getTime() - now.getTime()
-  
-  if (diff <= 0) {
-    timeLeft.value = t('afterparty.countdownNow')
-    return
-  }
-  
-  const d = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  const s = Math.floor((diff % (1000 * 60)) / 1000)
-  
-  timeLeft.value = `${d}j ${h}h ${m}m ${s}s`
-}
-
-let timerInterval: any
-
-onMounted(() => {
-  updateTimer()
-  timerInterval = setInterval(updateTimer, 1000)
-})
-
-onUnmounted(() => clearInterval(timerInterval))
 
 // Galerie photos
 const galleryImages = [
@@ -159,7 +130,7 @@ const drinkMenu = computed(() => [
               <div class="relative px-8 py-5 bg-black/90 backdrop-blur-xl border border-violet-500/30 rounded-xl">
                 <p class="text-[10px] text-white/60 uppercase tracking-[0.3em] mb-2 text-center font-bold">{{ t('afterparty.countdownLabel') }}</p>
                 <p class="text-3xl font-mono font-bold text-white tracking-wider text-center">
-                  {{ timeLeft || '--j --h --m' }}
+                  {{ timeLeftFull || '--j --h --m' }}
                 </p>
               </div>
             </div>
