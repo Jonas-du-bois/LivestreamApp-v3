@@ -14,3 +14,19 @@ Le bouton de retour (`UiBackButton`) est utilisé dans toutes les sous-pages de 
 **Apprentissages (LiveStreamApp) :**
 - L'utilisation de pseudo-classes `group-active` sur les éléments internes (comme les icônes) est un moyen extrêmement puissant et léger d'ajouter du "jus" aux composants réutilisables, sans Javascript additionnel.
 - Ces micro-interactions modifient les `transform`, `opacity` et `box-shadow`, évitant ainsi tout "Layout Shift" ou ralentissement (60fps fluide garanti sur mobile).
+
+## Micro-Interaction : Transition en fondu de la Map (`plan.vue`)
+
+**Problème observé :**
+Le bouton de basculement ("Toggle") entre la vue "Sombre" et la vue "Satellite" de la carte Leaflet dans `plan.vue` fonctionnait par suppression immédiate (`map.removeLayer`) puis ajout de la nouvelle couche. Cela provoquait un effet de clignotement brutal ("flash") très peu premium lors du changement de style, en rupture avec le reste du design "Liquid Glassmorphism" et fluide de l'application.
+
+**La Solution "Spark" :**
+1. **Ajout de transition CSS :** Application d'une transition CSS sur `opacity` de `.leaflet-layer` (`transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);`).
+2. **Animation par étapes (Cross-fade) :** La nouvelle couche `newLayer` est initialement injectée avec `opacity: 0`.
+3. **Trigger de Reflow :** Un court délai `setTimeout` permet d'appliquer ensuite `newLayer.setOpacity(1)` pour déclencher la transition CSS d'apparition. L'ancienne couche reste visible en arrière-plan pendant la durée de l'animation.
+4. **Nettoyage asynchrone :** Un deuxième `setTimeout` supprime l'ancienne couche du DOM (avec `leafletMap.removeLayer`) uniquement *après* que la transition d'apparition de la nouvelle soit terminée (environ `300ms`). Les timers sont proprement détruits dans le hook `onUnmounted`.
+
+**Apprentissages (LiveStreamApp) :**
+- L'API de base de LeafletJS ne gère pas les fondus enchaînés par défaut entre deux "TileLayers", mais combiner `setOpacity()`, un délai pour laisser le navigateur peindre, et une simple transition CSS sur la classe générique `.leaflet-layer` permet d'obtenir un effet luxueux (cross-fade) sans dépendance supplémentaire.
+- L'utilisation d'une courbe `cubic-bezier(0.25, 0.8, 0.25, 1)` pour l'opacité accompagne parfaitement les autres animations "Premium" de l'application (type `premium-swap`).
+- Il est crucial de limiter la durée des transitions à 300ms maximum pour respecter les contraintes de performance/réactivité et de bien nettoyer les timeouts stockés (`ReturnType<typeof setTimeout>`) via `onUnmounted` pour éviter des fuites mémoires si l'utilisateur change de page pendant la transition.
