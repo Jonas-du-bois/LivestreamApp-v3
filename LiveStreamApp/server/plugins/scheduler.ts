@@ -109,10 +109,11 @@ export default defineNitroPlugin((nitroApp) => {
       const updatedStreams: any[] = [];
 
       // A. Promote SCHEDULED -> LIVE (if startTime is reached/passed)
+      // BOLT: Optimize memory and payload size by selecting only necessary fields
       const passagesToGoLive = await PassageModel.find({
         status: 'SCHEDULED',
         startTime: { $lte: now }
-      }).populate('group').populate('apparatus');
+      }).populate('group', 'name').populate('apparatus', 'name code');
 
       if (passagesToGoLive.length > 0) {
         await PassageModel.updateMany(
@@ -131,7 +132,8 @@ export default defineNitroPlugin((nitroApp) => {
               { new: true }
             ).populate({
               path: 'currentPassage',
-              populate: [{ path: 'group' }, { path: 'apparatus' }]
+              // BOLT: Optimize memory usage by only selecting necessary fields for streams
+              populate: [{ path: 'group', select: 'name' }, { path: 'apparatus', select: 'name code' }]
             });
             
             if (stream) {
@@ -260,8 +262,9 @@ export default defineNitroPlugin((nitroApp) => {
     };
 
     const passages = await PassageModel.find(query)
-      .populate('group')
-      .populate('apparatus');
+      // BOLT: Optimize notifications by strictly selecting required fields
+      .populate('group', 'name')
+      .populate('apparatus', 'name code');
 
     if (passages.length === 0) return;
 
