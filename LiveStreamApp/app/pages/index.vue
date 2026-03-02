@@ -55,8 +55,8 @@ const happeningNow = computed<HappeningNowItem[]>(() => {
 
 const hasLiveLoadedOnce = ref(false)
 
-watch([livePending, liveResp], ([isPending, response]) => {
-  if (!isPending && response) {
+watch(livePending, (isPending) => {
+  if (!isPending) {
     hasLiveLoadedOnce.value = true
   }
 }, { immediate: true })
@@ -67,11 +67,11 @@ const showHappeningNowSkeleton = computed(() => !hasLiveLoadedOnce.value)
 const { data: weatherResp, pending: weatherPending } = await PublicService.getWeather()
 
 const weatherBadge = computed(() => {
-  if (weatherPending.value) return '--'
+  if (weatherPending.value) return '\u2014'
   if (weatherResp.value && typeof weatherResp.value.temperature === 'number') {
     return `${Math.round(weatherResp.value.temperature)}°`
   }
-  return '—'
+  return '\u2014'
 })
 
 const quickActions = computed<QuickAction[]>(() => [

@@ -14,7 +14,8 @@
     "noResults": "Aucun résultat",
     "open": "Ouvert",
     "closed": "Fermé",
-    "unknown": "Inconnu"
+    "unknown": "Inconnu",
+    "day": "Jour"
   },
   "nav": {
     "home": "Accueil",

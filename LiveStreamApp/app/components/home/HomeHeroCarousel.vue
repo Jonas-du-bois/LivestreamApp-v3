@@ -32,9 +32,9 @@ const { now } = useNow()
 // --- Countdown Logic for Afterparty ---
 const { timeLeftShort: afterpartyCountdown } = usePartyCountdown()
 
-// --- Additional Data Fetching ---
-const { data: albumResp } = await FlickrService.getAlbum()
-const { data: resultsResp } = await PublicService.getResults()
+// --- Additional Data Fetching (lazy, non-blocking) ---
+const { data: albumResp } = FlickrService.getAlbum()
+const { data: resultsResp } = PublicService.getResults()
 
 // --- Carousel State ---
 const currentIndex = ref(0)
@@ -78,14 +78,15 @@ const slides = computed(() => {
   }
 
   // 2. Dernières Photos (Flickr)
-  if (albumResp.value?.photos && albumResp.value.photos.length > 0) {
-    const latestPhoto = albumResp.value.photos[0]
+  const photos = albumResp.value?.photos
+  if (Array.isArray(photos) && photos.length > 0) {
+    const latestPhoto = photos[0]!
     items.push({
       id: `photo-${latestPhoto.id}`,
       type: 'photo',
       title: t('home.photos') || 'Galerie Photos',
       subtitle: t('home.latestPhotos') || 'Découvrez les clichés de la journée',
-      image: latestPhoto.url_l || latestPhoto.url_o || latestPhoto.url_m,
+      image: latestPhoto.urls?.l || latestPhoto.urls?.z || latestPhoto.urls?.m,
       to: '/photos',
       badge: {
         label: 'New',
@@ -96,8 +97,9 @@ const slides = computed(() => {
   }
 
   // 3. Derniers Résultats
-  if (resultsResp.value && resultsResp.value.length > 0) {
-    const lastResult = resultsResp.value[0]
+  const results = resultsResp.value
+  if (Array.isArray(results) && results.length > 0) {
+    const lastResult = results[0]
     items.push({
       id: `result-${lastResult._id}`,
       type: 'result',
@@ -255,11 +257,11 @@ const handleHeroClick = () => {
 
     <!-- Interactive Navigation Dots -->
     <div 
-      v-if="slides.length > 1"
+      v-if="slides && slides.length > 1"
       class="absolute bottom-6 right-8 z-30 flex items-center gap-3"
     >
       <button
-        v-for="(_, index) in slides"
+        v-for="(_, index) in (slides || [])"
         :key="index"
         @click.stop="manualChange(index)"
         class="relative flex items-center justify-center outline-none group/dot after:content-[''] after:absolute after:-inset-4"
