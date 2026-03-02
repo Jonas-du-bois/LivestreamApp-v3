@@ -267,6 +267,9 @@ function mapStreamToDisplay(s: any, passagesByLocation: Map<string, any>): Strea
               v-for="stream in offlineStreams" 
               :key="stream.id"
               class="glass-card overflow-hidden cursor-not-allowed"
+              role="group"
+              :aria-label="`${stream.title} - ${t('stream.streamUnavailable')}`"
+              :title="t('stream.streamUnavailable')"
             >
               <div class="relative aspect-video">
                 <ImageWithFallback 
