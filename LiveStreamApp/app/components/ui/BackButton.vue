@@ -46,8 +46,8 @@ const handleClick = (event: MouseEvent) => {
 }
 
 const commonClasses = computed(() => [
-  'inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 active:scale-95 text-white shadow-lg group outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
-  props.glass ? 'glass-panel bg-black/40 border border-white/10 hover:bg-white/20' : 'hover:bg-white/10'
+  'inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 active:scale-95 text-white shadow-lg group outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
+  props.glass ? 'glass-panel bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/20 hover:border-white/20 hover:shadow-cyan-500/20 active:bg-white/30 active:shadow-cyan-500/40' : 'hover:bg-white/10 active:bg-white/20'
 ])
 </script>
 
@@ -59,7 +59,7 @@ const commonClasses = computed(() => [
   >
     <Icon
       name="fluent:chevron-left-24-regular"
-      class="w-5 h-5 text-white transition-transform group-hover:-translate-x-0.5"
+      class="w-5 h-5 text-white transition-transform duration-300 group-hover:-translate-x-1 group-active:-translate-x-2 group-active:scale-90"
     />
     <span class="text-sm font-medium">
       <slot>{{ label }}</slot>
