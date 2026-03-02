@@ -36,3 +36,20 @@ Suivi des refactorisations, sécurisations et améliorations de qualité de code
 
 **Règle appliquée :**
 > "Bannir `any` pour garantir la sécurité du typage et toujours nettoyer les timers (setTimeout/setInterval) dans `onUnmounted`."
+
+## Sécurisation de useNetworkStatus, HomeHeroCarousel, et FilterChips
+
+**Cible :** `app/composables/useNetworkStatus.ts`, `app/components/home/HomeHeroCarousel.vue`, `app/components/ui/FilterChips.vue`
+
+**Problèmes identifiés :**
+*   Utilisation de `any` dans `useNetworkStatus.ts` pour accéder aux propriétés non standards de l'API `NetworkInformation` (`connection`, `mozConnection`, `webkitConnection`) sur l'objet `navigator`.
+*   Utilisation de `any` dans `HomeHeroCarousel.vue` pour typer un intervalle (`rotationInterval`) et un tableau d'éléments du carousel (`items`).
+*   Utilisation de `any` dans `FilterChips.vue` pour autoriser des propriétés additionnelles sur l'interface `FilterItem`.
+
+**Actions correctives :**
+*   🛡️ **Typage Strict (`useNetworkStatus.ts`) :** Création d'une interface `NetworkInformation` et d'une fonction `getConnection()` avec un cast sécurisé (`unknown` puis interface) pour éliminer les `any`.
+*   🛡️ **Typage Strict (`HomeHeroCarousel.vue`) :** Typage de `rotationInterval` avec `ReturnType<typeof setInterval> | null` et création de l'interface `CarouselItem` pour typer strictement le tableau `items`. Vérification que `stopRotation()` est bien appelé dans `onUnmounted`.
+*   🛡️ **Typage Strict (`FilterChips.vue`) :** Remplacement de `[key: string]: any` par `[key: string]: unknown` dans l'interface `FilterItem`.
+
+**Règle appliquée :**
+> "Remplacer l'utilisation de `any` pour interagir avec des APIs natives non standard ou externes par des interfaces dédiées. Typer strictement les retours de setInterval/setTimeout."

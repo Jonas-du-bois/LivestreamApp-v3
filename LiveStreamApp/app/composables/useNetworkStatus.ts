@@ -2,9 +2,24 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 export type ConnectionStatus = 'online' | 'offline' | 'poor'
 
+export interface NetworkInformation extends EventTarget {
+  effectiveType: 'slow-2g' | '2g' | '3g' | '4g'
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void
+  removeEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: EventListenerOptions | boolean): void
+}
+
 export function useNetworkStatus() {
   const status = ref<ConnectionStatus>('online')
   const isOnline = ref(true)
+
+  const getConnection = (): NetworkInformation | null => {
+    const nav = navigator as unknown as {
+      connection?: NetworkInformation
+      mozConnection?: NetworkInformation
+      webkitConnection?: NetworkInformation
+    }
+    return nav.connection || nav.mozConnection || nav.webkitConnection || null
+  }
 
   const updateNetworkStatus = () => {
     if (typeof navigator === 'undefined') return
@@ -18,7 +33,7 @@ export function useNetworkStatus() {
     isOnline.value = true
 
     // API Network Information (non supportée sur tous les navigateurs, particulièrement iOS/Safari)
-    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection
+    const conn = getConnection()
     
     if (conn) {
       const effectiveType = conn.effectiveType // 'slow-2g', '2g', '3g', or '4g'
@@ -32,7 +47,7 @@ export function useNetworkStatus() {
     }
   }
 
-  let connectionMonitor: any = null
+  let connectionMonitor: NetworkInformation | null = null
 
   onMounted(() => {
     if (typeof window === 'undefined') return
@@ -42,7 +57,7 @@ export function useNetworkStatus() {
     window.addEventListener('online', updateNetworkStatus)
     window.addEventListener('offline', updateNetworkStatus)
 
-    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection
+    const conn = getConnection()
     if (conn) {
       conn.addEventListener('change', updateNetworkStatus)
       connectionMonitor = conn

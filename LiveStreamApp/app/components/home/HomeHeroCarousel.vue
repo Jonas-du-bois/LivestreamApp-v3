@@ -36,14 +36,29 @@ const { timeLeftShort: afterpartyCountdown } = usePartyCountdown()
 const { data: albumResp } = FlickrService.getAlbum()
 const { data: resultsResp } = PublicService.getResults()
 
+interface CarouselItem {
+  id: string
+  type: 'live' | 'photo' | 'result' | 'afterparty' | 'food'
+  title: string
+  subtitle: string
+  image: string
+  to: string
+  badge?: {
+    label: string
+    variant: string
+    pulse?: boolean
+    showDot?: boolean
+  }
+}
+
 // --- Carousel State ---
 const currentIndex = ref(0)
-const rotationInterval = ref<any>(null)
-const SLIDE_DURATION = 15000 // 8 seconds per slide
+const rotationInterval = ref<ReturnType<typeof setInterval> | null>(null)
+const SLIDE_DURATION = 15000 // 15 seconds per slide
 
 // --- Slide Construction ---
 const slides = computed(() => {
-  const items: any[] = []
+  const items: CarouselItem[] = []
 
   // 1. Priorité aux Directs (Live)
   if (props.livePassages.length > 0) {
