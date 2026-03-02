@@ -7,7 +7,7 @@
 interface FilterItem {
   id: string | number
   label: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface Props {
