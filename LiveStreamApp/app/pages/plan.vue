@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, shallowRef, computed } from 'vue';
 import 'leaflet/dist/leaflet.css'; // Import CSS Leaflet
-import { useRouter } from 'vue-router';
 
 const { t } = useI18n()
 const router = useRouter()
@@ -14,8 +12,8 @@ const goBack = () => {
 }
 
 const mapContainer = ref<HTMLElement | null>(null);
-const map = shallowRef<any>(null); // Référence à l'instance Leaflet
-const currentLayer = shallowRef<any>(null); // La couche de tuiles active
+const map = shallowRef<unknown>(null); // Référence à l'instance Leaflet
+const currentLayer = shallowRef<unknown>(null); // La couche de tuiles active
 const isSatellite = ref(false); // État du bouton (False = Dark, True = Satellite)
 
 // --- CONFIGURATION DES LAYERS ---
@@ -39,9 +37,11 @@ const toggleMapStyle = async () => {
   if (!map.value || !currentLayer.value) return;
 
   const L = (await import('leaflet')).default;
+  const leafletMap = map.value as import('leaflet').Map;
+  const leafletLayer = currentLayer.value as import('leaflet').TileLayer;
   
   // 1. Retirer la couche actuelle
-  map.value.removeLayer(currentLayer.value);
+  leafletMap.removeLayer(leafletLayer);
 
   // 2. Inverser l'état
   isSatellite.value = !isSatellite.value;
@@ -54,7 +54,7 @@ const toggleMapStyle = async () => {
   });
 
   // 4. Ajouter la nouvelle couche
-  newLayer.addTo(map.value);
+  newLayer.addTo(leafletMap);
   currentLayer.value = newLayer;
 };
 
@@ -65,16 +65,17 @@ onMounted(async () => {
   const L = (await import('leaflet')).default;
 
   // Initialiser la carte
-  map.value = L.map(mapContainer.value, {
+  const leafletMap = L.map(mapContainer.value, {
     zoomControl: false, // On cache les boutons +/- par défaut pour gérer le design
     attributionControl: false
   }).setView([46.77311798451803, 6.63517385120118], 16);
+  map.value = leafletMap;
 
   // Ajouter la couche par défaut (Sombre)
   currentLayer.value = L.tileLayer(DARK_URL, {
     maxZoom: 20,
     subdomains: 'abcd',
-  }).addTo(map.value);
+  }).addTo(leafletMap);
 
   // Ajouter les marqueurs (POIs)
   pointsOfInterest.value.forEach(poi => {
@@ -91,7 +92,7 @@ onMounted(async () => {
       popupAnchor: [0, -45] // La bulle flotte au-dessus
     });
 
-    const marker = L.marker([poi.lat, poi.lng], { icon: customIcon }).addTo(map.value);
+    const marker = L.marker([poi.lat, poi.lng], { icon: customIcon }).addTo(leafletMap);
     
     // 2. La Popup Glassmorphic (Contenu HTML pur)
     // Design épuré : Juste l'icône ronde et le titre
