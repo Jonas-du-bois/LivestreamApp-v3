@@ -146,6 +146,7 @@ onMounted(async () => {
           glow
           class="pointer-events-auto"
           :class="!isSatellite ? '!bg-gray-900/60 !border-white/20' : ''"
+          :aria-label="isSatellite ? t('plan.showMap') : t('plan.showSatellite')"
         />
       </div>
     </Transition>
