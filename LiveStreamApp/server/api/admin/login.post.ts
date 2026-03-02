@@ -23,6 +23,13 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  if (typeof password !== 'string') {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid password format',
+    });
+  }
+
   // Security: Limit password length to prevent DoS via hashing of large payloads
   if (password.length > 1024) {
     throw createError({
