@@ -11,16 +11,8 @@ export default defineCachedEventHandler(async (event) => {
 
   try {
     // 1. Metadata: Available Days
-    const dayAggregation = await PassageModel.aggregate([
-      { $match: { isPublished: true } },
-      {
-        $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
-          sampleDate: { $first: "$startTime" }
-        }
-      },
-      { $sort: { _id: 1 } }
-    ]);
+    // BOLT: Optimize available days query by using a cached function to avoid re-running aggregation on every results fetch
+    const dayAggregation = await getCachedPublishedDays();
 
     const dayMap = new Map<string, string[]>();
     const availableDaysSet = new Set<string>();
