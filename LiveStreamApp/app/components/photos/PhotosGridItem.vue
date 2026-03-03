@@ -48,8 +48,8 @@ const formattedTime = computed(() => {
     type="button"
     class="relative w-full aspect-square overflow-hidden rounded-xl group outline-none
            focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2
-           focus-visible:ring-offset-[#0B1120] transition-transform duration-200
-           active:scale-[0.96] premium-cascade-item"
+           focus-visible:ring-offset-[#0B1120] transition-transform duration-150
+           active:scale-[0.94] premium-cascade-item"
     :class="isNew ? 'ring-2 ring-cyan-400/70 ring-offset-[2px] ring-offset-[#0B1120]' : 'glass-card'"
     :style="{ '--cascade-index': index }"
     :aria-label="photo.title || `Photo ${index + 1}`"
@@ -76,7 +76,7 @@ const formattedTime = computed(() => {
       loading="lazy"
       decoding="async"
       class="absolute inset-0 w-full h-full object-cover transition-transform duration-500
-             group-hover:scale-105 group-active:scale-102"
+             group-hover:scale-105"
       :class="imgLoaded ? 'opacity-100' : 'opacity-0'"
       @load="handleLoad"
       @error="handleError"
@@ -90,19 +90,20 @@ const formattedTime = computed(() => {
       <Icon name="fluent:image-off-24-regular" class="text-3xl text-white/20" />
     </div>
 
-    <!-- Overlay hover avec infos -->
+    <!-- Overlay hover avec infos (toujours visible sur mobile, hover sur desktop) -->
     <div
-      class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent
-             opacity-0 group-hover:opacity-100 transition-opacity duration-300
-             flex flex-col justify-end p-2.5 pointer-events-none"
+      v-if="!imgError"
+      class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent
+             flex flex-col justify-end p-2.5 pointer-events-none
+             opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300"
     >
       <p
         v-if="photo.title"
-        class="text-white text-xs font-semibold truncate leading-tight"
+        class="text-white text-[11px] font-semibold truncate leading-tight drop-shadow"
       >
         {{ photo.title }}
       </p>
-      <p class="text-white/50 text-[10px] mt-0.5">{{ formattedTime }}</p>
+      <p class="text-white/60 text-[10px] mt-0.5 drop-shadow">{{ formattedTime }}</p>
     </div>
   </button>
 </template>

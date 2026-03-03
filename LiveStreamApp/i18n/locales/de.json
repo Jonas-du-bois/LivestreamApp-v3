@@ -443,6 +443,11 @@
     "emptyTitle": "Öppe no kei Fotos",
     "emptyDescription": "De Fotograf het no nix hochglade. Komm speter zrug!",
     "errorTitle": "Fotos nid verfiegbar",
-    "errorDescription": "Lade nid möglich. Check dini Verbindig oder versuechs speter nomol."
+    "errorDescription": "Lade nid möglich. Check dini Verbindig oder versuechs speter nomol.",
+    "retryButton": "Nomol versuche",
+    "imageUnavailable": "Bild nid verfiegbar",
+    "openOriginal": "Im Vollbild öffne",
+    "prevPhoto": "Vorherigs Foto",
+    "nextPhoto": "Nächstes Foto"
   }
 }

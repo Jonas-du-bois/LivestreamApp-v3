@@ -445,6 +445,11 @@
     "emptyTitle": "Aucune photo pour l'instant",
     "emptyDescription": "Le photographe n'a pas encore publié de photos. Revenez un peu plus tard !",
     "errorTitle": "Photos indisponibles",
-    "errorDescription": "Impossible de charger les photos. Vérifie ta connexion ou réessaie dans quelques instants."
+    "errorDescription": "Impossible de charger les photos. Vérifie ta connexion ou réessaie dans quelques instants.",
+    "retryButton": "Réessayer",
+    "imageUnavailable": "Image indisponible",
+    "openOriginal": "Voir en plein écran",
+    "prevPhoto": "Photo précédente",
+    "nextPhoto": "Photo suivante"
   }
 }

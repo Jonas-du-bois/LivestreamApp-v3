@@ -5,6 +5,7 @@
  * - Navigation prev/next via boutons ou touches fléchées
  * - Fermeture via Echap, bouton ou clic sur le fond
  * - Swipe horizontal sur mobile
+ * - Transition directionnelle (gauche/droite) entre photos
  * - Verrouillage du scroll du body pendant l'ouverture
  * - Affiche l'image en grande résolution (url_l → url_z en fallback)
  */
@@ -37,11 +38,33 @@ const currentPhoto = computed((): FlickrPhoto | null =>
 const canPrev = computed(() => currentIndex.value !== null && currentIndex.value > 0)
 const canNext = computed(() => currentIndex.value !== null && currentIndex.value < props.photos.length - 1)
 
-const close = () => { currentIndex.value = null }
-const prev = () => { if (canPrev.value && currentIndex.value !== null) currentIndex.value-- }
-const next = () => { if (canNext.value && currentIndex.value !== null) currentIndex.value++ }
+// ─── Direction de navigation (pour les transitions directionnelles) ──────────
+const navDirection = ref<'next' | 'prev' | null>(null)
 
-// ─── Chargement de l'image ──────────────────────────────────────────────────
+const transitionName = computed(() => {
+  if (navDirection.value === 'next') return 'slide-next'
+  if (navDirection.value === 'prev') return 'slide-prev'
+  return 'fade'
+})
+
+const close = () => {
+  navDirection.value = null
+  currentIndex.value = null
+}
+const prev = () => {
+  if (canPrev.value && currentIndex.value !== null) {
+    navDirection.value = 'prev'
+    currentIndex.value--
+  }
+}
+const next = () => {
+  if (canNext.value && currentIndex.value !== null) {
+    navDirection.value = 'next'
+    currentIndex.value++
+  }
+}
+
+// ─── Chargement de l'image (lié à la photo affichée via sa clé) ────────────
 const imgLoaded = ref(false)
 const imgError = ref(false)
 
@@ -139,11 +162,27 @@ onUnmounted(() => {
             <p class="text-white/40 text-xs mt-0.5">{{ formattedDateTime }}</p>
           </div>
 
-          <div class="pointer-events-auto flex items-center gap-3 flex-shrink-0">
+          <div class="pointer-events-auto flex items-center gap-2 flex-shrink-0">
             <!-- Compteur -->
-            <span class="text-white/40 text-xs tabular-nums">
+            <span class="text-white/40 text-xs tabular-nums mr-1">
               {{ (currentIndex ?? 0) + 1 }} / {{ photos.length }}
             </span>
+
+            <!-- Bouton ouvrir l'original -->
+            <a
+              :href="currentPhoto.urls.l"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="glass-card p-2.5 rounded-full active:scale-95 transition-all
+                     hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none
+                     flex items-center justify-center"
+              :aria-label="t('photos.openOriginal')"
+              :title="t('photos.openOriginal')"
+              @click.stop
+            >
+              <Icon name="fluent:arrow-expand-24-regular" class="w-5 h-5 text-white" />
+            </a>
+
             <!-- Bouton fermer -->
             <button
               type="button"
@@ -157,61 +196,70 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- ─── Zone image ──────────────────────────────────────────────── -->
-        <div class="relative z-10 flex-1 flex items-center justify-center overflow-hidden px-4">
-          <!-- Skeleton pendant le chargement -->
-          <div
-            v-if="!imgLoaded && !imgError"
-            class="absolute inset-[15%] rounded-2xl premium-skeleton-surface premium-skeleton-shimmer"
-          />
-
-          <!-- Image grande résolution -->
-          <img
-            v-if="!imgError"
-            :src="currentPhoto.urls.l"
-            :alt="currentPhoto.title || 'Photo'"
-            class="relative max-w-full max-h-full object-contain rounded-lg
-                   transition-opacity duration-300 select-none"
-            :class="imgLoaded ? 'opacity-100' : 'opacity-0'"
-            draggable="false"
-            @load="imgLoaded = true"
-            @error="imgError = true"
-          />
-
-          <!-- État d'erreur -->
-          <div v-if="imgError" class="flex flex-col items-center gap-3 text-white/30">
-            <Icon name="fluent:image-off-24-regular" class="text-6xl" />
-            <span class="text-sm">Image indisponible</span>
-          </div>
-
-          <!-- ─── Flèche précédent ──────────────────────────────────────── -->
+        <!-- ─── Zone image avec transition directionnelle ────────────────── -->
+        <div class="relative z-10 flex-1 overflow-hidden">
+          <!-- Bouton précédent (par-dessus la transition) -->
           <Transition name="fade">
             <button
               v-if="canPrev"
               type="button"
-              class="absolute left-3 top-1/2 -translate-y-1/2 glass-card p-3 rounded-full
-                     active:scale-95 transition-all hover:bg-white/60
+              class="absolute left-3 top-1/2 -translate-y-1/2 z-20 glass-card p-3 rounded-full
+                     active:scale-95 transition-all hover:bg-white/20
                      focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
-              aria-label="Photo précédente"
+              :aria-label="t('photos.prevPhoto')"
               @click.stop="prev"
             >
               <Icon name="fluent:chevron-left-24-regular" class="w-6 h-6 text-white" />
             </button>
           </Transition>
 
-          <!-- ─── Flèche suivant ─────────────────────────────────────────── -->
+          <!-- Bouton suivant (par-dessus la transition) -->
           <Transition name="fade">
             <button
               v-if="canNext"
               type="button"
-              class="absolute right-3 top-1/2 -translate-y-1/2 glass-card p-3 rounded-full
-                     active:scale-95 transition-all hover:bg-white/60
+              class="absolute right-3 top-1/2 -translate-y-1/2 z-20 glass-card p-3 rounded-full
+                     active:scale-95 transition-all hover:bg-white/20
                      focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
-              aria-label="Photo suivante"
+              :aria-label="t('photos.nextPhoto')"
               @click.stop="next"
             >
               <Icon name="fluent:chevron-right-24-regular" class="w-6 h-6 text-white" />
             </button>
+          </Transition>
+
+          <!-- Contenu image avec transition directionnelle (clé = id de la photo) -->
+          <Transition :name="transitionName">
+            <div
+              :key="currentPhoto.id"
+              class="absolute inset-0 flex items-center justify-center px-14"
+            >
+              <!-- Skeleton pendant le chargement -->
+              <div
+                v-if="!imgLoaded && !imgError"
+                class="absolute inset-[15%] rounded-2xl premium-skeleton-surface premium-skeleton-shimmer"
+              />
+
+              <!-- Image grande résolution -->
+              <img
+                v-if="!imgError"
+                :key="`img-${currentPhoto.id}`"
+                :src="currentPhoto.urls.l"
+                :alt="currentPhoto.title || 'Photo'"
+                class="relative max-w-full max-h-full object-contain rounded-lg
+                       transition-opacity duration-300 select-none"
+                :class="imgLoaded ? 'opacity-100' : 'opacity-0'"
+                draggable="false"
+                @load="imgLoaded = true"
+                @error="imgError = true"
+              />
+
+              <!-- État d'erreur -->
+              <div v-if="imgError" class="flex flex-col items-center gap-3 text-white/30">
+                <Icon name="fluent:image-off-24-regular" class="text-6xl" />
+                <span class="text-sm">{{ t('photos.imageUnavailable') }}</span>
+              </div>
+            </div>
           </Transition>
         </div>
 
@@ -223,7 +271,7 @@ onUnmounted(() => {
           <div
             v-for="(_, i) in photos.slice(0, 20)"
             :key="i"
-            class="h-1 rounded-full transition-all duration-200"
+            class="h-1 rounded-full transition-all duration-300"
             :class="i === currentIndex
               ? 'w-5 bg-cyan-400'
               : 'w-1.5 bg-white/20'"
@@ -239,6 +287,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* ─── Ouverture / fermeture du lightbox ─── */
 .lightbox-enter-active {
   transition: opacity 0.2s ease;
 }
@@ -247,6 +296,44 @@ onUnmounted(() => {
 }
 .lightbox-enter-from,
 .lightbox-leave-to {
+  opacity: 0;
+}
+
+/* ─── Transition de navigation suivant (glissement vers la gauche) ─── */
+.slide-next-enter-active,
+.slide-next-leave-active,
+.slide-prev-enter-active,
+.slide-prev-leave-active {
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s ease;
+  position: absolute;
+  inset: 0;
+}
+
+.slide-next-enter-from {
+  transform: translateX(60px);
+  opacity: 0;
+}
+.slide-next-leave-to {
+  transform: translateX(-60px);
+  opacity: 0;
+}
+
+.slide-prev-enter-from {
+  transform: translateX(-60px);
+  opacity: 0;
+}
+.slide-prev-leave-to {
+  transform: translateX(60px);
+  opacity: 0;
+}
+
+/* ─── Fade simple (ouverture directe) ─── */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

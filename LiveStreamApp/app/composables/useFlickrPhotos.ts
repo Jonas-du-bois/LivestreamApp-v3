@@ -26,7 +26,7 @@ export function useFlickrPhotos() {
     if (!newData?.photos?.length) return
 
     if (!isInitialized.value) {
-      // Premier chargement : on considère toutes les photos comme "connues"
+      // Premier chargement (SSR ou client) : on considère toutes les photos comme "connues"
       newData.photos.forEach(p => knownIds.value.add(p.id))
       isInitialized.value = true
       return
@@ -39,7 +39,7 @@ export function useFlickrPhotos() {
         newPhotoIds.value.add(p.id)
       }
     })
-  })
+  }, { immediate: true })
 
   const clearNewPhotos = () => {
     newPhotoIds.value = new Set<string>()

@@ -443,6 +443,11 @@
     "emptyTitle": "Nessuna foto per ora",
     "emptyDescription": "Il fotografo non ha ancora pubblicato foto. Riprova tra poco!",
     "errorTitle": "Foto non disponibili",
-    "errorDescription": "Impossibile caricare le foto. Controlla la connessione o riprova tra poco."
+    "errorDescription": "Impossibile caricare le foto. Controlla la connessione o riprova tra poco.",
+    "retryButton": "Riprova",
+    "imageUnavailable": "Immagine non disponibile",
+    "openOriginal": "Apri a schermo intero",
+    "prevPhoto": "Foto precedente",
+    "nextPhoto": "Foto successiva"
   }
 }

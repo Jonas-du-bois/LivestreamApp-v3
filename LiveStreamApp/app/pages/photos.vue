@@ -6,12 +6,18 @@ import PhotosLightbox from '~/components/photos/PhotosLightbox.vue'
 
 const { t } = useI18n()
 
+useSeoMeta({
+  title: () => t('photos.title'),
+  description: () => t('photos.subtitle')
+})
+
 // ─── Données Flickr ──────────────────────────────────────────────────────────
 const {
   photos,
   total,
   pending,
   error,
+  refresh,
   hasLoadedOnce,
   newPhotoIds,
   newPhotoCount,
@@ -159,7 +165,20 @@ const handleNewPhotosBanner = () => {
         :title="t('photos.errorTitle')"
         :description="t('photos.errorDescription')"
         :glass="true"
-      />
+      >
+        <template #actions>
+          <button
+            type="button"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500/15 border border-cyan-400/30
+                   text-cyan-300 text-sm font-semibold active:scale-95 transition-transform duration-150
+                   hover:bg-cyan-500/25 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
+            @click="refresh()"
+          >
+            <Icon name="fluent:arrow-sync-24-regular" class="w-4 h-4" :class="{ 'animate-spin': pending }" />
+            {{ t('photos.retryButton') }}
+          </button>
+        </template>
+      </UiEmptyState>
     </div>
 
     <!-- ─── Aucune photo ───────────────────────────────────────────────────── -->
