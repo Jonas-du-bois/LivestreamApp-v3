@@ -22,6 +22,10 @@ const DARK_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
 // 2. Layer SATELLITE (Esri WorldImagery) - Très réaliste
 const SAT_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 
+// Timeout management for cleanup
+const transitionTimeout1 = ref<ReturnType<typeof setTimeout> | null>(null);
+const transitionTimeout2 = ref<ReturnType<typeof setTimeout> | null>(null);
+
 // Liste des POIs (Points d'Intérêt)
 const pointsOfInterest = computed(() => [
   { name: t('plan.pois.parking'), lat: 46.77151290029007, lng: 6.635177597178094, type: "info", icon: "fluent:vehicle-car-parking-24-regular" },
@@ -38,25 +42,41 @@ const toggleMapStyle = async () => {
 
   const L = (await import('leaflet')).default;
   const leafletMap = map.value as import('leaflet').Map;
-  const leafletLayer = currentLayer.value as import('leaflet').TileLayer;
+  const oldLayer = currentLayer.value as import('leaflet').TileLayer;
   
-  // 1. Retirer la couche actuelle
-  leafletMap.removeLayer(leafletLayer);
-
-  // 2. Inverser l'état
+  // 1. Inverser l'état
   isSatellite.value = !isSatellite.value;
 
-  // 3. Créer la nouvelle couche
+  // 2. Créer la nouvelle couche
   const newUrl = isSatellite.value ? SAT_URL : DARK_URL;
   const newLayer = L.tileLayer(newUrl, {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap & Esri',
+    opacity: 0 // ✨ Spark: Commence invisible pour le fondu
   });
 
-  // 4. Ajouter la nouvelle couche
+  // 3. Ajouter la nouvelle couche
   newLayer.addTo(leafletMap);
   currentLayer.value = newLayer;
+
+  // ✨ Spark: Animation de cross-fade fluide (< 300ms)
+  if (transitionTimeout1.value) clearTimeout(transitionTimeout1.value);
+  if (transitionTimeout2.value) clearTimeout(transitionTimeout2.value);
+
+  transitionTimeout1.value = setTimeout(() => {
+    newLayer.setOpacity(1); // Fait apparaître la nouvelle couche
+
+    // Attend la fin de la transition CSS (voir la balise <style>) avant de retirer l'ancienne
+    transitionTimeout2.value = setTimeout(() => {
+      leafletMap.removeLayer(oldLayer);
+    }, 300);
+  }, 50); // Léger délai pour s'assurer que le DOM a pris en compte l'opacité 0
 };
+
+onUnmounted(() => {
+  if (transitionTimeout1.value) clearTimeout(transitionTimeout1.value);
+  if (transitionTimeout2.value) clearTimeout(transitionTimeout2.value);
+});
 
 onMounted(async () => {
   if (!mapContainer.value) return;
@@ -304,6 +324,12 @@ onMounted(async () => {
 }
 
 /* 3. ANIMATIONS SPARK ✨ */
+
+/* Transition fluide pour les couches de la carte (Cross-fade Satellite/Dark) */
+.leaflet-layer {
+  transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
 .rotate-scale-enter-active,
 .rotate-scale-leave-active {
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);

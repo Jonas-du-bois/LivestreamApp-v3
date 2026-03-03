@@ -58,8 +58,8 @@ const displayCountdown = computed(() =>
 
 // --- Carousel State ---
 const currentIndex = ref(0)
-const rotationInterval = ref<any>(null)
-const SLIDE_DURATION = 15000 // 8 seconds per slide
+const rotationInterval = ref<ReturnType<typeof setInterval> | null>(null)
+const SLIDE_DURATION = 15000 // 15 seconds per slide
 
 // ─── Slides SSR stables (toujours identiques, aucune donnée dynamique) ───────
 // Ces slides sont affichées pendant le SSR et lors de la 1ère passe client
