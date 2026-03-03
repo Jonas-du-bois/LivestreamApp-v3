@@ -41,7 +41,8 @@
     "info": "Infos",
     "restaurant": "Restau",
     "afterParty": "After Party",
-    "photos": "Photos"
+    "photos": "Photos",
+    "latestPhotos": "Découvrez les clichés de la journée"
   },
   "network": {
     "offlineTitle": "Vous êtes hors ligne",
@@ -83,7 +84,6 @@
     }
   },
   "schedule": {
-    "group": "Groupe",
     "addToFavorites": "Ajouter {name} aux favoris",
     "removeFromFavorites": "Retirer {name} des favoris",
     "openGroupDetails": "Voir les détails pour {group} à {apparatus} à {time}",

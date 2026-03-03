@@ -120,7 +120,7 @@ onUnmounted(() => {
       >
         <!-- Arrière-plan opaque avec blur -->
         <div
-          class="absolute inset-0 bg-black/96 backdrop-blur-sm"
+          class="absolute inset-0 bg-black/96 backdrop-blur-lg"
           @click="close"
         />
 
@@ -190,7 +190,7 @@ onUnmounted(() => {
               v-if="canPrev"
               type="button"
               class="absolute left-3 top-1/2 -translate-y-1/2 glass-card p-3 rounded-full
-                     active:scale-95 transition-all hover:bg-white/20
+                     active:scale-95 transition-all hover:bg-white/60
                      focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
               aria-label="Photo précédente"
               @click.stop="prev"
@@ -205,7 +205,7 @@ onUnmounted(() => {
               v-if="canNext"
               type="button"
               class="absolute right-3 top-1/2 -translate-y-1/2 glass-card p-3 rounded-full
-                     active:scale-95 transition-all hover:bg-white/20
+                     active:scale-95 transition-all hover:bg-white/60
                      focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
               aria-label="Photo suivante"
               @click.stop="next"

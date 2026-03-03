@@ -24,26 +24,31 @@ export default defineCachedEventHandler(async (_event) => {
   const albumId = config.flickrAlbumId as string
   const userId = config.flickrUserId as string
 
-  if (!apiKey || !albumId || !userId) {
+  if (!apiKey || !albumId) {
     throw createError({
       statusCode: 503,
       statusMessage: 'Flickr not configured',
-      message: 'Les variables FLICKR_API_KEY, FLICKR_ALBUM_ID et FLICKR_USER_ID sont manquantes.'
+      message: 'Les variables FLICKR_API_KEY et FLICKR_ALBUM_ID sont manquantes.'
     })
   }
 
-  const params = new URLSearchParams({
+  const paramsObj: Record<string, string> = {
     method: 'flickr.photosets.getPhotos',
     api_key: apiKey,
     photoset_id: albumId,
-    user_id: userId,
     format: 'json',
     nojsoncallback: '1',
     extras: 'url_l,url_z,url_m,url_s,date_upload,title',
     per_page: '500',
     media: 'photos'
-  })
+  }
 
+  // user_id doit être un NSID Flickr (ex: 12345678@N01), pas un nom d'utilisateur
+  if (userId && /^\d+@N\d+$/.test(userId)) {
+    paramsObj.user_id = userId
+  }
+
+  const params = new URLSearchParams(paramsObj)
   const url = `https://www.flickr.com/services/rest/?${params.toString()}`
 
   console.log('[flickr] Fetching album', albumId)

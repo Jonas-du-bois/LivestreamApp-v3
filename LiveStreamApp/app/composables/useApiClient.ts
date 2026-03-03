@@ -81,9 +81,13 @@ export const useApiClient = <T>(
   // Inject Headers
   options.headers = getAuthHeaders(options.headers)
 
-  // If the component is already mounted (client-side calls after mount), use $fetch
+  // Utiliser $fetch si :
+  //  - Pas de contexte composant Vue (appel depuis un store Pinia, un service, un handler) → getCurrentInstance() est null
+  //  - OU le composant est déjà monté (appel post-setup, ex: toggleFavorite)
+  // Dans les deux cas, useFetch() déclencherait le warning Nuxt "[useFetch] Component is already mounted".
+  // useFetch est réservé au setup() initial pendant le SSR/hydration (vm présent ET non encore monté).
   const vm = getCurrentInstance?.()
-  if (vm && (vm as any).isMounted) {
+  if (!vm || (vm as any).isMounted) {
     const data = ref<T | null>(null)
     const pending = ref(false)
     const error = ref<any>(null)

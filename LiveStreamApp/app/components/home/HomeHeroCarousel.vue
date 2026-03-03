@@ -12,6 +12,13 @@ import { PublicService } from '~/services/public.service'
 import { useNow } from '~/composables/useNow'
 import type { PassageEnriched, Stream, Passage } from '~/types/api'
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Two-Pass Render Guard
+// `isMounted` reste `false` pendant le SSR ET lors du premier rendu client
+// (hydration). Vue compare donc deux DOM identiques. Après onMounted(), la
+// valeur passe à `true` et le composant bascule sur son contenu dynamique.
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface Props {
   livePassages?: PassageEnriched[]
   liveStreams?: Stream[]
@@ -36,13 +43,51 @@ const { timeLeftShort: afterpartyCountdown } = usePartyCountdown()
 const { data: albumResp } = FlickrService.getAlbum()
 const { data: resultsResp } = PublicService.getResults()
 
+// --- Two-Pass guard ---
+const isMounted = ref(false)
+
+/**
+ * Compte à rebours affiché dans la slide afterparty.
+ * - Passe SSR / 1er rendu client : placeholder stable « ... » pour éviter
+ *   le Text Mismatch causé par Date.now() qui diffère entre serveur et navigateur.
+ * - Après montage : valeur réelle mise à jour chaque seconde.
+ */
+const displayCountdown = computed(() =>
+  isMounted.value ? afterpartyCountdown.value : '...'
+)
+
 // --- Carousel State ---
 const currentIndex = ref(0)
 const rotationInterval = ref<any>(null)
 const SLIDE_DURATION = 15000 // 8 seconds per slide
 
-// --- Slide Construction ---
-const slides = computed(() => {
+// ─── Slides SSR stables (toujours identiques, aucune donnée dynamique) ───────
+// Ces slides sont affichées pendant le SSR et lors de la 1ère passe client
+// (avant onMounted). Elles garantissent que le DOM client correspond
+// exactement au HTML émis par le serveur → zéro hydration mismatch.
+const ssrSlides = computed(() => [
+  {
+    id: 'afterparty',
+    type: 'afterparty',
+    title: 'AFTER PARTY',
+    subtitle: t('afterparty.themeValue') || 'Thème: Bad Taste',
+    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2340&auto=format&fit=crop',
+    to: '/afterparty',
+    badge: { label: 'Soon', variant: 'violet', pulse: true, showDot: false }
+  },
+  {
+    id: 'food',
+    type: 'food',
+    title: t('food.title'),
+    subtitle: t('food.subtitle'),
+    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=2340',
+    to: '/food',
+    badge: { label: t('common.open'), variant: 'green', showDot: true, pulse: false }
+  }
+])
+
+// ─── Slides dynamiques (toute la logique originale, actives après onMounted) ──
+const dynamicSlides = computed(() => {
   const items: any[] = []
 
   // 1. Priorité aux Directs (Live)
@@ -147,6 +192,15 @@ const slides = computed(() => {
   return items
 })
 
+/**
+ * Point d'entrée unique utilisé par le template.
+ * - false  → ssrSlides  : DOM stable, hydration garantie sans mismatch
+ * - true   → dynamicSlides : contenu temps-réel une fois le client prêt
+ */
+const slides = computed(() =>
+  isMounted.value ? dynamicSlides.value : ssrSlides.value
+)
+
 const currentSlide = computed(() => slides.value[currentIndex.value] || slides.value[0])
 
 // --- Rotation Logic ---
@@ -171,6 +225,10 @@ const manualChange = (index: number) => {
 }
 
 onMounted(() => {
+  // Deuxième passe : on active les slides dynamiques PUIS on lance la rotation.
+  // L'ordre est important : isMounted doit être true avant startRotation()
+  // pour que le watch sur slides.length démarre avec le bon compte.
+  isMounted.value = true
   startRotation()
 })
 
@@ -223,7 +281,8 @@ const handleHeroClick = () => {
               <Transition name="badge-pop" appear>
                 <UiStatusBadge variant="violet" pulse>
                   <Icon name="fluent:clock-24-regular" class="w-3 h-3 mr-1" />
-                  {{ afterpartyCountdown }}
+                 
+                  {{ displayCountdown }}
                 </UiStatusBadge>
               </Transition>
             </div>
