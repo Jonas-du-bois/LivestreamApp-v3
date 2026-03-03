@@ -53,3 +53,19 @@ Suivi des refactorisations, sécurisations et améliorations de qualité de code
 
 **Règle appliquée :**
 > "Remplacer l'utilisation de `any` pour interagir avec des APIs natives non standard ou externes par des interfaces dédiées. Typer strictement les retours de setInterval/setTimeout."
+
+## Sécurisation de useNetworkStatus et socket.client
+
+**Cible :** `app/composables/useNetworkStatus.ts`, `app/plugins/socket.client.ts`
+
+**Problèmes identifiés :**
+*   Utilisation explicite des auto-imports Nuxt (`ref`, `onMounted`, `onUnmounted`) dans `useNetworkStatus.ts`, violant les bonnes pratiques Nuxt 4.
+*   Utilisation directe de `typeof window === 'undefined'` ou `typeof document !== 'undefined'` au lieu de `import.meta.client` pour les guards SSR.
+*   Risque potentiel de plantage SSR (Hydration Mismatch ou accès prématuré aux API navigateur) en n'utilisant pas la variable d'environnement Nuxt certifiée `import.meta.client`.
+
+**Actions correctives :**
+*   🛡️ **Nettoyage :** Suppression de la ligne `import { ref, onMounted, onUnmounted } from 'vue'` dans `useNetworkStatus.ts`.
+*   🛡️ **Compatibilité SSR :** Remplacement des vérifications globales (`typeof window`, `typeof document`, `typeof navigator`) par le guard strict `if (!import.meta.client) return` dans les deux fichiers.
+
+**Règle appliquée :**
+> "Toujours utiliser `import.meta.client` avant d'accéder à `window`, `document` ou `navigator` dans un environnement SSR. Éliminer le bruit des imports redondants gérés par Nuxt."

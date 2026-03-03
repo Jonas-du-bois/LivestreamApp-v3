@@ -54,7 +54,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
 
   // PWA: Reconnect when app comes back to foreground
-  if (typeof document !== 'undefined') {
+  if (import.meta.client) {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && !socket.connected) {
         console.log('[Socket] App visible, reconnecting...')
