@@ -29,10 +29,10 @@ const selectDay = (day: string) => {
       v-for="day in days"
       :key="`${day}-${locale}`"
       @click="selectDay(day)"
-      class="flex-1 py-2.5 px-4 rounded-xl transition-all font-medium capitalize whitespace-nowrap focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none hover:-translate-y-0.5 active:scale-95"
+      class="flex-1 py-2.5 px-4 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)] font-medium capitalize whitespace-nowrap focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none hover:-translate-y-0.5 active:scale-95"
       :class="modelValue === day
-        ? 'bg-white/20 text-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] shadow-lg'
-        : 'text-white/60 hover:bg-white/10'"
+        ? 'bg-white/20 text-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] shadow-[0_0_15px_rgba(6,182,212,0.2)] border border-cyan-400/20'
+        : 'text-white/60 hover:bg-white/10 hover:shadow-cyan-500/20 active:bg-white/15 active:shadow-cyan-500/40 border border-transparent'"
       type="button"
       role="tab"
       :aria-selected="modelValue === day"
