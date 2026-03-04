@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
 import PhotosGrid from '~/components/photos/PhotosGrid.vue'
 import PhotosGridSkeleton from '~/components/photos/PhotosGridSkeleton.vue'
 import PhotosLightbox from '~/components/photos/PhotosLightbox.vue'

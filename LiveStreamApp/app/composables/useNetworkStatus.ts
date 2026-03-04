@@ -1,4 +1,3 @@
-import { ref, onMounted, onUnmounted } from 'vue'
 
 export type ConnectionStatus = 'online' | 'offline' | 'poor'
 
@@ -50,7 +49,7 @@ export function useNetworkStatus() {
   let connectionMonitor: NetworkInformation | null = null
 
   onMounted(() => {
-    if (typeof window === 'undefined') return
+    if (!import.meta.client) return
 
     updateNetworkStatus()
 
@@ -65,7 +64,7 @@ export function useNetworkStatus() {
   })
 
   onUnmounted(() => {
-    if (typeof window === 'undefined') return
+    if (!import.meta.client) return
 
     window.removeEventListener('online', updateNetworkStatus)
     window.removeEventListener('offline', updateNetworkStatus)

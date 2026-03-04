@@ -5,7 +5,6 @@
  * Alterne entre les directs, les dernières photos, les résultats récents et les infos de l'événement.
  */
 
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { FlickrService } from '~/services/flickr.service'
 import { PublicService } from '~/services/public.service'

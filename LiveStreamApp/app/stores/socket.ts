@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { useSocket } from '../composables/useSocket'
 
 export const useSocketStore = defineStore('socket', () => {

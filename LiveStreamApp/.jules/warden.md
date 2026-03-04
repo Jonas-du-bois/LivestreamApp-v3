@@ -53,3 +53,27 @@ Suivi des refactorisations, sécurisations et améliorations de qualité de code
 
 **Règle appliquée :**
 > "Remplacer l'utilisation de `any` pour interagir avec des APIs natives non standard ou externes par des interfaces dédiées. Typer strictement les retours de setInterval/setTimeout."
+
+## 2026-02-22: Vue Imports Cleanup & SSR Safety
+
+- **Target:**
+  - `app/pages/index.vue`
+  - `app/pages/photos.vue`
+  - `app/pages/food.vue`
+  - `app/composables/useFirstLoad.ts`
+  - `app/composables/useNow.ts`
+  - `app/composables/usePartyCountdown.ts`
+  - `app/composables/useNetworkStatus.ts`
+  - `app/composables/useFlickrPhotos.ts`
+  - `app/composables/useApiClient.ts`
+  - `app/components/home/HomeHeroCarousel.vue`
+  - `app/components/AnimatedCounter.vue`
+  - `app/stores/socket.ts`
+- **Risks Mitigated:**
+    - **Fragility / Code Noise:** Explicit imports of Nuxt's auto-imported Vue primitives (`ref`, `computed`, `onMounted`, etc.) create unnecessary clutter and deviate from Nuxt 4 best practices.
+    - **SSR Crashes:** Using `typeof window === 'undefined'` in `useNetworkStatus.ts` is less robust than Nuxt's built-in `import.meta.client` for client-side checks, which could lead to hydration mismatches or server-side execution errors in some edge cases.
+- **Solution:**
+    - Systematically removed all explicit manual imports of Vue composition API functions across multiple pages, components, composables, and stores.
+    - Updated `useFirstLoad.ts` to only import `type Ref`.
+    - Updated `useNetworkStatus.ts` to use `import.meta.client` for SSR-safe window access.
+    - *Règle respectée :* "Toujours utiliser import.meta.client avant d'accéder à window" et "Supprimer les imports inutiles (Nuxt auto-importe ref, computed, onMounted, etc.)."
