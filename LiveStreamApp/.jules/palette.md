@@ -1,1 +1,4 @@
 ## 2026-02-28 - [Added ARIA Label to Map Style Toggle]\n**Learning:** Interactive components that toggle states (like switching from a map to a satellite view) need dynamic aria-labels to accurately reflect the action that will be performed to screen reader users.\n**Action:** When creating toggle buttons or components that switch views, dynamically bind `:aria-label` based on the active state using translations (e.g., `t('...')`).
+## 2026-03-04 - [Added ARIA Labels to Search Results]
+**Learning:** In highly complex list items like search results containing nested DOM elements (icons, badges, and secondary text), a single `aria-label` on the parent interactive element (e.g., `<button>`) prevents screen readers from reading fragmented and confusing text nodes.
+**Action:** Always provide a unified `:aria-label` string summarizing the most critical information of a complex, interactive component list item to ensure it is announced correctly as a single piece of info.

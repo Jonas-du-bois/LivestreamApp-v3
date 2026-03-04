@@ -301,6 +301,7 @@ onUnmounted(() => {
                     v-for="stream in filteredLiveResults.streams"
                     :key="stream._id"
                     @click="goToStream(stream)"
+                    :aria-label="`${stream.name} - ${stream.location}`"
                     class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
@@ -320,6 +321,7 @@ onUnmounted(() => {
                     v-for="passage in filteredLiveResults.passages"
                     :key="passage._id"
                     @click="goToPassage(passage)"
+                    :aria-label="`Live: ${passage.group?.name} - ${translateApparatus(passage.apparatus?.code, passage.apparatus?.name)} à ${passage.location}`"
                     class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center relative">
@@ -346,6 +348,7 @@ onUnmounted(() => {
                     v-for="group in filteredGroupResults"
                     :key="group._id"
                     @click="goToGroup(group)"
+                    :aria-label="`${group.name} - ${group.canton} - ${translateCategory(group.category)}`"
                     class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center overflow-hidden">
@@ -372,6 +375,7 @@ onUnmounted(() => {
                     v-for="passage in filteredPassageResults"
                     :key="passage._id"
                     @click="goToPassage(passage)"
+                    :aria-label="`${passage.group?.name} - ${translateApparatus(passage.apparatus?.code, passage.apparatus?.name)} à ${formatTime(passage.startTime)} en ${passage.location}`"
                     class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
