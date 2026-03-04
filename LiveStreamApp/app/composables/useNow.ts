@@ -1,4 +1,3 @@
-import { ref, onMounted, onUnmounted } from 'vue'
 import { NOW_REFRESH_INTERVAL } from '~/utils/timings'
 
 /**

@@ -1,4 +1,4 @@
-import { type Ref, ref, computed, watch } from 'vue'
+import type { Ref } from 'vue'
 
 /**
  * Composable to manage the "First Load" state (Skeleton).

@@ -1,4 +1,4 @@
-import { getCurrentInstance, ref } from 'vue'
+import { getCurrentInstance } from 'vue'
 import { isNativePlatform, getNativeToken } from '~/utils/capacitor'
 
 // Helper to get auth token (hybrid: native storage on Capacitor, cookie on web)

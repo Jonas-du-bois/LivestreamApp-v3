@@ -1,4 +1,3 @@
-import { ref, computed, watch } from 'vue'
 import type { FlickrPhoto } from '~/types/flickr'
 import { FLICKR_PHOTOS_REFRESH } from '~/utils/timings'
 import { FlickrService } from '~/services/flickr.service'
