@@ -184,7 +184,7 @@ useSocketRoom('schedule-updates', [
         />
 
         <!-- Happening Now Carousel -->
-        <div>
+        <div v-if="happeningNow.length > 0">
           <UiSectionTitle class="mb-4">{{ t('home.happeningNow') }}</UiSectionTitle>
           <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
             <UiGlassCard

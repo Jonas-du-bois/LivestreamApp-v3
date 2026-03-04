@@ -7,7 +7,8 @@
  * - Swipe horizontal sur mobile
  * - Transition directionnelle (gauche/droite) entre photos
  * - Verrouillage du scroll du body pendant l'ouverture
- * - Affiche l'image en grande résolution (url_l → url_z en fallback)
+ * - Clic sur l'image → vue fullscreen zoomable en qualité originale
+ * - Téléchargement en qualité originale
  */
 import type { FlickrPhoto } from '~/types/flickr'
 
@@ -73,6 +74,47 @@ watch(currentIndex, () => {
   imgError.value = false
 })
 
+/** URL la plus grande disponible (originale si autorisée, sinon grande 1024px) */
+const bestUrl = computed(() => currentPhoto.value?.urls.o || currentPhoto.value?.urls.l || '')
+
+// ─── Vue fullscreen zoomable ────────────────────────────────────────────────
+const showFullscreen = ref(false)
+
+const openFullscreen = () => {
+  if (currentPhoto.value) {
+    showFullscreen.value = true
+  }
+}
+
+const closeFullscreen = () => {
+  showFullscreen.value = false
+}
+
+// ─── Téléchargement de la photo en taille originale ─────────────────────────
+const isDownloading = ref(false)
+
+const downloadPhoto = async () => {
+  if (!currentPhoto.value || isDownloading.value) return
+  isDownloading.value = true
+  const url = bestUrl.value
+  const filename = `${currentPhoto.value.title || currentPhoto.value.id}.jpg`
+  try {
+    const response = await fetch(url)
+    const blob = await response.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = blobUrl
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(blobUrl)
+  } catch {
+    // Fallback : ouvrir dans un nouvel onglet
+    window.open(url, '_blank')
+  } finally {
+    isDownloading.value = false
+  }
+}
+
 // ─── Formatage date/heure ───────────────────────────────────────────────────
 const formattedDateTime = computed(() => {
   if (!currentPhoto.value) return ''
@@ -87,6 +129,8 @@ const formattedDateTime = computed(() => {
 // ─── Clavier ────────────────────────────────────────────────────────────────
 const handleKeyDown = (e: KeyboardEvent) => {
   if (!isOpen.value) return
+  // Si la vue fullscreen est ouverte, Escape la ferme (géré par PhotoFullscreen)
+  if (showFullscreen.value) return
   if (e.key === 'Escape') close()
   if (e.key === 'ArrowLeft') { e.preventDefault(); prev() }
   if (e.key === 'ArrowRight') { e.preventDefault(); next() }
@@ -149,7 +193,7 @@ onUnmounted(() => {
 
         <!-- ─── Header ──────────────────────────────────────────────────── -->
         <div
-          class="relative z-10 flex items-center justify-between gap-3 px-4 py-3
+          class="relative z-10 flex items-center justify-between gap-3 px-4 py-3 pt-10
                  bg-gradient-to-b from-black/70 to-transparent pointer-events-none"
         >
           <div class="pointer-events-auto flex-1 min-w-0">
@@ -168,26 +212,30 @@ onUnmounted(() => {
               {{ (currentIndex ?? 0) + 1 }} / {{ photos.length }}
             </span>
 
-            <!-- Bouton ouvrir l'original -->
-            <a
-              :href="currentPhoto.urls.l"
-              target="_blank"
-              rel="noopener noreferrer"
+            <!-- Bouton télécharger en taille originale -->
+            <button
+              type="button"
               class="glass-card p-2.5 rounded-full active:scale-95 transition-all
                      hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none
                      flex items-center justify-center"
-              :aria-label="t('photos.openOriginal')"
-              :title="t('photos.openOriginal')"
-              @click.stop
+              :aria-label="t('photos.download')"
+              :title="t('photos.download')"
+              :disabled="isDownloading"
+              @click.stop="downloadPhoto"
             >
-              <Icon name="fluent:arrow-expand-24-regular" class="w-5 h-5 text-white" />
-            </a>
+              <Icon
+                :name="isDownloading ? 'fluent:spinner-ios-20-regular' : 'fluent:arrow-download-24-regular'"
+                class="w-5 h-5 text-white"
+                :class="{ 'animate-spin': isDownloading }"
+              />
+            </button>
 
             <!-- Bouton fermer -->
             <button
               type="button"
               class="glass-card p-2.5 rounded-full active:scale-95 transition-all
-                     hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
+                     hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none
+                     flex items-center justify-center"
               :aria-label="t('common.close')"
               @click="close"
             >
@@ -240,18 +288,19 @@ onUnmounted(() => {
                 class="absolute inset-[15%] rounded-2xl premium-skeleton-surface premium-skeleton-shimmer"
               />
 
-              <!-- Image grande résolution -->
+              <!-- Image grande résolution – cliquer pour voir en plein écran -->
               <img
                 v-if="!imgError"
                 :key="`img-${currentPhoto.id}`"
-                :src="currentPhoto.urls.l"
+                :src="bestUrl"
                 :alt="currentPhoto.title || 'Photo'"
                 class="relative max-w-full max-h-full object-contain rounded-lg
-                       transition-opacity duration-300 select-none"
+                       transition-opacity duration-300 select-none cursor-zoom-in"
                 :class="imgLoaded ? 'opacity-100' : 'opacity-0'"
                 draggable="false"
                 @load="imgLoaded = true"
                 @error="imgError = true"
+                @click.stop="openFullscreen"
               />
 
               <!-- État d'erreur -->
@@ -265,24 +314,39 @@ onUnmounted(() => {
 
         <!-- ─── Footer – strip indicateur de position ─────────────────── -->
         <div
-          class="relative z-10 pb-safe flex justify-center py-4 gap-1.5
+          class="relative z-10 pb-10 flex flex-col items-center gap-2 py-4
                  bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
         >
-          <div
-            v-for="(_, i) in photos.slice(0, 20)"
-            :key="i"
-            class="h-1 rounded-full transition-all duration-300"
-            :class="i === currentIndex
-              ? 'w-5 bg-cyan-400'
-              : 'w-1.5 bg-white/20'"
-          />
-          <span
-            v-if="photos.length > 20"
-            class="text-white/30 text-xs ml-1 self-center"
-          >+{{ photos.length - 20 }}</span>
+          <!-- Indication : clic pour agrandir -->
+          <p class="text-white/30 text-xs">
+            {{ t('photos.tapToEnlarge') }}
+          </p>
+          <div class="flex gap-1.5">
+            <div
+              v-for="(_, i) in photos.slice(0, 20)"
+              :key="i"
+              class="h-1 rounded-full transition-all duration-300"
+              :class="i === currentIndex
+                ? 'w-5 bg-cyan-400'
+                : 'w-1.5 bg-white/20'"
+            />
+            <span
+              v-if="photos.length > 20"
+              class="text-white/30 text-xs ml-1 self-center"
+            >+{{ photos.length - 20 }}</span>
+          </div>
         </div>
       </div>
     </Transition>
+
+    <!-- ─── Vue fullscreen zoomable (par-dessus le carrousel) ──────── -->
+    <PhotosPhotoFullscreen
+      v-if="showFullscreen && currentPhoto"
+      :photo-id="currentPhoto.id"
+      :title="currentPhoto.title"
+      :fallback-url="bestUrl"
+      @close="closeFullscreen"
+    />
   </Teleport>
 </template>
 

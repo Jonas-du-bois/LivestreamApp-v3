@@ -12,6 +12,8 @@ export interface FlickrPhotoUrls {
   z: string
   /** Grand 1024 px (côté le plus long) – utilisé dans le lightbox */
   l: string
+  /** Taille originale (résolution maximale) – disponible si l'auteur l'a autorisée */
+  o?: string
 }
 
 export interface FlickrPhoto {

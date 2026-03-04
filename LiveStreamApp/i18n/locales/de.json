@@ -447,6 +447,11 @@
     "retryButton": "Nomol versuche",
     "imageUnavailable": "Bild nid verfiegbar",
     "openOriginal": "Im Vollbild öffne",
+    "download": "Im Originalformat abelade",
+    "tapToEnlarge": "Uf s Foto tippe zum Vergrössere",
+    "backToCarousel": "Zrugg",
+    "resetZoom": "Zruggsetze",
+    "zoomHint": "Zwüschet oder mid em Mausrad zoome",
     "prevPhoto": "Vorherigs Foto",
     "nextPhoto": "Nächstes Foto"
   }
