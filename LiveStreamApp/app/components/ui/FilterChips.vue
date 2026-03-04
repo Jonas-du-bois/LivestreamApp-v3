@@ -69,7 +69,7 @@ const focusRingClasses = computed(() => {
         focusRingClasses,
         isSelected(item.id)
           ? colorClasses
-          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white backdrop-blur-xl'
+          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white hover:shadow-[0_0_15px_rgba(6,182,212,0.1)] active:bg-white/15 active:shadow-[0_0_20px_rgba(6,182,212,0.2)] backdrop-blur-xl'
       ]"
       @click="select(item.id)"
     >

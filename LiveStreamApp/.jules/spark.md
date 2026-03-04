@@ -30,3 +30,16 @@ Le bouton de basculement ("Toggle") entre la vue "Sombre" et la vue "Satellite" 
 - L'API de base de LeafletJS ne gère pas les fondus enchaînés par défaut entre deux "TileLayers", mais combiner `setOpacity()`, un délai pour laisser le navigateur peindre, et une simple transition CSS sur la classe générique `.leaflet-layer` permet d'obtenir un effet luxueux (cross-fade) sans dépendance supplémentaire.
 - L'utilisation d'une courbe `cubic-bezier(0.25, 0.8, 0.25, 1)` pour l'opacité accompagne parfaitement les autres animations "Premium" de l'application (type `premium-swap`).
 - Il est crucial de limiter la durée des transitions à 300ms maximum pour respecter les contraintes de performance/réactivité et de bien nettoyer les timeouts stockés (`ReturnType<typeof setTimeout>`) via `onUnmounted` pour éviter des fuites mémoires si l'utilisateur change de page pendant la transition.
+## Micro-Interaction : Feedback tactile sur les filtres et sélecteurs de jours (`UiDaySwitcher` et `UiFilterChips`)
+
+**Problème observé :**
+Les composants de filtrage horizontaux (`UiDaySwitcher` et `UiFilterChips`), massivement utilisés dans l'application pour naviguer entre les jours et les agrès (Schedule, Results, Food), possédaient une interaction basique. Bien qu'un léger "active:scale-95" ait été présent dans certains cas, le ressenti global manquait du côté "premium" et satisfaisant, surtout pour des éléments touchés très fréquemment sur mobile.
+
+**La Solution "Spark" :**
+1. **Timing & Easing Premium :** Application d'une `duration-300` couplée avec `ease-[cubic-bezier(0.25,0.8,0.25,1)]` pour un retour visuel à la fois réactif au clic mais très fluide au relâchement.
+2. **Effet "Glow" Réactif :** Ajout d'une ombre portée (`box-shadow`) douce et colorée (cyan ou bleu) qui s'intensifie lors de l'interaction (`hover:shadow-cyan-500/20` puis `active:shadow-cyan-500/40` ou équivalent via le CSS inline Tailwind). Cela simule une émission de lumière sous l'élément pressé, très cohérent avec le "Dark Mode" de la Coupe des Bains.
+3. **Contraste de Fond (Glass) :** Lors du `active:` (toucher), l'arrière-plan devient très légèrement plus opaque (`active:bg-white/15`) pour donner une sensation physique d'enfoncement dans le "verre" (Glassmorphism), en complément du `scale`.
+
+**Apprentissages (LiveStreamApp) :**
+- L'utilisation combinée de `active:scale`, d'un léger changement de background (`bg-white/10` -> `bg-white/15`) et d'une augmentation de l'ombre colorée crée une illusion de profondeur (Z-axis) extrêmement efficace pour les boutons "Glass".
+- Appliquer ces styles directement sur les items inactifs (`text-white/60`) rend l'exploration de l'interface par l'utilisateur plus ludique, incitant à cliquer.
