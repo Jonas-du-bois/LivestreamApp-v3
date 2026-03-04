@@ -447,6 +447,11 @@
     "retryButton": "Riprova",
     "imageUnavailable": "Immagine non disponibile",
     "openOriginal": "Apri a schermo intero",
+    "download": "Scarica in dimensione originale",
+    "tapToEnlarge": "Tocca la foto per ingrandirla",
+    "backToCarousel": "Indietro",
+    "resetZoom": "Reimposta",
+    "zoomHint": "Pizzica o usa la rotellina per ingrandire",
     "prevPhoto": "Foto precedente",
     "nextPhoto": "Foto successiva"
   }

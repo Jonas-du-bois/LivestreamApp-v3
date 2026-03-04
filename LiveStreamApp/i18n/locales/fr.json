@@ -449,6 +449,11 @@
     "retryButton": "Réessayer",
     "imageUnavailable": "Image indisponible",
     "openOriginal": "Voir en plein écran",
+    "download": "Télécharger en taille originale",
+    "tapToEnlarge": "Appuyer sur la photo pour l'agrandir",
+    "backToCarousel": "Retour",
+    "resetZoom": "Réinitialiser",
+    "zoomHint": "Pincez ou utilisez la molette pour zoomer",
     "prevPhoto": "Photo précédente",
     "nextPhoto": "Photo suivante"
   }

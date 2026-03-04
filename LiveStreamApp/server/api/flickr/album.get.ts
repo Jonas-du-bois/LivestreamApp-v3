@@ -10,6 +10,9 @@ interface FlickrRawPhoto {
   url_m?: string
   url_z?: string
   url_l?: string
+  url_o?: string
+  originalsecret?: string
+  originalformat?: string
 }
 
 /**
@@ -38,7 +41,8 @@ export default defineCachedEventHandler(async (_event) => {
     photoset_id: albumId,
     format: 'json',
     nojsoncallback: '1',
-    extras: 'url_l,url_z,url_m,url_s,date_upload,title',
+    extras: 'url_o,url_l,url_z,url_m,url_s,date_upload,title',
+    original_format: '1',
     per_page: '500',
     media: 'photos'
   }
@@ -73,7 +77,8 @@ export default defineCachedEventHandler(async (_event) => {
       s: p.url_s ?? `https://live.staticflickr.com/${p.server}/${p.id}_${p.secret}_s.jpg`,
       m: p.url_m ?? `https://live.staticflickr.com/${p.server}/${p.id}_${p.secret}_m.jpg`,
       z: p.url_z ?? `https://live.staticflickr.com/${p.server}/${p.id}_${p.secret}_z.jpg`,
-      l: p.url_l ?? `https://live.staticflickr.com/${p.server}/${p.id}_${p.secret}_b.jpg`
+      l: p.url_l ?? `https://live.staticflickr.com/${p.server}/${p.id}_${p.secret}_b.jpg`,
+      ...(p.url_o ? { o: p.url_o } : p.originalsecret ? { o: `https://live.staticflickr.com/${p.server}/${p.id}_${p.originalsecret}_o.${p.originalformat ?? 'jpg'}` } : {})
     }
   }))
 

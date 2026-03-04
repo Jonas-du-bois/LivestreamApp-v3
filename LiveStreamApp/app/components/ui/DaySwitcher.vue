@@ -24,7 +24,7 @@ const selectDay = (day: string) => {
 </script>
 
 <template>
-  <div class="glass-card p-1 flex overflow-x-auto scrollbar-hide" role="tablist" :aria-label="t('common.day')">
+  <div class="glass-card p-1 flex items-center overflow-x-auto scrollbar-hide" role="tablist" :aria-label="t('common.day')">
     <button
       v-for="day in days"
       :key="`${day}-${locale}`"

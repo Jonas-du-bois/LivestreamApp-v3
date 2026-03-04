@@ -265,6 +265,7 @@ const handleHeroClick = () => {
         v-show="currentIndex === index"
         :key="slide.id"
         class="absolute inset-0 w-full h-full"
+        :class="{ 'photo-zoom': slide.type === 'photo' }"
       >
         <UiMediaCard
           :image="slide.image"
@@ -408,6 +409,12 @@ const handleHeroClick = () => {
 @keyframes dot-progress {
   from { width: 0%; }
   to { width: 100%; }
+}
+
+/* Zoom 110% pour les slides Flickr */
+.photo-zoom :deep(img) {
+  transform: scale(1.1);
+  transform-origin: center center;
 }
 
 /* Badge pop animation */

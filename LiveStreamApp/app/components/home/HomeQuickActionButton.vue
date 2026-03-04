@@ -49,7 +49,7 @@ const resolvedAriaLabel = computed(() => props.ariaLabel || props.label)
       <Icon :name="props.icon" class="home-quick-action__icon w-6 h-6" />
     </div>
 
-    <span class="text-white/85 text-sm font-semibold leading-tight">{{ props.label }}</span>
+    <span class="text-white/85 text-lg font-semibold leading-tight">{{ props.label }}</span>
   </NuxtLink>
 </template>
 
