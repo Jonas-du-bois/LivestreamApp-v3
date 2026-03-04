@@ -43,3 +43,8 @@ Les composants de filtrage horizontaux (`UiDaySwitcher` et `UiFilterChips`), mas
 **Apprentissages (LiveStreamApp) :**
 - L'utilisation combinée de `active:scale`, d'un léger changement de background (`bg-white/10` -> `bg-white/15`) et d'une augmentation de l'ombre colorée crée une illusion de profondeur (Z-axis) extrêmement efficace pour les boutons "Glass".
 - Appliquer ces styles directement sur les items inactifs (`text-white/60`) rend l'exploration de l'interface par l'utilisateur plus ludique, incitant à cliquer.
+
+## Touch Feedback (Micro-interactions)
+- **Pull-to-Refresh & Sync Icons**: Adding a `group-active:-rotate-180` (or `rotate-180`) on sync/refresh icons provides immediate tactile feedback that the app is responding to the touch, even before the network request starts and the `animate-spin` takes over.
+- **Global Button Juice**: By adding `group-active:scale-90` (or `scale-75` inside `UiIconButton`) to standard icons within `UiButton` and `UiIconButton`, we ensure that every button press feels physical and satisfying across the entire PWA, without causing any layout shifts. The inner element shrinking relative to the container gives depth to the interaction.
+- **Tabs/Switchers**: Non-moving lists of tabs like `UiDaySwitcher` must still provide touch feedback (`active:scale-95`). Static navigation elements feel disconnected from the touch experience if they lack this simple interaction.
