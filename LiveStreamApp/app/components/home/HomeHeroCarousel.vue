@@ -99,11 +99,7 @@ const dynamicSlides = computed(() => {
         return (stream.currentPassage as Passage)._id === p._id
       })
 
-      let heroImage = 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop'
-      if (s?.url && s.url.includes('youtube')) {
-        const m = s.url.match(/embed\/([a-zA-Z0-9_-]{11})/)
-        if (m && m[1]) heroImage = `https://img.youtube.com/vi/${m[1]}/maxresdefault.jpg`
-      }
+      const heroImage = getStreamThumbnailUrl(s?.url, 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop')
 
       items.push({
         id: `live-${p._id}`,
