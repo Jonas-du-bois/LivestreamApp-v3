@@ -8,18 +8,13 @@
     </div>
 
     <!-- Hero Section -->
-    <div class="relative py-6 mb-4">
-      <div class="pointer-events-none absolute top-0 right-0 p-6 opacity-20" aria-hidden="true">
-        <Icon name="fluent:food-pizza-24-filled" class="text-9xl text-blue-500 blur-2xl animate-pulse" />
-      </div>
-      <h1 class="text-3xl font-black text-white mb-2 uppercase tracking-wide">
-        {{ t('food.title') }}
-        <span class="text-blue-500">.</span>
-      </h1>
-      <p class="text-white/60 text-sm max-w-xs">
-        {{ t('food.subtitle') }}
-      </p>
-    </div>
+    <UiPageHeader
+      :title="t('food.title')"
+      :subtitle="t('food.subtitle')"
+      icon="fluent:food-pizza-24-filled"
+      icon-color="text-blue-500"
+      accent-color="text-blue-500"
+    />
 
     <!-- Filtres Catégories -->
     <UiFilterChips
