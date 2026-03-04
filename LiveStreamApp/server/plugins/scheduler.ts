@@ -113,7 +113,7 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToGoLive = await PassageModel.find({
         status: 'SCHEDULED',
         startTime: { $lte: now }
-      }).populate('group', 'name').populate('apparatus', 'name code');
+      }).populate('group', 'name').populate('apparatus', 'name code').lean();
 
       if (passagesToGoLive.length > 0) {
         await PassageModel.updateMany(
@@ -152,7 +152,7 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToFinish = await PassageModel.find({
         status: 'LIVE',
         endTime: { $lte: now }
-      });
+      }).lean();
 
       if (passagesToFinish.length > 0) {
         await PassageModel.updateMany(
@@ -264,7 +264,8 @@ export default defineNitroPlugin((nitroApp) => {
     const passages = await PassageModel.find(query)
       // BOLT: Optimize notifications by strictly selecting required fields
       .populate('group', 'name')
-      .populate('apparatus', 'name code');
+      .populate('apparatus', 'name code')
+      .lean();
 
     if (passages.length === 0) return;
 
@@ -278,6 +279,19 @@ export default defineNitroPlugin((nitroApp) => {
     const allSubscriptions = await SubscriptionModel.find({
       favorites: { $in: passageIds }
     }).lean();
+
+    // BOLT: Optimize cross-referencing collections by mapping subscriptions by favorite id.
+    // Replaces O(N*M) array filtering with O(1) map lookups per passage.
+    const subscriptionsByPassage = new Map<string, any[]>();
+    allSubscriptions.forEach((sub: any) => {
+      sub.favorites.forEach((favId: any) => {
+        const id = favId.toString();
+        if (!subscriptionsByPassage.has(id)) {
+          subscriptionsByPassage.set(id, []);
+        }
+        subscriptionsByPassage.get(id)!.push(sub);
+      });
+    });
 
     // BOLT: Parallelize notification sending per passage
     const passagePromises = passages.map(async (passage) => {
@@ -293,11 +307,9 @@ export default defineNitroPlugin((nitroApp) => {
         url: '/schedule',
       };
 
-      // In-memory filter from the batched query result
-      // Handle both ObjectId and string formats from Mongoose lean()
-      const subscriptions = allSubscriptions.filter((sub: any) =>
-        sub.favorites.some((favId: any) => favId.toString() === passage._id.toString())
-      );
+      // Fetch from pre-computed Map using passage ID
+      const passageIdStr = passage._id.toString();
+      const subscriptions = subscriptionsByPassage.get(passageIdStr) || [];
 
       if (subscriptions.length === 0) {
         await PassageModel.findByIdAndUpdate(passage._id, {
