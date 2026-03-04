@@ -104,7 +104,7 @@ const offlineStreams = computed<StreamDisplay[]>(() => {
 })
 
 function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEnriched>): StreamDisplay {
-  let currentGroupName = '—'
+  let currentGroupName = ''
   let currentApparatusName = ''
   let currentApparatusCode = ''
   
@@ -112,14 +112,14 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
   const livePassage = s.location ? passagesByLocation.get(s.location) : null
   
   if (livePassage) {
-    currentGroupName = livePassage.group?.name || '—'
+    currentGroupName = livePassage.group?.name || ''
     currentApparatusName = livePassage.apparatus?.name || ''
     currentApparatusCode = livePassage.apparatus?.code || ''
   } else if (s.currentPassage) {
     // Fallback to currentPassage if no live passage found by location
     const cp = s.currentPassage as any // currentPassage can be string or object depending on population, but here it might be populated or partially populated
     if (typeof cp === 'object' && cp && cp.group) {
-      currentGroupName = cp.group.name || '—'
+      currentGroupName = cp.group.name || ''
       currentApparatusName = cp.apparatus?.name || ''
       currentApparatusCode = cp.apparatus?.code || ''
     }
@@ -185,7 +185,7 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
             {{ t('stream.liveStreams') }}
           </p>
 
-          <div class="grid grid-cols-1 gap-4">
+          <div class="grid grid-cols-1 gap-8">
             <DomainStreamCard
               v-for="stream in liveStreams" 
               :key="stream.id" 
@@ -208,7 +208,7 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
             {{ t('stream.offlineStreams') }}
           </p>
 
-          <div class="grid grid-cols-1 gap-4">
+          <div class="grid grid-cols-1 gap-8">
             <DomainStreamCard
               v-for="stream in offlineStreams" 
               :key="stream.id"

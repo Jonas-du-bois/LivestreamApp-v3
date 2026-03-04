@@ -14,8 +14,8 @@ const { open: openGroupDetails } = useGroupDetails()
 const favoritesStore = useFavoritesStore()
 const { favorites } = storeToRefs(favoritesStore)
 
-// Fetch Schedule
-const { data: scheduleData, pending, refresh: refreshSchedule } = await PublicService.getSchedule()
+// Fetch Schedule (unique key to avoid sharing cached data with schedule page)
+const { data: scheduleData, pending, refresh: refreshSchedule } = await PublicService.getSchedule(undefined, { key: 'favorites-schedule' })
 const hasLoadedOnce = ref(false)
 
 // ─── Realtime status overrides (same pattern as schedule.vue) ───

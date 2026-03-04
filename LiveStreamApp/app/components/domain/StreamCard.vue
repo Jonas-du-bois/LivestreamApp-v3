@@ -20,13 +20,26 @@ const props = defineProps<{
 }>()
 
 const isLive = computed(() => props.isLive ?? false)
+
+/** Règle 3 — Titre non-dupliqué : affiche l'épreuve au lieu du lieu (déjà dans le badge) */
+const displayTitle = computed(() => {
+  if (props.stream.currentApparatusCode) {
+    return translateApparatus(props.stream.currentApparatusCode, props.stream.currentApparatus)
+  }
+  return 'Flux vidéo en direct'
+})
+
+/** Règle 4 — Détection d'un groupe « réellement » en piste */
+const hasCurrentGroup = computed(() => {
+  return !!props.stream.currentGroup && props.stream.currentGroup.trim() !== ''
+})
 </script>
 
 <template>
   <component
     :is="isLive ? resolveComponent('NuxtLink') : 'div'"
     :to="isLive ? `/stream/${stream.id}` : undefined"
-    class="glass-card overflow-hidden block transition-colors"
+    class="glass-card overflow-hidden block transition-colors group"
     :class="{ 'cursor-pointer hover:border-cyan-400/50': isLive, 'cursor-not-allowed opacity-60': !isLive }"
   >
     <div class="relative aspect-video">
@@ -51,30 +64,46 @@ const isLive = computed(() => props.isLive ?? false)
           {{ t('stream.live') }}
         </UiStatusBadge>
 
-        <div class="glass-card px-3 py-1.5">
-          <span class="text-xs font-medium" :class="isLive ? 'text-white' : 'text-white/50'">{{ stream.salle }}</span>
+        <!-- Règle 2 — Glassmorphism sombre pour lisibilité sur tout fond -->
+        <div class="bg-black/60 backdrop-blur-md px-4 py-1 rounded-2xl items-center justify-center">
+          <span class="text-xs font-bold text-white">{{ stream.salle }}</span>
         </div>
       </div>
 
-      <!-- Play Overlay -->
-      <div v-if="isLive" class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/30">
-        <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-          <Icon name="fluent:play-24-filled" class="w-8 h-8 text-white" />
+      <!-- Règle 1 — Bouton Play central toujours visible (affordance) -->
+      <div v-if="isLive" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div
+          class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
+        >
+          <Icon name="fluent:play-24-filled" class="w-7 h-7 text-white ml-0.5" />
         </div>
       </div>
     </div>
 
     <!-- Content -->
     <div class="p-4">
-      <h3 class="font-bold mb-1" :class="isLive ? 'text-white' : 'text-white/50'">{{ stream.title }}</h3>
+      <!-- Règle 3 — Titre = épreuve (le lieu est déjà dans le badge) -->
+      <h3
+        class="text-lg font-extrabold mt-3"
+        :class="isLive ? 'text-white' : 'text-white/50'"
+      >
+        {{ displayTitle }}
+      </h3>
 
-      <p v-if="isLive" class="text-white/60 text-sm">
-        {{ t('stream.onTrack') }}: <span class="text-cyan-400">{{ stream.currentGroup }}</span>
-        <template v-if="stream.currentApparatusCode">
-          <span class="text-white/40"> • </span>
-          <span class="text-purple-400">{{ translateApparatus(stream.currentApparatusCode, stream.currentApparatus) }}</span>
-        </template>
-      </p>
+      <!-- Règle 4 — Empty state « En piste » -->
+      <template v-if="isLive">
+        <p v-if="hasCurrentGroup" class="text-sm mt-1">
+          <span class="text-white/60">{{ t('stream.onTrack') }} : </span>
+          <span class="text-white font-medium">{{ stream.currentGroup }}</span>
+          <template v-if="stream.currentApparatusCode">
+            <span class="text-white/40"> • </span>
+            <span class="text-purple-400">{{ translateApparatus(stream.currentApparatusCode, stream.currentApparatus) }}</span>
+          </template>
+        </p>
+        <p v-else class="mt-1">
+          <span class="italic text-white/50 text-sm">En attente du prochain passage...</span>
+        </p>
+      </template>
 
       <p v-else class="text-white/30 text-sm">{{ t('stream.streamUnavailable') }}</p>
     </div>
