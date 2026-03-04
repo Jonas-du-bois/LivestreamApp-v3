@@ -128,26 +128,7 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
   // Determine thumbnail
   const defaultImg = 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
 
-  let thumb = s.thumbnail || ''
-  if (!thumb && s.url) {
-    const url: string = s.url
-    const embedMatch = url.match(/embed\/([a-zA-Z0-9_-]{11})/)
-    const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/)
-    const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
-
-    const ytId = embedMatch?.[1] || watchMatch?.[1] || shortMatch?.[1]
-    if (ytId) {
-      thumb = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`
-    } else if (url.includes('twitch.tv')) {
-      const twMatch = url.match(/twitch\.tv\/(.+?)(?:$|\/|\?)/)
-      const channel = twMatch?.[1]
-      if (channel) {
-        thumb = `https://static-cdn.jtvnw.net/previews-ttv/live_user_${channel}-1280x720.jpg`
-      }
-    }
-  }
-
-  if (!thumb) thumb = defaultImg
+  const thumb = s.thumbnail || getStreamThumbnailUrl(s.url, defaultImg)
 
   return {
     id: s._id,
