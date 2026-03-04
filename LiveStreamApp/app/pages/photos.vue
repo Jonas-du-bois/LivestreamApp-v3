@@ -71,47 +71,34 @@ const handleNewPhotosBanner = () => {
     </div>
 
     <!-- ─── Hero ──────────────────────────────────────────────────────────── -->
-    <div class="relative px-6 py-6 mb-4">
-      <!-- Glow décoration -->
-      <div
-        class="pointer-events-none absolute top-0 right-0 p-6 opacity-20"
-        aria-hidden="true"
-      >
-        <Icon
-          name="fluent:camera-24-filled"
-          class="text-9xl text-cyan-500 blur-2xl animate-pulse"
-        />
-      </div>
-
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <h1 class="text-3xl font-black text-white mb-2 uppercase tracking-wide">
-            {{ t('photos.title') }}<span class="text-cyan-500">.</span>
-          </h1>
-          <p class="text-white/60 text-sm max-w-xs">
-            {{ t('photos.subtitle') }}
-          </p>
-        </div>
-
+    <UiPageHeader
+      class="px-6"
+      :title="t('photos.title')"
+      :subtitle="t('photos.subtitle')"
+      icon="fluent:camera-24-filled"
+      icon-color="text-cyan-500"
+      accent-color="text-cyan-500"
+    >
+      <template #badge>
         <!-- Badge LIVE animé -->
-        <div class="flex-shrink-0 pt-1">
-          <UiStatusBadge variant="cyan" :show-dot="true" :pulse="true">
-            {{ t('photos.live') }}
-          </UiStatusBadge>
-        </div>
-      </div>
+        <UiStatusBadge variant="cyan" :show-dot="true" :pulse="true">
+          {{ t('photos.live') }}
+        </UiStatusBadge>
+      </template>
 
-      <!-- Horodatage dernière mise à jour -->
-      <Transition name="fade">
-        <div
-          v-if="lastUpdatedLabel"
-          class="mt-3 flex items-center gap-1.5 text-white/30 text-xs"
-        >
-          <Icon name="fluent:arrow-sync-circle-24-regular" class="w-3.5 h-3.5" />
-          <span>{{ t('photos.updatedAt', { time: lastUpdatedLabel }) }}</span>
-        </div>
-      </Transition>
-    </div>
+      <template #bottom>
+        <!-- Horodatage dernière mise à jour -->
+        <Transition name="fade">
+          <div
+            v-if="lastUpdatedLabel"
+            class="mt-3 flex items-center gap-1.5 text-white/30 text-xs"
+          >
+            <Icon name="fluent:arrow-sync-circle-24-regular" class="w-3.5 h-3.5" />
+            <span>{{ t('photos.updatedAt', { time: lastUpdatedLabel }) }}</span>
+          </div>
+        </Transition>
+      </template>
+    </UiPageHeader>
 
     <!-- ─── Compteur de photos ────────────────────────────────────────────── -->
     <Transition name="fade">
