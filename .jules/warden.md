@@ -55,3 +55,16 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Strict Typing Enforcement & Auto-Import Cleanup
+
+- **Target:** `app/services/public.service.ts`, `app/services/admin.service.ts`, `app/pages/results.vue`, `app/pages/favorites.vue`, `app/pages/afterparty.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced implicit/explicit `any` in `public.service.ts`, `admin.service.ts`, `results.vue`, and `favorites.vue` with strictly defined types (like `Record<string, unknown>`, `PassageEnriched`, and custom `ResultsResponse`). This prevents runtime data manipulation errors and provides strong IDE support.
+    - **Code Noise / Fragility:** Removed explicit Nuxt auto-imports (Vue primitives like `computed`) from `afterparty.vue` according to Nuxt best practices.
+- **Solution:**
+    - Defined a typed `ResultsResponse` interface in `public.service.ts`.
+    - Used `Record<string, unknown>` for dynamically populated objects replacing `any`.
+    - Extended `ScoreUpdatePayload` in `socket.ts` to include `apparatusCode` eliminating unsafe `(data as any)` casts.
+    - Replaced `(p: any)` with `(p: PassageEnriched)` in `favorites.vue`.
+    - Stripped explicit `import { computed } from 'vue'` in `afterparty.vue`.

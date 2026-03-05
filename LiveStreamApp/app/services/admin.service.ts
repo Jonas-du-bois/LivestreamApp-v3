@@ -10,7 +10,7 @@ export const AdminService = {
   },
 
   updateScore(payload: { passageId: string; score?: number }) {
-    return apiClient<{ ok: boolean; payload: any }>('/admin/score', {
+    return apiClient<{ ok: boolean; payload: Record<string, unknown> }>('/admin/score', {
       method: 'PUT',
       body: payload
     })
@@ -31,7 +31,7 @@ export const AdminService = {
   },
 
   seedDatabase() {
-    return apiClient<{ success: boolean; summary?: any; error?: string }>('/admin/seed', {
+    return apiClient<{ success: boolean; summary?: Record<string, unknown>; error?: string }>('/admin/seed', {
       method: 'POST'
     })
   }
