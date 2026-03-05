@@ -4,7 +4,29 @@ import { z } from 'zod';
 
 const WebSubscriptionSchema = z.object({
   type: z.literal('web'),
-  endpoint: z.string().url().max(500),
+  // Security: SSRF Protection. Block local/private IP ranges and enforce HTTPS.
+  endpoint: z.string().url().max(500).refine((url) => {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol !== 'https:') return false;
+
+      const hostname = parsed.hostname;
+      // Block localhost and loopback
+      if (hostname === 'localhost' || hostname === '0.0.0.0' || hostname.startsWith('127.')) return false;
+
+      // Block RFC1918 Private Networks
+      if (hostname.startsWith('10.')) return false;
+      if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)) return false;
+      if (hostname.startsWith('192.168.')) return false;
+
+      // Block Link-local
+      if (hostname.startsWith('169.254.')) return false;
+
+      return true;
+    } catch {
+      return false;
+    }
+  }, { message: 'Invalid or forbidden endpoint URL' }),
   keys: z.object({
     p256dh: z.string().max(200),
     auth: z.string().max(100),
