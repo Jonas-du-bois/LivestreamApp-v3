@@ -173,10 +173,10 @@ const usefulLinks = [
               :href="link.href"
               target="_blank"
               rel="noopener noreferrer"
-              class="glass-card p-4 flex items-center justify-between gap-3 hover:bg-white/10 transition-colors"
+              class="glass-card p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 active:bg-white/15 active:scale-[0.98] group"
             >
-              <span class="text-white text-sm font-medium">{{ link.label }}</span>
-              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-cyan-400 shrink-0" />
+              <span class="text-white text-sm font-medium transition-colors duration-200 group-hover:text-cyan-300 group-active:text-cyan-200">{{ link.label }}</span>
+              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-cyan-400 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:scale-90" />
             </a>
           </div>
         </section>
