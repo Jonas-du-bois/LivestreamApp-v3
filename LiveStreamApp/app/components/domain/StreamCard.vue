@@ -3,6 +3,8 @@ import { computed, resolveComponent } from '#imports'
 import { useI18n } from 'vue-i18n'
 import { useTranslatedData } from '~/composables/useTranslatedData'
 
+const NuxtLinkComp = resolveComponent('NuxtLink')
+
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
 
@@ -37,7 +39,7 @@ const hasCurrentGroup = computed(() => {
 
 <template>
   <component
-    :is="isLive ? resolveComponent('NuxtLink') : 'div'"
+    :is="isLive ? NuxtLinkComp : 'div'"
     :to="isLive ? `/stream/${stream.id}` : undefined"
     class="glass-card overflow-hidden block transition-colors group"
     :class="{ 'cursor-pointer hover:border-cyan-400/50': isLive, 'cursor-not-allowed opacity-60': !isLive }"

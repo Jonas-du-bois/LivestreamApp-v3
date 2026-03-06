@@ -17,6 +17,9 @@ export const FAVORITES_AUTO_REFRESH = 45_000
 /** Home page auto-refresh – shows LIVE data, needs faster updates (ms) */
 export const HOME_AUTO_REFRESH = 30_000
 
+/** Stream pages auto-refresh – live data, fast polling fallback (ms) */
+export const STREAM_AUTO_REFRESH = 30_000
+
 // ─── Clock / display refresh ────────────────────────────────────────
 /** How often we refresh "now" timestamp for time-based filtering (ms) */
 export const NOW_REFRESH_INTERVAL = 2_000

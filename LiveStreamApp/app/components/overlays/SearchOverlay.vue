@@ -11,7 +11,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
-const { translateApparatus, translateCategory } = useTranslatedData()
+const { translateApparatus, translateCategory, formatLocalizedTime } = useTranslatedData()
 const router = useRouter()
 const searchInput = ref<HTMLInputElement | null>(null)
 const activeTab = ref<'all' | 'groups' | 'passages' | 'live'>('all')
@@ -111,7 +111,6 @@ onUnmounted(() => {
   if (import.meta.client) {
     window.removeEventListener('keydown', handleKeydown)
   }
-  if (searchTimeout) clearTimeout(searchTimeout)
 })
 </script>
 

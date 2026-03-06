@@ -19,7 +19,7 @@ const config: CapacitorConfig = {
   },
 
   plugins: {
-    // Config du plugin Preferences (stockage natif du token auth)
+    // Config du plugin Preferences (stockage natif du token auth + favoris)
     Preferences: {
       group: 'CoupeDesBainsStorage'
     },
@@ -27,6 +27,21 @@ const config: CapacitorConfig = {
     PushNotifications: {
       // Afficher le badge sur l'icône de l'app (iOS)
       presentationOptions: ['badge', 'sound', 'alert']
+    },
+    // Config du plugin SplashScreen natif
+    SplashScreen: {
+      // On gère le masquage manuellement (après que l'app soit prête)
+      launchAutoHide: false,
+      // Durée d'animation de fondu en sortie (ms)
+      fadeOutDuration: 500,
+      // Couleur de fond identique au thème de l'app
+      backgroundColor: '#0B1120',
+      // Android : afficher le splash en plein écran (pas de barre de statut)
+      androidSplashResourceName: 'splash',
+      showSpinner: false,
+      // iOS : utiliser la Launch Image native
+      iosSpinnerStyle: 'small',
+      spinnerColor: '#06B6D4'
     }
   }
 };

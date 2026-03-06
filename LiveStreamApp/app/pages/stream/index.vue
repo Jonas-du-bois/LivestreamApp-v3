@@ -2,6 +2,7 @@
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 import { PublicService } from '../../services/public.service'
 import type { Stream, PassageEnriched } from '../../types/api'
+import { STREAM_AUTO_REFRESH } from '~/utils/timings'
 
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
@@ -84,6 +85,9 @@ useSocketRoom(['streams', 'schedule-updates'], [
   { event: 'schedule-update', handler: handleRefresh },
   { event: 'status-update', handler: handleRefresh }
 ])
+
+// PWA fallback: periodic auto-refresh + reprise de visibilité (onglet ou app)
+useAutoRefresh(handleRefresh, STREAM_AUTO_REFRESH)
 
 // Get live streams from liveData
 const liveStreams = computed<StreamDisplay[]>(() => {

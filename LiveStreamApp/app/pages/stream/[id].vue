@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Stream, Passage, Group, Apparatus, PopulatedPassage, PopulatedStream, PassageEnriched, GroupDetailsResponse } from '../../types/api'
 import { PublicService } from '../../services/public.service'
+import { STREAM_AUTO_REFRESH } from '~/utils/timings'
 
 const { t } = useI18n()
 const { translateApparatus } = useTranslatedData()
@@ -210,6 +211,9 @@ useSocketRoom([streamRoom, 'streams', 'schedule-updates'], [
   { event: 'status-update', handler: handleRefresh },
   { event: 'schedule-update', handler: handleRefresh }
 ])
+
+// PWA fallback: periodic auto-refresh + reprise de visibilité (onglet ou app)
+useAutoRefresh(handleRefresh, STREAM_AUTO_REFRESH)
 </script>
 
 <template>

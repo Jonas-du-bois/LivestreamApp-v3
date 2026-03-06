@@ -1,3 +1,4 @@
+import { isNativePlatform } from '~/utils/capacitor'
 
 export type ConnectionStatus = 'online' | 'offline' | 'poor'
 
@@ -11,6 +12,24 @@ export function useNetworkStatus() {
   const status = ref<ConnectionStatus>('online')
   const isOnline = ref(true)
 
+  // Garde pour n'afficher l'alerte native qu'une seule fois par session
+  let nativeAlertShown = false
+
+  const showNativeOfflineAlert = async () => {
+    if (nativeAlertShown) return
+    nativeAlertShown = true
+    try {
+      const { Dialog } = await import('@capacitor/dialog')
+      await Dialog.alert({
+        title: 'Connexion perdue',
+        message: 'Tu es hors-ligne. Les résultats en direct et le live ne sont pas disponibles. Reconnecte-toi au réseau pour continuer.',
+        buttonTitle: 'OK'
+      })
+    } catch {
+      // Fallback silencieux si Dialog n'est pas disponible
+    }
+  }
+
   const getConnection = (): NetworkInformation | null => {
     const nav = navigator as unknown as {
       connection?: NetworkInformation
@@ -20,57 +39,91 @@ export function useNetworkStatus() {
     return nav.connection || nav.mozConnection || nav.webkitConnection || null
   }
 
-  const updateNetworkStatus = () => {
-    if (typeof navigator === 'undefined') return
-
-    if (!navigator.onLine) {
+  const updateNetworkStatus = (online: boolean, effectiveType?: string) => {
+    if (!online) {
       status.value = 'offline'
       isOnline.value = false
+      if (isNativePlatform()) showNativeOfflineAlert()
       return
     }
 
     isOnline.value = true
+    nativeAlertShown = false // Reset pour la prochaine déconnexion
 
-    // API Network Information (non supportée sur tous les navigateurs, particulièrement iOS/Safari)
-    const conn = getConnection()
-    
-    if (conn) {
-      const effectiveType = conn.effectiveType // 'slow-2g', '2g', '3g', or '4g'
-      if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-        status.value = 'poor'
-      } else {
-        status.value = 'online'
-      }
+    if (effectiveType === 'slow-2g' || effectiveType === '2g') {
+      status.value = 'poor'
     } else {
       status.value = 'online'
     }
   }
 
-  let connectionMonitor: NetworkInformation | null = null
+  // --- Canal Web (PWA) ---
+  const updateFromBrowserApi = () => {
+    if (typeof navigator === 'undefined') return
+    const conn = getConnection()
+    updateNetworkStatus(navigator.onLine, conn?.effectiveType)
+  }
 
-  onMounted(() => {
+  let connectionMonitor: NetworkInformation | null = null
+  // Référence pour retirer les listeners Capacitor Network
+  let nativeNetworkCleanup: (() => Promise<void>) | null = null
+
+  onMounted(async () => {
     if (!import.meta.client) return
 
-    updateNetworkStatus()
+    if (isNativePlatform()) {
+      // --- Canal NATIF : @capacitor/network ---
+      // Fiable même dans une WebView Safari/Chrome (salle de sport, réseau capricieux)
+      try {
+        const { Network } = await import('@capacitor/network')
 
-    window.addEventListener('online', updateNetworkStatus)
-    window.addEventListener('offline', updateNetworkStatus)
+        // Statut initial
+        const current = await Network.getStatus()
+        updateNetworkStatus(current.connected, current.connectionType === 'wifi' || current.connectionType === 'cellular' ? '4g' : undefined)
+
+        // Écoute des changements
+        const handle = await Network.addListener('networkStatusChange', (networkStatus) => {
+          updateNetworkStatus(networkStatus.connected)
+        })
+
+        nativeNetworkCleanup = () => handle.remove()
+      } catch (err) {
+        console.warn('[Network] Native plugin unavailable, falling back to web API:', err)
+        updateFromBrowserApi()
+        window.addEventListener('online', updateFromBrowserApi)
+        window.addEventListener('offline', updateFromBrowserApi)
+      }
+      return
+    }
+
+    // --- Canal Web/PWA ---
+    updateFromBrowserApi()
+
+    window.addEventListener('online', updateFromBrowserApi)
+    window.addEventListener('offline', updateFromBrowserApi)
 
     const conn = getConnection()
     if (conn) {
-      conn.addEventListener('change', updateNetworkStatus)
+      conn.addEventListener('change', updateFromBrowserApi)
       connectionMonitor = conn
     }
   })
 
-  onUnmounted(() => {
+  onUnmounted(async () => {
     if (!import.meta.client) return
 
-    window.removeEventListener('online', updateNetworkStatus)
-    window.removeEventListener('offline', updateNetworkStatus)
+    // Nettoyage natif
+    if (nativeNetworkCleanup) {
+      await nativeNetworkCleanup()
+      return
+    }
+
+    // Nettoyage web
+    window.removeEventListener('online', updateFromBrowserApi)
+    window.removeEventListener('offline', updateFromBrowserApi)
 
     if (connectionMonitor) {
-      connectionMonitor.removeEventListener('change', updateNetworkStatus)
+      connectionMonitor.removeEventListener('change', updateFromBrowserApi)
     }
   })
 

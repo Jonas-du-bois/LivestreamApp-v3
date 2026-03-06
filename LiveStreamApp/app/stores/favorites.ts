@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { NotificationService } from '../services/notification.service';
 import { urlBase64ToUint8Array } from '../utils/webPush';
 import { isNativePlatform } from '../utils/capacitor';
+import { capacitorStorage } from '../utils/nativeStorage';
 
 export const useFavoritesStore = defineStore('favorites', {
   state: () => ({
@@ -122,5 +123,9 @@ export const useFavoritesStore = defineStore('favorites', {
       }
     }
   },
-  persist: true,
+  // Sur Capacitor : @capacitor/preferences (NSUserDefaults / SharedPreferences)
+  // Sur Web/PWA   : localStorage (comportement existant)
+  persist: {
+    storage: capacitorStorage
+  },
 });
