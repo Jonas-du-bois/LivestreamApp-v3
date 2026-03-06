@@ -38,8 +38,7 @@ const handleError = () => {
 const { formatLocalizedTime } = useTranslatedData()
 
 const formattedTime = computed(() => {
-  const d = new Date(props.photo.dateUpload * 1000)
-  return formatLocalizedTime(d.toISOString())
+  return formatLocalizedTime(props.photo.dateUpload * 1000)
 })
 </script>
 
