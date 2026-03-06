@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PassageEnriched, Stream, EnrichedGroup, ScheduleResponse } from '~/types/api'
+import type { PassageEnriched, Stream, EnrichedGroup } from '~/types/api'
 
 interface Props {
   isOpen: boolean
@@ -13,96 +13,26 @@ const emit = defineEmits<{
 const { t, locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
 const router = useRouter()
-const searchQuery = ref('')
 const searchInput = ref<HTMLInputElement | null>(null)
-const isLoading = ref(false)
 const activeTab = ref<'all' | 'groups' | 'passages' | 'live'>('all')
 
 const { open: openGroupDetails } = useGroupDetails()
 
-// Search results
-const groupResults = ref<EnrichedGroup[]>([])
-const passageResults = ref<PassageEnriched[]>([])
-const liveResults = ref<{ passages: PassageEnriched[], streams: Stream[] }>({ passages: [], streams: [] })
+// Use the new global search composable
+const {
+  searchQuery,
+  isLoading,
+  groupResults,
+  passageResults,
+  liveResults,
+  resetSearch
+} = useGlobalSearch()
 
-// Debounced search
-let searchTimeout: ReturnType<typeof setTimeout> | null = null
-
-const performSearch = async (query: string) => {
-  if (!query || query.length < 2) {
-    groupResults.value = []
-    passageResults.value = []
-    liveResults.value = { passages: [], streams: [] }
-    return
-  }
-
-  isLoading.value = true
-  const q = query.toLowerCase()
-
-  try {
-    // Fetch all data in parallel
-    const [scheduleRes, liveRes] = await Promise.all([
-      $fetch<ScheduleResponse>('/api/schedule'),
-      $fetch<{ passages: PassageEnriched[]; streams: Stream[] }>('/api/live')
-    ])
-
-    // Extract unique groups from passages
-    const groupsMap = new Map<string, EnrichedGroup>()
-    scheduleRes.data.forEach((p) => {
-      if (p.group && p.group._id) {
-        groupsMap.set(p.group._id, p.group)
-      }
-    })
-    const allGroups = Array.from(groupsMap.values())
-
-    // Filter groups
-    groupResults.value = allGroups.filter((g) =>
-      g.name?.toLowerCase().includes(q) ||
-      g.canton?.toLowerCase().includes(q) ||
-      g.category?.toLowerCase().includes(q)
-    ).slice(0, 10)
-
-    // Filter passages (by group name, apparatus name, location)
-    passageResults.value = scheduleRes.data.filter((p) =>
-      p.group?.name?.toLowerCase().includes(q) ||
-      p.apparatus?.name?.toLowerCase().includes(q) ||
-      p.apparatus?.code?.toLowerCase().includes(q) ||
-      p.location?.toLowerCase().includes(q)
-    ).slice(0, 15)
-
-    // Filter live data
-    const livePassages = liveRes.passages.filter((p) =>
-      p.group?.name?.toLowerCase().includes(q) ||
-      p.apparatus?.name?.toLowerCase().includes(q) ||
-      p.location?.toLowerCase().includes(q)
-    )
-    const liveStreams = liveRes.streams.filter((s) =>
-      s.name?.toLowerCase().includes(q) ||
-      s.location?.toLowerCase().includes(q)
-    )
-    liveResults.value = { passages: livePassages, streams: liveStreams }
-
-  } catch (err) {
-    console.error('[SearchOverlay] Error fetching data:', err)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-watch(() => searchQuery.value, (newQuery) => {
-  if (searchTimeout) clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    performSearch(newQuery)
-  }, 300)
-})
 
 // Reset when closed
 watch(() => props.isOpen, (open) => {
   if (!open) {
-    searchQuery.value = ''
-    groupResults.value = []
-    passageResults.value = []
-    liveResults.value = { passages: [], streams: [] }
+    resetSearch()
     activeTab.value = 'all'
   } else {
     nextTick(() => searchInput.value?.focus())

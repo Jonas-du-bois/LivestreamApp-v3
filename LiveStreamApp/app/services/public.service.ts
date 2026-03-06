@@ -10,6 +10,12 @@ export const PublicService = {
     })
   },
 
+  fetchSchedule(filters?: { day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[]; [key: string]: any }) {
+    return apiClient<ScheduleResponse>('/schedule', {
+      query: filters
+    })
+  },
+
   getResults(options: UseFetchOptions<any> & { day?: MaybeRef<string> } = {}) {
     return useApiClient<any>('/results', {
       key: 'results-' + JSON.stringify(toValue(options.day) || 'all'),

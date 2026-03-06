@@ -96,15 +96,7 @@ const enrichedTimeline = computed(() => {
     // 2. Client-side status calculation for reactivity (past/live/upcoming)
     const startTime = new Date(merged.startTime).getTime()
     const endTime = new Date(merged.endTime).getTime()
-    let status = merged.status
-
-    if (now >= startTime && now <= endTime) {
-      status = 'LIVE'
-    } else if (now > endTime) {
-      status = 'FINISHED'
-    } else if (now < startTime && (status === 'LIVE' || status === 'FINISHED')) {
-      status = 'SCHEDULED'
-    }
+    const status = computePassageStatus(startTime, endTime, now, merged.status)
 
     return {
       ...merged,

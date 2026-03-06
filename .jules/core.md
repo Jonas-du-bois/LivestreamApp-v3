@@ -85,3 +85,13 @@
   - Centralized interval management and visibility handling.
   - Refactored `schedule.vue`, `favorites.vue`, and `index.vue` to use the composable.
 - **Outcome:** Removed ~60 lines of duplicated boilerplate code. Centralized PWA background/foreground refresh strategy.
+
+## 2026-02-21: Dynamic Status Calculation Extraction
+
+- **Logic Extracted:** Client-side dynamic passage status calculation (`now >= startTime && now <= endTime`) resolving 'LIVE', 'FINISHED', or 'SCHEDULED' overrides based on current time. This logic was duplicated in `usePassageTiming.ts` and `GroupDetailsModal.vue`.
+- **Destination:** `app/utils/passage.ts`
+- **Changes:**
+  - Created `computePassageStatus` pure utility function.
+  - Extracted the condition chain into this utility.
+  - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
+- **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
