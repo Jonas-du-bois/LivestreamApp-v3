@@ -1,4 +1,4 @@
-import type { PassageStatus } from '../types/api'
+import type { PassageStatus, SeedResponse } from '../types/api'
 import { apiClient } from '../composables/useApiClient'
 
 export const AdminService = {
@@ -10,7 +10,7 @@ export const AdminService = {
   },
 
   updateScore(payload: { passageId: string; score?: number }) {
-    return apiClient<{ ok: boolean; payload: any }>('/admin/score', {
+    return apiClient<{ ok: boolean; payload: unknown }>('/admin/score', {
       method: 'PUT',
       body: payload
     })
@@ -31,7 +31,7 @@ export const AdminService = {
   },
 
   seedDatabase() {
-    return apiClient<{ success: boolean; summary?: any; error?: string }>('/admin/seed', {
+    return apiClient<SeedResponse>('/admin/seed', {
       method: 'POST'
     })
   }

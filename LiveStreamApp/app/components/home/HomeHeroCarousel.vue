@@ -85,9 +85,24 @@ const ssrSlides = computed(() => [
   }
 ])
 
+interface HeroSlide {
+  id: string;
+  type: 'live' | 'photo' | 'result' | 'afterparty' | 'food';
+  title: string;
+  subtitle: string;
+  image: string;
+  to: string;
+  badge?: {
+    label: string;
+    variant: string;
+    pulse?: boolean;
+    showDot?: boolean;
+  };
+}
+
 // ─── Slides dynamiques (toute la logique originale, actives après onMounted) ──
 const dynamicSlides = computed(() => {
-  const items: any[] = []
+  const items: HeroSlide[] = []
 
   // 1. Priorité aux Directs (Live)
   if (props.livePassages.length > 0) {

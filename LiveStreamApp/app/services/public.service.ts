@@ -1,23 +1,22 @@
-import type { ScheduleResponse, PassageEnriched, Stream, PopulatedStream, GroupDetailsResponse } from '../types/api'
-import { type MaybeRef, toValue } from 'vue'
+import type { ScheduleResponse, PassageEnriched, Stream, PopulatedStream, GroupDetailsResponse, ResultsResponse, WeatherResponse, SeedResponse } from '../types/api'
 import type { UseFetchOptions } from '#app'
 
 export const PublicService = {
-  getSchedule(filters?: MaybeRef<{ day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[]; [key: string]: any }>, opts?: { key?: string }) {
+  getSchedule(filters?: MaybeRef<{ day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[]; [key: string]: unknown }>, opts?: { key?: string }) {
     return useApiClient<ScheduleResponse>('/schedule', {
       query: filters,
       key: opts?.key || ('schedule-' + JSON.stringify(toValue(filters) || {}))
     })
   },
 
-  fetchSchedule(filters?: { day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[]; [key: string]: any }) {
+  fetchSchedule(filters?: { day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[]; [key: string]: unknown }) {
     return apiClient<ScheduleResponse>('/schedule', {
       query: filters
     })
   },
 
-  getResults(options: UseFetchOptions<any> & { day?: MaybeRef<string> } = {}) {
-    return useApiClient<any>('/results', {
+  getResults(options: UseFetchOptions<ResultsResponse> & { day?: MaybeRef<string> } = {}) {
+    return useApiClient<ResultsResponse>('/results', {
       key: 'results-' + JSON.stringify(toValue(options.day) || 'all'),
       query: computed(() => ({
         day: toValue(options.day) || undefined
@@ -26,7 +25,7 @@ export const PublicService = {
     })
   },
 
-  getStreams(filters?: MaybeRef<{ isLive?: boolean; [key: string]: any }>) {
+  getStreams(filters?: MaybeRef<{ isLive?: boolean; [key: string]: unknown }>) {
     return useApiClient<Stream[]>('/streams', {
       query: filters,
       key: 'streams-' + JSON.stringify(toValue(filters) || {}),
@@ -55,18 +54,18 @@ export const PublicService = {
   },
 
   fetchWeather() {
-    return apiClient<{ temperature: number; raw?: any }>('/weather')
+    return apiClient<WeatherResponse>('/weather')
   },
 
   getWeather() {
     // Returns current temperature for Yverdon-les-Bains (proxy to external weather API)
-    return useApiClient<{ temperature: number; raw?: any }>('/weather', {
+    return useApiClient<WeatherResponse>('/weather', {
       key: 'weather'
     })
   },
 
   seedDatabase() {
-    return useApiClient<{ success: boolean; summary: any }>('/seed')
+    return useApiClient<SeedResponse>('/seed')
   },
 
   getGroupDetails(groupId: string) {
