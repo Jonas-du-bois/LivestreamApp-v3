@@ -24,6 +24,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
+const { formatLocalizedDateTime } = useTranslatedData()
 
 // ─── État de navigation ─────────────────────────────────────────────────────
 const currentIndex = computed({
@@ -118,12 +119,7 @@ const downloadPhoto = async () => {
 // ─── Formatage date/heure ───────────────────────────────────────────────────
 const formattedDateTime = computed(() => {
   if (!currentPhoto.value) return ''
-  const d = new Date(currentPhoto.value.dateUpload * 1000)
-  const loc = locale.value === 'de' ? 'de-CH' : locale.value === 'it' ? 'it-CH' : 'fr-CH'
-  return d.toLocaleString(loc, {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  })
+  return formatLocalizedDateTime(currentPhoto.value.dateUpload * 1000)
 })
 
 // ─── Clavier ────────────────────────────────────────────────────────────────

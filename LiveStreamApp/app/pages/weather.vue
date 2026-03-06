@@ -52,7 +52,7 @@ const windDirection = computed(() => {
 // Display the local time of the last successful fetch/refresh
 const updatedDisplay = computed(() => {
   if (pending.value && !weatherResp.value) return '--'
-  return formatLocalizedTime(lastRefreshedAt.value.toISOString())
+  return formatLocalizedTime(lastRefreshedAt.value)
 })
 
 const weatherKind = computed<WeatherKind>(() => {
