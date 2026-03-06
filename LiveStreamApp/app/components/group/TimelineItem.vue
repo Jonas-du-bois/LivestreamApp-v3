@@ -12,6 +12,7 @@ const { translateApparatus, formatLocalizedTime } = useTranslatedData()
 
 const formatTime = (iso: string) => formatLocalizedTime(iso)
 
+// Détermine l'état du passage pour adapter le label affiché.
 const statusLabel = computed(() => {
   if (props.item.status === 'LIVE') return t('group.inProgress')
   if (props.item.status === 'FINISHED') return ''
@@ -21,7 +22,6 @@ const statusLabel = computed(() => {
 
 <template>
   <div class="relative pl-12">
-    <!-- Icon Bubble -->
     <div
       class="absolute left-0 top-0 w-10 h-10 rounded-full flex items-center justify-center border-2 z-10 bg-[#0B1120] transition-all duration-500"
       :class="item.status === 'LIVE' ? 'border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)] scale-110' :
@@ -30,7 +30,6 @@ const statusLabel = computed(() => {
       <Icon :name="item.apparatus?.icon || 'fluent:circle-24-regular'" class="w-5 h-5" />
     </div>
 
-    <!-- Content Card -->
     <div 
       class="glass-card p-4 transition-all duration-500"
       :class="item.status === 'FINISHED' ? 'opacity-60 grayscale-[0.3]' : 'hover:bg-white/10'"

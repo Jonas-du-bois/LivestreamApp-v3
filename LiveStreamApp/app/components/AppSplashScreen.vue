@@ -5,12 +5,14 @@
     aria-live="polite"
     aria-label="Chargement de Coupe des Bains"
   >
+    <!-- Orbes décoratifs en arrière-plan pour l'effet visuel -->
     <span class="splash-screen__orb splash-screen__orb--cyan" aria-hidden="true" />
     <span class="splash-screen__orb splash-screen__orb--violet" aria-hidden="true" />
 
     <div class="splash-screen__card glass-panel">
       <div class="splash-screen__logo-wrap" aria-hidden="true">
         <span class="splash-screen__halo" />
+        <!-- On utilise un chargement eager pour l'image du splash screen car c'est le premier élément visible -->
         <img
           src="/icons/logo_livestreamappv3-192.png"
           alt=""
@@ -25,6 +27,7 @@
       <p class="splash-screen__title">Coupe des Bains</p>
       <p class="splash-screen__subtitle">Connexion au live...</p>
 
+      <!-- Indicateur de progression visuelle (infinie) -->
       <div class="splash-screen__progress" aria-hidden="true">
         <span class="splash-screen__progress-bar" />
       </div>
@@ -80,6 +83,10 @@
   width: min(90vw, 360px);
   padding: 2.25rem 1.5rem 1.4rem;
   text-align: center;
+  /* Centrage explicite de tous les enfants (logo, titres, barre de progression) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border-color: rgba(255, 255, 255, 0.22);
   box-shadow:
     0 25px 55px rgba(2, 6, 23, 0.52),
@@ -131,6 +138,7 @@
 
 .splash-screen__progress {
   width: 100%;
+  max-width: 260px;
   height: 6px;
   border-radius: 9999px;
   overflow: hidden;

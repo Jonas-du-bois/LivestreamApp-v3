@@ -1,10 +1,8 @@
 import { NOW_REFRESH_INTERVAL } from '~/utils/timings'
 
 /**
- * ⚛️ useNow
- * Shared composable to provide a reactive "now" timestamp.
- * Used for client-side status calculations (LIVE, FINISHED, etc.)
- * with a standardized refresh interval.
+ * Fournit un timestamp réactif (now) actualisé à intervalle régulier.
+ * Utilisé pour calculer les statuts dynamiques (LIVE, FINISHED, etc.) côté client.
  */
 export function useNow() {
   const now = ref(Date.now())

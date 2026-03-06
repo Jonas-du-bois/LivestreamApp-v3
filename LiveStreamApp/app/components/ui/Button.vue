@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiButton
- * Bouton d'action standardisé.
+ * UiButton
+ * Bouton d'action standardisé du design system.
  * Supporte les variantes Glass, Primary, Ghost et les états de chargement.
  */
 
@@ -75,7 +75,6 @@ const commonClasses = computed(() => [
     :class="commonClasses"
     @click="emit('click', $event)"
   >
-    <!-- Loading Spinner -->
     <Icon
       v-if="loading"
       name="svg-spinners:ring-resize"
@@ -83,17 +82,14 @@ const commonClasses = computed(() => [
       :size="size === 'sm' ? '16' : '20'"
     />
 
-    <!-- Left Icon -->
     <Icon
       v-else-if="icon"
       :name="icon"
       :size="size === 'sm' ? '16' : '20'"
     />
 
-    <!-- Content -->
     <slot />
 
-    <!-- Right Icon -->
     <Icon
       v-if="iconRight && !loading"
       :name="iconRight"

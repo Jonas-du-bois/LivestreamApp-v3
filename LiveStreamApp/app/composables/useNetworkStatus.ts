@@ -8,11 +8,16 @@ export interface NetworkInformation extends EventTarget {
   removeEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: EventListenerOptions | boolean): void
 }
 
+/**
+ * Détecte l'état réseau (online / offline / poor) de façon hybride :
+ * - Natif (Capacitor) : plugin @capacitor/network, plus fiable en WebView
+ * - Web/PWA : API navigator.onLine + Network Information API
+ */
 export function useNetworkStatus() {
   const status = ref<ConnectionStatus>('online')
   const isOnline = ref(true)
 
-  // Garde pour n'afficher l'alerte native qu'une seule fois par session
+  // Alerte native affichée une seule fois par session pour ne pas spammer
   let nativeAlertShown = false
 
   const showNativeOfflineAlert = async () => {
@@ -48,7 +53,7 @@ export function useNetworkStatus() {
     }
 
     isOnline.value = true
-    nativeAlertShown = false // Reset pour la prochaine déconnexion
+    nativeAlertShown = false // Réarmer pour la prochaine déconnexion
 
     if (effectiveType === 'slow-2g' || effectiveType === '2g') {
       status.value = 'poor'
@@ -64,8 +69,8 @@ export function useNetworkStatus() {
     updateNetworkStatus(navigator.onLine, conn?.effectiveType)
   }
 
+  // Références de nettoyage
   let connectionMonitor: NetworkInformation | null = null
-  // Référence pour retirer les listeners Capacitor Network
   let nativeNetworkCleanup: (() => Promise<void>) | null = null
 
   onMounted(async () => {

@@ -1,26 +1,20 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiIconButton
- * Bouton d'icône standardisé avec effet Glassmorphism.
+ * UiIconButton
+ * Bouton contenant uniquement une icône, avec des styles unifiés et une gestion native de l'accessibilité.
  */
 
 interface Props {
-  /** Nom de l'icône Iconify */
   icon: string
-  /** Taille de l'icône (défaut: 5 pour w-5 h-5) */
   iconSize?: string | number
-  /** Label pour l'accessibilité (obligatoire pour les boutons sans texte) */
   label: string
-  /** Variante visuelle */
   variant?: 'ghost' | 'glass' | 'dark' | 'bubble'
-  /** État actif (ex: pour les filtres activés) */
   active?: boolean
-  /** Afficher un point de notification */
   showBadge?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  iconSize: '20', // Équivalent à w-5 h-5
+  iconSize: '20', 
   variant: 'ghost',
   active: false,
   showBadge: false
@@ -55,7 +49,6 @@ const variantClasses = computed(() => {
       class="transition-transform"
     />
     
-    <!-- Badge de notification -->
     <span 
       v-if="showBadge"
       class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-[#0B1120]"

@@ -1,16 +1,20 @@
 import { isNativePlatform, getNativeToken, setNativeToken, removeNativeToken } from '~/utils/capacitor'
 
+/**
+ * Gestion de l'authentification admin.
+ * Web : stockage via cookie HTTP (24h).
+ * Mobile (Capacitor) : stockage via Preferences natif.
+ */
 export const useAdminAuth = () => {
-  // Cookie pour le mode Web (24 heures)
   const cookieToken = useCookie<string | null>('auth_token', {
-    maxAge: 60 * 60 * 24, // 1 day
+    maxAge: 60 * 60 * 24,
     sameSite: 'lax',
     path: '/',
     secure: false,
     httpOnly: false
   })
 
-  // Token réactif hybride : lit depuis le bon stockage selon la plateforme
+  // Lecture hybride : Preferences (natif) ou cookie (web)
   const token = computed({
     get: () => {
       if (import.meta.client && isNativePlatform()) {
@@ -18,9 +22,9 @@ export const useAdminAuth = () => {
       }
       return cookieToken.value
     },
-    set: () => {
-      // La modification se fait via login/logout (async pour le natif)
-    }
+    // Le setter est volontairement vide — la modification du token
+    // passe par login() / logout() pour gérer l'async natif.
+    set: () => {}
   })
 
   const loginError = ref<string | null>(null)

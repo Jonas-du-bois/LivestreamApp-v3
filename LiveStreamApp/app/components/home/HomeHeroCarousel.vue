@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * ⚛️ HomeHeroCarousel
+ * HomeHeroCarousel
  * Carousel premium pour la section Hero de l'accueil.
  * Alterne entre les directs, les dernières photos, les résultats récents et les infos de l'événement.
  */
@@ -11,12 +11,8 @@ import { PublicService } from '~/services/public.service'
 import { useNow } from '~/composables/useNow'
 import type { PassageEnriched, Stream, Passage } from '~/types/api'
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Two-Pass Render Guard
-// `isMounted` reste `false` pendant le SSR ET lors du premier rendu client
-// (hydration). Vue compare donc deux DOM identiques. Après onMounted(), la
-// valeur passe à `true` et le composant bascule sur son contenu dynamique.
-// ─────────────────────────────────────────────────────────────────────────────
+// Utilise une technique "Two-Pass Render" pour éviter les erreurs d'hydratation Vue (Mismatch DOM/Server) causées par le temps réel.
+// isMounted reste false pendant le SSR et la 1ère passe client. Il passe à true après onMounted(), activant les données dynamiques.
 
 interface Props {
   livePassages?: PassageEnriched[]
@@ -30,40 +26,30 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false
 })
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+// ⚠️ DEAD CODE : const { locale } = useI18n()
 const { translateApparatus } = useTranslatedData()
 const router = useRouter()
-const { now } = useNow()
+// ⚠️ DEAD CODE : const { now } = useNow()
 
-// --- Countdown Logic for Afterparty ---
 const { timeLeftShort: afterpartyCountdown } = usePartyCountdown()
 
-// --- Additional Data Fetching (lazy, non-blocking) ---
+// Requêtes non bloquantes pour récupérer les données secondaires du carrousel.
 const { data: albumResp } = FlickrService.getAlbum()
 const { data: resultsResp } = PublicService.getResults()
 
-// --- Two-Pass guard ---
 const isMounted = ref(false)
 
-/**
- * Compte à rebours affiché dans la slide afterparty.
- * - Passe SSR / 1er rendu client : placeholder stable « ... » pour éviter
- *   le Text Mismatch causé par Date.now() qui diffère entre serveur et navigateur.
- * - Après montage : valeur réelle mise à jour chaque seconde.
- */
+// Affiche un placeholder pendant le SSR pour éviter le Text Mismatch du compte à rebours.
 const displayCountdown = computed(() =>
   isMounted.value ? afterpartyCountdown.value : '...'
 )
 
-// --- Carousel State ---
 const currentIndex = ref(0)
 const rotationInterval = ref<ReturnType<typeof setInterval> | null>(null)
-const SLIDE_DURATION = 15000 // 15 seconds per slide
+const SLIDE_DURATION = 15000 
 
-// ─── Slides SSR stables (toujours identiques, aucune donnée dynamique) ───────
-// Ces slides sont affichées pendant le SSR et lors de la 1ère passe client
-// (avant onMounted). Elles garantissent que le DOM client correspond
-// exactement au HTML émis par le serveur → zéro hydration mismatch.
+// Slides statiques utilisées pour garantir une correspondance exacte entre le serveur (SSR) et le premier rendu client.
 const ssrSlides = computed(() => [
   {
     id: 'afterparty',
@@ -85,11 +71,10 @@ const ssrSlides = computed(() => [
   }
 ])
 
-// ─── Slides dynamiques (toute la logique originale, actives après onMounted) ──
+// Construit dynamiquement les slides en fonction de l'actualité de l'événement (Live, Photos, Résultats).
 const dynamicSlides = computed(() => {
   const items: any[] = []
 
-  // 1. Priorité aux Directs (Live)
   if (props.livePassages.length > 0) {
     props.livePassages.slice(0, 2).forEach((p, idx) => {
       const s = props.liveStreams.find((stream: Stream) => {
@@ -117,7 +102,6 @@ const dynamicSlides = computed(() => {
     })
   }
 
-  // 2. Dernières Photos (Flickr)
   const photos = albumResp.value?.photos
   if (Array.isArray(photos) && photos.length > 0) {
     const latestPhoto = photos[0]!
@@ -136,7 +120,6 @@ const dynamicSlides = computed(() => {
     })
   }
 
-  // 3. Derniers Résultats
   const results = resultsResp.value
   if (Array.isArray(results) && results.length > 0) {
     const lastResult = results[0]
@@ -154,7 +137,6 @@ const dynamicSlides = computed(() => {
     })
   }
 
-  // 4. Afterparty (Countdown context)
   items.push({
     id: 'afterparty',
     type: 'afterparty',
@@ -169,7 +151,6 @@ const dynamicSlides = computed(() => {
     }
   })
 
-  // 5. Restauration
   items.push({
     id: 'food',
     type: 'food',
@@ -187,18 +168,13 @@ const dynamicSlides = computed(() => {
   return items
 })
 
-/**
- * Point d'entrée unique utilisé par le template.
- * - false  → ssrSlides  : DOM stable, hydration garantie sans mismatch
- * - true   → dynamicSlides : contenu temps-réel une fois le client prêt
- */
 const slides = computed(() =>
   isMounted.value ? dynamicSlides.value : ssrSlides.value
 )
 
 const currentSlide = computed(() => slides.value[currentIndex.value] || slides.value[0])
 
-// --- Rotation Logic ---
+// Gère la rotation automatique du carrousel.
 const startRotation = () => {
   stopRotation()
   if (slides.value.length <= 1) return
@@ -216,13 +192,11 @@ const stopRotation = () => {
 
 const manualChange = (index: number) => {
   currentIndex.value = index
-  startRotation() // Reset timer on manual change
+  startRotation() 
 }
 
 onMounted(() => {
-  // Deuxième passe : on active les slides dynamiques PUIS on lance la rotation.
-  // L'ordre est important : isMounted doit être true avant startRotation()
-  // pour que le watch sur slides.length démarre avec le bon compte.
+  // L'ordre est crucial : isMounted doit être true pour peupler dynamicSlides AVANT de lancer la rotation.
   isMounted.value = true
   startRotation()
 })
@@ -249,7 +223,6 @@ const handleHeroClick = () => {
 
 <template>
   <div class="relative w-full h-64 sm:h-80 overflow-hidden rounded-3xl shadow-2xl group border border-white/10">
-    <!-- Main Carousel -->
     <TransitionGroup 
       name="hero-slide" 
       tag="div" 
@@ -277,7 +250,6 @@ const handleHeroClick = () => {
               <Transition name="badge-pop" appear>
                 <UiStatusBadge variant="violet" pulse>
                   <Icon name="fluent:clock-24-regular" class="w-3 h-3 mr-1" />
-                 
                   {{ displayCountdown }}
                 </UiStatusBadge>
               </Transition>
@@ -310,7 +282,6 @@ const handleHeroClick = () => {
       </div>
     </TransitionGroup>
 
-    <!-- Interactive Navigation Dots -->
     <div 
       v-if="slides && slides.length > 1"
       class="absolute bottom-6 right-8 z-30 flex items-center gap-3"
@@ -328,7 +299,6 @@ const handleHeroClick = () => {
             currentIndex === index ? 'w-8 bg-white/40' : 'w-2 bg-white/20 group-hover/dot:bg-white/40'
           ]"
         >
-          <!-- Progress Fill Layer -->
           <span 
             v-if="currentIndex === index"
             class="absolute inset-0 bg-white hero-dot-progress block"
@@ -338,7 +308,7 @@ const handleHeroClick = () => {
       </button>
     </div>
 
-    <!-- Click Overlay for interactivity since MediaCard is non-interactive inside -->
+    <!-- Couche invisible permettant de rendre toute la carte cliquable puisque le contenu est désactivé pour éviter les conflits d'interaction -->
     <button 
       type="button"
       class="absolute inset-0 z-20 w-full h-full cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400 focus-visible:outline-none"
@@ -359,7 +329,6 @@ const handleHeroClick = () => {
   );
 }
 
-/* Animations Premium */
 .hero-slide-enter-active {
   transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -378,7 +347,6 @@ const handleHeroClick = () => {
   filter: blur(10px);
 }
 
-/* Reveal effect for text */
 .premium-content-reveal {
   animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -396,7 +364,6 @@ const handleHeroClick = () => {
   }
 }
 
-/* Dot Progress Animation */
 .hero-dot-progress {
   animation: dot-progress linear forwards;
 }
@@ -406,13 +373,11 @@ const handleHeroClick = () => {
   to { width: 100%; }
 }
 
-/* Zoom 110% pour les slides Flickr */
 .photo-zoom :deep(img) {
   transform: scale(1.1);
   transform-origin: center center;
 }
 
-/* Badge pop animation */
 .badge-pop-enter-active {
   animation: badge-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }

@@ -1,16 +1,13 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiSectionTitle
+ * UiSectionTitle
  * Titre de section standardisé.
- * Centralise la typographie (bold, white) et le padding horizontal léger (px-1).
+ * Centralise la typographie (bold, white) et le padding horizontal léger.
  */
 
 interface Props {
-  /** Niveau de titre HTML (h1-h6) */
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  /** Taille du texte (base, lg, xl, 2xl) */
   size?: 'base' | 'lg' | 'xl' | '2xl'
-  /** Classes CSS additionnelles */
   class?: string
 }
 

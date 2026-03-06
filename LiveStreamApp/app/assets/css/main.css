@@ -52,7 +52,7 @@ body {
     :root {
       --header-safe-extra: 0px;
       --nav-safe-extra: -10px; /* keep current iOS PWA visual spacing */
-      --main-content-top-base: 5.5rem;
+      --main-content-top-base: 5.25rem;
       --main-content-bottom-base: 45px;
     }
   }

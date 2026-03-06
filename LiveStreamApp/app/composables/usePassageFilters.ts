@@ -1,13 +1,10 @@
-import { computed, type Ref } from 'vue'
+import { type Ref } from 'vue'
 import type { PassageEnriched, PassageStatus } from '~/types/api'
 import type { PassageSearchable } from '~/types/ui'
 
-// Helper for normalization
 const normalize = (value: string | null | undefined) => (value ?? '').toString().toLowerCase()
 
-/**
- * Enriches a passage with search keys and normalized strings
- */
+/** Enrichit un passage avec des clés de recherche pré-normalisées */
 export const enrichPassage = (p: PassageEnriched): PassageSearchable => {
   const groupName = p.group?.name ?? ''
   const apparatusName = p.apparatus?.name ?? ''
@@ -15,8 +12,7 @@ export const enrichPassage = (p: PassageEnriched): PassageSearchable => {
   const location = p.location ?? ''
   const category = p.group?.category ?? ''
   
-  // Create a day key consistent with UI display logic (e.g. 'samedi')
-  // Note: Using 'fr-FR' as the UI uses French day names for filtering
+  // Jour fr-FR car le filtrage UI utilise les noms de jours en français
   const dayKey = p.startTime
     ? new Date(p.startTime).toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase()
     : ''
@@ -48,18 +44,15 @@ export interface PassageFilterOptions {
 }
 
 /**
- * Composable for filtering and searching passages efficiently
- * @param passages Raw list of enriched passages
- * @param options Reactive filter options
+ * Filtrage multi-critères des passages (jour, engin, statut, texte libre…).
+ * Les passages sont enrichis avec des clés normalisées pour des recherches performantes.
  */
 export const usePassageFilters = (
   passages: Ref<PassageEnriched[]>,
   options: Ref<PassageFilterOptions>
 ) => {
-  // 1. Enrich passages first (memoized)
   const enrichedPassages = computed(() => passages.value.map(enrichPassage))
 
-  // 2. Filter enriched passages
   const filteredPassages = computed(() => {
     let result = enrichedPassages.value
     const opts = options.value

@@ -1,3 +1,7 @@
+/**
+ * État partagé pour le modal de détails d'un groupe.
+ * Utilise useState pour persister entre les navigations.
+ */
 export const useGroupDetails = () => {
   const isOpen = useState<boolean>('group-details-open', () => false)
   const groupId = useState<string>('group-details-id', () => '')
@@ -11,9 +15,6 @@ export const useGroupDetails = () => {
 
   const close = () => {
     isOpen.value = false
-    // Optional: clear data on close if needed, but keeping it might be useful for transitions
-    // groupId.value = ''
-    // apparatusCode.value = undefined
   }
 
   return {

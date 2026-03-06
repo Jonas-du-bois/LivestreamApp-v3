@@ -15,7 +15,6 @@ import {
   type ChartData
 } from 'chart.js'
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -47,10 +46,9 @@ const props = withDefaults(defineProps<Props>(), {
   compact: false
 })
 
-
 const { t, locale } = useI18n()
 
-// Chart data
+// Configuration dynamique des données du graphique (labels, valeurs, styles des lignes et points).
 const chartData = computed<ChartData<'line'>>(() => ({
   labels: props.data.map(d => d.year.toString()),
   datasets: [
@@ -58,6 +56,7 @@ const chartData = computed<ChartData<'line'>>(() => ({
       label: 'Note',
       data: props.data.map(d => d.score),
       fill: true,
+      // Création d'un dégradé pour la zone sous la courbe.
       backgroundColor: (context: any) => {
         const ctx = context.chart.ctx
         const gradient = ctx.createLinearGradient(0, 0, 0, props.height)
@@ -66,6 +65,7 @@ const chartData = computed<ChartData<'line'>>(() => ({
         gradient.addColorStop(1, 'rgba(168, 85, 247, 0.02)')
         return gradient
       },
+      // Création d'un dégradé horizontal pour la ligne de la courbe.
       borderColor: (context: any) => {
         const ctx = context.chart.ctx
         const gradient = ctx.createLinearGradient(0, 0, context.chart.width, 0)
@@ -87,7 +87,7 @@ const chartData = computed<ChartData<'line'>>(() => ({
   ]
 }))
 
-// Chart options
+// Configuration des options du graphique Chart.js (axes, tooltips, responsivité).
 const chartOptions = computed<ChartOptions<'line'>>(() => ({
   responsive: true,
   maintainAspectRatio: false,
@@ -191,7 +191,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
   }
 }))
 
-// Compute stats
+// Calcule les métriques affichées sous le graphique.
 const maxScore = computed(() => {
   if (!props.data.length) return 0
   return Math.max(...props.data.map(d => d.score))
@@ -202,6 +202,7 @@ const avgScore = computed(() => {
   return props.data.reduce((acc, d) => acc + d.score, 0) / props.data.length
 })
 
+// Détermine la tendance d'évolution entre la première et la dernière note de l'historique.
 const trend = computed(() => {
   if (props.data.length <= 1) return 'stable'
   const first = props.data[0]?.score ?? 0
@@ -221,12 +222,10 @@ const trendValue = computed(() => {
 
 <template>
   <div class="history-chart">
-    <!-- Chart Container -->
     <div class="relative" :style="{ height: `${height}px` }" :key="locale">
       <Line :data="chartData" :options="chartOptions" />
     </div>
 
-    <!-- Stats Summary (optional) -->
     <div v-if="!compact" class="mt-4 pt-4 border-t border-white/10 grid grid-cols-3 gap-3 text-center">
       <div>
         <div class="text-xs text-white/40 mb-1">{{ t('historyLineChart.best') }}</div>

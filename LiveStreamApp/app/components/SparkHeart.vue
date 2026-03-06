@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * SparkHeart
+ * Composant de bouton "Favori" avec une petite animation d'échelle au clic.
+ */
 const props = defineProps<{
   active: boolean
   label?: string
@@ -10,6 +14,7 @@ const emit = defineEmits<{
 
 const isAnimating = ref(false)
 
+// Déclenche l'animation css conditionnelle 'scale-125' temporairement lors de l'activation.
 watch(() => props.active, (newVal) => {
   if (newVal) {
     isAnimating.value = true

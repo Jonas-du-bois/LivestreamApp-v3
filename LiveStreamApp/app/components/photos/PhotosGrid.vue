@@ -1,16 +1,14 @@
 <script setup lang="ts">
 /**
- * ⚛️ PhotosGrid
- * Grille responsive de photos temps réel (Flickr).
- * 2 colonnes mobile → 3 tablette → 4 desktop.
- * Délègue chaque tuile à PhotosGridItem pour la gestion de chargement.
+ * PhotosGrid
+ * Grille responsive de photos affichées en temps réel.
+ * La gestion du chargement de chaque image est déléguée au sous-composant PhotosGridItem.
  */
 import type { FlickrPhoto } from '~/types/flickr'
 import PhotosGridItem from './PhotosGridItem.vue'
 
 interface Props {
   photos: FlickrPhoto[]
-  /** Set des IDs de nouvelles photos (pour le badge "New") */
   newPhotoIds?: Set<string>
 }
 
@@ -19,7 +17,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  /** Émet l'index de la photo pour ouvrir le lightbox */
   openLightbox: [index: number]
 }>()
 </script>

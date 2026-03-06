@@ -1,20 +1,12 @@
 <script setup lang="ts">
 /**
- * ⚛️ PhotosLightbox
- * Visionneuse plein écran pour le galerie de photos Flickr.
- * - Navigation prev/next via boutons ou touches fléchées
- * - Fermeture via Echap, bouton ou clic sur le fond
- * - Swipe horizontal sur mobile
- * - Transition directionnelle (gauche/droite) entre photos
- * - Verrouillage du scroll du body pendant l'ouverture
- * - Clic sur l'image → vue fullscreen zoomable en qualité originale
- * - Téléchargement en qualité originale
+ * PhotosLightbox
+ * Composant de visionneuse plein écran pour la galerie.
  */
 import type { FlickrPhoto } from '~/types/flickr'
 
 interface Props {
   photos: FlickrPhoto[]
-  /** Index de la photo affichée, null = fermé */
   modelValue: number | null
 }
 
@@ -23,10 +15,11 @@ const emit = defineEmits<{
   'update:modelValue': [value: number | null]
 }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+// ⚠️ DEAD CODE : const { locale } = useI18n()
 const { formatLocalizedDateTime } = useTranslatedData()
 
-// ─── État de navigation ─────────────────────────────────────────────────────
+// Gère l'index courant pour l'ouverture/fermeture et empêche de dépasser les limites du tableau de photos.
 const currentIndex = computed({
   get: () => props.modelValue,
   set: (v) => emit('update:modelValue', v)
@@ -40,7 +33,7 @@ const currentPhoto = computed((): FlickrPhoto | null =>
 const canPrev = computed(() => currentIndex.value !== null && currentIndex.value > 0)
 const canNext = computed(() => currentIndex.value !== null && currentIndex.value < props.photos.length - 1)
 
-// ─── Direction de navigation (pour les transitions directionnelles) ──────────
+// Détermine la direction de l'animation ('next' ou 'prev') pour offrir un effet visuel de glissement naturel.
 const navDirection = ref<'next' | 'prev' | null>(null)
 
 const transitionName = computed(() => {
@@ -66,7 +59,7 @@ const next = () => {
   }
 }
 
-// ─── Chargement de l'image (lié à la photo affichée via sa clé) ────────────
+// Réinitialise l'état de l'image (chargement/erreur) à chaque changement pour éviter d'afficher l'ancienne image temporairement.
 const imgLoaded = ref(false)
 const imgError = ref(false)
 
@@ -75,10 +68,9 @@ watch(currentIndex, () => {
   imgError.value = false
 })
 
-/** URL la plus grande disponible (originale si autorisée, sinon grande 1024px) */
 const bestUrl = computed(() => currentPhoto.value?.urls.o || currentPhoto.value?.urls.l || '')
 
-// ─── Vue fullscreen zoomable ────────────────────────────────────────────────
+// Permet d'ouvrir une vue détaillée et zoomable lors d'un clic sur l'image courante.
 const showFullscreen = ref(false)
 
 const openFullscreen = () => {
@@ -91,7 +83,7 @@ const closeFullscreen = () => {
   showFullscreen.value = false
 }
 
-// ─── Téléchargement de la photo en taille originale ─────────────────────────
+// Force le téléchargement direct du fichier image plutôt que son ouverture dans un nouvel onglet via l'API fetch.
 const isDownloading = ref(false)
 
 const downloadPhoto = async () => {
@@ -109,30 +101,28 @@ const downloadPhoto = async () => {
     a.click()
     URL.revokeObjectURL(blobUrl)
   } catch {
-    // Fallback : ouvrir dans un nouvel onglet
+    // Solution de secours si la requête cross-origin échoue
     window.open(url, '_blank')
   } finally {
     isDownloading.value = false
   }
 }
 
-// ─── Formatage date/heure ───────────────────────────────────────────────────
+// Adapte la date de la photo à la langue actuelle de l'utilisateur.
 const formattedDateTime = computed(() => {
   if (!currentPhoto.value) return ''
   return formatLocalizedDateTime(currentPhoto.value.dateUpload * 1000)
 })
 
-// ─── Clavier ────────────────────────────────────────────────────────────────
+// Raccourcis clavier pour une meilleure accessibilité (fermeture et navigation).
 const handleKeyDown = (e: KeyboardEvent) => {
-  if (!isOpen.value) return
-  // Si la vue fullscreen est ouverte, Escape la ferme (géré par PhotoFullscreen)
-  if (showFullscreen.value) return
+  if (!isOpen.value || showFullscreen.value) return
   if (e.key === 'Escape') close()
   if (e.key === 'ArrowLeft') { e.preventDefault(); prev() }
   if (e.key === 'ArrowRight') { e.preventDefault(); next() }
 }
 
-// ─── Swipe tactile ──────────────────────────────────────────────────────────
+// Support des gestes sur mobile : on filtre les mouvements verticaux pour ne pas bloquer le scroll naturel.
 let touchStartX = 0
 let touchStartY = 0
 
@@ -144,7 +134,7 @@ const handleTouchStart = (e: TouchEvent) => {
 const handleTouchEnd = (e: TouchEvent) => {
   const dx = e.changedTouches[0]!.clientX - touchStartX
   const dy = Math.abs(e.changedTouches[0]!.clientY - touchStartY)
-  // Ignorer si le geste est plus vertical qu'horizontal (scroll)
+  
   if (dy > Math.abs(dx)) return
   if (Math.abs(dx) > 50) {
     if (dx < 0) next()
@@ -152,13 +142,13 @@ const handleTouchEnd = (e: TouchEvent) => {
   }
 }
 
-// ─── Verrouillage du scroll ──────────────────────────────────────────────────
+// Bloque le scroll de la page en arrière-plan quand la modale est ouverte pour éviter les comportements inattendus.
 watch(isOpen, (open) => {
   if (!import.meta.client) return
   document.body.style.overflow = open ? 'hidden' : ''
 })
 
-// ─── Lifecycle ──────────────────────────────────────────────────────────────
+// Nettoyage rigoureux des événements globaux pour éviter les fuites de mémoire.
 onMounted(() => {
   document.addEventListener('keydown', handleKeyDown)
 })
@@ -181,13 +171,11 @@ onUnmounted(() => {
         @touchstart.passive="handleTouchStart"
         @touchend.passive="handleTouchEnd"
       >
-        <!-- Arrière-plan opaque avec blur -->
         <div
           class="absolute inset-0 bg-black/96 backdrop-blur-lg"
           @click="close"
         />
 
-        <!-- ─── Header ──────────────────────────────────────────────────── -->
         <div
           class="relative z-10 flex items-center justify-between gap-3 px-4 py-3 pt-10
                  bg-gradient-to-b from-black/70 to-transparent pointer-events-none"
@@ -203,12 +191,10 @@ onUnmounted(() => {
           </div>
 
           <div class="pointer-events-auto flex items-center gap-2 flex-shrink-0">
-            <!-- Compteur -->
             <span class="text-white/40 text-xs tabular-nums mr-1">
               {{ (currentIndex ?? 0) + 1 }} / {{ photos.length }}
             </span>
 
-            <!-- Bouton télécharger en taille originale -->
             <button
               type="button"
               class="glass-card p-2.5 rounded-full active:scale-95 transition-all
@@ -226,7 +212,6 @@ onUnmounted(() => {
               />
             </button>
 
-            <!-- Bouton fermer -->
             <button
               type="button"
               class="glass-card p-2.5 rounded-full active:scale-95 transition-all
@@ -240,9 +225,7 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- ─── Zone image avec transition directionnelle ────────────────── -->
         <div class="relative z-10 flex-1 overflow-hidden">
-          <!-- Bouton précédent (par-dessus la transition) -->
           <Transition name="fade">
             <button
               v-if="canPrev"
@@ -257,7 +240,6 @@ onUnmounted(() => {
             </button>
           </Transition>
 
-          <!-- Bouton suivant (par-dessus la transition) -->
           <Transition name="fade">
             <button
               v-if="canNext"
@@ -272,19 +254,16 @@ onUnmounted(() => {
             </button>
           </Transition>
 
-          <!-- Contenu image avec transition directionnelle (clé = id de la photo) -->
           <Transition :name="transitionName">
             <div
               :key="currentPhoto.id"
               class="absolute inset-0 flex items-center justify-center px-14"
             >
-              <!-- Skeleton pendant le chargement -->
               <div
                 v-if="!imgLoaded && !imgError"
                 class="absolute inset-[15%] rounded-2xl premium-skeleton-surface premium-skeleton-shimmer"
               />
 
-              <!-- Image grande résolution – cliquer pour voir en plein écran -->
               <img
                 v-if="!imgError"
                 :key="`img-${currentPhoto.id}`"
@@ -299,7 +278,6 @@ onUnmounted(() => {
                 @click.stop="openFullscreen"
               />
 
-              <!-- État d'erreur -->
               <div v-if="imgError" class="flex flex-col items-center gap-3 text-white/30">
                 <Icon name="fluent:image-off-24-regular" class="text-6xl" />
                 <span class="text-sm">{{ t('photos.imageUnavailable') }}</span>
@@ -308,12 +286,10 @@ onUnmounted(() => {
           </Transition>
         </div>
 
-        <!-- ─── Footer – strip indicateur de position ─────────────────── -->
         <div
           class="relative z-10 pb-10 flex flex-col items-center gap-2 py-4
                  bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
         >
-          <!-- Indication : clic pour agrandir -->
           <p class="text-white/30 text-xs">
             {{ t('photos.tapToEnlarge') }}
           </p>
@@ -335,7 +311,6 @@ onUnmounted(() => {
       </div>
     </Transition>
 
-    <!-- ─── Vue fullscreen zoomable (par-dessus le carrousel) ──────── -->
     <PhotosPhotoFullscreen
       v-if="showFullscreen && currentPhoto"
       :photo-id="currentPhoto.id"
@@ -347,7 +322,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* ─── Ouverture / fermeture du lightbox ─── */
 .lightbox-enter-active {
   transition: opacity 0.2s ease;
 }
@@ -359,7 +333,6 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* ─── Transition de navigation suivant (glissement vers la gauche) ─── */
 .slide-next-enter-active,
 .slide-next-leave-active,
 .slide-prev-enter-active,
@@ -387,7 +360,6 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* ─── Fade simple (ouverture directe) ─── */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

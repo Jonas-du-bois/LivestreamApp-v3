@@ -1,17 +1,14 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiBackButton
- * Bouton de retour standardisé et robuste.
+ * UiBackButton
+ * Bouton de retour standardisé et robuste avec effet glassmorphism optionnel.
  * Gère la navigation de manière programmatique pour éviter les conflits d'événements.
  */
 import { useRouter } from 'vue-router'
 
 const props = withDefaults(defineProps<{
-  /** Chemin de redirection optionnel (ex: '/') */
   to?: string | null
-  /** Texte affiché */
   label?: string
-  /** Active l'effet Glassmorphism */
   glass?: boolean
 }>(), {
   to: null,
@@ -25,15 +22,12 @@ const emit = defineEmits<{
 }>()
 
 const handleClick = (event: MouseEvent) => {
-  // 1. Émettre l'événement pour les besoins spécifiques des parents
   emit('click', event)
   
-  // 2. Gérer la navigation
   if (props.to) {
     router.push(props.to)
   } else {
     try {
-      // Si on a une page précédente, on y retourne
       if (window.history.length > 1) {
         router.back()
       } else {

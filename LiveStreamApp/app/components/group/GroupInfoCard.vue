@@ -4,7 +4,8 @@ import AnimatedCounter from '../AnimatedCounter.vue'
 
 interface Props {
   group: Group
-  passageMonitors?: string[] // Moniteurs du passage (prioritaire sur group.monitors)
+  // Les moniteurs du passage sont prioritaires par rapport à ceux du groupe global pour une donnée plus précise.
+  passageMonitors?: string[] 
 }
 
 const props = defineProps<Props>()
@@ -16,28 +17,29 @@ const getInitials = (name: string) => {
   return name.split(' ').map((n: string) => n[0]).join('')
 }
 
+// ⚠️ DEAD CODE :
+/*
 const isFavorite = ref(false)
 
 const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
+*/
 
-// Compute stats from props - prioritize passageMonitors over group.monitors
 const gymnastsCount = computed(() => props.group.gymnastsCount ?? 0)
 const monitors = computed(() => props.passageMonitors ?? props.group.monitors ?? [])
 const monitorsCount = computed(() => monitors.value.length)
+
+// Calcule la note moyenne, en privilégiant la statistique pré-calculée par l'API si elle existe, sinon via l'historique complet.
 const averageScore = computed(() => {
-  // Use pre-computed averageScore if available (from API stats)
   if (typeof (props.group as any).averageScore === 'number') {
     return (props.group as any).averageScore.toFixed(2)
   }
-  // Fallback: compute from history
   if (!props.group.history?.length) return '0.00'
   const sum = props.group.history.reduce((acc: number, curr: HistoryEntry) => acc + curr.score, 0)
   return (sum / props.group.history.length).toFixed(2)
 })
 
-// Category display
 const categoryLabel = computed(() => {
   return translateCategory(props.group.category)
 })
@@ -46,7 +48,7 @@ const categoryColor = computed(() => {
   return props.group.category === 'MIXTE' ? 'bg-purple-500/20 text-purple-400' : 'bg-cyan-500/20 text-cyan-400'
 })
 
-// Group history by year for the timeline
+// Prépare les données de l'historique en faisant une moyenne des scores par année pour affichage dans le graphique.
 const historyByYear = computed(() => {
   if (!props.group.history) return []
 
@@ -62,7 +64,7 @@ const historyByYear = computed(() => {
   }).sort((a, b) => a.year - b.year)
 })
 
-// Stats Array for cleaner template and transitions
+// Regroupe les statistiques dans un tableau pour faciliter le rendu et l'application des animations (v-for dans le template).
 const stats = computed(() => [
   {
     id: 'gymnasts',
@@ -95,7 +97,6 @@ const stats = computed(() => [
 
 <template>
   <div class="glass-panel overflow-hidden flex flex-col">
-    <!-- Header with Photo and Wave Mask -->
     <div class="relative h-48 overflow-hidden flex-shrink-0">
       <ImageWithFallback
         :src="group.logo || 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'"
@@ -126,9 +127,7 @@ const stats = computed(() => [
       </div>
     </div>
 
-    <!-- Content -->
     <div class="flex-1 p-6 space-y-6 overflow-y-auto">
-      <!-- Stats Grid -->
       <TransitionGroup
         tag="div"
         class="grid grid-cols-3 gap-3"
@@ -156,7 +155,6 @@ const stats = computed(() => [
         </div>
       </TransitionGroup>
 
-      <!-- Category Info (optional additional details) -->
       <div v-if="group.category === 'MIXTE'" class="glass-card p-4">
         <div class="flex items-start gap-3">
           <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
@@ -169,7 +167,6 @@ const stats = computed(() => [
         </div>
       </div>
 
-      <!-- Coaches -->
       <div v-if="monitors.length > 0">
         <h3 class="text-white font-bold mb-3">{{ t('group.monitors') }}</h3>
         <div class="glass-card p-4 space-y-3">
@@ -188,14 +185,12 @@ const stats = computed(() => [
         </div>
       </div>
 
-      <!-- Historical Timeline -->
       <div v-if="historyByYear.length > 0">
         <div class="flex items-center gap-2 mb-3">
           <Icon name="fluent:history-24-regular" class="w-5 h-5 text-cyan-400" />
           <h3 class="text-white font-bold">{{ t('group.historicalPerformance') }}</h3>
         </div>
         <div class="glass-card p-4">
-          <!-- Chart.js Line Chart (compact mode) -->
           <ChartsHistoryLineChart
             :data="historyByYear"
             :height="150"
@@ -205,7 +200,7 @@ const stats = computed(() => [
       </div>
     </div>
 
-    <!-- Footer Action -->
+    <!-- ⚠️ DEAD CODE : (Le bouton favori commenté dans le template a été conservé tel quel car il était déjà commenté en HTML) -->
     <!-- <div class="p-6 border-t border-white/10 flex-shrink-0">
       <button
         @click="toggleFavorite"
@@ -222,7 +217,6 @@ const stats = computed(() => [
 </template>
 
 <style scoped>
-/* Scoped transitions for entrance ONLY */
 .staggered-fade-enter-active {
   transition: all 0.6s ease-out;
 }
@@ -230,7 +224,6 @@ const stats = computed(() => [
   opacity: 0;
   transform: translateY(20px);
 }
-/* Ensure exit doesn't break layout if stats change */
 .staggered-fade-leave-active {
   transition: all 0.3s ease-in;
   position: absolute;

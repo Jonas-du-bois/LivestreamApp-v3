@@ -1,7 +1,12 @@
 import type { PassageEnriched, Stream, EnrichedGroup } from '~/types/api'
 
 const DEBOUNCE_MS = 300
+const MIN_QUERY_LENGTH = 2
 
+/**
+ * Recherche globale avec debounce sur les données schedule + live.
+ * Filtre par nom de groupe, engin, canton et localisation.
+ */
 export const useGlobalSearch = () => {
   const searchQuery = ref('')
   const isLoading = ref(false)
@@ -12,11 +17,16 @@ export const useGlobalSearch = () => {
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-  const resetSearch = () => {
-    searchQuery.value = ''
+  /** Vide tous les résultats (utilisé à la réinit et quand la recherche est trop courte) */
+  const clearResults = () => {
     groupResults.value = []
     passageResults.value = []
     liveResults.value = { passages: [], streams: [] }
+  }
+
+  const resetSearch = () => {
+    searchQuery.value = ''
+    clearResults()
     isLoading.value = false
     if (debounceTimer) {
       clearTimeout(debounceTimer)
@@ -27,10 +37,8 @@ export const useGlobalSearch = () => {
   const performSearch = async (query: string) => {
     const q = query.trim().toLowerCase()
 
-    if (q.length < 2) {
-      groupResults.value = []
-      passageResults.value = []
-      liveResults.value = { passages: [], streams: [] }
+    if (q.length < MIN_QUERY_LENGTH) {
+      clearResults()
       return
     }
 
@@ -42,7 +50,7 @@ export const useGlobalSearch = () => {
         apiClient<{ passages: PassageEnriched[]; streams: Stream[] }>('/live')
       ])
 
-      // Filter passages matching query by group name, apparatus or category
+      // Filtre les passages dont le groupe, l'engin ou le canton correspond
       const matchingPassages = (scheduleData.data ?? []).filter((p) => {
         const groupName = p.group?.name?.toLowerCase() ?? ''
         const apparatus = p.apparatus?.name?.toLowerCase() ?? ''
@@ -50,7 +58,7 @@ export const useGlobalSearch = () => {
         return groupName.includes(q) || apparatus.includes(q) || canton.includes(q)
       })
 
-      // Deduplicate groups from matching passages
+      // Dédoublonne les groupes à partir des passages trouvés
       const seenIds = new Set<string>()
       const groups: EnrichedGroup[] = []
       for (const p of matchingPassages) {
@@ -63,7 +71,7 @@ export const useGlobalSearch = () => {
       groupResults.value = groups
       passageResults.value = matchingPassages
 
-      // Filter live results
+      // Filtre les résultats live (passages en cours + flux vidéo)
       const livePassages = (liveData.passages ?? []).filter((p) => {
         const groupName = p.group?.name?.toLowerCase() ?? ''
         const apparatus = p.apparatus?.name?.toLowerCase() ?? ''
@@ -78,9 +86,7 @@ export const useGlobalSearch = () => {
 
       liveResults.value = { passages: livePassages, streams: liveStreams }
     } catch {
-      groupResults.value = []
-      passageResults.value = []
-      liveResults.value = { passages: [], streams: [] }
+      clearResults()
     } finally {
       isLoading.value = false
     }
@@ -89,10 +95,8 @@ export const useGlobalSearch = () => {
   watch(searchQuery, (value) => {
     if (debounceTimer) clearTimeout(debounceTimer)
 
-    if (value.trim().length < 2) {
-      groupResults.value = []
-      passageResults.value = []
-      liveResults.value = { passages: [], streams: [] }
+    if (value.trim().length < MIN_QUERY_LENGTH) {
+      clearResults()
       isLoading.value = false
       return
     }

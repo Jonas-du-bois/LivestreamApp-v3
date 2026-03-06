@@ -1,20 +1,13 @@
 <script setup lang="ts">
 /**
- * ⚛️ PhotoFullscreen
+ * PhotoFullscreen
  * Vue plein écran pour afficher une photo en qualité maximale (originale Flickr).
- * - Pinch-to-zoom et double-tap via gestes tactiles
- * - Zoom molette sur desktop
- * - Téléchargement en qualité originale
- * - Bouton retour (revient au carrousel sans quitter l'app)
- * - Charge la taille originale via l'API flickr.photos.getSizes
+ * Intègre les gestes tactiles complexes : Pinch-to-zoom, double-tap, pan.
  */
 
 interface Props {
-  /** ID Flickr de la photo à afficher */
   photoId: string
-  /** Titre de la photo (pour l'affichage et le nom de fichier) */
   title?: string
-  /** URL de fallback (taille l) si l'API ne retourne rien */
   fallbackUrl: string
 }
 
@@ -28,12 +21,14 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-// ─── Chargement de l'image originale via API ────────────────────────────────
+// ─── Chargement et Qualité d'Image ──────────────────────────────────────────
+
 const originalUrl = ref('')
 const originalLoading = ref(true)
 const originalError = ref(false)
 const imgLoaded = ref(false)
 
+// Interroge l'API pour récupérer la version non compressée de l'image.
 const fetchOriginalUrl = async () => {
   originalLoading.value = true
   originalError.value = false
@@ -50,7 +45,6 @@ const fetchOriginalUrl = async () => {
   }
 }
 
-// Charger au montage
 onMounted(() => {
   fetchOriginalUrl()
   document.addEventListener('keydown', handleKeyDown)
@@ -62,7 +56,8 @@ onUnmounted(() => {
 
 const displayUrl = computed(() => originalUrl.value || props.fallbackUrl)
 
-// ─── Zoom / Pan State ───────────────────────────────────────────────────────
+// ─── Logique de Zoom et Panoramique (Pan) ───────────────────────────────────
+
 const scale = ref(1)
 const translateX = ref(0)
 const translateY = ref(0)
@@ -79,7 +74,6 @@ const resetZoom = () => {
   translateY.value = 0
 }
 
-// ─── Molette zoom (desktop) ─────────────────────────────────────────────────
 const handleWheel = (e: WheelEvent) => {
   e.preventDefault()
   const factor = e.deltaY > 0 ? 0.9 : 1.1
@@ -91,7 +85,6 @@ const handleWheel = (e: WheelEvent) => {
   }
 }
 
-// ─── Double-click / double-tap zoom ─────────────────────────────────────────
 let lastTap = 0
 const handleDoubleTap = () => {
   if (isZoomed.value) {
@@ -102,7 +95,7 @@ const handleDoubleTap = () => {
 }
 
 const handleClick = (e: MouseEvent) => {
-  // Empêcher le double-click si on est en drag
+  // Ignore le clic classique si l'utilisateur est en train de naviguer dans l'image zoomée (drag).
   if (isDragging) return
 
   const now = Date.now()
@@ -114,7 +107,8 @@ const handleClick = (e: MouseEvent) => {
   }
 }
 
-// ─── Pinch-to-zoom (tactile) ────────────────────────────────────────────────
+// ─── Gestion des gestes tactiles ────────────────────────────────────────────
+
 let initialPinchDistance = 0
 let initialScale = 1
 
@@ -152,7 +146,8 @@ const handleTouchEnd = (e: TouchEvent) => {
   }
 }
 
-// ─── Pan (Desktop mouse drag quand zoomé) ───────────────────────────────────
+// ─── Drag à la souris (Desktop) ─────────────────────────────────────────────
+
 let dragStartX = 0
 let dragStartY = 0
 let isDragging = false
@@ -169,16 +164,20 @@ const handleMouseDown = (e: MouseEvent) => {
     translateX.value = ev.clientX - dragStartX
     translateY.value = ev.clientY - dragStartY
   }
+  
   const onUp = () => {
     document.removeEventListener('mousemove', onMove)
     document.removeEventListener('mouseup', onUp)
+    // Petit délai pour éviter qu'un "mouseup" ne soit immédiatement compté comme un "click" (qui réinitialiserait le zoom).
     setTimeout(() => { isDragging = false }, 50)
   }
+  
   document.addEventListener('mousemove', onMove)
   document.addEventListener('mouseup', onUp)
 }
 
-// ─── Clavier ────────────────────────────────────────────────────────────────
+// ─── Utilitaires ────────────────────────────────────────────────────────────
+
 const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape') {
     if (isZoomed.value) {
@@ -189,7 +188,6 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 }
 
-// ─── Téléchargement ─────────────────────────────────────────────────────────
 const isDownloading = ref(false)
 
 const downloadPhoto = async () => {
@@ -225,12 +223,10 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
         aria-modal="true"
         :aria-label="title || 'Photo'"
       >
-        <!-- ─── Header ────────────────────────────────────────────────── -->
         <div
           class="relative z-30 flex items-center justify-between gap-3 px-4 py-3 pt-10
                  bg-gradient-to-b from-black/80 to-transparent pointer-events-none"
         >
-          <!-- Bouton retour -->
           <button
             type="button"
             class="pointer-events-auto glass-card p-2.5 rounded-full active:scale-95
@@ -246,7 +242,6 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
           </button>
 
           <div class="pointer-events-auto flex items-center gap-2 flex-shrink-0">
-            <!-- Indicateur de zoom -->
             <Transition name="fade">
               <button
                 v-if="isZoomed"
@@ -259,7 +254,6 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
               </button>
             </Transition>
 
-            <!-- Bouton télécharger -->
             <button
               type="button"
               class="glass-card p-2.5 rounded-full active:scale-95 transition-all
@@ -279,7 +273,6 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
           </div>
         </div>
 
-        <!-- ─── Zone image zoomable ──────────────────────────────────── -->
         <div
           ref="containerRef"
           class="relative z-10 flex-1 overflow-hidden flex items-center justify-center
@@ -292,13 +285,11 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
           @mousedown="handleMouseDown"
           @click="handleClick"
         >
-          <!-- Skeleton de chargement -->
           <div
             v-if="(originalLoading || !imgLoaded)"
             class="absolute inset-[10%] rounded-2xl premium-skeleton-surface premium-skeleton-shimmer"
           />
 
-          <!-- Image pleine résolution -->
           <img
             v-if="displayUrl"
             :src="displayUrl"
@@ -312,7 +303,6 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
           />
         </div>
 
-        <!-- ─── Footer – indication de zoom ───────────────────────────── -->
         <div
           class="relative z-30 pb-10 flex justify-center py-4
                  bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
@@ -342,7 +332,6 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
   transform: scale(0.95);
 }
 
-/* Fade simple */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

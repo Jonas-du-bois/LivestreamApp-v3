@@ -1,4 +1,5 @@
-import type { Ref } from 'vue'
+// ⚠️ DEAD CODE : Ref n'est pas utilisé dans ce fichier
+// import type { Ref } from 'vue'
 import type { PassageStatus } from '~/types/api'
 import type { ScoreUpdatePayload, ScheduleUpdatePayload } from '~/types/socket'
 import { STATUS_OVERRIDE_DEFER } from '~/utils/timings'
@@ -8,12 +9,19 @@ interface OverrideData {
   score?: number | null
 }
 
+/**
+ * Gestion des mises à jour temps réel des passages via socket.
+ *
+ * Stratégie : les données socket sont stockées comme "overrides" temporaires
+ * appliqués par-dessus les données API. Après STATUS_OVERRIDE_DEFER ms,
+ * les overrides sont vidés et un refresh API est déclenché pour consolider.
+ */
 export function useRealtimeStatus(refreshCallback?: () => void | Promise<void>) {
   const overrides = new Map<string, OverrideData>()
   const version = ref(0)
   let deferTimer: ReturnType<typeof setTimeout> | null = null
 
-  // Ensure timer cleanup to prevent memory leaks or callbacks after unmount
+  // Prévient les fuites mémoire si le composant est démonté avant le defer
   onUnmounted(() => {
     if (deferTimer) {
       clearTimeout(deferTimer)
@@ -21,6 +29,7 @@ export function useRealtimeStatus(refreshCallback?: () => void | Promise<void>) 
     }
   })
 
+  /** Applique les overrides socket sur un passage donné */
   const apply = <T extends { _id?: string; status?: PassageStatus | string; score?: number | null }>(passage: T): T => {
     if (!passage._id) return passage
     const override = overrides.get(passage._id)
@@ -34,8 +43,8 @@ export function useRealtimeStatus(refreshCallback?: () => void | Promise<void>) 
     return passage
   }
 
+  /** Reçoit un changement de statut et programme un refresh différé */
   const handleStatusUpdate = (payload: ScoreUpdatePayload) => {
-    // console.log('[Realtime] status-update:', payload)
     if (payload?.passageId && payload?.status) {
       overrides.set(payload.passageId, {
         status: payload.status,
@@ -53,8 +62,8 @@ export function useRealtimeStatus(refreshCallback?: () => void | Promise<void>) 
     }, STATUS_OVERRIDE_DEFER)
   }
 
+  /** Met à jour le score d'un passage (merge avec l'override existant) */
   const handleScoreUpdate = (payload: ScoreUpdatePayload) => {
-    // console.log('[Realtime] score-update:', payload)
     if (!payload?.passageId) return
 
     const existing = overrides.get(payload.passageId)
@@ -65,8 +74,8 @@ export function useRealtimeStatus(refreshCallback?: () => void | Promise<void>) 
     version.value++
   }
 
-  const handleScheduleUpdate = (payload?: ScheduleUpdatePayload) => {
-    // console.log('[Realtime] schedule-update → refresh')
+  /** Le planning a changé côté serveur → on purge les overrides et on refresh */
+  const handleScheduleUpdate = (_payload?: ScheduleUpdatePayload) => {
     overrides.clear()
     version.value++
     if (refreshCallback) refreshCallback()

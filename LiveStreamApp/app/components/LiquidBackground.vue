@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * LiquidBackground
+ * Fond d'écran animé avec des "blobs" (formes floues) flottants.
+ */
 interface Blob {
   id: number
   size: number
@@ -8,6 +12,7 @@ interface Blob {
   duration: number
 }
 
+// Configuration des orbes animés. Ces valeurs sont fixes pour garantir la stabilité de l'animation.
 const blobs: Blob[] = [
   {
     id: 1,

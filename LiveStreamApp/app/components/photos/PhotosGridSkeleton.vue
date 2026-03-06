@@ -1,12 +1,10 @@
 <script setup lang="ts">
 /**
- * ⚛️ PhotosGridSkeleton
- * Grille squelette pour l'état de chargement des photos Flickr.
- * Simule le layout 2 colonnes mobile / 3 colonnes tablet / 4 colonnes desktop.
+ * PhotosGridSkeleton
+ * Squelette de chargement "shimmer" reproduisant la grille responsive de photos.
  */
 
 interface Props {
-  /** Nombre de tuiles simulées (défaut : 12) */
   count?: number
 }
 

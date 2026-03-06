@@ -1,6 +1,9 @@
 <script setup lang="ts">
-// Composant wrapper pour le PWA Install prompt
-// Utilise le web component @khmyznikov/pwa-install
+/**
+ * PwaInstallPrompt
+ * Composant d'intégration du web component @khmyznikov/pwa-install.
+ * Intercepte et relaie les événements liés à l'installation de la PWA sur le navigateur.
+ */
 
 const props = defineProps<{
   manifestUrl?: string
@@ -10,7 +13,6 @@ const { t } = useI18n()
 const pwaInstallRef = ref<HTMLElement | null>(null)
 const showInstallButton = ref(false)
 
-// Événements émis par le composant
 const emit = defineEmits<{
   (e: 'install-success'): void
   (e: 'install-fail'): void
@@ -19,10 +21,10 @@ const emit = defineEmits<{
   (e: 'install-how-to', event: CustomEvent): void
 }>()
 
+// Mise en place des écouteurs natifs pour "traduire" les CustomEvents du Web Component en événements Vue (emit).
 onMounted(() => {
   if (!pwaInstallRef.value) return
 
-  // Écouter les événements du web component
   pwaInstallRef.value.addEventListener('pwa-install-success-event', () => {
     emit('install-success')
   })
@@ -46,21 +48,19 @@ onMounted(() => {
   })
 })
 
-// Méthode pour ouvrir le prompt manuellement
 const openInstallPrompt = () => {
   if (pwaInstallRef.value) {
     (pwaInstallRef.value as any).showDialog(true)
   }
 }
 
-// Méthode pour cacher le prompt
 const hideInstallPrompt = () => {
   if (pwaInstallRef.value) {
     (pwaInstallRef.value as any).hideDialog()
   }
 }
 
-// Exposer les méthodes pour le parent
+// Expose les fonctions de pilotage au composant parent (ex: Bouton d'installation custom dans la navigation).
 defineExpose({
   openInstallPrompt,
   hideInstallPrompt,
@@ -83,7 +83,6 @@ defineExpose({
 </template>
 
 <style>
-/* Personnalisation du style du web component */
 pwa-install {
   --install-focus-color: #6366f1;
   --install-button-color: #6366f1;

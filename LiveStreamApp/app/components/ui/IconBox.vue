@@ -1,31 +1,21 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiIconBox
+ * UiIconBox
  * Conteneur atomique standardisé pour afficher une icône avec style.
  * Supporte différents styles (verre, solide, dégradé), formes, tailles et couleurs.
- * Remplace les blocs <div> répétés pour les icônes dans UiInfoTile, food.vue, afterparty.vue, etc.
+ * Remplace les blocs <div> répétés pour les icônes dans l'application.
  */
 
 interface Props {
-  /** Nom de l'icône Iconify */
   icon: string
-  /** Taille du conteneur et de l'icône */
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-  /** Forme du conteneur */
   shape?: 'circle' | 'rounded' | 'square'
-  /** Style visuel */
   variant?: 'solid' | 'glass' | 'outline' | 'gradient' | 'ghost'
-  /** Palette de couleur */
   color?: 'cyan' | 'violet' | 'blue' | 'white' | 'gray' | 'orange' | 'red' | 'green' | 'emerald' | 'pink'
-  /** Effet de pulsation (animate-pulse-slow) */
   pulse?: boolean
-  /** Effet de lueur (shadow coloré) */
   glow?: boolean
-  /** Rend le composant interactif (hover states, focus ring) */
   interactive?: boolean
-  /** Lien de navigation (rend un NuxtLink) */
   to?: string
-  /** Tag HTML ou composant à rendre (ex: 'button', 'div') */
   as?: string
 }
 
@@ -43,9 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const NuxtLink = resolveComponent('NuxtLink')
 
-// --- COMPUTED CLASSES ---
-
-// 1. Taille (Conteneur + Icône)
+// Détermine dynamiquement la taille de la boîte et de l'icône
 const sizeClasses = computed(() => {
   const sizes = {
     xs: { box: 'w-6 h-6', icon: '12' },
@@ -57,18 +45,15 @@ const sizeClasses = computed(() => {
   return sizes[props.size] || sizes.md
 })
 
-// 2. Forme
 const shapeClasses = computed(() => {
   if (props.shape === 'circle') return 'rounded-full'
   if (props.shape === 'square') return 'rounded-none'
-  // Rounded adaptatif selon la taille
   if (props.size === 'xs' || props.size === 'sm') return 'rounded-md'
   return 'rounded-xl'
 })
 
-// 3. Couleurs & Variantes
+// Logique complexe de mapping de couleurs pour gérer toutes les variantes du design system.
 const colorClasses = computed(() => {
-  // Mapping des couleurs de base
   const colors = {
     cyan: { text: 'text-cyan-400', bg: 'bg-cyan-500', border: 'border-cyan-500' },
     violet: { text: 'text-violet-400', bg: 'bg-violet-500', border: 'border-violet-500' },
@@ -86,11 +71,9 @@ const colorClasses = computed(() => {
 
   switch (props.variant) {
     case 'solid':
-      // Fond semi-transparent + Blur (ex: food.vue)
       return `${c.bg}/90 text-white backdrop-blur shadow-lg border border-white/5`
 
     case 'glass':
-      // Style "InfoTile" classique
       return `${c.bg}/10 ${c.text} ${c.border}/20 border backdrop-blur-md`
 
     case 'outline':
@@ -100,7 +83,6 @@ const colorClasses = computed(() => {
       return `bg-transparent hover:bg-white/10 ${c.text}`
 
     case 'gradient':
-      // Style "Afterparty" (ex: from-violet-500 to-purple-600)
       if (props.color === 'violet') return `bg-gradient-to-br from-violet-500 to-purple-600 text-white border border-white/10`
       if (props.color === 'cyan') return `bg-gradient-to-br from-cyan-400 to-blue-600 text-white border border-white/10`
       if (props.color === 'orange') return `bg-gradient-to-br from-orange-400 to-red-600 text-white border border-white/10`
@@ -111,17 +93,16 @@ const colorClasses = computed(() => {
   }
 })
 
-// 4. Glow (Ombre portée colorée)
+// Détermine l'ombre portée (glow) à appliquer en fonction de la couleur.
 const glowClasses = computed(() => {
   if (!props.glow) return ''
 
   const glows = {
     cyan: 'shadow-[0_0_20px_rgba(6,182,212,0.4)]',
-    violet: 'shadow-[0_0_30px_rgba(139,92,246,0.6)]', // Specifique Afterparty
+    violet: 'shadow-[0_0_30px_rgba(139,92,246,0.6)]',
     blue: 'shadow-[0_0_20px_rgba(37,99,235,0.4)]',
     orange: 'shadow-[0_0_20px_rgba(249,115,22,0.4)]',
     white: 'shadow-[0_0_20px_rgba(255,255,255,0.2)]',
-    // Fallbacks
     red: 'shadow-lg shadow-red-500/30',
     green: 'shadow-lg shadow-green-500/30',
     emerald: 'shadow-lg shadow-emerald-500/30',
@@ -131,7 +112,6 @@ const glowClasses = computed(() => {
   return glows[props.color] || 'shadow-lg'
 })
 
-// 5. Interactivité
 const interactiveClasses = computed(() => {
   if (!props.interactive && !props.to && props.as !== 'button') return ''
   return 'cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-200 outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
@@ -158,7 +138,6 @@ const finalComponent = computed(() => {
       pulse ? 'animate-pulse-slow' : ''
     ]"
   >
-    <!-- Background Gradient Overlay for specific effects if needed -->
     <div v-if="variant === 'gradient'" class="absolute inset-0 bg-white/10 mix-blend-overlay pointer-events-none" />
 
     <Icon
@@ -170,7 +149,6 @@ const finalComponent = computed(() => {
 </template>
 
 <style scoped>
-/* Pulse lent (similaire à afterparty.vue) */
 @keyframes pulse-slow {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.85; transform: scale(1.05); }

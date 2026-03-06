@@ -1,23 +1,20 @@
 import type { Ref } from 'vue'
 
 /**
- * Composable to manage the "First Load" state (Skeleton).
- * Prevents skeleton from reappearing during subsequent background refreshes.
- *
- * @param loading - The loading state (e.g., from useFetch)
- * @param data - The data ref (e.g., from useFetch)
+ * Gère l'état "premier chargement" (skeleton).
+ * Empêche le skeleton de réapparaître lors des refresh en arrière-plan.
  */
 export const useFirstLoad = (loading: Ref<boolean>, data: Ref<any>) => {
   const hasLoadedOnce = ref(false)
 
-  // Mark as loaded once the first successful fetch completes
+  // Passe à true dès le premier fetch réussi
   watch([loading, data], ([isPending, val]) => {
     if (!isPending && val) {
       hasLoadedOnce.value = true
     }
   }, { immediate: true })
 
-  // Show skeleton only if loading AND never loaded before
+  // Affiche le skeleton uniquement lors du tout premier chargement
   const showSkeleton = computed(() => loading.value && !hasLoadedOnce.value)
 
   return {

@@ -1,19 +1,14 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiPageHeader
- * Composant standardisé pour les en-têtes de page avec titre, sous-titre et icône en filigrane animée.
+ * UiPageHeader
+ * Composant d'en-tête de page standardisé affichant un titre, une description optionnelle et une icône floutée en filigrane pour l'esthétique.
  */
 
 interface Props {
-  /** Titre principal de la page */
   title: string
-  /** Sous-titre ou description courte (optionnel) */
   subtitle?: string
-  /** Icône Fluent affichée en grand en arrière-plan (ex: 'fluent:camera-24-filled') */
   icon?: string
-  /** Couleur Tailwind pour l'icône de fond (ex: 'text-cyan-500') */
   iconColor?: string
-  /** Couleur Tailwind pour le point d'accent final du titre (ex: 'text-cyan-500') */
   accentColor?: string
 }
 
@@ -27,7 +22,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <div class="relative py-6 mb-4">
-    <!-- Glow décoration -->
+    <!-- Glow décoratif en arrière-plan -->
     <div
       v-if="icon"
       class="pointer-events-none absolute top-0 right-0 p-6 opacity-20"
@@ -50,13 +45,13 @@ withDefaults(defineProps<Props>(), {
         </p>
       </div>
 
-      <!-- Slot pour un badge (ex: LIVE) -->
+      <!-- Emplacement optionnel pour un badge d'état (ex: LIVE) dans le header -->
       <div v-if="$slots.badge" class="flex-shrink-0 pt-1">
         <slot name="badge" />
       </div>
     </div>
 
-    <!-- Slot pour du contenu sous le titre (ex: dernière mise à jour) -->
+    <!-- Emplacement pour injecter du contenu sous le bloc titre (ex: dernière mise à jour) -->
     <slot name="bottom" />
   </div>
 </template>

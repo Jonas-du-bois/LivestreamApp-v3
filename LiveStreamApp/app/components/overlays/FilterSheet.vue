@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * FilterSheet
+ * Modale "bottom sheet" (tiroir du bas) permettant de filtrer le programme/les résultats.
+ */
 interface Props {
   isOpen: boolean
 }
@@ -8,25 +12,26 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+// ⚠️ DEAD CODE : const { locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
 
-// Access shared metadata from schedule.vue
+// Récupère les métadonnées (agrès, catégories, salles) préparées et partagées par la page schedule.vue
 const meta = useState<any>('scheduleMeta')
 const availableApparatus = computed(() => meta.value?.availableApparatus || [])
 const availableCategories = computed(() => meta.value?.availableCategories || [])
 const availableLocations = computed(() => meta.value?.availableLocations || [])
 
-// Global Filter State
 const filtersStore = useScheduleFilters()
 
-// Local State (for editing)
+// État local des filtres. 
+// L'utilisation de useState() garantit la persistance de la saisie en cours de l'utilisateur même si le composant est démonté/remonté durant l'édition.
 const selectedDivision = useState<string[]>('filter-sheet-division', () => [])
 const selectedSalle = useState<string[]>('filter-sheet-salle', () => [])
 const selectedApparatus = useState<string[]>('filter-sheet-apparatus', () => [])
 const selectedHidePast = useState<boolean>('filter-sheet-hide-past', () => false)
 
-// Sync local state with global state when opening
+// Synchronise l'état local avec l'état global du store à l'ouverture de la modale.
 watch(() => props.isOpen, (isOpen) => {
   if (isOpen) {
     selectedDivision.value = [...filtersStore.value.division]
@@ -36,6 +41,7 @@ watch(() => props.isOpen, (isOpen) => {
   }
 })
 
+// Fonction générique pour ajouter ou retirer une valeur d'un tableau de filtre.
 const toggleSelection = (value: string, arrayName: 'division' | 'salle' | 'apparatus') => {
   const array = arrayName === 'division' ? selectedDivision
               : arrayName === 'salle' ? selectedSalle
@@ -56,6 +62,7 @@ const clearFilters = () => {
   selectedHidePast.value = false
 }
 
+// Applique les filtres locaux au store global et ferme la modale.
 const applyFilters = () => {
   filtersStore.value.division = [...selectedDivision.value]
   filtersStore.value.salle = [...selectedSalle.value]
@@ -97,7 +104,6 @@ onUnmounted(() => {
         aria-modal="true"
         aria-labelledby="filter-sheet-title"
       >
-        <!-- Header -->
         <div class="p-6 border-b border-white/10">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-3">
@@ -113,9 +119,7 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Content -->
         <div class="overflow-y-auto p-6 space-y-6 max-h-[calc(80vh-180px)]">
-          <!-- Quick Filter -->
           <div>
             <button
               @click="selectedHidePast = !selectedHidePast"
@@ -130,7 +134,7 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <!-- Apparatus Filter (Dynamic) -->
+          <!-- Section dynamique : n'apparaît que s'il y a des agrès disponibles -->
           <div v-if="availableApparatus.length > 0">
             <h3 class="text-white font-bold mb-3">{{ t('filters.apparatus') }}</h3>
             <div class="grid grid-cols-2 gap-2">
@@ -149,7 +153,6 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- Division Filter -->
           <div v-if="availableCategories.length > 0">
             <h3 class="text-white font-bold mb-3">{{ t('filters.division') }}</h3>
             <div class="grid grid-cols-2 gap-2">
@@ -168,7 +171,6 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- Salle Filter -->
           <div v-if="availableLocations.length > 0">
             <h3 class="text-white font-bold mb-3">{{ t('filters.hall') }}</h3>
             <div class="grid grid-cols-3 gap-2">
@@ -188,7 +190,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Footer Actions -->
         <div class="p-6 border-t border-white/10 flex gap-3">
           <button
             @click="clearFilters"

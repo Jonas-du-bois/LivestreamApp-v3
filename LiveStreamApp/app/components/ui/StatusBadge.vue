@@ -1,17 +1,13 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiStatusBadge
+ * UiStatusBadge
  * Composant atomique pour afficher un badge de statut avec un indicateur visuel pulsant.
  */
 
 interface Props {
-  /** Variante de couleur (ex: 'green', 'red', 'violet', 'cyan', 'solid-red') */
   variant?: 'green' | 'red' | 'violet' | 'cyan' | 'white' | 'solid-red'
-  /** Active l'indicateur visuel (point) */
   showDot?: boolean
-  /** Active l'animation de pulsation sur le point */
   pulse?: boolean
-  /** Classes CSS additionnelles pour le conteneur */
   containerClass?: string
 }
 
@@ -22,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
   containerClass: ''
 })
 
-// Mappage des variantes vers les classes Tailwind
+// Mappage des couleurs du conteneur et du texte
 const variantClasses = computed(() => {
   const maps = {
     green: 'bg-green-500/20 border-green-500/30 text-green-400',
@@ -35,6 +31,7 @@ const variantClasses = computed(() => {
   return maps[props.variant] || maps.white
 })
 
+// Mappage des couleurs du point indicateur
 const dotClasses = computed(() => {
   const maps = {
     green: 'bg-green-500',
@@ -53,7 +50,6 @@ const dotClasses = computed(() => {
     class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-md shadow-lg transition-all"
     :class="[variantClasses, containerClass]"
   >
-    <!-- Indicateur Visuel (Point) -->
     <span v-if="showDot" class="relative flex h-2 w-2 flex-shrink-0">
       <span 
         v-if="pulse"
@@ -66,7 +62,6 @@ const dotClasses = computed(() => {
       ></span>
     </span>
 
-    <!-- Texte du badge -->
     <span class="text-xs font-bold tracking-widest uppercase leading-none">
       <slot />
     </span>

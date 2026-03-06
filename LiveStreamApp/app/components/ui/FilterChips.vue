@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiFilterChips
- * Barre de navigation horizontale pour filtres ou onglets.
+ * UiFilterChips
+ * Barre de navigation horizontale pour filtres ou onglets sous forme de "pilules" cliquables.
  */
 
 interface FilterItem {
@@ -14,9 +14,7 @@ interface Props {
   items: FilterItem[]
   modelValue: string | number
   ariaLabel?: string
-  /** Variante visuelle : 'pill' (défaut) ou 'glass' */
   variant?: 'pill' | 'glass'
-  /** Couleur d'accentuation : 'cyan' (défaut) ou 'blue' */
   color?: 'cyan' | 'blue'
 }
 
@@ -36,11 +34,11 @@ const select = (id: string | number) => {
   emit('update:modelValue', id)
 }
 
+// Détermine la palette de couleurs à appliquer lorsque la pilule est active.
 const colorClasses = computed(() => {
   if (props.color === 'blue') {
     return 'bg-blue-600/80 border-blue-400/50 text-white shadow-lg shadow-blue-500/20 ring-1 ring-blue-400/50'
   }
-  // Default cyan
   return 'bg-cyan-500 border-cyan-400 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)]'
 })
 
@@ -79,7 +77,6 @@ const focusRingClasses = computed(() => {
 </template>
 
 <style scoped>
-/* Masquer la scrollbar tout en gardant le scroll fonctionnel */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

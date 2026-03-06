@@ -1,18 +1,14 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiGlassCard
- * Conteneur standardisé utilisant le Glassmorphism.
- * Gère automatiquement les états de survol et de clic interactifs.
+ * UiGlassCard
+ * Conteneur réutilisable appliquant l'effet de Glassmorphism du design system.
+ * Se transforme automatiquement en bouton/lien interactif si des props spécifiques sont fournies.
  */
 
 interface Props {
-  /** Chemin NuxtLink. Si présent, la carte devient un lien. */
   to?: string | null
-  /** Active les effets de survol et de clic (auto si 'to' est présent) */
   interactive?: boolean
-  /** Padding interne (défaut: 'p-4') */
   padding?: string
-  /** Classes CSS additionnelles */
   class?: string
 }
 
@@ -25,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const isInteractive = computed(() => props.interactive ?? !!props.to)
 
+// Compose dynamiquement les classes CSS : applique des effets de survol uniquement si le composant est interactif.
 const cardClasses = computed(() => [
   'glass-card transition-all duration-300 block outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
   props.padding,
@@ -32,13 +29,13 @@ const cardClasses = computed(() => [
   props.class
 ])
 
+// Permet l'activation au clavier pour l'accessibilité si la carte n'est pas un NuxtLink natif.
 const handleKeyDown = (event: KeyboardEvent) => {
-  if (props.to) return // Let NuxtLink handle it
+  if (props.to) return 
   if (!isInteractive.value) return
 
   if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault()
-    // Trigger click on the element itself
+    event.preventDefault();
     (event.currentTarget as HTMLElement).click()
   }
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiInfoTile
+ * UiInfoTile
  * Tuile d'information standardisée utilisant le Glassmorphism.
  * Utilisée pour afficher des statistiques, des horaires ou des infos clés.
  */
@@ -9,15 +9,10 @@ interface Props {
   icon: string
   label: string
   value?: string | number
-  /** Couleur d'accentuation pour l'icône et sa bordure */
   accent?: 'cyan' | 'violet' | 'orange' | 'emerald' | 'pink' | 'white' | 'blue'
-  /** Si fourni, transforme la tuile en lien NuxtLink */
   to?: string
-  /** Taille de la tuile */
   size?: 'sm' | 'md' | 'lg'
-  /** Variante d'affichage : 'stat' (Label petit / Valeur grand) ou 'feature' (Titre grand / Description petit) */
   variant?: 'stat' | 'feature'
-  /** Forme du conteneur d'icône */
   iconShape?: 'square' | 'circle'
 }
 
@@ -29,14 +24,13 @@ const props = withDefaults(defineProps<Props>(), {
   iconShape: 'square'
 })
 
-// Mapping des tailles UiInfoTile vers UiIconBox
+// Adapte la taille de la boîte de l'icône en fonction de la taille globale demandée pour la tuile.
 const boxSize = computed(() => {
   if (props.size === 'sm') return 'md'
   if (props.size === 'lg') return 'xl'
   return 'lg'
 })
 
-// Mapping des formes
 const boxShape = computed(() => {
   return props.iconShape === 'circle' ? 'circle' : 'rounded'
 })
@@ -54,7 +48,6 @@ const NuxtLink = resolveComponent('NuxtLink')
       size === 'lg' ? 'p-5' : 'p-4'
     ]"
   >
-    <!-- Icon Wrapper (Delegated to Atom) -->
     <UiIconBox
       :icon="icon"
       :size="boxSize"
@@ -64,7 +57,6 @@ const NuxtLink = resolveComponent('NuxtLink')
       :glow="false"
     />
 
-    <!-- Content -->
     <div class="flex-1 min-w-0">
       <template v-if="variant === 'feature'">
         <h3 class="text-white font-bold text-sm truncate">{{ label }}</h3>

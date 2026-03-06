@@ -1,5 +1,8 @@
 <script setup lang="ts">
-
+/**
+ * AnimatedCounter
+ * Anime une transition fluide d'une valeur numérique vers une autre.
+ */
 const props = defineProps({
   value: {
     type: [Number, String],
@@ -17,18 +20,19 @@ const props = defineProps({
 
 const displayValue = ref(0)
 
+// Déclenche l'animation de la valeur en utilisant requestAnimationFrame pour la fluidité.
 const animate = () => {
   const end = Number(props.value)
   if (isNaN(end)) return
 
-  const start = displayValue.value // Start from current value to avoid jumping to 0
+  const start = displayValue.value
   const startTime = performance.now()
 
   const step = (currentTime: number) => {
     const elapsed = currentTime - startTime
     const progress = Math.min(elapsed / props.duration, 1)
 
-    // Ease out quart: 1 - (1 - t)^4
+    // Fonction d'easing 'ease out quart' pour un atterrissage progressif.
     const easeProgress = 1 - Math.pow(1 - progress, 4)
 
     const current = start + (end - start) * easeProgress

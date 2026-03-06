@@ -1,15 +1,14 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiNetworkToast
- * Composant global pour afficher l'état de la connexion réseau.
- * Avertit l'utilisateur en cas de perte de connexion ou de signal faible.
+ * UiNetworkToast
+ * Notification globale flottante alertant l'utilisateur sur la qualité de sa connexion réseau.
  */
 import { useNetworkStatus } from '~/composables/useNetworkStatus'
 
 const { status } = useNetworkStatus()
 const { t } = useI18n()
 
-// Auto-hide the "poor" status after 10 seconds to not be too annoying
+// Gère le masquage automatique de l'avertissement de connexion faible après 10s pour ne pas frustrer l'utilisateur.
 const showPoorWarning = ref(true)
 let poorTimeout: ReturnType<typeof setTimeout> | null = null
 
@@ -23,10 +22,12 @@ watch(status, (newStatus) => {
   }
 })
 
+// Détermine si le toast doit être affiché selon l'état actuel et le délai d'avertissement.
 const isVisible = computed(() => {
   return status.value === 'offline' || (status.value === 'poor' && showPoorWarning.value)
 })
 
+// Configure le contenu et le style du toast en fonction du niveau de dégradation du réseau.
 const alertConfig = computed(() => {
   if (status.value === 'offline') {
     return {

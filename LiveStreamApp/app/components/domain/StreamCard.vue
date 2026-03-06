@@ -23,7 +23,7 @@ const props = defineProps<{
 
 const isLive = computed(() => props.isLive ?? false)
 
-/** Règle 3 — Titre non-dupliqué : affiche l'épreuve au lieu du lieu (déjà dans le badge) */
+// Priorise l'affichage de l'épreuve (agrès) sur le lieu, car le lieu est déjà visible dans le badge supérieur.
 const displayTitle = computed(() => {
   if (props.stream.currentApparatusCode) {
     return translateApparatus(props.stream.currentApparatusCode, props.stream.currentApparatus)
@@ -31,7 +31,7 @@ const displayTitle = computed(() => {
   return 'Flux vidéo en direct'
 })
 
-/** Règle 4 — Détection d'un groupe « réellement » en piste */
+// Vérifie de manière robuste si un groupe est actuellement en train de passer pour adapter le statut affiché ("En piste" vs "En attente").
 const hasCurrentGroup = computed(() => {
   return !!props.stream.currentGroup && props.stream.currentGroup.trim() !== ''
 })
@@ -52,7 +52,6 @@ const hasCurrentGroup = computed(() => {
         :class="{ 'grayscale': !isLive }"
       />
 
-      <!-- Offline Overlay -->
       <div v-if="!isLive" class="absolute inset-0 bg-black/50 flex items-center justify-center">
         <div class="text-center">
           <Icon name="fluent:video-off-24-regular" class="w-10 h-10 text-white/50 mx-auto mb-2" />
@@ -60,19 +59,18 @@ const hasCurrentGroup = computed(() => {
         </div>
       </div>
 
-      <!-- Badges -->
       <div class="absolute top-3 left-3 flex gap-2">
         <UiStatusBadge v-if="isLive" variant="solid-red" show-dot pulse>
           {{ t('stream.live') }}
         </UiStatusBadge>
 
-        <!-- Règle 2 — Glassmorphism sombre pour lisibilité sur tout fond -->
+        <!-- Fond sombre semi-transparent pour garantir la lisibilité du texte peu importe la couleur de la miniature -->
         <div class="bg-black/60 backdrop-blur-md px-4 py-1 rounded-2xl items-center justify-center">
           <span class="text-xs font-bold text-white">{{ stream.salle }}</span>
         </div>
       </div>
 
-      <!-- Règle 1 — Bouton Play central toujours visible (affordance) -->
+      <!-- Indique clairement à l'utilisateur que l'élément est cliquable et déclenche une vidéo -->
       <div v-if="isLive" class="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div
           class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
@@ -82,9 +80,7 @@ const hasCurrentGroup = computed(() => {
       </div>
     </div>
 
-    <!-- Content -->
     <div class="p-4">
-      <!-- Règle 3 — Titre = épreuve (le lieu est déjà dans le badge) -->
       <h3
         class="text-lg font-extrabold mt-3"
         :class="isLive ? 'text-white' : 'text-white/50'"
@@ -92,7 +88,6 @@ const hasCurrentGroup = computed(() => {
         {{ displayTitle }}
       </h3>
 
-      <!-- Règle 4 — Empty state « En piste » -->
       <template v-if="isLive">
         <p v-if="hasCurrentGroup" class="text-sm mt-1">
           <span class="text-white/60">{{ t('stream.onTrack') }} : </span>

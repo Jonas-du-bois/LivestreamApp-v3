@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
 import type { AppNotification, NotificationType } from '../types/notifications'
 
-export type { AppNotification, NotificationType }
+// ⚠️ DEAD CODE : re-exports inutilisés — les consommateurs importent directement depuis '~/types/notifications'
+// export type { AppNotification, NotificationType }
 
 interface NotificationsState {
   notifications: AppNotification[]
 }
 
-// Messages par défaut pour les tests
+// Contenu prédéfini pour les notifications de test (admin dashboard)
 const DEFAULT_MESSAGES: Record<NotificationType, { title: string; message: string; icon: string }> = {
   info: { title: 'Information', message: 'Ceci est une notification de test', icon: 'fluent:info-24-regular' },
   success: { title: 'Succès', message: 'Opération réussie avec succès', icon: 'fluent:checkmark-circle-24-regular' },
@@ -40,8 +41,8 @@ export const useNotificationsStore = defineStore('notifications', {
 
   actions: {
     /**
-     * Ajoute une notification UNIQUEMENT au store in-app (pas de notification navigateur)
-     * Utilisé quand le serveur envoie déjà un push notification
+     * Ajoute une notification au store in-app sans déclencher de notification navigateur.
+     * Utilisé lorsque le serveur a déjà envoyé un push via WebPush/FCM.
      */
     addToStore(notification: Omit<AppNotification, 'id' | 'timestamp' | 'isRead'>): AppNotification {
       const newNotification: AppNotification = {
@@ -50,13 +51,14 @@ export const useNotificationsStore = defineStore('notifications', {
         timestamp: new Date().toISOString(),
         isRead: false
       }
+      // Limite le store à 50 notifications pour éviter une croissance mémoire infinie
       this.notifications = [newNotification, ...this.notifications.slice(0, 49)]
       return newNotification
     },
 
     /**
-     * Affiche une notification navigateur (sans l'ajouter au store)
-     * Utilisé pour les utilisateurs non-abonnés aux push
+     * Affiche une notification native du navigateur (sans impact sur le store).
+     * Fallback pour les utilisateurs non abonnés aux push notifications.
      */
     async showBrowserNotification(notification: { title: string; message: string; url?: string; type?: NotificationType }): Promise<boolean> {
       if (typeof window === 'undefined' || !('Notification' in window)) {
@@ -95,8 +97,8 @@ export const useNotificationsStore = defineStore('notifications', {
     },
 
     /**
-     * Méthode unifiée : ajoute au store ET affiche notification navigateur
-     * Utilisé pour les tests admin ou quand on veut forcer les 2
+     * Force l'ajout au store ET l'affichage navigateur simultanément.
+     * Réservé aux tests admin ou aux cas où les deux canaux sont nécessaires.
      */
     async notify(notification: Omit<AppNotification, 'id' | 'timestamp' | 'isRead'>): Promise<AppNotification> {
       const newNotification = this.addToStore(notification)
@@ -110,20 +112,17 @@ export const useNotificationsStore = defineStore('notifications', {
     },
 
     /**
-     * Méthode intelligente : ajoute au store + affiche notification navigateur SEULEMENT si pas d'abonnement push
-     * C'est LA méthode à utiliser pour les événements temps réel (socket)
-     * @param notification - Les données de la notification
-     * @param hasPushSubscription - true si l'utilisateur est abonné aux push (le serveur envoie déjà le push)
+     * Point d'entrée principal pour les événements temps réel (socket).
+     * Ajoute toujours au store, mais n'affiche la notification navigateur
+     * que si l'utilisateur n'a pas d'abonnement push (évite les doublons).
      */
     async notifyIfNeeded(
       notification: Omit<AppNotification, 'id' | 'timestamp' | 'isRead'>,
       hasPushSubscription: boolean
     ): Promise<AppNotification> {
-      // Toujours ajouter au store in-app
       const newNotification = this.addToStore(notification)
       
-      // Afficher notification navigateur SEULEMENT si pas d'abonnement push
-      // (sinon le serveur l'a déjà envoyée via WebPush)
+      // Évite le doublon : le serveur envoie déjà le push aux abonnés WebPush/FCM
       if (!hasPushSubscription) {
         await this.showBrowserNotification({
           title: notification.title,
@@ -136,7 +135,7 @@ export const useNotificationsStore = defineStore('notifications', {
       return newNotification
     },
 
-    // === Actions de gestion ===
+    // --- Gestion des notifications ---
     
     markAsRead(notificationId: string) {
       const idx = this.notifications.findIndex(n => n.id === notificationId)
@@ -153,15 +152,16 @@ export const useNotificationsStore = defineStore('notifications', {
       this.notifications = this.notifications.filter(n => n.id !== notificationId)
     },
 
-    clearAll() {
-      this.notifications = []
-    },
+    // ⚠️ DEAD CODE : jamais appelé dans l'application
+    // clearAll() {
+    //   this.notifications = []
+    // },
 
     clearRead() {
       this.notifications = this.notifications.filter(n => !n.isRead)
     },
 
-    // === HELPERS pour différents types (utilisent notifyIfNeeded) ===
+    // --- Helpers typés pour les événements socket (utilisent notifyIfNeeded) ---
     
     notifyLive(groupName: string, apparatusName: string, hasPushSubscription: boolean, url?: string) {
       return this.notifyIfNeeded({
@@ -183,27 +183,28 @@ export const useNotificationsStore = defineStore('notifications', {
       }, hasPushSubscription)
     },
 
-    notifyReminder(groupName: string, apparatusName: string, minutesUntil: number, hasPushSubscription: boolean, url?: string) {
-      return this.notifyIfNeeded({
-        title: '⏰ Passage imminent',
-        message: `${groupName} passe au ${apparatusName} dans ${minutesUntil} min`,
-        type: 'reminder',
-        icon: 'fluent:clock-alarm-24-regular',
-        url
-      }, hasPushSubscription)
-    },
+    // ⚠️ DEAD CODE : helper prévu mais jamais connecté aux événements socket
+    // notifyReminder(groupName: string, apparatusName: string, minutesUntil: number, hasPushSubscription: boolean, url?: string) {
+    //   return this.notifyIfNeeded({
+    //     title: '⏰ Passage imminent',
+    //     message: `${groupName} passe au ${apparatusName} dans ${minutesUntil} min`,
+    //     type: 'reminder',
+    //     icon: 'fluent:clock-alarm-24-regular',
+    //     url
+    //   }, hasPushSubscription)
+    // },
 
-    notifyStreamOnline(streamName: string, hasPushSubscription: boolean, url?: string) {
-      return this.notifyIfNeeded({
-        title: '📺 Nouveau direct',
-        message: `${streamName} est maintenant en ligne`,
-        type: 'info',
-        icon: 'fluent:video-24-regular',
-        url
-      }, hasPushSubscription)
-    },
+    // ⚠️ DEAD CODE : helper prévu mais jamais connecté aux événements socket
+    // notifyStreamOnline(streamName: string, hasPushSubscription: boolean, url?: string) {
+    //   return this.notifyIfNeeded({
+    //     title: '📺 Nouveau direct',
+    //     message: `${streamName} est maintenant en ligne`,
+    //     type: 'info',
+    //     icon: 'fluent:video-24-regular',
+    //     url
+    //   }, hasPushSubscription)
+    // },
 
-    // Pour les tests admin - force les 2 (in-app + navigateur)
     sendTestNotification(type: NotificationType = 'info') {
       const msg = DEFAULT_MESSAGES[type]
       return this.notify({

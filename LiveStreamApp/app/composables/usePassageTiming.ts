@@ -1,4 +1,4 @@
-import { computed, type Ref } from 'vue'
+import { type Ref } from 'vue'
 import type { PassageEnriched, PassageStatus } from '~/types/api'
 
 // Extended interface with pre-calculated timestamps
@@ -9,28 +9,26 @@ export interface PassageTimeEnriched extends PassageEnriched {
 }
 
 /**
- * Composable for handling time-based logic for passages.
- * - Pre-calculates timestamps for performance.
- * - Computes dynamic status (LIVE, FINISHED, SCHEDULED) based on current time.
- * - Provides sorted lists (upcoming, past, live).
- * - Handles countdown to next event.
+ * Logique temporelle des passages :
+ * - Pré-calcule les timestamps pour éviter des new Date() répétés
+ * - Calcule le statut dynamique (LIVE, FINISHED, SCHEDULED) selon l'heure courante
+ * - Fournit des listes triées (à venir, passés, en direct)
+ * - Gère le compte à rebours vers le prochain événement
  */
 export const usePassageTiming = (
   passages: Ref<PassageEnriched[]>
 ) => {
   const { t } = useI18n()
-  // Reactive current timestamp
   const { now: nowTimestamp } = useNow()
 
-  // 1. Enrich passages with timestamps (Memoized)
-  // This avoids calling new Date() repeatedly in frequent re-renders
+  // Enrichissement avec timestamps pré-calculés (mémoisé)
+  // ⚠️ DEAD CODE : timeEnrichedPassages n'est consommé par aucun composant externe
   const timeEnrichedPassages = computed<PassageTimeEnriched[]>(() => {
     if (!passages.value) return []
 
     return passages.value.map(p => {
       const dStart = new Date(p.startTime)
       const dEnd = new Date(p.endTime)
-      // Calculate start of day (local time) for day comparison
       const dayStart = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate()).getTime()
 
       return {
@@ -42,22 +40,19 @@ export const usePassageTiming = (
     })
   })
 
-  // 2. Compute dynamic status based on time
-  // This is reactive to `nowTimestamp`
+  // Statut dynamique selon l'heure courante (réactif à nowTimestamp)
   const passagesWithDynamicStatus = computed<PassageTimeEnriched[]>(() => {
     const now = nowTimestamp.value
 
     return timeEnrichedPassages.value.map(p => {
-      const computedStatus = computePassageStatus(p._startTime, p._endTime, now, p.status)
+      const computedStatus = computePassageStatus(p._startTime, p._endTime, now, p.status ?? 'SCHEDULED')
 
       return {
         ...p,
-        status: computedStatus as PassageStatus // cast back to PassageStatus
+        status: computedStatus as PassageStatus
       }
     })
   })
-
-  // 3. Sorted Lists
 
   const upcomingPassages = computed(() => {
     const now = nowTimestamp.value
@@ -70,17 +65,16 @@ export const usePassageTiming = (
     const now = nowTimestamp.value
     return passagesWithDynamicStatus.value
       .filter(p => p._startTime <= now)
-      .sort((a, b) => b._startTime - a._startTime) // Most recent first
+      .sort((a, b) => b._startTime - a._startTime)
   })
 
   const livePassages = computed(() => {
     return passagesWithDynamicStatus.value.filter(p => p.status === 'LIVE')
   })
 
-  // 4. Next Event & Countdown
+  // Prochain événement et compte à rebours
 
   const nextEvent = computed(() => {
-    // first element of sorted upcoming
     return upcomingPassages.value[0] || null
   })
 

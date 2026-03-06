@@ -1,23 +1,18 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiEmptyState
- * Composant standard pour les listes vides ou l'absence de résultats.
+ * UiEmptyState
+ * Composant standard utilisé pour illustrer une liste vide ou l'absence de résultats (ex: recherche infructueuse).
  */
 
 interface Props {
-  /** Titre principal (optionnel) */
   title?: string
-  /** Description détaillée */
   description?: string
-  /** Icône Fluent (ex: 'fluent:search-24-regular') */
   icon?: string
-  /** Affiche une bordure glass-card (par défaut: true) */
   glass?: boolean
-  /** Active l'animation de pulsation lente sur l'icône */
   pulse?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   title: undefined,
   description: '',
   icon: 'fluent:info-24-regular',
@@ -34,7 +29,6 @@ withDefaults(defineProps<Props>(), {
     aria-live="polite"
     tabindex="0"
   >
-    <!-- Icon Circle -->
     <div
       class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/5 border border-white/5"
       :class="{ 'animate-pulse-slow': pulse }"
@@ -43,7 +37,6 @@ withDefaults(defineProps<Props>(), {
       <Icon :name="icon" class="h-8 w-8 text-white/40" />
     </div>
 
-    <!-- Text Content -->
     <h3 v-if="title" class="text-white text-lg font-bold">
       {{ title }}
     </h3>
@@ -52,7 +45,7 @@ withDefaults(defineProps<Props>(), {
       {{ description }}
     </p>
 
-    <!-- Actions Slot (Buttons, Links) -->
+    <!-- Slot permettant d'injecter des boutons d'actions personnalisés sous le texte (ex: "Réessayer") -->
     <div v-if="$slots.actions" class="mt-6 flex justify-center">
       <slot name="actions" />
     </div>

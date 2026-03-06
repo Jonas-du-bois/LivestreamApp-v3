@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * NotificationDrawer
+ * Tiroir latéral affichant l'historique et l'état des notifications de l'utilisateur.
+ */
 import type { AppNotification, NotificationType } from '~/types/notifications'
 import { useNotificationsStore } from '#imports'
 
@@ -14,12 +18,11 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const notificationsStore = useNotificationsStore()
 
-// Computed values from store
 const notifications = computed(() => notificationsStore.allNotifications)
 const unreadCount = computed(() => notificationsStore.unreadCount)
 const hasNotifications = computed(() => notifications.value.length > 0)
 
-// Format relative time
+// Formate le temps écoulé de manière relative (ex: "il y a 5 minutes").
 const formatRelativeTime = (timestamp: string): string => {
   const now = new Date()
   const date = new Date(timestamp)
@@ -35,7 +38,7 @@ const formatRelativeTime = (timestamp: string): string => {
   return t('notifications.daysAgo', { count: diffDays })
 }
 
-// Get icon based on notification type
+// Assigne une icône visuelle en fonction du type de notification.
 const getNotificationIcon = (type: NotificationType): string => {
   const icons: Record<NotificationType, string> = {
     info: 'fluent:info-24-regular',
@@ -48,7 +51,7 @@ const getNotificationIcon = (type: NotificationType): string => {
   return icons[type] || 'fluent:alert-24-regular'
 }
 
-// Get accent color based on notification type
+// Assigne une couleur thématique cohérente avec le design system (Tailwind).
 const getTypeColor = (type: NotificationType): string => {
   const colors: Record<NotificationType, string> = {
     info: 'cyan',
@@ -61,7 +64,6 @@ const getTypeColor = (type: NotificationType): string => {
   return colors[type] || 'cyan'
 }
 
-// Actions
 const markAsRead = (id: string) => {
   notificationsStore.markAsRead(id)
 }
@@ -78,7 +80,7 @@ const clearAllRead = () => {
   notificationsStore.clearRead()
 }
 
-// Handle notification click - mark as read and optionally navigate
+// Action au clic : marque comme lue et redirige vers l'URL associée si elle existe (ex: lien vers le live ou les résultats).
 const handleNotificationClick = (notification: AppNotification) => {
   if (!notification.isRead) {
     markAsRead(notification.id)
@@ -106,7 +108,6 @@ const handleNotificationClick = (notification: AppNotification) => {
         v-if="isOpen"
         class="fixed right-0 top-0 bottom-0 w-[85%] max-w-md glass-panel z-[70] overflow-hidden flex flex-col overlay-safe-right safe-area-top safe-area-bottom"
       >
-        <!-- Header -->
         <div class="p-5 border-b border-white/10 flex-shrink-0">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-3">
@@ -128,7 +129,6 @@ const handleNotificationClick = (notification: AppNotification) => {
             />
           </div>
 
-          <!-- Actions bar -->
           <div v-if="hasNotifications" class="flex items-center gap-2">
             <button
               v-if="unreadCount > 0"
@@ -149,9 +149,7 @@ const handleNotificationClick = (notification: AppNotification) => {
           </div>
         </div>
 
-        <!-- Notifications List -->
         <div class="flex-1 overflow-y-auto p-4 space-y-3">
-          <!-- Empty state -->
           <div v-if="!hasNotifications" class="flex flex-col items-center justify-center h-full text-center px-6">
             <div class="p-6 bg-white/5 rounded-full mb-4">
               <Icon name="fluent:alert-off-24-regular" class="w-12 h-12 text-white/20" />
@@ -162,7 +160,6 @@ const handleNotificationClick = (notification: AppNotification) => {
             </p>
           </div>
 
-          <!-- Notifications -->
           <TransitionGroup name="notification-list" tag="div" class="space-y-3">
             <div
               v-for="notification in notifications"
@@ -181,7 +178,6 @@ const handleNotificationClick = (notification: AppNotification) => {
               :aria-label="notification.title"
             >
               <div class="flex items-start gap-3">
-                <!-- Type indicator icon -->
                 <div 
                   class="flex-shrink-0 p-2 rounded-xl transition-colors"
                   :class="[
@@ -196,13 +192,11 @@ const handleNotificationClick = (notification: AppNotification) => {
                   />
                 </div>
 
-                <!-- Content -->
                 <div class="flex-1 min-w-0">
                   <div class="flex items-start justify-between gap-2">
                     <h4 class="text-white font-semibold text-sm leading-tight">
                       {{ notification.title }}
                     </h4>
-                    <!-- Unread indicator -->
                     <div 
                       v-if="!notification.isRead"
                       class="w-2 h-2 bg-cyan-400 rounded-full flex-shrink-0 mt-1 animate-pulse" 
@@ -219,7 +213,6 @@ const handleNotificationClick = (notification: AppNotification) => {
                       <span>{{ formatRelativeTime(notification.timestamp) }}</span>
                     </div>
 
-                    <!-- Actions (show on hover or focus) -->
                     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                       <button
                         v-if="!notification.isRead"
@@ -243,7 +236,7 @@ const handleNotificationClick = (notification: AppNotification) => {
                 </div>
               </div>
 
-              <!-- Live indicator bar -->
+              <!-- Indicateur rouge animé pour le direct -->
               <div
                 v-if="notification.type === 'live' && !notification.isRead"
                 class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-red-500 via-orange-500 to-red-500 animate-gradient-x"
@@ -275,7 +268,6 @@ const handleNotificationClick = (notification: AppNotification) => {
   transform: translateX(100%);
 }
 
-/* Notification list animations */
 .notification-list-enter-active {
   transition: all 0.3s ease-out;
 }
@@ -296,13 +288,11 @@ const handleNotificationClick = (notification: AppNotification) => {
   transition: transform 0.3s ease;
 }
 
-/* Notification card */
 .notification-card {
   position: relative;
   overflow: hidden;
 }
 
-/* Gradient animation for live indicator */
 @keyframes gradient-x {
   0%, 100% {
     background-position: 0% 50%;
@@ -316,7 +306,7 @@ const handleNotificationClick = (notification: AppNotification) => {
   animation: gradient-x 2s ease infinite;
 }
 
-/* Dynamic colors - Tailwind JIT workaround */
+/* Astuce JIT Tailwind : Déclaration explicite des couleurs dynamiques pour garantir leur compilation. */
 .bg-cyan-500\/20 { background-color: rgb(6 182 212 / 0.2); }
 .bg-emerald-500\/20 { background-color: rgb(16 185 129 / 0.2); }
 .bg-amber-500\/20 { background-color: rgb(245 158 11 / 0.2); }

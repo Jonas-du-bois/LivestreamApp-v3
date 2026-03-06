@@ -1,5 +1,7 @@
-// Composable pour gérer l'installation PWA depuis n'importe quel composant
-// Utilise le web component @khmyznikov/pwa-install
+/**
+ * Installation PWA via le web component @khmyznikov/pwa-install.
+ * Détecte la plateforme et expose les actions d'installation.
+ */
 
 interface PWAInstallElement extends HTMLElement {
   showDialog: (force?: boolean) => void
@@ -9,64 +11,46 @@ interface PWAInstallElement extends HTMLElement {
 export const usePwaInstall = () => {
   const isInstalled = ref(false)
   const isInstallAvailable = ref(false)
-  const isIOS = ref(false)
-  const isAndroid = ref(false)
   const isStandalone = ref(false)
 
-  // Détection de la plateforme
   const detectPlatform = () => {
-    if (import.meta.client) {
-      const userAgent = navigator.userAgent.toLowerCase()
-      isIOS.value = /iphone|ipad|ipod/.test(userAgent)
-      isAndroid.value = /android/.test(userAgent)
-      
-      // Vérifier si l'app est déjà en mode standalone
-      isStandalone.value = window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone === true
-        
-      // Si déjà en mode standalone, considérer comme installé
-      if (isStandalone.value) {
-        isInstalled.value = true
-      }
+    if (!import.meta.client) return
+
+    // const userAgent = navigator.userAgent.toLowerCase()
+    // isIOS.value = /iphone|ipad|ipod/.test(userAgent)
+    // isAndroid.value = /android/.test(userAgent)
+
+    // Mode standalone = déjà installée (PWA lancée depuis l'écran d'accueil)
+    isStandalone.value = window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true
+
+    if (isStandalone.value) {
+      isInstalled.value = true
     }
   }
 
-  // Obtenir l'élément pwa-install
   const getPwaInstallElement = (): PWAInstallElement | null => {
-    if (import.meta.client) {
-      return document.querySelector('pwa-install') as PWAInstallElement | null
-    }
-    return null
+    if (!import.meta.client) return null
+    return document.querySelector('pwa-install') as PWAInstallElement | null
   }
 
-  // Ouvrir le dialogue d'installation
   const showInstallPrompt = (force = false) => {
-    const element = getPwaInstallElement()
-    if (element) {
-      element.showDialog(force)
-    }
+    getPwaInstallElement()?.showDialog(force)
   }
 
-  // Fermer le dialogue
   const hideInstallPrompt = () => {
-    const element = getPwaInstallElement()
-    if (element) {
-      element.hideDialog()
-    }
+    getPwaInstallElement()?.hideDialog()
   }
 
-  // Initialisation
   onMounted(() => {
     detectPlatform()
-    
-    // Écouter les événements de disponibilité d'installation
+
     if (import.meta.client) {
       const element = getPwaInstallElement()
       if (element) {
         element.addEventListener('pwa-install-available-event', () => {
           isInstallAvailable.value = true
         })
-        
         element.addEventListener('pwa-install-success-event', () => {
           isInstalled.value = true
           isInstallAvailable.value = false
@@ -76,14 +60,9 @@ export const usePwaInstall = () => {
   })
 
   return {
-    // États
     isInstalled: readonly(isInstalled),
     isInstallAvailable: readonly(isInstallAvailable),
-    isIOS: readonly(isIOS),
-    isAndroid: readonly(isAndroid),
     isStandalone: readonly(isStandalone),
-    
-    // Actions
     showInstallPrompt,
     hideInstallPrompt
   }

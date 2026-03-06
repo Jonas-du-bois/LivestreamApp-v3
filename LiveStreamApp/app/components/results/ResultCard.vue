@@ -1,12 +1,10 @@
 <script setup lang="ts">
 /**
- * ⚛️ ResultCard
- * Carte atomique pour afficher un résultat (podium ou classement complet).
- * Uniformisée avec SchedulePassageCard pour une cohérence UI.
+ * ResultCard
+ * Carte d'affichage d'un résultat (utilisée pour le podium ou la liste complète du classement).
  */
 import type { PassageEnriched } from '~/types/api'
 
-// Extension du type PassageEnriched pour inclure le rang et le score
 export type PassageResult = PassageEnriched & { rank: number; score?: number | null }
 
 interface Props {
@@ -26,8 +24,7 @@ const emit = defineEmits<{
 
 const { translateCategory } = useTranslatedData()
 
-// --- Logic Helpers ---
-
+// Retourne l'icône de médaille correspondante pour le top 3.
 const getMedalIcon = (rank: number) => {
   switch (rank) {
     case 1:
@@ -41,6 +38,7 @@ const getMedalIcon = (rank: number) => {
   }
 }
 
+// Applique une bordure colorée uniquement aux éléments du podium.
 const getBorderClass = (rank: number) => {
   if (!props.isPodium) return ''
   switch (rank) {
@@ -67,7 +65,6 @@ const handleClick = () => {
     :id="`result-${passage._id}`"
   >
     <div class="flex items-center gap-4">
-      <!-- Rank / Medal (Left Column - Uniform width with Schedule) -->
       <div class="flex items-center justify-center min-w-[60px] flex-shrink-0">
         <template v-if="isPodium && getMedalIcon(passage.rank)">
           <span class="sr-only">#{{ passage.rank }}</span>
@@ -80,7 +77,6 @@ const handleClick = () => {
         <span v-else class="text-white/40 font-bold text-xl">#{{ passage.rank }}</span>
       </div>
 
-      <!-- Group Info (Middle Column - Flexible) -->
       <div class="flex-1 min-w-0">
         <h3 class="text-white font-bold text-lg leading-tight mb-0.5 truncate">
           {{ passage.group?.name }}
@@ -90,7 +86,6 @@ const handleClick = () => {
         </p>
       </div>
 
-      <!-- Score (Right Column - Fixed) -->
       <div
         class="font-bold flex-shrink-0 text-right min-w-[60px]"
         :class="isPodium ? 'text-cyan-400 text-3xl' : 'text-white text-2xl'"
@@ -102,7 +97,6 @@ const handleClick = () => {
 </template>
 
 <style scoped>
-/* Score Flash Animation (copied from results.vue for encapsulation) */
 :global(.score-flash) {
   animation: premium-pop 2s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;

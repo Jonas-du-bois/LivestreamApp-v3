@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * CascadeSkeletonList
+ * Composant utilitaire affichant une liste de "skeletons" (éléments de chargement) avec un effet d'animation en cascade.
+ */
 type CascadeLayout = 'vertical' | 'grid' | 'horizontal'
 
 interface Props {
@@ -19,11 +23,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n()
 
+// Génère un tableau d'index basé sur le nombre demandé, avec une sécurité pour éviter les listes vides inattendues.
 const items = computed(() => {
   const safeCount = Math.max(1, Number(props.count) || 1)
   return Array.from({ length: safeCount }, (_, index) => index)
 })
 
+// Détermine dynamiquement les classes Tailwind à appliquer selon le type de layout choisi.
 const layoutClass = computed(() => {
   if (props.layout === 'grid') return 'grid grid-cols-1 gap-4'
   if (props.layout === 'horizontal') return 'flex gap-3 overflow-x-auto pb-2'

@@ -1,11 +1,6 @@
-import { onMounted, onUnmounted } from 'vue'
-
 /**
- * Composable to handle auto-refreshing data on an interval and when the app becomes visible.
- *
- * @param callback The function to call on the interval.
- * @param intervalMs The interval in milliseconds.
- * @param onVisibility Optional function to call when the app becomes visible. Defaults to `callback`.
+ * Rafraîchit des données à intervalle régulier et quand l'app redevient visible.
+ * Gère automatiquement le nettoyage au démontage du composant.
  */
 export function useAutoRefresh(
   callback: () => void | Promise<void>,
@@ -16,34 +11,25 @@ export function useAutoRefresh(
 
   const handleVisibilityChange = () => {
     if (document.visibilityState === 'visible') {
-      if (onVisibility) {
-        onVisibility()
-      } else {
-        callback()
-      }
+      // Permet un callback différent au retour de visibilité (ex: refresh complet vs poll léger)
+      onVisibility ? onVisibility() : callback()
     }
   }
 
   onMounted(() => {
-    // Start the interval
-    timer = setInterval(() => {
-      callback()
-    }, intervalMs)
+    timer = setInterval(callback, intervalMs)
 
-    // Add visibility listener
     if (import.meta.client) {
       document.addEventListener('visibilitychange', handleVisibilityChange)
     }
   })
 
   onUnmounted(() => {
-    // Clear the interval
     if (timer) {
       clearInterval(timer)
       timer = null
     }
 
-    // Remove visibility listener
     if (import.meta.client) {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }

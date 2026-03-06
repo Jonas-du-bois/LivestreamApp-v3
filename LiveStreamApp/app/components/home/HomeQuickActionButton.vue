@@ -22,6 +22,7 @@ const accentRgbMap: Record<Accent, string> = {
   violet: '167 139 250'
 }
 
+// Convertit la couleur d'accentuation en variable CSS personnalisée pour qu'elle puisse être utilisée de manière fluide dans le `<style>`.
 const accentStyle = computed(() => ({
   '--accent-rgb': accentRgbMap[props.accent]
 }))

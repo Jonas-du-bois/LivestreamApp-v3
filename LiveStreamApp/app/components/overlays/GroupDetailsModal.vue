@@ -1,16 +1,17 @@
 <script lang="ts">
 import type { GroupDetailsResponse } from '../../types/api'
 import { GROUP_DETAILS_CACHE_TTL } from '../../utils/timings'
-// TTL-based cache: persist across instances but auto-expire
+
+// Cache en mémoire pour éviter les requêtes redondantes (ex: aller-retour rapide entre vue globale et détails).
 const detailsCache = new Map<string, { data: GroupDetailsResponse; ts: number }>()
 </script>
 
 <script setup lang="ts">
 import { PublicService } from '../../services/public.service'
-import { useSocket } from '../../composables/useSocket'
+//import { useSocket } from '../../composables/useSocket'
 import { useFavoritesStore } from '../../stores/favorites'
-import type { PassageEnriched, HistoryEntry } from '../../types/api'
-import type { ScoreUpdatePayload } from '../../types/socket'
+//import type { PassageEnriched, HistoryEntry } from '../../types/api'
+//import type { ScoreUpdatePayload } from '../../types/socket'
 
 interface Props {
   isOpen: boolean
@@ -26,10 +27,9 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { translateCategory, translateApparatus } = useTranslatedData()
-const socket = useSocket()
+// ⚠️ DEAD CODE : const socket = useSocket()
 const favoritesStore = useFavoritesStore()
 
-// Shared reactive time and realtime status
 const { now: nowTimestamp } = useNow()
 
 const isLoading = ref(false)
@@ -38,10 +38,10 @@ const error = ref<string | null>(null)
 const details = ref<GroupDetailsResponse | null>(null)
 const activeTab = ref<'timeline' | 'stats'>('timeline')
 
+// Récupère les données avec possibilité de forcer le bypass du cache (ex: mise à jour websocket).
 const fetchData = async (force = false) => {
   if (!props.groupId) return
 
-  // Check cache (with TTL)
   if (!force) {
     const cached = detailsCache.get(props.groupId)
     if (cached && Date.now() - cached.ts < GROUP_DETAILS_CACHE_TTL) {
@@ -66,11 +66,12 @@ const fetchData = async (force = false) => {
 
 const { version, apply, handleStatusUpdate, handleScoreUpdate, handleScheduleUpdate, reset } = useRealtimeStatus(() => fetchData(true))
 
+// Réinitialise l'état et recharge les données lors de l'ouverture d'un nouveau groupe.
 watch(() => props.isOpen, (newVal) => {
   if (newVal && props.groupId) {
-    reset() // Clear overrides when opening a new group
+    reset()
     fetchData()
-    activeTab.value = 'timeline' // Reset to timeline on open
+    activeTab.value = 'timeline'
   }
 })
 
@@ -81,19 +82,19 @@ watch(() => props.groupId, (newId) => {
   }
 })
 
-// ─── Real-time & Reactive Timeline ───────────────────────────────
-
+// Construit une timeline fusionnant les données initiales avec les mises à jour temps réel des WebSockets.
 const enrichedTimeline = computed(() => {
   if (!details.value?.timeline) return []
   
-  const _v = version.value // reactive dep
+  // Cette dépendance force la réévaluation quand une mise à jour websocket est reçue.
+  // ⚠️ DEAD CODE : const _v = version.value
+  version.value 
   const now = nowTimestamp.value
 
   return details.value.timeline.map((item) => {
-    // 1. Apply socket overrides
     const merged = apply(item)
     
-    // 2. Client-side status calculation for reactivity (past/live/upcoming)
+    // Calcule le statut localement pour réagir au passage du temps sans attendre le serveur.
     const startTime = new Date(merged.startTime).getTime()
     const endTime = new Date(merged.endTime).getTime()
     const status = computePassageStatus(startTime, endTime, now, merged.status)
@@ -111,11 +112,9 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
   { event: 'schedule-update', handler: handleScheduleUpdate }
 ])
 
+// Recalcule les statistiques à la volée en se basant sur les données de la timeline enrichie.
 const recomputeStats = () => {
-   // 1. Passages completed according to time/status
    const finishedPassages = enrichedTimeline.value.filter((p) => p.status === 'FINISHED')
-   
-   // 2. Passages that actually have a numeric score for the average
    const scoredPassages = finishedPassages.filter((p) => typeof p.score === 'number')
    
    const totalScore = scoredPassages.reduce((acc, curr) => acc + (curr.score || 0), 0)
@@ -131,7 +130,6 @@ const recomputeStats = () => {
    }
 }
 
-// Watch timeline changes to sync stats (including client-side status transitions)
 watch(enrichedTimeline, () => {
   recomputeStats()
 }, { deep: true })
@@ -154,15 +152,14 @@ onUnmounted(() => {
   }
 })
 
-const formatTime = (iso: string) => formatLocalizedTime(iso)
+// ⚠️ DEAD CODE : const formatTime = (iso: string) => formatLocalizedTime(iso)
 
-// Get all passage IDs from the same group and category
 const groupPassageIds = computed(() => {
   if (!details.value?.timeline) return []
   return details.value.timeline.map((p) => p._id).filter(Boolean)
 })
 
-// Check if all group passages are favorited
+// L'état de favori global est vrai seulement si TOUS les passages du groupe sont marqués.
 const isFavorite = computed(() => {
   return favoritesStore.areAllGroupPassagesFavorited(groupPassageIds.value)
 })
@@ -183,7 +180,6 @@ const getInitials = (name: string) => {
   return name.split(' ').map((n: string) => n[0]).join('')
 }
 
-// Computed properties
 const categoryLabel = computed(() => {
   if (!details.value?.info) return translateCategory('ACTIFS')
   return translateCategory(details.value.info.category)
@@ -196,11 +192,10 @@ const categoryColor = computed(() => {
     : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
 })
 
-// Canton display: utilise le canton de la DB, sinon extrait du nom (partie avant ":")
+// Tente de récupérer le canton depuis la donnée structurée, sinon fallback via parsage du nom de la société.
 const cantonDisplay = computed(() => {
   if (!details.value?.info) return null
   if (details.value.info.canton) return details.value.info.canton
-  // Fallback: extraire du nom
   const name = details.value.info.name || ''
   if (name.includes(':')) return name.split(':')[0].trim()
   return null
@@ -215,17 +210,16 @@ interface HistoryPoint {
   score: number
 }
 
+// Agrége l'historique par année pour le graphique, avec un filtre optionnel par agrès.
 const historyByYear = computed<HistoryPoint[]>(() => {
   if (!details.value?.history) return []
 
   let rawHistory = details.value.history
 
-  // Filter by apparatus if provided
   if (props.apparatusCode) {
     rawHistory = rawHistory.filter(h => h.apparatus === props.apparatusCode)
   }
 
-  // Aggregate by year
   const yearMap = new Map<number, { total: number; count: number }>()
   rawHistory.forEach(h => {
      if (!yearMap.has(h.year)) yearMap.set(h.year, { total: 0, count: 0 })
@@ -234,7 +228,6 @@ const historyByYear = computed<HistoryPoint[]>(() => {
      entry.count++
   })
 
-  // Convert to array
   const aggregated: HistoryPoint[] = Array.from(yearMap.entries()).map(([year, data]) => ({
     year,
     score: data.total / data.count
@@ -250,7 +243,8 @@ const averageHistoryScore = computed(() => {
   return (sum / list.length).toFixed(2)
 })
 
-// Helper computed properties pour éviter les erreurs TypeScript
+// ⚠️ DEAD CODE :
+/*
 const firstHistoryScore = computed(() => {
   const list = historyByYear.value
   return list.length > 0 ? list[0]?.score ?? 0 : 0
@@ -282,6 +276,7 @@ const maxHistoryScore = computed(() => {
   if (!list.length) return '0.00'
   return Math.max(...list.map((d) => d.score ?? 0)).toFixed(2)
 })
+*/
 </script>
 
 <template>
@@ -302,7 +297,6 @@ const maxHistoryScore = computed(() => {
         aria-modal="true"
         aria-labelledby="group-details-title"
       >
-        <!-- Close button – toujours visible –-->
         <div class="absolute top-3 right-3 z-[100]">
           <UiIconButton
             icon="fluent:dismiss-24-regular"
@@ -323,7 +317,6 @@ const maxHistoryScore = computed(() => {
         </div>
 
         <template v-else-if="details">
-            <!-- Header with Image -->
             <div class="relative h-52 overflow-hidden flex-shrink-0">
               <ImageWithFallback
                 :src="details.info.logo || 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2340&auto=format&fit=crop'"
@@ -332,7 +325,6 @@ const maxHistoryScore = computed(() => {
               />
               <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#0B1120]" />
               
-              <!-- Wave SVG -->
               <svg
                 class="absolute bottom-0 w-full"
                 viewBox="0 0 1440 120"
@@ -345,7 +337,6 @@ const maxHistoryScore = computed(() => {
                 />
               </svg>
 
-              <!-- Title & Category -->
               <div class="absolute bottom-6 left-6 right-6 z-10">
                 <div class="flex items-start justify-between gap-3 mb-2">
                   <h2 id="group-details-title" class="text-white font-bold text-2xl md:text-3xl leading-tight">{{ details.info.name }}</h2>
@@ -362,7 +353,6 @@ const maxHistoryScore = computed(() => {
               </div>
             </div>
 
-            <!-- Tab Navigation -->
             <div class="flex border-b border-white/10 bg-[#0B1120]/80 backdrop-blur-sm flex-shrink-0" role="tablist">
               <button
                 @click="activeTab = 'timeline'"
@@ -394,11 +384,8 @@ const maxHistoryScore = computed(() => {
               </button>
             </div>
 
-            <!-- Content Area -->
             <div class="flex-1 overflow-y-auto">
-              <!-- TIMELINE TAB -->
               <div v-show="activeTab === 'timeline'" class="p-6" id="panel-timeline" role="tabpanel">
-                <!-- Quick Stats -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
                   <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
                     <Icon name="fluent:checkmark-circle-24-regular" class="w-6 h-6 text-cyan-400 mb-2" />
@@ -414,13 +401,11 @@ const maxHistoryScore = computed(() => {
                   </div>
                 </div>
 
-                <!-- Timeline -->
                 <h3 class="text-white font-bold mb-4 flex items-center gap-2">
                   <Icon name="fluent:calendar-clock-24-regular" class="w-5 h-5 text-cyan-400" />
                   {{ t('group.daySchedule') }}
                 </h3>
                 <div class="space-y-4 relative">
-                  <!-- Vertical Line -->
                   <div class="absolute left-[19px] top-2 bottom-2 w-0.5 bg-white/10" />
 
                   <GroupTimelineItem 
@@ -431,9 +416,7 @@ const maxHistoryScore = computed(() => {
                 </div>
               </div>
 
-              <!-- STATS TAB -->
               <div v-show="activeTab === 'stats'" class="p-6 space-y-6" id="panel-stats" role="tabpanel">
-                <!-- Stats Grid -->
                 <div>
                   <h3 class="text-white font-bold mb-4 flex items-center gap-2">
                     <Icon name="fluent:data-bar-vertical-24-regular" class="w-5 h-5 text-cyan-400" />
@@ -458,7 +441,6 @@ const maxHistoryScore = computed(() => {
                   </div>
                 </div>
 
-                <!-- Category Info for MIXTE -->
                 <div v-if="details.info.category === 'MIXTE'" class="glass-card p-4 bg-purple-500/5 border border-purple-500/20">
                   <div class="flex items-start gap-3">
                     <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
@@ -471,7 +453,6 @@ const maxHistoryScore = computed(() => {
                   </div>
                 </div>
 
-                <!-- Monitors List -->
                 <div v-if="monitors.length > 0">
                   <h3 class="text-white font-bold mb-3 flex items-center gap-2">
                     <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-cyan-400" />
@@ -493,14 +474,12 @@ const maxHistoryScore = computed(() => {
                   </div>
                 </div>
 
-                <!-- Historical Performance -->
                 <div v-if="historyByYear.length > 0">
                   <div class="flex items-center gap-2 mb-3">
                     <Icon name="fluent:history-24-regular" class="w-5 h-5 text-cyan-400" />
                     <h3 class="text-white font-bold">{{ t('group.historicalPerformance') }}</h3>
                   </div>
                   <div class="glass-card p-5 bg-white/5">
-                    <!-- Chart.js Line Chart -->
                     <ChartsHistoryLineChart
                       :data="historyByYear"
                       :height="200"
@@ -509,11 +488,11 @@ const maxHistoryScore = computed(() => {
                 </div>
               </div>
             </div>
-  <p v-if="groupPassageIds.length > 0" class="text-white/50 text-xs text-center mt-2">
-                {{ t('group.passagesInGroup', { count: groupPassageIds.length }, groupPassageIds.length) }}
-              </p>
             
-            <!-- Footer Action -->
+            <p v-if="groupPassageIds.length > 0" class="text-white/50 text-xs text-center mt-2">
+              {{ t('group.passagesInGroup', { count: groupPassageIds.length }, groupPassageIds.length) }}
+            </p>
+            
             <div class="p-6 border-t border-white/10 flex-shrink-0 bg-[#0B1120]/50 backdrop-blur-xl">
               <UiButton
                 @click="toggleFavorite"

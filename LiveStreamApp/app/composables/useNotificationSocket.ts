@@ -25,13 +25,12 @@ interface ScoreUpdatePayload {
 }
 
 /**
- * Composable pour écouter les événements socket et créer des notifications.
- * 
- * LOGIQUE DE NOTIFICATION :
- * - Si l'utilisateur a un abonnement push actif : le serveur envoie déjà le push
- *   → On ajoute seulement au store in-app (pas de notification navigateur pour éviter les doublons)
- * - Si l'utilisateur n'a PAS d'abonnement push : le serveur n'envoie rien
- *   → On ajoute au store in-app ET on affiche une notification navigateur
+ * Écoute les événements socket pour créer des notifications.
+ *
+ * Stratégie anti-doublon :
+ * - Si l'utilisateur a un abonnement push actif → le serveur envoie déjà le push,
+ *   on ajoute seulement au store in-app.
+ * - Sinon → on ajoute au store ET on affiche une notification navigateur.
  */
 export const useNotificationSocket = () => {
   const socket = useSocket()
@@ -42,56 +41,46 @@ export const useNotificationSocket = () => {
   const isSetup = useState('notification-socket-setup', () => false)
   
   /**
-   * Vérifie si l'utilisateur a un abonnement push actif
-   * L'endpoint est stocké dans favoritesStore quand l'utilisateur s'abonne
+   * Vérifie si l'utilisateur a un abonnement push actif.
+   * L'endpoint est enregistré dans favoritesStore lors de l'abonnement.
    */
   const hasPushSubscription = computed(() => !!favoritesStore.endpoint)
   
   const handleStreamUpdate = (payload: StreamUpdatePayload) => {
-    console.log('[NotificationSocket] stream-update received:', payload)
-    
-    if (payload.currentPassage?._id) {
-      const passageId = payload.currentPassage._id
-      
-      // Ne notifier QUE si le passage est en favoris
-      if (favoritesStore.isFavorite(passageId)) {
-        const groupName = payload.currentPassage.group?.name || 'Groupe'
-        const apparatusName = payload.currentPassage.apparatus?.name || 'appareil'
-        
-        // Utilise notifyIfNeeded : ajoute au store + notification navigateur seulement si pas d'abonnement push
-        notificationsStore.notifyLive(
-          groupName,
-          apparatusName,
-          hasPushSubscription.value,
-          '/stream'
-        )
-      }
-    }
+    if (!payload.currentPassage?._id) return
+
+    const passageId = payload.currentPassage._id
+
+    // Ne notifier que les passages en favoris
+    if (!favoritesStore.favorites.includes(passageId)) return
+
+    const groupName = payload.currentPassage.group?.name || 'Groupe'
+    const apparatusName = payload.currentPassage.apparatus?.name || 'appareil'
+
+    notificationsStore.notifyLive(
+      groupName,
+      apparatusName,
+      hasPushSubscription.value,
+      '/stream'
+    )
   }
 
   const handleScoreUpdate = (payload: ScoreUpdatePayload) => {
-    console.log('[NotificationSocket] score-update received:', payload)
-    
-    // Ne créer une notification que si le passage est en favoris
-    if (payload.passageId && favoritesStore.isFavorite(payload.passageId)) {
-      if (payload.score !== undefined && payload.groupName) {
-        // Utilise notifyIfNeeded : ajoute au store + notification navigateur seulement si pas d'abonnement push
-        notificationsStore.notifyScore(
-          payload.groupName,
-          payload.apparatusName || payload.apparatusCode,
-          payload.score,
-          hasPushSubscription.value,
-          '/results'
-        )
-      }
-    } else {
-      console.log('[NotificationSocket] Score update ignored - passage not in favorites')
+    if (!payload.passageId || !favoritesStore.favorites.includes(payload.passageId)) return
+
+    if (payload.score !== undefined && payload.groupName) {
+      notificationsStore.notifyScore(
+        payload.groupName,
+        payload.apparatusName || payload.apparatusCode,
+        payload.score,
+        hasPushSubscription.value,
+        '/results'
+      )
     }
   }
 
   const handleScheduleUpdate = () => {
-    console.log('[NotificationSocket] schedule-update received')
-    // Les mises à jour de schedule sont gérées par d'autres composants
+    // Les mises à jour de schedule sont gérées par les composants concernés
   }
 
   const setupListeners = () => {
@@ -121,10 +110,7 @@ export const useNotificationSocket = () => {
       if (socket.connected) {
         setupListeners()
       } else {
-        socket.on('connect', () => {
-          console.log('[NotificationSocket] Socket connected, setting up listeners')
-          setupListeners()
-        })
+        socket.on('connect', () => setupListeners())
       }
     })
 

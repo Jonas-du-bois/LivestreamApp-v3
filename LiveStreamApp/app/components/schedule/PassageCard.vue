@@ -1,11 +1,8 @@
 <script setup lang="ts">
-
 /**
- * ⚛️ SchedulePassageCard
- * Carte atomique pour afficher un passage dans le programme.
- * Taille fixe, hiérarchie visuelle claire, espacement cohérent.
+ * SchedulePassageCard
+ * Carte affichant un passage du programme (groupe, heure, lieu, agrès, favori, statut live).
  */
-
 import type { PassageEnriched } from '~/types/api'
 
 interface Props {
@@ -58,6 +55,7 @@ const handleClick = () => {
   }
 }
 
+// Stoppe la propagation de l'événement pour éviter de déclencher l'ouverture de la carte lors du clic sur le favori.
 const handleFavoriteToggle = (event: Event) => {
   event.stopPropagation()
   if (passageId.value) {
@@ -76,23 +74,20 @@ const handleFavoriteToggle = (event: Event) => {
   >
     <div class="passage-inner">
 
-      <!-- Colonne gauche : Heure + Lieu -->
       <div class="passage-time-col">
         <span class="passage-time">{{ formattedTime }}</span>
         <span v-if="location" class="passage-location">{{ location }}</span>
+        <!-- Maintient l'alignement de l'heure si le lieu n'est pas renseigné -->
         <span v-else class="passage-location-placeholder" aria-hidden="true" />
       </div>
 
-      <!-- Séparateur vertical -->
       <div class="passage-divider" aria-hidden="true" />
 
-      <!-- Colonne centrale : Nom + Engin -->
       <div class="passage-content">
         <h4 class="passage-group">{{ groupName }}</h4>
         <span class="passage-apparatus">{{ translatedApparatus }}</span>
       </div>
 
-      <!-- Colonne droite : Live badge + Favori -->
       <div class="passage-actions" :class="{ 'has-live': isLive }">
         <span v-if="isLive" class="passage-live-badge" role="status">
           <span class="live-dot" aria-hidden="true" />
@@ -113,7 +108,6 @@ const handleFavoriteToggle = (event: Event) => {
 </template>
 
 <style scoped>
-/* ── Taille fixe de la carte ─────────────────────────────────────── */
 .passage-card {
   height: 80px;
   min-height: 80px;
@@ -126,7 +120,6 @@ const handleFavoriteToggle = (event: Event) => {
     opacity      0.35s ease;
 }
 
-/* ── Layout interne flex centré ──────────────────────────────────── */
 .passage-inner {
   display: flex;
   align-items: center;
@@ -134,7 +127,6 @@ const handleFavoriteToggle = (event: Event) => {
   padding: 0 16px;
 }
 
-/* ── Colonne Heure / Lieu ────────────────────────────────────────── */
 .passage-time-col {
   display: flex;
   flex-direction: column;
@@ -162,13 +154,11 @@ const handleFavoriteToggle = (event: Event) => {
   text-overflow: ellipsis;
 }
 
-/* Maintient l'espace même sans lieu pour ne pas faire bouger la ligne du temps */
 .passage-location-placeholder {
   display: block;
   height: 11px;
 }
 
-/* ── Séparateur ──────────────────────────────────────────────────── */
 .passage-divider {
   width: 1px;
   height: 40px;
@@ -177,7 +167,6 @@ const handleFavoriteToggle = (event: Event) => {
   margin: 0 14px;
 }
 
-/* ── Colonne Groupe / Engin ──────────────────────────────────────── */
 .passage-content {
   flex: 1;
   min-width: 0;
@@ -207,25 +196,23 @@ const handleFavoriteToggle = (event: Event) => {
   text-overflow: ellipsis;
 }
 
-/* ── Colonne Actions ─────────────────────────────────────────────── */
 .passage-actions {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* centré par défaut (sans badge) */
+  justify-content: center;
   gap: 6px;
   flex-shrink: 0;
   margin-left: 12px;
   width: 52px;
 }
 
-/* Quand le badge live est présent, espace badge + cœur verticalement */
+/* Gère l'espacement si le badge live est affiché pour éviter qu'il n'écrase l'icône favori */
 .passage-actions.has-live {
   justify-content: space-between;
   padding: 14px 0;
 }
 
-/* Badge LIVE */
 .passage-live-badge {
   display: inline-flex;
   align-items: center;
@@ -249,13 +236,11 @@ const handleFavoriteToggle = (event: Event) => {
   animation: pulse-dot 1.8s ease-in-out infinite;
 }
 
-/* Placeholder même hauteur que le badge → pas de saut de layout */
 .passage-live-placeholder {
   display: block;
   height: 18px;
 }
 
-/* ── États de la carte ───────────────────────────────────────────── */
 .is-live {
   border-color: rgba(239, 68, 68, 0.35) !important;
   box-shadow: 0 0 14px rgba(239, 68, 68, 0.12);
@@ -266,7 +251,6 @@ const handleFavoriteToggle = (event: Event) => {
   opacity: 0.55;
 }
 
-/* ── Animations ──────────────────────────────────────────────────── */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.5; transform: scale(0.75); }
@@ -282,7 +266,6 @@ const handleFavoriteToggle = (event: Event) => {
   .live-dot { animation: none; }
 }
 
-/* ── Transition interne du glass-card ───────────────────────────── */
 :deep(.glass-card) {
   transition:
     border-color 0.35s ease,

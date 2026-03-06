@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * ImageWithFallback
+ * Composant d'image affichant une icône de remplacement standardisée en cas d'échec de chargement (lien mort, erreur réseau).
+ */
 interface Props {
   src?: string
   alt?: string
@@ -10,6 +14,7 @@ const alt = toRef(props, 'alt')
 
 const didError = ref(false)
 
+// Image de remplacement au format base64 pour éviter une requête réseau supplémentaire en cas d'erreur.
 const ERROR_IMG_SRC = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODgiIGhlaWdodD0iODgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBvcGFjaXR5PSIuMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzLjciPjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjU2IiByeD0iNiIvPjxwYXRoIGQ9Im0xNiA1OCAxNi0xOCAzMiAzMiIvPjxjaXJjbGUgY3g9IjUzIiBjeT0iMzUiIHI9IjciLz48L3N2Zz4KCg=='
 
 const handleError = () => {
@@ -25,7 +30,7 @@ const handleError = () => {
     <div class="flex items-center justify-center w-full h-full">
       <img 
         :src="ERROR_IMG_SRC" 
-        alt="Error loading image" 
+        alt="Image indisponible" 
         :data-original-url="src"
       />
     </div>

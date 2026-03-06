@@ -1,35 +1,32 @@
 import { getCurrentInstance } from 'vue'
 import { isNativePlatform, getNativeToken } from '~/utils/capacitor'
 
-// Helper to get auth token (hybrid: native storage on Capacitor, cookie on web)
+/** Récupère le token d'authentification selon la plateforme */
 const getAuthToken = (): string | null => {
-  // Mode Capacitor → token stocké dans Preferences (chargé en mémoire au démarrage)
+  // Capacitor : token stocké en mémoire via Preferences
   if (import.meta.client && isNativePlatform()) {
     return getNativeToken()
   }
 
-  // Mode Web → cookie classique
+  // Web : lecture du cookie
   try {
     const cookieRef = useCookie('auth_token')
-    if (cookieRef.value) {
-      return cookieRef.value
-    }
+    if (cookieRef.value) return cookieRef.value
   } catch {
-    // useCookie might fail outside Vue context
+    // useCookie peut échouer hors contexte Vue (store Pinia, service…)
   }
-  
-  // Fallback: read directly from document.cookie (client-side only)
+
+  // Fallback : lecture directe du cookie côté client
   if (import.meta.client && typeof document !== 'undefined') {
     const match = document.cookie.match(/(?:^|;\s*)auth_token=([^;]*)/)
-    if (match) {
-      return decodeURIComponent(match[1])
-    }
+    const tokenValue = match?.[1]
+    if (tokenValue) return decodeURIComponent(tokenValue)
   }
-  
+
   return null
 }
 
-// Helper to inject auth header
+/** Injecte le header Authorization si un token est disponible */
 const getAuthHeaders = (headers: any = {}) => {
   const token = getAuthToken()
   if (token) {
@@ -41,6 +38,7 @@ const getAuthHeaders = (headers: any = {}) => {
   return headers
 }
 
+/** Client $fetch brut avec auth et auto-logout sur 401 */
 export const apiClient = <T>(url: string, options: any = {}) => {
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
@@ -50,19 +48,16 @@ export const apiClient = <T>(url: string, options: any = {}) => {
     ...options,
     headers: getAuthHeaders(options.headers),
     async onResponseError({ response }) {
-      // Auto-logout on 401 (session expirée/invalide)
+      // Session expirée : on supprime le token et on reload
       if (response.status === 401 && import.meta.client) {
         const { isNativePlatform, removeNativeToken } = await import('~/utils/capacitor')
         
-        // Clear token selon la plateforme
         if (isNativePlatform()) {
           await removeNativeToken()
         } else {
-          // Clear cookie
           document.cookie = 'auth_token=; path=/; max-age=0'
         }
-        
-        // Rediriger vers le dashboard (affichera le login)
+
         if (window.location.pathname.startsWith('/admin')) {
           window.location.reload()
         }
@@ -71,6 +66,13 @@ export const apiClient = <T>(url: string, options: any = {}) => {
   })
 }
 
+/**
+ * Client API réactif avec gestion automatique du contexte Vue.
+ *
+ * - En setup() initial : utilise useFetch (SSR-compatible, hydratation)
+ * - Hors setup ou après montage : utilise $fetch directement
+ *   pour éviter le warning Nuxt "Component is already mounted"
+ */
 export const useApiClient = <T>(
   url: string,
   options: any = {}
@@ -78,14 +80,9 @@ export const useApiClient = <T>(
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
 
-  // Inject Headers
   options.headers = getAuthHeaders(options.headers)
 
-  // Utiliser $fetch si :
-  //  - Pas de contexte composant Vue (appel depuis un store Pinia, un service, un handler) → getCurrentInstance() est null
-  //  - OU le composant est déjà monté (appel post-setup, ex: toggleFavorite)
-  // Dans les deux cas, useFetch() déclencherait le warning Nuxt "[useFetch] Component is already mounted".
-  // useFetch est réservé au setup() initial pendant le SSR/hydration (vm présent ET non encore monté).
+  // Détecte si on est dans un setup() actif et non encore monté
   const vm = getCurrentInstance?.()
   if (!vm || (vm as any).isMounted) {
     const data = ref<T | null>(null)
@@ -108,7 +105,7 @@ export const useApiClient = <T>(
       }
     }
 
-    // Trigger initial fetch
+    // Déclenche le fetch immédiatement
     void refresh()
 
     return {
@@ -119,12 +116,12 @@ export const useApiClient = <T>(
     }
   }
 
+  // En setup() : useFetch gère le SSR/hydratation
   return useFetch<T>(url, {
     baseURL: apiBase,
-    // En mode SPA/Capacitor (ssr: false), forcer le fetch côté client uniquement
-    // car les données pré-rendues au build sont vides
+    // SPA/Capacitor (ssr: false) : fetch côté client uniquement
     server: false,
-    // Ne pas utiliser le cache des payloads pré-rendus (toujours re-fetch)
+    // Ignore le cache de payload pré-rendu (données vides au build)
     getCachedData: () => undefined,
     ...options,
     onResponseError({ response }) {

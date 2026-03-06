@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * ⚛️ UiDaySwitcher
- * Un composant atomique pour basculer entre les jours de la compétition.
+ * UiDaySwitcher
+ * Composant à onglets stylisé pour basculer entre les jours de la compétition.
  * Utilisé dans le programme et les résultats pour filtrer les données par jour.
  */
 interface Props {
@@ -14,7 +14,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+// ⚠️ DEAD CODE : const { locale } = useI18n()
 const { translateDay } = useTranslatedData()
 
 const selectDay = (day: string) => {
@@ -29,6 +30,7 @@ const selectDay = (day: string) => {
     
     <div class="relative flex w-full">
       
+      <!-- Pillule animée marquant la sélection actuelle -->
       <div 
         class="absolute top-0 bottom-0 left-0 bg-white/20 border border-white/10 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.2)] transition-transform duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)] z-0"
         :style="{ 
@@ -40,7 +42,7 @@ const selectDay = (day: string) => {
 
       <button
         v-for="day in days"
-        :key="`${day}-${locale}`"
+        :key="`${day}`"
         @click="selectDay(day)"
         class="relative z-10 flex-1 py-2.5 px-4 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)] font-medium capitalize whitespace-nowrap outline-none flex justify-center items-center"
         :class="modelValue === day

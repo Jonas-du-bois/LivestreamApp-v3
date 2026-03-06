@@ -7,9 +7,9 @@ interface SocketEventHandler {
 }
 
 /**
- * Composable optimisé pour la gestion des salles socket.
- * Utilise un store centralisé avec compteur de références pour éviter de surcharger
- * le serveur avec des messages join/leave lors de la navigation entre pages.
+ * Gestion des salles socket avec compteur de références.
+ * Évite les join/leave redondants lors de la navigation entre pages
+ * quand plusieurs composants écoutent la même salle.
  */
 export const useSocketRoom = (
   rooms: string | string[],
@@ -18,16 +18,14 @@ export const useSocketRoom = (
   const socket = useSocket()
   const socketStore = useSocketStore()
   const roomList = Array.isArray(rooms) ? rooms : [rooms]
-  
-  const wrappedHandlers = new Map<string, (...args: any[]) => void>()
-  
+
+  // Stocke les références des handlers pour pouvoir les retirer proprement
+  const registeredHandlers = new Map<string, (...args: any[]) => void>()
+
   const registerEvents = () => {
     events.forEach(({ event, handler }) => {
-      const wrappedHandler = (...args: any[]) => {
-        handler(...args)
-      }
-      wrappedHandlers.set(event, wrappedHandler)
-      socket.on(event, wrappedHandler)
+      registeredHandlers.set(event, handler)
+      socket.on(event, handler)
     })
     if (import.meta.dev) {
       console.log(`[SocketRoom] Registered events: [${events.map(e => e.event).join(', ')}] for rooms [${roomList.join(', ')}]`)
@@ -36,10 +34,10 @@ export const useSocketRoom = (
 
   const unregisterEvents = () => {
     events.forEach(({ event }) => {
-      const wrappedHandler = wrappedHandlers.get(event)
-      if (wrappedHandler) {
-        socket.off(event, wrappedHandler)
-        wrappedHandlers.delete(event)
+      const handler = registeredHandlers.get(event)
+      if (handler) {
+        socket.off(event, handler)
+        registeredHandlers.delete(event)
       }
     })
   }
@@ -50,22 +48,14 @@ export const useSocketRoom = (
   }
 
   onMounted(() => {
-    // 1. Enregistrement des écouteurs d'événements (local au composant)
     registerEvents()
-    
-    // 2. Gestion des salles via le Store (Optimisé)
     socketStore.subscribeToRooms(roomList)
-
-    // 3. Gestion de la reconnexion
     socket.on('connect', handleConnect)
   })
 
   onBeforeUnmount(() => {
-    // 1. Nettoyage des événements
     unregisterEvents()
     socket.off('connect', handleConnect)
-
-    // 2. Libération des salles dans le Store
     socketStore.unsubscribeFromRooms(roomList)
   })
 

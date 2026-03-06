@@ -10,7 +10,8 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+// ⚠️ DEAD CODE : const { locale } = useI18n()
 const { translateApparatus, translateCategory, formatLocalizedTime } = useTranslatedData()
 const router = useRouter()
 const searchInput = ref<HTMLInputElement | null>(null)
@@ -18,7 +19,6 @@ const activeTab = ref<'all' | 'groups' | 'passages' | 'live'>('all')
 
 const { open: openGroupDetails } = useGroupDetails()
 
-// Use the new global search composable
 const {
   searchQuery,
   isLoading,
@@ -28,8 +28,7 @@ const {
   resetSearch
 } = useGlobalSearch()
 
-
-// Reset when closed
+// Réinitialise la recherche lors de la fermeture de la modale pour éviter de conserver un état obsolète à la réouverture.
 watch(() => props.isOpen, (open) => {
   if (!open) {
     resetSearch()
@@ -46,13 +45,15 @@ const clearSearch = () => {
   })
 }
 
+// Permet de fermer la modale rapidement au clavier.
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && props.isOpen) {
     emit('close')
   }
 }
 
-// Navigation actions
+// ─── Actions de navigation ──────────────────────────────────────────────────
+
 const goToGroup = (group: EnrichedGroup) => {
   emit('close')
   if (openGroupDetails && group._id) {
@@ -77,12 +78,13 @@ const goToLive = () => {
   router.push('/stream')
 }
 
-// Format time
+// ─── Utilitaires d'affichage ────────────────────────────────────────────────
+
 const formatTime = (date: string) => {
   return formatLocalizedTime(date)
 }
 
-// Computed: has results
+// Détermine s'il y a des résultats sur n'importe quel onglet pour conditionner l'affichage.
 const hasResults = computed(() => {
   return groupResults.value.length > 0 || 
          passageResults.value.length > 0 || 
@@ -90,6 +92,7 @@ const hasResults = computed(() => {
          liveResults.value.streams.length > 0
 })
 
+// Filtrage des résultats selon l'onglet actif.
 const filteredGroupResults = computed(() => activeTab.value === 'all' || activeTab.value === 'groups' ? groupResults.value : [])
 const filteredPassageResults = computed(() => activeTab.value === 'all' || activeTab.value === 'passages' ? passageResults.value : [])
 const filteredLiveResults = computed(() => activeTab.value === 'all' || activeTab.value === 'live' ? liveResults.value : { passages: [], streams: [] })
@@ -132,7 +135,6 @@ onUnmounted(() => {
         aria-modal="true"
         :aria-label="t('common.search')"
       >
-        <!-- Search Input -->
         <div class="p-4 border-b border-white/10">
           <div class="flex items-center gap-3">
             <Icon name="fluent:search-24-regular" class="w-5 h-5 text-white/60 flex-shrink-0" />
@@ -168,7 +170,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Tabs -->
         <div v-if="searchQuery.length >= 2" class="flex gap-1 p-2 border-b border-white/10 overflow-x-auto" role="tablist" :aria-label="t('filters.title')">
           <button
             v-for="tab in tabs"
@@ -185,9 +186,7 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <!-- Search Results -->
         <div id="search-results-panel" class="p-4 max-h-[60vh] overflow-y-auto" aria-live="polite" role="tabpanel">
-          <!-- Initial state -->
           <template v-if="searchQuery.length < 2">
             <div class="text-center py-8 text-white/50">
               <Icon name="fluent:search-24-regular" class="w-12 h-12 mx-auto mb-3 opacity-50" />
@@ -195,7 +194,6 @@ onUnmounted(() => {
             </div>
           </template>
 
-          <!-- Loading -->
           <template v-else-if="isLoading">
             <div class="flex flex-col items-center justify-center py-12" role="status">
               <Icon name="fluent:spinner-ios-20-regular" class="w-10 h-10 text-cyan-400 animate-spin" />
@@ -203,7 +201,6 @@ onUnmounted(() => {
             </div>
           </template>
 
-          <!-- No results -->
           <template v-else-if="!hasResults">
             <div class="flex flex-col items-center justify-center py-12 text-center text-white/60">
               <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
@@ -214,17 +211,15 @@ onUnmounted(() => {
             </div>
           </template>
 
-          <!-- Results -->
           <template v-else>
             <div class="space-y-6">
-              <!-- Live Results -->
+              <!-- Diffusions en direct et passages en cours -->
               <div v-if="filteredLiveResults.passages.length > 0 || filteredLiveResults.streams.length > 0">
                 <h3 class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
                   <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                   {{ t('search.live') }}
                 </h3>
                 
-                <!-- Live Streams -->
                 <div v-if="filteredLiveResults.streams.length > 0" class="space-y-2 mb-3">
                   <button
                     v-for="stream in filteredLiveResults.streams"
@@ -244,7 +239,6 @@ onUnmounted(() => {
                   </button>
                 </div>
 
-                <!-- Live Passages -->
                 <div v-if="filteredLiveResults.passages.length > 0" class="space-y-2">
                   <button
                     v-for="passage in filteredLiveResults.passages"
@@ -266,7 +260,7 @@ onUnmounted(() => {
                 </div>
               </div>
 
-              <!-- Group Results -->
+              <!-- Groupes correspondants -->
               <div v-if="filteredGroupResults.length > 0">
                 <h3 class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Icon name="fluent:people-24-regular" class="w-4 h-4" />
@@ -293,7 +287,7 @@ onUnmounted(() => {
                 </div>
               </div>
 
-              <!-- Passage Results -->
+              <!-- Passages correspondants -->
               <div v-if="filteredPassageResults.length > 0">
                 <h3 class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Icon name="fluent:calendar-24-regular" class="w-4 h-4" />
@@ -333,7 +327,6 @@ onUnmounted(() => {
           </template>
         </div>
 
-        <!-- Quick Actions Footer -->
         <div v-if="searchQuery.length >= 2 && hasResults" class="p-3 border-t border-white/10 flex gap-2">
           <button
             @click="goToLive"

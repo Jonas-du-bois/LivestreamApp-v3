@@ -2,8 +2,10 @@
 import { isNativePlatform } from '~/utils/capacitor'
 
 const { t } = useI18n()
+const route = useRoute()
 const pwaInstallRef = ref<InstanceType<typeof import('./components/PwaInstallPrompt.vue').default> | null>(null)
-const showSplash = ref(true)
+// Démarre à false pour éviter le flash SSR sur les pages autres que home
+const showSplash = ref(false)
 
 // Initialisation globale du Socket pour les notifications et mises à jour temps réel
 useNotificationSocket()
@@ -33,9 +35,21 @@ const handleUserChoice = (choice: 'accepted' | 'dismissed') => {
 }
 
 onMounted(() => {
+  // Le splash ne s'affiche qu'une seule fois par session, uniquement depuis la page d'accueil.
+  // Naviguer directement vers /photos ou toute autre sous-page ne le déclenche jamais.
   const hasSeenSplash = sessionStorage.getItem(splashStorageKey) === '1'
+  const isHomePage = route.path === '/'
+
+  if (hasSeenSplash || !isHomePage) {
+    // Déjà vu cette session OU accès direct à une sous-page → pas de splash
+    showSplash.value = false
+    return
+  }
+
+  // Première visite sur la page d'accueil
+  showSplash.value = true
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const splashDuration = hasSeenSplash ? 280 : prefersReducedMotion ? 500 : 1900
+  const splashDuration = prefersReducedMotion ? 500 : 1900
 
   splashTimeout = window.setTimeout(() => {
     showSplash.value = false
