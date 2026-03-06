@@ -48,22 +48,11 @@ export const usePassageTiming = (
     const now = nowTimestamp.value
 
     return timeEnrichedPassages.value.map(p => {
-      let status: PassageStatus | 'LIVE' = p.status
-
-      // Logic from schedule.vue:
-      // Client-side status calculation overrides stale server status based on time
-      if (now >= p._startTime && now <= p._endTime) {
-        status = 'LIVE'
-      } else if (now > p._endTime) {
-        status = 'FINISHED'
-      } else if (now < p._startTime && (status === 'LIVE' || status === 'FINISHED')) {
-        // If time says upcoming but server says LIVE/FINISHED (stale), reset it
-        status = 'SCHEDULED'
-      }
+      const computedStatus = computePassageStatus(p._startTime, p._endTime, now, p.status)
 
       return {
         ...p,
-        status: status as PassageStatus // cast back to PassageStatus
+        status: computedStatus as PassageStatus // cast back to PassageStatus
       }
     })
   })
