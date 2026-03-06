@@ -115,11 +115,7 @@ const hasUnreadNotifications = computed(() => notificationsStore.hasUnread)
 const unreadCount = computed(() => notificationsStore.unreadCount)
 
 const refreshApp = () => {
-  if (window && 'beforeinstallprompt' in window) {
-    window.location.reload()
-  } else {
-    window.location.reload()
-  }
+  window.location.reload()
 }
 
 const openSearch = () => { isSearchOpen.value = true }
