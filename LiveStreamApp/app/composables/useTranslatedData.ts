@@ -61,35 +61,53 @@ export const useTranslatedData = () => {
   }
 
   /**
+   * Retourne le code locale Suisse approprié
+   */
+  const getLocaleCode = (): string => {
+    if (locale.value === 'de') return 'de-CH'
+    if (locale.value === 'it') return 'it-CH'
+    return 'fr-CH'
+  }
+
+  /**
    * Formate une date selon la locale courante
-   * @param dateStr - La date en ISO string
+   * @param dateInput - La date (ISO string, timestamp, ou objet Date)
    * @param options - Options de formatage (optionnel)
    */
-  const formatLocalizedDate = (dateStr: string, options?: Intl.DateTimeFormatOptions): string => {
+  const formatLocalizedDate = (dateInput: string | number | Date, options?: Intl.DateTimeFormatOptions): string => {
     const defaultOptions: Intl.DateTimeFormatOptions = {
       weekday: 'long',
       day: 'numeric'
     }
     
-    const localeCode = locale.value === 'de' ? 'de-CH' : 'fr-CH'
-    // Force Swiss timezone to avoid hydration mismatch
     const finalOptions: Intl.DateTimeFormatOptions = {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateStr).toLocaleDateString(localeCode, finalOptions)
+    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
   }
 
   /**
    * Formate une heure selon la locale courante
-   * @param dateStr - La date en ISO string
+   * @param dateInput - La date (ISO string, timestamp, ou objet Date)
    */
-  const formatLocalizedTime = (dateStr: string): string => {
-    const localeCode = locale.value === 'de' ? 'de-CH' : 'fr-CH'
-    return new Date(dateStr).toLocaleTimeString(localeCode, { 
+  const formatLocalizedTime = (dateInput: string | number | Date): string => {
+    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
       hour: '2-digit', 
       minute: '2-digit',
-      timeZone: 'Europe/Zurich' // Force Swiss timezone to avoid hydration mismatch
+      timeZone: 'Europe/Zurich'
+    })
+  }
+
+  /**
+   * Formate une date et heure selon la locale courante
+   * @param dateInput - La date (ISO string, timestamp, ou objet Date)
+   */
+  const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
+    return new Date(dateInput).toLocaleString(getLocaleCode(), {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+      timeZone: 'Europe/Zurich'
     })
   }
 
@@ -98,6 +116,7 @@ export const useTranslatedData = () => {
     translateDay,
     translateCategory,
     formatLocalizedDate,
-    formatLocalizedTime
+    formatLocalizedTime,
+    formatLocalizedDateTime
   }
 }

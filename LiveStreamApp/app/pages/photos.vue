@@ -40,7 +40,7 @@ watch(photos, (val) => {
 
 const lastUpdatedLabel = computed(() => {
   if (!lastUpdated.value) return ''
-  return formatLocalizedTime(lastUpdated.value.toISOString())
+  return formatLocalizedTime(lastUpdated.value)
 })
 
 // ─── États de la page ────────────────────────────────────────────────────────
