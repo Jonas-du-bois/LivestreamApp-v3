@@ -112,7 +112,11 @@ onMounted(async () => {
       popupAnchor: [0, -45] // La bulle flotte au-dessus
     });
 
-    const marker = L.marker([poi.lat, poi.lng], { icon: customIcon }).addTo(leafletMap);
+    const marker = L.marker([poi.lat, poi.lng], {
+      icon: customIcon,
+      title: poi.name,
+      alt: poi.name
+    }).addTo(leafletMap);
     
     // 2. La Popup Glassmorphic (Contenu HTML pur)
     // Design épuré : Juste l'icône ronde et le titre
