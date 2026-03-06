@@ -30,6 +30,7 @@ Le bouton de basculement ("Toggle") entre la vue "Sombre" et la vue "Satellite" 
 - L'API de base de LeafletJS ne gère pas les fondus enchaînés par défaut entre deux "TileLayers", mais combiner `setOpacity()`, un délai pour laisser le navigateur peindre, et une simple transition CSS sur la classe générique `.leaflet-layer` permet d'obtenir un effet luxueux (cross-fade) sans dépendance supplémentaire.
 - L'utilisation d'une courbe `cubic-bezier(0.25, 0.8, 0.25, 1)` pour l'opacité accompagne parfaitement les autres animations "Premium" de l'application (type `premium-swap`).
 - Il est crucial de limiter la durée des transitions à 300ms maximum pour respecter les contraintes de performance/réactivité et de bien nettoyer les timeouts stockés (`ReturnType<typeof setTimeout>`) via `onUnmounted` pour éviter des fuites mémoires si l'utilisateur change de page pendant la transition.
+
 ## Micro-Interaction : Feedback tactile sur les filtres et sélecteurs de jours (`UiDaySwitcher` et `UiFilterChips`)
 
 **Problème observé :**
@@ -43,3 +44,18 @@ Les composants de filtrage horizontaux (`UiDaySwitcher` et `UiFilterChips`), mas
 **Apprentissages (LiveStreamApp) :**
 - L'utilisation combinée de `active:scale`, d'un léger changement de background (`bg-white/10` -> `bg-white/15`) et d'une augmentation de l'ombre colorée crée une illusion de profondeur (Z-axis) extrêmement efficace pour les boutons "Glass".
 - Appliquer ces styles directement sur les items inactifs (`text-white/60`) rend l'exploration de l'interface par l'utilisateur plus ludique, incitant à cliquer.
+
+## Micro-Interaction : Feedback tactile sur les listes de liens (`infos.vue`)
+
+**Problème observé :**
+La liste statique "Liens utiles" dans la page `/infos` utilisait de simples ancres (`<a>`) enveloppées dans une `.glass-card`. Bien que le fond réagisse au survol (`hover:bg-white/10`), l'interaction manquait cruellement de répondant tactile pour une application mobile.
+
+**La Solution "Spark" :**
+1. **Feedback Tactile Base :** Ajout de `active:scale-[0.98]` et `active:bg-white/15` sur le conteneur du lien pour un effet de pression physique direct au toucher.
+2. **Chorégraphie de Groupe (`group`) :** Utilisation de la classe `group` sur le conteneur parent pour animer simultanément les éléments internes.
+3. **Motion Design Typographique :** Le texte change de couleur au survol (`group-hover:text-cyan-300`) et s'assombrit légèrement au clic (`group-active:text-cyan-200`), donnant une impression d'éclairage réactif.
+4. **Micro-mouvement Icône :** L'icône de lien externe ("open") bouge légèrement vers le haut et la droite (`group-hover:-translate-y-0.5 group-hover:translate-x-0.5`) pour indiquer son action. Au clic, elle se compresse (`group-active:scale-90`), ajoutant un côté très élastique et satisfaisant.
+
+**Apprentissages (LiveStreamApp) :**
+- Les listes statiques, même simples (comme des liens sortants), bénéficient énormément de la classe `group` couplée aux états `active:`. Cela transforme un lien web classique en un véritable bouton d'application native, sans ajouter la moindre complexité Javascript.
+- Utiliser de minuscules translations (ex: `0.5` = `2px` via Tailwind) suffit à donner une direction à une interaction. Un lien sortant doit pointer "vers l'extérieur".
