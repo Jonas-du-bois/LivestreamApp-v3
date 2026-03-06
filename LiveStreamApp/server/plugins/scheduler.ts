@@ -293,6 +293,10 @@ export default defineNitroPlugin((nitroApp) => {
       });
     });
 
+    // BOLT: Collect IDs for bulk operations to avoid N+1 queries during iteration
+    const passagesToMarkAsNotified: any[] = [];
+    const subscriptionsToDelete: any[] = [];
+
     // BOLT: Parallelize notification sending per passage
     const passagePromises = passages.map(async (passage) => {
       const group = passage.group as any;
@@ -312,9 +316,7 @@ export default defineNitroPlugin((nitroApp) => {
       const subscriptions = subscriptionsByPassage.get(passageIdStr) || [];
 
       if (subscriptions.length === 0) {
-        await PassageModel.findByIdAndUpdate(passage._id, {
-          $set: { [trackingField]: now }
-        });
+        passagesToMarkAsNotified.push(passage._id);
         return;
       }
 
@@ -338,7 +340,7 @@ export default defineNitroPlugin((nitroApp) => {
             code === 'messaging/invalid-registration-token';
           if (isExpired) {
             console.log(`[Scheduler] Removing expired subscription ${sub._id} (${sub.type})`);
-            await SubscriptionModel.findByIdAndDelete(sub._id);
+            subscriptionsToDelete.push(sub._id);
           } else {
             console.error(`[Scheduler] Error sending ${sub.type} push:`, err?.message ?? err);
           }
@@ -348,13 +350,23 @@ export default defineNitroPlugin((nitroApp) => {
       await Promise.all(notifications);
       
       // Marquer le passage comme notifié pour éviter les doublons
-      await PassageModel.findByIdAndUpdate(passage._id, {
-        $set: { [trackingField]: now }
-      });
+      passagesToMarkAsNotified.push(passage._id);
       
       console.log(`[Scheduler] Sent ${subscriptions.length} notifications (${minutesBefore}min) for ${group.name}`);
     });
 
     await Promise.all(passagePromises);
+
+    // BOLT: Execute bulk database operations at the end of the batch
+    if (passagesToMarkAsNotified.length > 0) {
+      await PassageModel.updateMany(
+        { _id: { $in: passagesToMarkAsNotified } },
+        { $set: { [trackingField]: now } }
+      );
+    }
+
+    if (subscriptionsToDelete.length > 0) {
+      await SubscriptionModel.deleteMany({ _id: { $in: subscriptionsToDelete } });
+    }
   }
 });
