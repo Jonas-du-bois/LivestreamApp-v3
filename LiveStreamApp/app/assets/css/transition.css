@@ -131,11 +131,13 @@
   
   .premium-cascade-item {
     animation-name: premium-cascade-in-left;
-    animation-duration: 0.44s;
+    animation-duration: 0.38s;
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
     animation-fill-mode: both;
-    animation-delay: calc(var(--cascade-index, 0) * 65ms);
-    will-change: transform, opacity;
+    /* Multiplicateur réduit (45ms) : délai max = 7 × 45ms = 315ms grâce au cap côté composant */
+    animation-delay: calc(var(--cascade-index, 0) * 45ms);
+    /* will-change retiré du style statique : le browser promote la layer automatiquement
+       pendant l'animation grâce à translate3d — évite 20 compositor layers permanents */
   }
   
   .premium-swap-enter-active,

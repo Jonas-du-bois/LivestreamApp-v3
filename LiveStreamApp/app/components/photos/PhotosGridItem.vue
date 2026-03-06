@@ -44,7 +44,7 @@ const formattedTime = computed(() => {
            focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2
            focus-visible:ring-offset-[#0B1120] transition-transform duration-150
            active:scale-[0.94] premium-cascade-item"
-    :class="isNew ? 'ring-2 ring-cyan-400/70 ring-offset-[2px] ring-offset-[#0B1120]' : 'glass-card'"
+    :class="isNew ? 'ring-2 ring-cyan-400/70 ring-offset-[2px] ring-offset-[#0B1120]' : 'bg-white/[0.05] border border-white/[0.08]'"
     :style="{ '--cascade-index': index }"
     :aria-label="photo.title || `Photo ${index + 1}`"
     @click="emit('open', index)"

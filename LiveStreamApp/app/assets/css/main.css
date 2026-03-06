@@ -32,6 +32,8 @@
 /* Base Styles */
 html {
   font-size: var(--font-size);
+  /* Fond explicite sur html pour éviter le flash blanc lors des transitions de page */
+  background-color: #0B1120;
   /* Safe area insets pour Capacitor edge-to-edge */
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
