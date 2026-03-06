@@ -93,6 +93,24 @@ export interface ScheduleResponse {
   data: PassageEnriched[];
 }
 
+export interface ResultsResponse {
+  meta: {
+    availableDays: string[];
+  };
+  data: Record<string, PassageEnriched[]>;
+}
+
+export interface WeatherResponse {
+  temperature: number;
+  raw?: unknown;
+}
+
+export interface SeedResponse {
+  success: boolean;
+  summary?: unknown;
+  error?: string;
+}
+
 // --- Subscriptions (Web Push / FCM natif) ---
 
 export interface WebSubscription {

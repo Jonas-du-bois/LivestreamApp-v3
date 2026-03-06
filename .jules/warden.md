@@ -1,5 +1,16 @@
 # Warden's Refactoring Journal
 
+## 2026-02-21: API Types Strict Typing & Carousel Security
+
+- **Target:** `app/services/public.service.ts`, `app/components/home/HomeHeroCarousel.vue`, `app/types/api.ts`
+- **Risks Mitigated:**
+    - **Weak Typing:** Removed excessive `any` usage in HTTP services and component logic. `any` exposes the application to undefined behaviors and run-time data manipulation errors.
+    - **Code Noise / Fragility:** Removed manual Vue primitives imports inside services that conflict with auto-imports.
+- **Solution:**
+    - Explicitly defined missing interfaces: `ResultsResponse`, `WeatherResponse`, `SeedResponse` in `app/types/api.ts`.
+    - Applied the new interfaces to `PublicService` and `AdminService`. Replaced dynamic type mappings `[key: string]: any` with `unknown`.
+    - Refactored `HomeHeroCarousel` by defining a clear `HeroSlide` interface to replace `any[]` and structure local dynamic components strictly.
+
 ## 2026-02-21: Streams and Plan Strict Typing & Auto-Imports Cleanup
 
 - **Target:** `app/pages/stream/index.vue`, `app/pages/stream/[id].vue`, `app/pages/plan.vue`
