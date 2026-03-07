@@ -96,3 +96,15 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+
+## 2026-03-06: History & Scores Logic Extraction
+
+- **Logic Extracted:** Duplicated logic for aggregating history notes by year (`Array.from(map.entries()).reduce...`) and calculating average score from history in `GroupInfoCard.vue`, `GroupDetailsModal.vue` and `HistoryLineChart.vue`.
+- **Destination:** `app/utils/history.ts`
+- **Changes:**
+  - Created pure utility function `aggregateHistoryByYear(history, apparatusCode?)` to handle the different structures of history data (e.g. `apparatus` vs `apparatusCode` fields).
+  - Created pure utility function `calculateAverageScore(list)` to calculate the average score of an array of objects containing a `score` property.
+  - Refactored `app/components/group/GroupInfoCard.vue` to use the new utilities.
+  - Refactored `app/components/overlays/GroupDetailsModal.vue` to use the new utilities.
+  - Refactored `app/components/charts/HistoryLineChart.vue` to use `calculateAverageScore`.
+- **Outcome:** Cleaned up ~30 lines of duplicated logic from UI components. Centralized business rules regarding score averaging and year-over-year aggregation for graphs.
