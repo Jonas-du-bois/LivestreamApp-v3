@@ -33,12 +33,19 @@ const variantClasses = computed(() => {
   }
   return maps[props.variant] || maps.ghost
 })
+
+const iconAnimationClass = computed(() => {
+  const isRefresh = props.icon?.includes('sync') || props.icon?.includes('clockwise')
+  return isRefresh
+    ? 'transition-transform duration-500 group-active:-rotate-180'
+    : 'transition-transform duration-300 group-active:scale-90'
+})
 </script>
 
 <template>
   <button
     type="button"
-    class="relative p-2 transition-all duration-200 active:scale-90 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
+    class="group relative p-2 transition-all duration-200 active:scale-90 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
     :class="[variantClasses, active ? 'bg-white/20' : '', variant === 'bubble' ? 'rounded-full' : 'rounded-lg']"
     :aria-label="label"
     @click="$emit('click', $event)"
@@ -46,7 +53,7 @@ const variantClasses = computed(() => {
     <Icon 
       :name="icon" 
       :size="iconSize"
-      class="transition-transform"
+      :class="iconAnimationClass"
     />
     
     <span 
