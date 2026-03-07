@@ -1,4 +1,4 @@
-import { normalize } from 'node:path';
+import { posix } from 'node:path';
 
 export default defineEventHandler(async (event) => {
   // Security: Normalize path to prevent bypass (e.g. //api/admin) and handle query params
@@ -10,14 +10,19 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Bad Request: Malformed URI' });
   }
 
-  // Fix: Resolve . and .. segments using node:path.normalize
-  // Replace backslashes with forward slashes for cross-platform consistency
-  // Also ensure multiple slashes are collapsed (normalize usually handles this on POSIX but good to be safe)
-  const normalizedPath = normalize(path).replace(/\\/g, '/');
+  // Security: Resolve . and .. segments using node:path.posix.normalize
+  // Replace backslashes with forward slashes BEFORE normalization to prevent traversal bypasses
+  // Also ensure multiple slashes are collapsed
+  let normalizedPath = posix.normalize(path.replace(/\\/g, '/'));
+
+  // Standardize by removing trailing slash for accurate precise matching
+  if (normalizedPath.endsWith('/') && normalizedPath.length > 1) {
+    normalizedPath = normalizedPath.slice(0, -1);
+  }
 
   // Define protected zones (exclude login endpoint)
-  // Security: Use strict equality check to prevent bypass (e.g. /api/admin/users/login)
-  const isProtectedPath = normalizedPath.startsWith('/api/admin') && normalizedPath !== '/api/admin/login';
+  // Security: Use precise segment matching to avoid partial string match bypass
+  const isProtectedPath = (normalizedPath === '/api/admin' || normalizedPath.startsWith('/api/admin/')) && normalizedPath !== '/api/admin/login';
 
   // Define public mutation endpoints
   const publicMutationPaths = [
