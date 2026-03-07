@@ -1,5 +1,17 @@
 # Warden's Refactoring Journal
 
+## 2026-02-21: GroupInfoCard & FilterSheet Strict Typing & SSR Safety
+
+- **Target:** `app/components/group/GroupInfoCard.vue`, `app/components/overlays/FilterSheet.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced `any` casts when accessing `averageScore` on `Group` by augmenting the `Group` interface in `app/types/api.ts`. Replaced `useState<any>` in `FilterSheet.vue` with `useState<ScheduleResponse['meta'] | null>` to ensure type safety for filters.
+    - **SSR Safety:** Wrapped `window.addEventListener` and `window.removeEventListener` in `FilterSheet.vue` with `import.meta.client` to prevent potential server-side execution crashes.
+    - **Dead Code/Reactivity:** Restored `locale` from `useI18n()` in `FilterSheet.vue` as it was actively used in the template, preventing undeclared variable errors.
+- **Solution:**
+    - Updated `app/types/api.ts` to include `averageScore?: number` in `Group`.
+    - Removed `any` casts in `GroupInfoCard.vue`.
+    - Explicitly typed `scheduleMeta` state and added `import.meta.client` guards in `FilterSheet.vue`.
+
 ## 2026-02-21: Streams and Plan Strict Typing & Auto-Imports Cleanup
 
 - **Target:** `app/pages/stream/index.vue`, `app/pages/stream/[id].vue`, `app/pages/plan.vue`
