@@ -198,8 +198,7 @@ const maxScore = computed(() => {
 })
 
 const avgScore = computed(() => {
-  if (!props.data.length) return 0
-  return props.data.reduce((acc, d) => acc + d.score, 0) / props.data.length
+  return calculateAverageScore(props.data)
 })
 
 // Détermine la tendance d'évolution entre la première et la dernière note de l'historique.
