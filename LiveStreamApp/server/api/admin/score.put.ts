@@ -44,16 +44,14 @@ export default defineEventHandler(async (event) => {
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
     // Compute rank among published passages (per apparatus) - Decoupled from status
-    const finished = await PassageModel.find({
+    // BOLT: Optimize ranking query from O(N) array sort to O(1) indexed count calculation
+    const countGreater = await PassageModel.countDocuments({
       isPublished: true,
-      apparatus: updated.apparatus._id
-    })
-      .sort({ score: -1 })
-      .select('_id')
-      .lean()
-      .exec();
+      apparatus: updated.apparatus._id,
+      score: { $gt: updated.score }
+    }).exec();
 
-    const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
+    const rank = countGreater + 1;
 
     const payload = {
       passageId: updated._id.toString(),
@@ -100,18 +98,25 @@ export default defineEventHandler(async (event) => {
             url: '/results'
           });
 
+          const expiredSubIds: string[] = [];
           const notifications = subscriptions.map(sub => {
             return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, pushPayload)
               .catch(err => {
                 if (err.statusCode === 410 || err.statusCode === 404) {
                   console.log(`[score] Removing expired subscription ${sub._id}`);
-                  return SubscriptionModel.findByIdAndDelete(sub._id);
+                  expiredSubIds.push(sub._id);
+                  return;
                 }
                 console.error('[score] Error sending push:', err);
               });
           });
 
           await Promise.all(notifications);
+
+          if (expiredSubIds.length > 0) {
+            await SubscriptionModel.deleteMany({ _id: { $in: expiredSubIds } });
+          }
+
           console.log(`[score] Sent ${subscriptions.length} push notifications for score update`);
         }
       }
