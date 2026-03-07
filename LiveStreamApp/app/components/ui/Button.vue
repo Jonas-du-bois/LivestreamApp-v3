@@ -55,8 +55,16 @@ const sizeClasses = computed(() => {
 
 const roundedClasses = computed(() => `rounded-${props.rounded}`)
 
+const iconAnimationClass = computed(() => {
+  const isRefresh = props.icon?.includes('sync') || props.icon?.includes('clockwise') ||
+                    props.iconRight?.includes('sync') || props.iconRight?.includes('clockwise')
+  return isRefresh
+    ? 'transition-transform duration-500 group-active:-rotate-180'
+    : 'transition-transform duration-300 group-active:scale-90'
+})
+
 const commonClasses = computed(() => [
-  'inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
+  'group inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
   variantClasses.value,
   sizeClasses.value,
   roundedClasses.value,
@@ -86,6 +94,7 @@ const commonClasses = computed(() => [
       v-else-if="icon"
       :name="icon"
       :size="size === 'sm' ? '16' : '20'"
+      :class="iconAnimationClass"
     />
 
     <slot />
@@ -94,6 +103,7 @@ const commonClasses = computed(() => [
       v-if="iconRight && !loading"
       :name="iconRight"
       :size="size === 'sm' ? '16' : '20'"
+      :class="iconAnimationClass"
     />
   </component>
 </template>
