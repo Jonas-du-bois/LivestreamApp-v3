@@ -12,3 +12,8 @@
 **Vulnerability:** Critical admin endpoints (`seed.post.ts` and `score.put.ts`) lacked rate limiting. Although authenticated, a compromised admin account or a script could exploit this to trigger Denial of Service (DoS) by repeatedly wiping the database or spamming push notifications to all users.
 **Learning:** Authentication is not a substitute for rate limiting. Resource-intensive or user-impacting operations must be throttled regardless of the user's privilege level to contain damage in case of compromise or bugs.
 **Prevention:** Implement strict rate limiting (e.g., 1 req/10min for destructive actions, 60 req/min for operational actions) on all sensitive endpoints.
+
+## 2026-03-05 - Inconsistent Rate Limiting on Admin Endpoints
+**Vulnerability:** While some admin endpoints (`score.put.ts`, `seed.post.ts`) had rate limiting, others (`status.put.ts`, `stream.put.ts`) did not. This inconsistency leaves the application vulnerable to DoS attacks or resource exhaustion through the unprotected endpoints.
+**Learning:** Security measures must be applied uniformly. An attacker will always find and exploit the least protected endpoint. In this case, repeatedly toggling a stream's live status or passage status could overwhelm the database or socket server.
+**Prevention:** Apply rate limiting consistently across all mutation endpoints, especially administrative ones, to prevent abuse and ensure defense in depth.
