@@ -5,17 +5,38 @@ const { t } = useI18n()
 const { formatLocalizedTime } = useTranslatedData()
 
 type WeatherKind =
-// ... existing types
+  | 'sunny'
+  | 'partly_cloudy'
+  | 'cloudy'
+  | 'rain'
+  | 'snow'
+  | 'thunder'
+  | 'fog'
+  | 'windy'
   | 'unknown'
 
+interface WeatherCurrent {
+  weathercode?: number
+  windspeed?: number
+  winddirection?: number
+}
+
+interface WeatherResponse {
+  temperature?: number
+  raw?: {
+    current_weather?: WeatherCurrent
+  }
+}
+
 // Fetch weather data using useAsyncData for better control over SSR/Client hydration
-const { data: weatherResp, pending, refresh, error } = await useAsyncData('weather-data', () => PublicService.fetchWeather(), {
+const { data: weatherResp, pending, refresh, error } = await useAsyncData<WeatherResponse>('weather-data', () => PublicService.fetchWeather() as Promise<WeatherResponse>, {
   lazy: false,
   server: true
 })
 
 const isRefreshing = ref(false)
 const lastRefreshedAt = ref(new Date())
+let refreshTimer: ReturnType<typeof setTimeout> | null = null
 
 const handleRefresh = async () => {
   isRefreshing.value = true
@@ -24,16 +45,22 @@ const handleRefresh = async () => {
     lastRefreshedAt.value = new Date()
   } finally {
     // Add a small delay to show the spinner/feedback
-    setTimeout(() => {
+    if (refreshTimer) clearTimeout(refreshTimer)
+    refreshTimer = setTimeout(() => {
       isRefreshing.value = false
     }, 500)
   }
 }
 
-const current = computed(() => weatherResp.value?.raw?.current_weather ?? null)
+onUnmounted(() => {
+  if (refreshTimer) {
+    clearTimeout(refreshTimer)
+  }
+})
+
+const current = computed<WeatherCurrent | null>(() => weatherResp.value?.raw?.current_weather ?? null)
 
 const temperature = computed(() => {
-// ... existing computed
   const value = weatherResp.value?.temperature
   return typeof value === 'number' ? Math.round(value) : null
 })
