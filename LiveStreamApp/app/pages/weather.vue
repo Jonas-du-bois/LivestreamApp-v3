@@ -186,9 +186,9 @@ const stats = computed(() => {
 
     <Transition name="premium-swap" mode="out-in">
       <div v-if="pending && !weatherResp" key="weather-loading" class="space-y-6">
-        <div class="glass-card h-48 premium-skeleton-surface premium-skeleton-shimmer opacity-50 rounded-xl"></div>
+        <UiSkeletonBox class="h-48" />
         <div class="grid grid-cols-2 gap-3">
-          <div v-for="i in 4" :key="i" class="glass-card h-24 premium-skeleton-surface premium-skeleton-shimmer opacity-50 rounded-xl"></div>
+          <UiSkeletonBox v-for="i in 4" :key="i" class="h-24" />
         </div>
       </div>
       

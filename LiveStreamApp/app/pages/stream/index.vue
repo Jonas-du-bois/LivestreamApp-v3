@@ -156,7 +156,7 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
           <CascadeSkeletonList :count="3" layout="vertical" :aria-label="t('common.loading')">
             <template #default>
               <div class="overflow-hidden">
-                <div class="premium-skeleton-surface premium-skeleton-shimmer aspect-video w-full"></div>
+                <UiSkeletonBox :glass="false" :rounded="false" class="aspect-video w-full" />
                 <div class="p-4 space-y-2">
                   <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-2/3"></div>
                   <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-1/2"></div>
@@ -171,7 +171,7 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
           <CascadeSkeletonList :count="2" layout="vertical" :aria-label="t('common.loading')">
             <template #default>
               <div class="overflow-hidden opacity-70">
-                <div class="premium-skeleton-surface premium-skeleton-shimmer aspect-video w-full"></div>
+                <UiSkeletonBox :glass="false" :rounded="false" class="aspect-video w-full" />
                 <div class="p-4 space-y-2">
                   <div class="premium-skeleton-line premium-skeleton-shimmer h-5 w-1/2"></div>
                   <div class="premium-skeleton-line premium-skeleton-shimmer h-4 w-1/3"></div>

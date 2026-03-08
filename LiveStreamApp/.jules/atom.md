@@ -135,3 +135,7 @@ Les alertes globales de ce type doivent se placer à la racine (`app.vue`) avec 
 **Règle établie :**
 Les sections promotionnelles ou informatives de haut niveau doivent être encapsulées dans des composants de domaine (`app/components/home/`) et ne pas polluer la logique de navigation des pages. Le Hero Carousel doit rester le point d'entrée visuel principal et refléter l'état global de l'événement.
 * Création de `<UiPageHeader>`. Règle établie : Les en-têtes de page ('Hero Section') comportant un titre, un sous-titre et une icône animée en filigrane doivent utiliser ce composant pour standardiser l'expérience visuelle, avec les options `icon`, `icon-color`, `accent-color` et les slots `badge` / `bottom`.
+
+## 2024-05-18 - Extraction du composant UiSkeletonBox
+**Décision :** Création de `<UiSkeletonBox>`.
+**Règle établie :** Toutes les boîtes de squelettes de chargement génériques rectangulaires (sans contenu spécifique comme `UiSkeletonCard`) doivent utiliser `<UiSkeletonBox>`. Cela permet d'éviter la duplication des classes Tailwind `premium-skeleton-surface premium-skeleton-shimmer opacity-50` à travers l'application.
