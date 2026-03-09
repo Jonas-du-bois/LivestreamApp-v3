@@ -55,3 +55,13 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-03-09: Strict Typing & Code Conventions in Food & Infos Pages
+
+- **Target:** `app/pages/food.vue`, `app/pages/infos.vue`
+- **Risks Mitigated:**
+    - **Weak Typing / Implicit types:** Extracted and applied strict TypeScript interfaces to components' reactive and constant data to prevent data manipulation errors and improve maintainability.
+    - **Code Conventions:** Moved the `<script setup lang="ts">` block to the top of `app/pages/food.vue` according to the standard Vue/Nuxt convention.
+- **Solution:**
+    - `food.vue`: Moved `<script setup>` to the top. Added `MenuItem`, `FoodSpot`, and `FoodCategory` interfaces, and strictly typed `activeCategory`, `categories`, and `foodSpots`.
+    - `infos.vue`: Created interfaces `EventInfo`, `WeekendDay`, `InfoRow`, and `UsefulLink`, applying them strictly to the constant data arrays.
