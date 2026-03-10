@@ -55,3 +55,15 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Filter Sheet Strict Typing & SSR Safety
+
+- **Target:** `app/components/overlays/FilterSheet.vue`
+- **Risks Mitigated:**
+    - **SSR Safety:** Missing `import.meta.client` check before `window.addEventListener` inside `onMounted`/`onUnmounted` could have caused server-side rendering crashes.
+    - **Weak Typing:** Usage of `useState<any>` bypassed TypeScript's static type checks, hiding potential undefined/null structure errors.
+    - **Dead Code:** Cleaned up unused `locale` extraction from `useI18n()`.
+- **Solution:**
+    - Wrapped `window` event listeners in `import.meta.client` block.
+    - Explicitly typed `useState<ScheduleResponse['meta']>` to ensure typed access to `availableApparatus`, `availableCategories`, and `availableLocations`.
+    - Removed `// ⚠️ DEAD CODE : const { locale } = useI18n()` and properly retrieved `locale` directly from the `useI18n` composable as it was needed in the template.
