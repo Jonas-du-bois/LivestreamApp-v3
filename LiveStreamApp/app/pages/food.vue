@@ -91,13 +91,13 @@
               <Icon name="fluent:options-20-filled" />
               {{ t('food.onTheMenu') }}
             </h4>
-            <ul class="space-y-3">
-              <li v-for="(item, idx) in spot.menu" :key="idx" class="flex items-end justify-between text-sm group/item">
-                <span class="text-white/90 font-medium relative pr-2 z-10">{{ item.item }}</span>
-                <span class="flex-grow border-b border-dashed border-white/10 mb-1 mx-1"></span>
-                <span class="text-blue-400 font-bold pl-2 z-10">{{ item.price }}</span>
-              </li>
-            </ul>
+            <UiKeyValueList
+              :items="spot.menu"
+              variant="dashed"
+              label-key="item"
+              value-key="price"
+              value-classes="text-blue-400 font-bold pl-2 z-10"
+            />
           </div>
         </template>
       </UiMediaCard>
