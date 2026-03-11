@@ -1,4 +1,3 @@
-import { getCurrentInstance } from 'vue'
 import { isNativePlatform, getNativeToken } from '~/utils/capacitor'
 
 /** Récupère le token d'authentification selon la plateforme */
@@ -27,7 +26,7 @@ const getAuthToken = (): string | null => {
 }
 
 /** Injecte le header Authorization si un token est disponible */
-const getAuthHeaders = (headers: any = {}) => {
+const getAuthHeaders = (headers: HeadersInit | Record<string, string> = {}) => {
   const token = getAuthToken()
   if (token) {
     return {
@@ -39,7 +38,7 @@ const getAuthHeaders = (headers: any = {}) => {
 }
 
 /** Client $fetch brut avec auth et auto-logout sur 401 */
-export const apiClient = <T>(url: string, options: any = {}) => {
+export const apiClient = <T>(url: string, options: Parameters<typeof $fetch>[1] = {}) => {
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
 
@@ -75,29 +74,29 @@ export const apiClient = <T>(url: string, options: any = {}) => {
  */
 export const useApiClient = <T>(
   url: string,
-  options: any = {}
+  options: Parameters<typeof useFetch>[1] = {}
 ) => {
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
 
-  options.headers = getAuthHeaders(options.headers)
+  options.headers = getAuthHeaders(options.headers as HeadersInit | Record<string, string>)
 
   // Détecte si on est dans un setup() actif et non encore monté
   const vm = getCurrentInstance?.()
-  if (!vm || (vm as any).isMounted) {
+  if (!vm || (vm as unknown as { isMounted: boolean }).isMounted) {
     const data = ref<T | null>(null)
     const pending = ref(false)
-    const error = ref<any>(null)
+    const error = ref<Error | null>(null)
 
     const refresh = async () => {
       pending.value = true
       error.value = null
       try {
-        const res = await $fetch<T>(url, { baseURL: apiBase, ...options })
+        const res = await $fetch<T>(url, { baseURL: apiBase, ...options as any })
         data.value = res
         return res
-      } catch (err: any) {
-        error.value = err
+      } catch (err) {
+        error.value = err instanceof Error ? err : new Error(String(err))
         console.error('API Error:', err)
         throw err
       } finally {
