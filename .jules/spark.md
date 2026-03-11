@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2024-03-XX - Double tactile feedback on buttons
+**Learning:** Adding `group` to standard buttons and applying `group-active` transitions (like `-rotate-180` for sync icons, `scale-90` for generic icons, or `translate-x-1` for right-aligned icons) provides a satisfying double tactile feedback without layout shifts.
+**Action:** Implemented dynamic `group-active` classes in `UiButton.vue` based on the icon name and position to apply these effects automatically.
