@@ -173,10 +173,10 @@ const usefulLinks = [
               :href="link.href"
               target="_blank"
               rel="noopener noreferrer"
-              class="glass-card p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 active:bg-white/15 active:scale-[0.98] group"
+              class="glass-card p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 hover:border-cyan-500/30 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)] active:bg-cyan-900/40 active:border-cyan-500/50 active:scale-95 group outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
             >
               <span class="text-white text-sm font-medium transition-colors duration-200 group-hover:text-cyan-300 group-active:text-cyan-200">{{ link.label }}</span>
-              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-cyan-400 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:scale-90" />
+              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-cyan-400 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:translate-x-1 group-active:-translate-y-1" />
             </a>
           </div>
         </section>
