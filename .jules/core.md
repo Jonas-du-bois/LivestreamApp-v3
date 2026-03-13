@@ -96,3 +96,13 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+
+## 2026-03-06: Group Name Initials & History Aggregation Logic Extraction
+
+- **Logic Extracted:** Duplicated logic for getting initials from names and aggregating history by year in `app/components/overlays/GroupDetailsModal.vue` and `app/components/group/GroupInfoCard.vue`.
+- **Destination:** `app/utils/formatters.ts` and `app/utils/history.ts`
+- **Changes:**
+  - Created `app/utils/formatters.ts` to centralize `getInitials` logic.
+  - Created `app/utils/history.ts` to centralize `aggregateHistoryByYear` logic.
+  - Refactored `GroupDetailsModal.vue` and `GroupInfoCard.vue` to use the extracted utilities.
+- **Outcome:** Removed local duplication of formatting and aggregation logic from Vue components, keeping them more focused on the presentation.
