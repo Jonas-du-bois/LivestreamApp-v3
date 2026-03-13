@@ -9,8 +9,13 @@ const props = defineProps<{
   manifestUrl?: string
 }>()
 
+interface PwaInstallElement extends HTMLElement {
+  showDialog(force: boolean): void
+  hideDialog(): void
+}
+
 const { t } = useI18n()
-const pwaInstallRef = ref<HTMLElement | null>(null)
+const pwaInstallRef = ref<PwaInstallElement | null>(null)
 const showInstallButton = ref(false)
 
 const emit = defineEmits<{
@@ -50,13 +55,13 @@ onMounted(() => {
 
 const openInstallPrompt = () => {
   if (pwaInstallRef.value) {
-    (pwaInstallRef.value as any).showDialog(true)
+    pwaInstallRef.value.showDialog(true)
   }
 }
 
 const hideInstallPrompt = () => {
   if (pwaInstallRef.value) {
-    (pwaInstallRef.value as any).hideDialog()
+    pwaInstallRef.value.hideDialog()
   }
 }
 

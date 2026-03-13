@@ -55,3 +55,15 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Strict Typing & Cleanup in Vue Components
+
+- **Target:** `app/components/group/GroupInfoCard.vue`, `app/components/overlays/FilterSheet.vue`, `app/components/PwaInstallPrompt.vue`, `app/components/charts/HistoryLineChart.vue`
+- **Risks Mitigated:**
+    - **Weak Typing / Code Fragility:** Pervasive `any` usage in prop casting, state hooks, and third-party library callbacks (Chart.js, Web Components) could hide runtime errors or API contract changes.
+    - **Dead Code:** Leftover code noise from previous refactorings (e.g. locale dead code comments).
+- **Solution:**
+    - `GroupInfoCard.vue`: Replaced `props.group as any` by adding an intersection type `Group & { averageScore?: number }` to the component's `Props`.
+    - `FilterSheet.vue`: Replaced `useState<any>` with a strict `ScheduleMeta` type. Restored properly destructured `locale` from `useI18n()` since it was used in the template.
+    - `PwaInstallPrompt.vue`: Avoided `as any` by typing `pwaInstallRef` with an interface extending `HTMLElement` containing the `.showDialog` and `.hideDialog` methods.
+    - `HistoryLineChart.vue`: Substituted `(context: any)` callbacks with Chart.js strictly typed `ScriptableContext<'line'>` argument.
