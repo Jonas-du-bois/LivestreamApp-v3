@@ -229,19 +229,17 @@ const drinkMenu = computed(() => [
                   </div>
                   
                   <!-- Boissons de la catégorie -->
-                  <div class="space-y-2">
-                    <div 
-                      v-for="(drink, idx) in category.drinks" 
-                      :key="idx" 
-                      class="flex items-center justify-between p-3 rounded-xl bg-violet-500/5 hover:bg-violet-500/10 transition-colors border border-violet-500/20"
-                    >
-                      <span class="text-white text-sm font-medium">{{ drink.name }}</span>
-                      <div class="flex items-center gap-1.5">
-                        <span class="text-sm font-mono font-bold text-white/80">CHF</span>
-                        <span class="text-lg font-mono font-bold text-violet-400">{{ drink.price }}</span>
-                      </div>
-                    </div>
-                  </div>
+                  <UiKeyValueList
+                    :items="category.drinks"
+                    variant="boxed"
+                    color="violet"
+                    label-key="name"
+                  >
+                    <template #value="{ item }">
+                      <span class="text-sm font-mono font-bold text-white/80">CHF</span>
+                      <span class="text-lg font-mono font-bold text-violet-400">{{ item.price }}</span>
+                    </template>
+                  </UiKeyValueList>
                 </div>
               </div>
             </UiGlassCard>
