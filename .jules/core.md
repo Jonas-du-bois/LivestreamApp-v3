@@ -96,3 +96,13 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+
+## 2026-03-06: Historical Performance Aggregation Extraction
+
+- **Logic Extracted:** Duplicated logic to group history entries by year and compute the average score from `app/components/overlays/GroupDetailsModal.vue` and `app/components/group/GroupInfoCard.vue`.
+- **Destination:** `app/utils/history.ts`
+- **Changes:**
+  - Created pure function `aggregateHistoryByYear(history, apparatusCode)`.
+  - Extracted `HistoryPoint` interface to the new utility.
+  - Replaced inline map/reduce implementations in components with calls to the utility.
+- **Outcome:** Eliminated ~20 lines of redundant array mapping logic. Unified the way historical average scores are calculated across detail views.
