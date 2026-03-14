@@ -50,6 +50,13 @@ export const PublicService = {
     return apiClient<Stream[]>('/streams')
   },
 
+  getStream(id: string) {
+    return useApiClient<PopulatedStream>(`/streams/${id}`, {
+      key: `stream-${id}`,
+      getCachedData: () => undefined // Disable cache for real-time data
+    })
+  },
+
   fetchStream(id: string) {
     return apiClient<PopulatedStream>(`/streams/${id}`)
   },
