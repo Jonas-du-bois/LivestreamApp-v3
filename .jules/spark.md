@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2024-03-15 - Double feedback tactile global sur les boutons
+**Learning:** Les boutons avaient une simple animation `active:scale-95`, mais les icônes restaient statiques, ce qui rendait l'interaction un peu "plate".
+**Action:** En ajoutant la classe `group` au composant de base `UiButton` et en ciblant les icônes internes (`group-active:-rotate-180` pour les icônes de synchronisation, `group-active:scale-90` par défaut, et `group-active:translate-x-1` pour les icônes à droite), on obtient un "double feedback tactile" très satisfaisant qui donne beaucoup plus de "jus" (juice) à l'interface globale.
