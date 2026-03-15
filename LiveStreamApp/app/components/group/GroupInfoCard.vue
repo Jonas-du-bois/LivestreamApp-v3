@@ -3,7 +3,7 @@ import type { Group, HistoryEntry } from '../../types/api'
 import AnimatedCounter from '../AnimatedCounter.vue'
 
 interface Props {
-  group: Group
+  group: Group & { averageScore?: number }
   // Les moniteurs du passage sont prioritaires par rapport à ceux du groupe global pour une donnée plus précise.
   passageMonitors?: string[] 
 }
@@ -17,23 +17,14 @@ const getInitials = (name: string) => {
   return name.split(' ').map((n: string) => n[0]).join('')
 }
 
-// ⚠️ DEAD CODE :
-/*
-const isFavorite = ref(false)
-
-const toggleFavorite = () => {
-  isFavorite.value = !isFavorite.value
-}
-*/
-
 const gymnastsCount = computed(() => props.group.gymnastsCount ?? 0)
 const monitors = computed(() => props.passageMonitors ?? props.group.monitors ?? [])
 const monitorsCount = computed(() => monitors.value.length)
 
 // Calcule la note moyenne, en privilégiant la statistique pré-calculée par l'API si elle existe, sinon via l'historique complet.
 const averageScore = computed(() => {
-  if (typeof (props.group as any).averageScore === 'number') {
-    return (props.group as any).averageScore.toFixed(2)
+  if (typeof props.group.averageScore === 'number') {
+    return props.group.averageScore.toFixed(2)
   }
   if (!props.group.history?.length) return '0.00'
   const sum = props.group.history.reduce((acc: number, curr: HistoryEntry) => acc + curr.score, 0)
@@ -200,19 +191,6 @@ const stats = computed(() => [
       </div>
     </div>
 
-    <!-- ⚠️ DEAD CODE : (Le bouton favori commenté dans le template a été conservé tel quel car il était déjà commenté en HTML) -->
-    <!-- <div class="p-6 border-t border-white/10 flex-shrink-0">
-      <button
-        @click="toggleFavorite"
-        class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-      >
-        <Icon
-          :name="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
-          class="w-5 h-5"
-        />
-        {{ isFavorite ? 'Retirer des Favoris' : 'Ajouter aux Favoris' }}
-      </button>
-    </div> -->
   </div>
 </template>
 

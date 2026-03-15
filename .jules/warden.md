@@ -55,3 +55,13 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Strict Typing & Code Cleanup for HomeHeroCarousel & GroupInfoCard
+
+- **Target:** `app/components/home/HomeHeroCarousel.vue`, `app/components/group/GroupInfoCard.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced generic `any[]` and `(props.group as any)` with proper types and interfaces to prevent silent data structure errors.
+    - **Code Noise:** Removed redundant dead code comments.
+- **Solution:**
+    - Defined a robust `HeroSlide` interface in `HomeHeroCarousel.vue` to rigorously shape the dynamic array building logic.
+    - Extended the `Group` prop interface using an intersection (`Group & { averageScore?: number }`) in `GroupInfoCard.vue` instead of dangerous `any` casting.
