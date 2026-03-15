@@ -13,7 +13,7 @@ interface NavItem {
 
 const route = useRoute()
 const notificationsStore = useNotificationsStore()
-const { t, locale, locales, setLocale } = useI18n()
+const { t, locale } = useI18n()
 
 // téléportation vers le haut de la page à chaque changement de route
 watch(route, () => {
@@ -71,21 +71,7 @@ const pageTitleKeys: Record<string, string> = {
 
 const currentPageTitle = computed(() => t(pageTitleKeys[route.path] || 'pages.home'))
 
-const availableLocaleCodes = computed(() =>
-  locales.value
-    .map((localeOption) => (typeof localeOption === 'string' ? localeOption : localeOption.code))
-    .filter((code) => Boolean(code))
-)
-
-// Language toggle
-const toggleLocale = () => {
-  const codes = availableLocaleCodes.value
-  if (!codes.length) return
-
-  const currentIndex = codes.indexOf(locale.value)
-  const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % codes.length
-  setLocale(codes[nextIndex]!)
-}
+const { toggleLocale } = useLocaleToggle()
 
 // Page meta-based visibility for header/footer (default: shown)
 const routeMeta = computed(() => (route.meta || {}) as Record<string, any>)
