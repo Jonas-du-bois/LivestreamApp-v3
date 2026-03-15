@@ -56,7 +56,7 @@ const sizeClasses = computed(() => {
 const roundedClasses = computed(() => `rounded-${props.rounded}`)
 
 const commonClasses = computed(() => [
-  'inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
+  'group inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
   variantClasses.value,
   sizeClasses.value,
   roundedClasses.value,
@@ -86,6 +86,10 @@ const commonClasses = computed(() => [
       v-else-if="icon"
       :name="icon"
       :size="size === 'sm' ? '16' : '20'"
+      :class="[
+        'transition-transform duration-300',
+        icon.includes('sync') || icon.includes('clockwise') ? 'group-active:-rotate-180' : 'group-active:scale-90'
+      ]"
     />
 
     <slot />
@@ -94,6 +98,7 @@ const commonClasses = computed(() => [
       v-if="iconRight && !loading"
       :name="iconRight"
       :size="size === 'sm' ? '16' : '20'"
+      class="transition-transform duration-300 group-active:translate-x-1"
     />
   </component>
 </template>
