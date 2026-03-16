@@ -1,3 +1,6 @@
 ## 2024-05-24 - Leaflet Marker Accessibility
 **Learning:** By default, Leaflet map markers (`L.marker`) render as `<img>` elements without `alt` text or a `title` attribute. This makes them completely invisible to screen readers and difficult to navigate for keyboard-only users or users relying on native tooltips.
 **Action:** When initializing Leaflet map markers, always include `title` (for native hover tooltips) and `alt` (for screen reader text) properties in the `MarkerOptions` object. This ensures the Point of Interest is properly announced and discoverable.
+## 2024-03-16 - Interactive Divs Require Full Keyboard Support
+**Learning:** In Vue, simply adding an `@click` handler to a `<div>` or `<span>` makes it inaccessible to keyboard and screen reader users. It lacks the implicit semantics and keyboard interactions built into native `<button>` or `<a>` elements.
+**Action:** Whenever converting a non-interactive element into a clickable one (e.g., a card or a custom button), always explicitly add `role="button"`, `tabindex="0"`, `@keydown.enter="handler"`, `@keydown.space.prevent="handler"`, and `aria-label` (if no accessible text content exists). Furthermore, ensure visible focus styles are provided, typically via Tailwind's `focus-visible:ring-2 focus-visible:outline-none`.
