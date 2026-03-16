@@ -25,3 +25,5 @@ logs
 .env.*
 !.env.example
 
+#google-services.json
+google-services.json
