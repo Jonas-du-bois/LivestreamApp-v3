@@ -96,3 +96,25 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+
+## 2026-03-06: History Aggregation Logic Extraction
+
+- **Logic Extracted:** Duplicated logic for aggregating an array of history entries by year (calculating average scores) from `app/components/overlays/GroupDetailsModal.vue` and `app/components/group/GroupInfoCard.vue`.
+- **Destination:** `app/utils/history.ts`
+- **Changes:**
+  - Extracted the `HistoryPoint` interface to `app/types/api.ts` for reuse.
+  - Created `aggregateHistoryByYear(history: HistoryEntry[], apparatusCode?: string): HistoryPoint[]` pure utility function.
+  - Refactored `GroupDetailsModal.vue` to use this new utility for `historyByYear` computed property.
+  - Refactored `GroupInfoCard.vue` to use this new utility for `historyByYear` computed property.
+- **Outcome:** Centralized data manipulation for historical score averages into a single reusable and testable pure function. Removed duplicated maps and reduce patterns across components.
+
+## 2026-03-06: History Aggregation Logic Extraction
+
+- **Logic Extracted:** Duplicated logic for aggregating an array of history entries by year (calculating average scores) from `app/components/overlays/GroupDetailsModal.vue` and `app/components/group/GroupInfoCard.vue`.
+- **Destination:** `app/utils/history.ts`
+- **Changes:**
+  - Extracted the `HistoryPoint` interface to `app/types/api.ts` for reuse.
+  - Created `aggregateHistoryByYear(history: HistoryEntry[], apparatusCode?: string): HistoryPoint[]` pure utility function. Added backward compatibility check on apparatus code.
+  - Refactored `GroupDetailsModal.vue` to use this new utility for `historyByYear` computed property.
+  - Refactored `GroupInfoCard.vue` to use this new utility for `historyByYear` computed property.
+- **Outcome:** Centralized data manipulation for historical score averages into a single reusable and testable pure function. Removed duplicated maps and reduce patterns across components.
