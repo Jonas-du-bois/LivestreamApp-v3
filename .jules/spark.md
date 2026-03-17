@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2025-05-18 - Snappy Interactions and Meaningful Loading States
+- **Learning:** Swapping the button icon with a generic loading spinner breaks the context and removes the tactile satisfaction of a "pull-to-refresh" style feedback.
+- **Action:** For buttons, I added `group` class to transition the original icon (`group-active:rotate-180 duration-500`) and made it spin when loading, preserving context and making the interaction feel more rewarding.

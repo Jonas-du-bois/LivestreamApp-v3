@@ -56,7 +56,7 @@ const sizeClasses = computed(() => {
 const roundedClasses = computed(() => `rounded-${props.rounded}`)
 
 const commonClasses = computed(() => [
-  'inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
+  'group inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
   variantClasses.value,
   sizeClasses.value,
   roundedClasses.value,
@@ -76,15 +76,15 @@ const commonClasses = computed(() => [
     @click="emit('click', $event)"
   >
     <Icon
-      v-if="loading"
-      name="svg-spinners:ring-resize"
-      class="animate-spin"
+      v-if="icon"
+      :name="icon"
+      :class="['transition-transform duration-500 group-active:rotate-180', loading ? 'animate-spin' : '']"
       :size="size === 'sm' ? '16' : '20'"
     />
-
     <Icon
-      v-else-if="icon"
-      :name="icon"
+      v-else-if="loading && !icon"
+      name="svg-spinners:ring-resize"
+      class="animate-spin"
       :size="size === 'sm' ? '16' : '20'"
     />
 
