@@ -12,7 +12,9 @@ export default defineEventHandler(async (event) => {
   }
 
   // Validate input: union type web | fcm
-  const body = await readValidatedBody(event, (b) => SubscriptionSchema.parse(b));
+  // Security: Since SubscriptionSchema now uses async DNS resolution for SSRF protection,
+  // we MUST use parseAsync to await the result correctly.
+  const body = await readValidatedBody(event, (b) => SubscriptionSchema.parseAsync(b));
   const { type, endpoint } = body;
 
   try {
