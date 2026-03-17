@@ -32,8 +32,8 @@ const monitorsCount = computed(() => monitors.value.length)
 
 // Calcule la note moyenne, en privilégiant la statistique pré-calculée par l'API si elle existe, sinon via l'historique complet.
 const averageScore = computed(() => {
-  if (typeof (props.group as any).averageScore === 'number') {
-    return (props.group as any).averageScore.toFixed(2)
+  if (typeof props.group.averageScore === 'number') {
+    return props.group.averageScore.toFixed(2)
   }
   if (!props.group.history?.length) return '0.00'
   const sum = props.group.history.reduce((acc: number, curr: HistoryEntry) => acc + curr.score, 0)
