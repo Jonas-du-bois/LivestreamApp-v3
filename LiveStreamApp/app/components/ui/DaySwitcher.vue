@@ -44,7 +44,7 @@ const selectDay = (day: string) => {
         v-for="day in days"
         :key="`${day}`"
         @click="selectDay(day)"
-        class="relative z-10 flex-1 py-2.5 px-4 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)] font-medium capitalize whitespace-nowrap outline-none flex justify-center items-center"
+        class="relative z-10 flex-1 py-2.5 px-4 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)] font-medium capitalize whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] flex justify-center items-center"
         :class="modelValue === day
           ? 'text-white drop-shadow-md' 
           : 'text-white/60 hover:text-white/80 active:scale-95 active:text-white/90'"

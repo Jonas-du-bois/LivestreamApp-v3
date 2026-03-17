@@ -37,3 +37,7 @@
 ## 2025-06-03 - Consistent Focus States on Secondary Elements
 **Learning:** Secondary interactive elements (like `UiBackButton` or `UiInfoTile`) often miss the detailed focus styles applied to primary cards, creating an inconsistent keyboard navigation experience where some elements show a clear ring and others just the browser default (or nothing if `outline-none` is used without replacement).
 **Action:** Systematically apply the design system's focus ring classes (`focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]`) to ALL interactive components, including back buttons, info tiles (when linked), and icon buttons.
+
+## 2025-06-03 - Focus Rings on Tab Lists
+**Learning:** Elements functioning as tabs (`role="tab"`) often have default outlines disabled via `outline-none` for aesthetic reasons. Without explicit `focus-visible` replacements, keyboard users completely lose visibility of their current position within the tablist (like `UiDaySwitcher`).
+**Action:** Always systematically apply the design system's focus ring classes (`focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]`) when using `outline-none` on tab elements.
