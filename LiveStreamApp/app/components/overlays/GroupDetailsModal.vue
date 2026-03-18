@@ -423,21 +423,27 @@ const maxHistoryScore = computed(() => {
                     {{ t('group.overview') }}
                   </h3>
                   <div class="grid grid-cols-3 gap-3">
-                    <div class="glass-card p-4 text-center bg-white/5">
-                      <Icon name="fluent:people-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-                      <div class="text-white font-bold text-xl">{{ gymnastsCount }}</div>
-                      <div class="text-white/60 text-xs">{{ t('group.gymnasts') }}</div>
-                    </div>
-                    <div class="glass-card p-4 text-center bg-white/5">
-                      <Icon name="fluent:person-24-regular" class="w-6 h-6 text-purple-400 mx-auto mb-2" />
-                      <div class="text-white font-bold text-xl">{{ monitorsCount }}</div>
-                      <div class="text-white/60 text-xs">{{ t('group.monitors') }}</div>
-                    </div>
-                    <div class="glass-card p-4 text-center bg-white/5">
-                      <Icon name="fluent:trophy-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-                      <div class="text-white font-bold text-xl">{{ averageHistoryScore }}</div>
-                      <div class="text-white/60 text-xs">{{ t('group.historyAvg') }}</div>
-                    </div>
+                    <UiStatCard
+                      icon="fluent:people-24-regular"
+                      icon-color="text-cyan-400"
+                      :value="gymnastsCount"
+                      :label="t('group.gymnasts')"
+                      bg-class="bg-white/5"
+                    />
+                    <UiStatCard
+                      icon="fluent:person-24-regular"
+                      icon-color="text-purple-400"
+                      :value="monitorsCount"
+                      :label="t('group.monitors')"
+                      bg-class="bg-white/5"
+                    />
+                    <UiStatCard
+                      icon="fluent:trophy-24-regular"
+                      icon-color="text-cyan-400"
+                      :value="averageHistoryScore"
+                      :label="t('group.historyAvg')"
+                      bg-class="bg-white/5"
+                    />
                   </div>
                 </div>
 
