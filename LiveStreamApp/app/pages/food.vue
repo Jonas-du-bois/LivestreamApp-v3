@@ -50,7 +50,7 @@
         :alt="spot.name"
         variant="split"
         :interactive="true"
-        class="premium-cascade-item rounded-2xl bg-gray-900/40 backdrop-blur-xl border-white/10 shadow-xl hover:border-blue-400/30 hover:shadow-blue-900/20 active:border-blue-400/60 active:bg-gray-800/60 active:scale-[0.98] transition-all duration-300"
+        class="premium-cascade-item rounded-2xl bg-gray-900/40 backdrop-blur-xl border-white/10 shadow-xl hover:border-blue-400/30 hover:shadow-blue-900/20 active:border-blue-400/60 active:bg-gray-800/60 active:scale-[0.98] transition-all duration-200"
         :style="{ '--cascade-index': index }"
       >
         <template #image-top>
