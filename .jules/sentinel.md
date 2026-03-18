@@ -12,3 +12,8 @@
 **Vulnerability:** Critical admin endpoints (`seed.post.ts` and `score.put.ts`) lacked rate limiting. Although authenticated, a compromised admin account or a script could exploit this to trigger Denial of Service (DoS) by repeatedly wiping the database or spamming push notifications to all users.
 **Learning:** Authentication is not a substitute for rate limiting. Resource-intensive or user-impacting operations must be throttled regardless of the user's privilege level to contain damage in case of compromise or bugs.
 **Prevention:** Implement strict rate limiting (e.g., 1 req/10min for destructive actions, 60 req/min for operational actions) on all sensitive endpoints.
+
+## 2026-03-02 - Path Traversal Bypass via URL-Encoded Backslashes
+**Vulnerability:** The authentication middleware was vulnerable to path traversal bypasses like `/api/public/%5c..%5c..%5capi/admin` because it replaced backslashes *after* calling `path.normalize()`, and didn't reliably restrict paths to the virtual root across platforms or different URL encodings.
+**Learning:** URL decoding and normalization must happen in a very specific order. Replacing backslashes must happen *before* normalization, and POSIX normalization should be forced to prevent platform-specific anomalies.
+**Prevention:** Always replace `\` with `/` first, then use `path.posix.normalize()`, and finally ensure a single leading forward slash by using `'/' + path.replace(/^\/+/, '')` to securely jail `..` segments to the virtual root.
