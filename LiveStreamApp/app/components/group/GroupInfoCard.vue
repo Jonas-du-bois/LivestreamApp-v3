@@ -12,11 +12,6 @@ const props = defineProps<Props>()
 const { t } = useI18n()
 const { translateCategory } = useTranslatedData()
 
-const getInitials = (name: string) => {
-  if (!name) return ''
-  return name.split(' ').map((n: string) => n[0]).join('')
-}
-
 // ⚠️ DEAD CODE :
 /*
 const isFavorite = ref(false)
@@ -50,18 +45,7 @@ const categoryColor = computed(() => {
 
 // Prépare les données de l'historique en faisant une moyenne des scores par année pour affichage dans le graphique.
 const historyByYear = computed(() => {
-  if (!props.group.history) return []
-
-  const map = new Map<number, number[]>()
-  props.group.history.forEach((h: HistoryEntry) => {
-    if (!map.has(h.year)) map.set(h.year, [])
-    map.get(h.year)?.push(h.score)
-  })
-
-  return Array.from(map.entries()).map(([year, scores]) => {
-    const avg = scores.reduce((a, b) => a + b, 0) / scores.length
-    return { year, score: avg }
-  }).sort((a, b) => a.year - b.year)
+  return aggregateHistoryByYear(props.group.history)
 })
 
 // Regroupe les statistiques dans un tableau pour faciliter le rendu et l'application des animations (v-for dans le template).
