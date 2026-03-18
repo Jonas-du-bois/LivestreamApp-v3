@@ -200,11 +200,12 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
         </div>
 
         <!-- No Live Streams Message -->
-        <div v-else class="glass-panel p-8 text-center">
-          <Icon name="fluent:video-off-24-regular" class="w-16 h-16 text-white/30 mx-auto mb-4" />
-          <h2 class="text-white font-bold text-xl mb-2">{{ t('stream.noLiveStreams') }}</h2>
-          <p class="text-white/60">{{ t('stream.liveStreamsWillAppear') }}</p>
-        </div>
+        <UiEmptyState
+          v-else
+          :title="t('stream.noLiveStreams')"
+          :description="t('stream.liveStreamsWillAppear')"
+          icon="fluent:video-off-24-regular"
+        />
 
         <!-- Offline Streams Section -->
         <div v-if="offlineStreams.length > 0">
