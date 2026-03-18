@@ -222,6 +222,7 @@ const stats = computed(() => {
                 size="sm"
                 :loading="isRefreshing"
                 icon="fluent:arrow-clockwise-24-regular"
+                rotate-icon
                 @click="handleRefresh"
               >
                 {{ isRefreshing ? t('common.loading') : t('weather.refresh') }}

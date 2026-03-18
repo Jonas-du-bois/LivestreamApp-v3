@@ -11,13 +11,15 @@ interface Props {
   variant?: 'ghost' | 'glass' | 'dark' | 'bubble'
   active?: boolean
   showBadge?: boolean
+  rotateIcon?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   iconSize: '20', 
   variant: 'ghost',
   active: false,
-  showBadge: false
+  showBadge: false,
+  rotateIcon: false
 })
 
 defineEmits<{
@@ -38,15 +40,15 @@ const variantClasses = computed(() => {
 <template>
   <button
     type="button"
-    class="relative p-2 transition-all duration-200 active:scale-90 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
-    :class="[variantClasses, active ? 'bg-white/20' : '', variant === 'bubble' ? 'rounded-full' : 'rounded-lg']"
+    class="relative p-2 transition-all duration-200 active:scale-95 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]"
+    :class="[variantClasses, active ? 'bg-white/20' : '', variant === 'bubble' ? 'rounded-full' : 'rounded-lg', rotateIcon ? 'group' : '']"
     :aria-label="label"
     @click="$emit('click', $event)"
   >
     <Icon 
       :name="icon" 
       :size="iconSize"
-      class="transition-transform"
+      :class="['transition-transform', rotateIcon ? 'duration-500 group-active:rotate-180' : '']"
     />
     
     <span 
