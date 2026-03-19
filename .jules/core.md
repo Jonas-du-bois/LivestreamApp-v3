@@ -96,3 +96,15 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+
+## 2026-03-20: Group History Logic Abstraction
+
+- **Logic Extracted:** Duplicated historical scores aggregation (by year, averaging, and sorting) and global average score calculations from `GroupDetailsModal.vue` and `GroupInfoCard.vue`.
+- **Destination:** `app/utils/history.ts`
+- **Changes:**
+  - Created `app/utils/history.ts` (pure utility file).
+  - Added `aggregateHistoryByYear` to centralize map-based aggregation and chronological sorting.
+  - Added `calculateAverageScore` and `calculateAggregatedAverageScore` for generic score averages formatting.
+  - Refactored `GroupDetailsModal.vue` to use the auto-imported utilities, removing local map-reduce logic (~15 lines).
+  - Refactored `GroupInfoCard.vue` to use the auto-imported utilities, removing local map-reduce logic (~15 lines).
+- **Outcome:** Cleaned up component script setups by removing duplicated mapping/reducing code. Group history aggregation logic is now purely testable and "DRY".
