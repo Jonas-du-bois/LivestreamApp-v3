@@ -192,14 +192,19 @@ const stats = computed(() => {
         </div>
       </div>
       
-      <div v-else-if="error" key="weather-error" class="glass-card p-8 text-center">
-        <Icon name="fluent:cloud-error-24-regular" class="w-16 h-16 text-red-400 mx-auto mb-4" />
-        <h2 class="text-white font-bold text-xl mb-2">{{ t('weather.errorTitle') || 'Erreur Météo' }}</h2>
-        <p class="text-white/60 mb-6">{{ t('weather.errorDescription') || 'Impossible de charger la météo.' }}</p>
+      <UiGlassEmptyState
+        v-else-if="error"
+        key="weather-error"
+        panel-class="glass-card"
+        icon="fluent:cloud-error-24-regular"
+        icon-color="text-red-400"
+        :title="t('weather.errorTitle') || 'Erreur Météo'"
+        :description="t('weather.errorDescription') || 'Impossible de charger la météo.'"
+      >
         <UiButton variant="secondary" @click="handleRefresh" class="mx-auto" icon="fluent:arrow-clockwise-24-regular">
           {{ t('weather.retry') || 'Réessayer' }}
         </UiButton>
-      </div>
+      </UiGlassEmptyState>
 
       <div v-else key="weather-content" class="space-y-6">
         <div class="glass-card relative overflow-hidden">
