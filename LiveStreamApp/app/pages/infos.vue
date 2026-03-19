@@ -168,15 +168,16 @@ const usefulLinks = [
           <UiSectionTitle>Liens utiles</UiSectionTitle>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <a
-              v-for="link in usefulLinks"
+              v-for="(link, index) in usefulLinks"
               :key="link.href"
               :href="link.href"
               target="_blank"
               rel="noopener noreferrer"
-              class="glass-card p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 active:bg-white/15 active:scale-[0.98] group"
+              class="premium-cascade-item glass-card p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 active:bg-white/15 active:scale-95 group"
+              :style="{ '--cascade-index': index }"
             >
               <span class="text-white text-sm font-medium transition-colors duration-200 group-hover:text-cyan-300 group-active:text-cyan-200">{{ link.label }}</span>
-              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-cyan-400 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:scale-90" />
+              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-cyan-400 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:-rotate-12 group-active:scale-90" />
             </a>
           </div>
         </section>
@@ -205,3 +206,21 @@ const usefulLinks = [
     </Transition>
   </div>
 </template>
+
+<style scoped>
+@keyframes cascade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.premium-cascade-item {
+  animation: cascade-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--cascade-index) * 50ms);
+}
+</style>

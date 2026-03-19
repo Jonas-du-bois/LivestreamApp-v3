@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2026-03-19 - Feedback tactile sur les liens utiles
+**Learning:** For small interactive elements like list items or external links, an `active:scale-[0.98]` effect is often too subtle to provide a satisfying, immediate physical response on touch devices.
+**Action:** Use a snappier `active:scale-95` on small interactive elements. Additionally, combining scale with a slight rotation (e.g., `group-active:-rotate-12` on the internal icon) adds a delightful layer of micro-interaction that makes the app feel premium and highly responsive.
