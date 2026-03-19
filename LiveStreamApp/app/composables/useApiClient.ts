@@ -1,5 +1,6 @@
 import { getCurrentInstance } from 'vue'
 import { isNativePlatform, getNativeToken } from '~/utils/capacitor'
+import type { UseFetchOptions } from '#app'
 
 /** Récupère le token d'authentification selon la plateforme */
 const getAuthToken = (): string | null => {
@@ -27,26 +28,42 @@ const getAuthToken = (): string | null => {
 }
 
 /** Injecte le header Authorization si un token est disponible */
-const getAuthHeaders = (headers: any = {}) => {
+const getAuthHeaders = (headers?: HeadersInit | Record<string, string>): Record<string, string> => {
   const token = getAuthToken()
-  if (token) {
-    return {
-      ...headers,
-      Authorization: `Bearer ${token}`
+
+  // Normalize headers into a Record<string, string> safely
+  const headersObj: Record<string, string> = {}
+
+  if (headers) {
+    if (headers instanceof Headers) {
+      headers.forEach((value, key) => {
+        headersObj[key] = value
+      })
+    } else if (Array.isArray(headers)) {
+      headers.forEach(([key, value]) => {
+        headersObj[key] = value
+      })
+    } else {
+      Object.assign(headersObj, headers)
     }
   }
-  return headers
+
+  if (token) {
+    headersObj.Authorization = `Bearer ${token}`
+  }
+
+  return headersObj
 }
 
 /** Client $fetch brut avec auth et auto-logout sur 401 */
-export const apiClient = <T>(url: string, options: any = {}) => {
+export const apiClient = <T>(url: string, options: Parameters<typeof $fetch>[1] = {}) => {
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
 
   return $fetch<T>(url, {
     baseURL: apiBase,
     ...options,
-    headers: getAuthHeaders(options.headers),
+    headers: getAuthHeaders(options.headers as HeadersInit | Record<string, string>),
     async onResponseError({ response }) {
       // Session expirée : on supprime le token et on reload
       if (response.status === 401 && import.meta.client) {
@@ -75,29 +92,39 @@ export const apiClient = <T>(url: string, options: any = {}) => {
  */
 export const useApiClient = <T>(
   url: string,
-  options: any = {}
+  options: UseFetchOptions<T> = {}
 ) => {
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
 
-  options.headers = getAuthHeaders(options.headers)
+  options.headers = getAuthHeaders(options.headers as HeadersInit | Record<string, string>)
 
   // Détecte si on est dans un setup() actif et non encore monté
   const vm = getCurrentInstance?.()
-  if (!vm || (vm as any).isMounted) {
+  if (!vm || (vm as { isMounted?: boolean }).isMounted) {
     const data = ref<T | null>(null)
     const pending = ref(false)
-    const error = ref<any>(null)
+    const error = ref<Error | null>(null)
 
     const refresh = async () => {
       pending.value = true
       error.value = null
       try {
-        const res = await $fetch<T>(url, { baseURL: apiBase, ...options })
+        // Safe mapping from useFetch options to standard $fetch options
+        const fetchOptions: Parameters<typeof $fetch>[1] = {
+          baseURL: apiBase,
+          method: options.method,
+          query: options.query ? toValue(options.query) : undefined,
+          params: options.params ? toValue(options.params) : undefined,
+          body: options.body ? toValue(options.body) : undefined,
+          headers: options.headers,
+        }
+
+        const res = await $fetch<T>(url, fetchOptions)
         data.value = res
         return res
-      } catch (err: any) {
-        error.value = err
+      } catch (err) {
+        error.value = err as Error
         console.error('API Error:', err)
         throw err
       } finally {
