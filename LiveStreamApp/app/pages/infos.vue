@@ -124,30 +124,12 @@ const usefulLinks = [
 
         <section class="space-y-3">
           <UiSectionTitle>Acces et parking</UiSectionTitle>
-          <UiGlassCard class="space-y-3" padding="p-4">
-            <div
-              v-for="line in parkingInfo"
-              :key="line.label"
-              class="flex items-start justify-between gap-4 border-b border-white/10 pb-3 last:border-0 last:pb-0"
-            >
-              <p class="text-white/70 text-sm min-w-36">{{ line.label }}</p>
-              <p class="text-white text-sm text-right">{{ line.value }}</p>
-            </div>
-          </UiGlassCard>
+          <UiInfoList :items="parkingInfo" />
         </section>
 
         <section class="space-y-3">
           <UiSectionTitle>Samaritains et premiers secours</UiSectionTitle>
-          <UiGlassCard class="space-y-3" padding="p-4">
-            <div
-              v-for="line in samaritansInfo"
-              :key="line.label"
-              class="flex items-start justify-between gap-4 border-b border-white/10 pb-3 last:border-0 last:pb-0"
-            >
-              <p class="text-white/70 text-sm min-w-36">{{ line.label }}</p>
-              <p class="text-white text-sm text-right">{{ line.value }}</p>
-            </div>
-          </UiGlassCard>
+          <UiInfoList :items="samaritansInfo" />
         </section>
 
         <section class="space-y-3">

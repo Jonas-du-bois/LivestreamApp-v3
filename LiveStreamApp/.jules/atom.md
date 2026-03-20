@@ -135,3 +135,6 @@ Les alertes globales de ce type doivent se placer à la racine (`app.vue`) avec 
 **Règle établie :**
 Les sections promotionnelles ou informatives de haut niveau doivent être encapsulées dans des composants de domaine (`app/components/home/`) et ne pas polluer la logique de navigation des pages. Le Hero Carousel doit rester le point d'entrée visuel principal et refléter l'état global de l'événement.
 * Création de `<UiPageHeader>`. Règle établie : Les en-têtes de page ('Hero Section') comportant un titre, un sous-titre et une icône animée en filigrane doivent utiliser ce composant pour standardiser l'expérience visuelle, avec les options `icon`, `icon-color`, `accent-color` et les slots `badge` / `bottom`.
+
+## 2024-03-20 - UiInfoList
+**Création de `<UiInfoList>`**. Règle établie : L'affichage d'une liste de paires clé/valeur (ex: Infos pratiques, contacts) doit utiliser `<UiInfoList>` plutôt que de dupliquer des boucles `v-for` manuelles sur des `<UiGlassCard>`. Cela unifie l'espacement et les classes CSS génériques pour ce type de présentation.
