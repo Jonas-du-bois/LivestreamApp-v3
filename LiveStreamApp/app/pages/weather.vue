@@ -16,6 +16,7 @@ const { data: weatherResp, pending, refresh, error } = await useAsyncData('weath
 
 const isRefreshing = ref(false)
 const lastRefreshedAt = ref(new Date())
+let refreshTimer: ReturnType<typeof setTimeout> | null = null
 
 const handleRefresh = async () => {
   isRefreshing.value = true
@@ -24,11 +25,15 @@ const handleRefresh = async () => {
     lastRefreshedAt.value = new Date()
   } finally {
     // Add a small delay to show the spinner/feedback
-    setTimeout(() => {
+    refreshTimer = setTimeout(() => {
       isRefreshing.value = false
     }, 500)
   }
 }
+
+onUnmounted(() => {
+  if (refreshTimer) clearTimeout(refreshTimer)
+})
 
 const current = computed(() => weatherResp.value?.raw?.current_weather ?? null)
 
