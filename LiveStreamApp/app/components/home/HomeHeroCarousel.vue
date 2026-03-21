@@ -290,7 +290,7 @@ const handleHeroClick = () => {
         v-for="(_, index) in (slides || [])"
         :key="index"
         @click.stop="manualChange(index)"
-        class="relative flex items-center justify-center outline-none group/dot after:content-[''] after:absolute after:-inset-4"
+        class="relative flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] rounded-full group/dot after:content-[''] after:absolute after:-inset-4"
         :aria-label="`Slide ${index + 1}`"
       >
         <span
