@@ -2,7 +2,6 @@ import { defineEventHandler, getRouterParam, createError } from 'h3'
 import mongoose from 'mongoose'
 import GroupModel from '../../../models/Group'
 import PassageModel from '../../../models/Passage'
-import ApparatusModel from '../../../models/Apparatus'
 
 export default defineEventHandler(async (event) => {
   const groupId = getRouterParam(event, 'id')
@@ -18,13 +17,19 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 1. Fetch Group Info
-    const group = await GroupModel.findById(groupId).lean()
+    // BOLT: Optimize by only selecting needed fields, ignoring large unbounded history/monitors arrays if unused here
+    const group = await GroupModel.findById(groupId)
+      .select('name canton category logo description gymnastsCount history') // Included history because it is used below
+      .lean()
+
     if (!group) {
       throw createError({ statusCode: 404, message: 'Group not found' })
     }
 
     // 2. Fetch Timeline (Passages)
+    // BOLT: Select only necessary fields on passages to avoid fetching excessive arrays when not needed
     const passages = await PassageModel.find({ group: groupId })
+      .select('apparatus startTime endTime status score monitors location history') // Explicit projection
       .populate('apparatus', 'name icon code')
       .sort({ startTime: 1 })
       .lean()

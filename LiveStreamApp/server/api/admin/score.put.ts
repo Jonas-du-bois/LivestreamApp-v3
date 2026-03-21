@@ -29,6 +29,7 @@ export default defineEventHandler(async (event) => {
   const { passageId, score } = result.data;
 
   try {
+    // BOLT: Optimize Mongoose populate to only fetch required fields, avoiding massive payloads with unused data
     // Use explicit $set to avoid object merging issues
     const updated = await PassageModel.findByIdAndUpdate(
       passageId,
@@ -39,7 +40,7 @@ export default defineEventHandler(async (event) => {
         }
       },
       { new: true }
-    ).populate('group').populate('apparatus').exec();
+    ).populate('group', 'name').populate('apparatus', 'name code icon').lean().exec();
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
@@ -84,10 +85,11 @@ export default defineEventHandler(async (event) => {
     try {
       const config = useRuntimeConfig();
       if (config.vapidPrivateKey && config.public.vapidPublicKey) {
+        // BOLT: Only fetch subscriptions, use `.lean()` for better performance
         // Find subscribers who have this passage in favorites
         const subscriptions = await SubscriptionModel.find({
           favorites: passageId
-        });
+        }).lean();
 
         if (subscriptions.length > 0) {
           const groupName = (updated.group as any)?.name || 'Groupe';
@@ -101,7 +103,7 @@ export default defineEventHandler(async (event) => {
           });
 
           const notifications = subscriptions.map(sub => {
-            return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, pushPayload)
+            return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys as any }, pushPayload)
               .catch(err => {
                 if (err.statusCode === 410 || err.statusCode === 404) {
                   console.log(`[score] Removing expired subscription ${sub._id}`);

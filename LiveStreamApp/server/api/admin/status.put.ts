@@ -60,7 +60,8 @@ export default defineEventHandler(async (event) => {
     await passage.save();
 
     // Update stream's currentPassage when passage goes LIVE or FINISHED
-    const stream = await StreamModel.findOne({ location: passage.location }).exec();
+    // BOLT: Optimize by only selecting needed fields to check/update
+    const stream = await StreamModel.findOne({ location: passage.location }).select('_id name url location isLive currentPassage').exec();
     if (stream) {
       if (status === 'LIVE') {
         // Set this passage as the current one on the stream
@@ -130,6 +131,8 @@ export default defineEventHandler(async (event) => {
     // SCHEDULED passage in the SAME location whose startTime has passed ───
     if (status === 'FINISHED' && passage.location) {
       const now = new Date();
+      // BOLT: Use select/lean for faster findOne when full Mongoose document isn't fully required
+      // NOTE: We still need the actual doc to do `.save()`, so we don't use lean here.
       const nextPassage = await PassageModel.findOne({
         status: 'SCHEDULED',
         location: passage.location,
