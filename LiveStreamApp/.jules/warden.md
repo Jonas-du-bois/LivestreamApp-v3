@@ -77,3 +77,14 @@ Suivi des refactorisations, sécurisations et améliorations de qualité de code
     - Updated `useFirstLoad.ts` to only import `type Ref`.
     - Updated `useNetworkStatus.ts` to use `import.meta.client` for SSR-safe window access.
     - *Règle respectée :* "Toujours utiliser import.meta.client avant d'accéder à window" et "Supprimer les imports inutiles (Nuxt auto-importe ref, computed, onMounted, etc.)."
+
+## 2026-02-21: FilterSheet & Results Strict Typing
+
+- **Target:** `app/components/overlays/FilterSheet.vue`, `app/types/socket.ts`, `app/pages/results.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced `any` casts in FilterSheet (`meta = useState<any>`) and Results (`data as any`) which could have caused runtime data manipulation errors and destroyed reactivity.
+    - **Dead Code:** Cleaned up unused and explicitly imported Vue references.
+- **Solution:**
+    - Explicitly typed `ScheduleResponse['meta']` in FilterSheet.
+    - Added `apparatusCode` to `ScoreUpdatePayload` to allow safe dynamic property access in results update handlers.
+    - Added `locale` correctly to `useI18n()` destructuring to fix template error and ensure proper locale switching in UI.
