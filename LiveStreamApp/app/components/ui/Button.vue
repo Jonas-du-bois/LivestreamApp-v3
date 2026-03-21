@@ -16,6 +16,7 @@ interface Props {
   disabled?: boolean
   block?: boolean
   type?: 'button' | 'submit' | 'reset'
+  rotateIcon?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -25,7 +26,8 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   disabled: false,
   block: false,
-  type: 'button'
+  type: 'button',
+  rotateIcon: false
 })
 
 const emit = defineEmits<{
@@ -61,7 +63,8 @@ const commonClasses = computed(() => [
   sizeClasses.value,
   roundedClasses.value,
   props.block ? 'w-full' : '',
-  props.loading ? 'cursor-wait' : ''
+  props.loading ? 'cursor-wait' : '',
+  props.rotateIcon ? 'group' : ''
 ])
 </script>
 
@@ -86,6 +89,7 @@ const commonClasses = computed(() => [
       v-else-if="icon"
       :name="icon"
       :size="size === 'sm' ? '16' : '20'"
+      :class="rotateIcon ? 'transition-transform duration-300 group-active:rotate-180' : ''"
     />
 
     <slot />
