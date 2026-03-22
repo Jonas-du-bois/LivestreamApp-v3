@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Validate input: union type web | fcm
-  const body = await readValidatedBody(event, (b) => SubscriptionSchema.parse(b));
+  const body = await readValidatedBody(event, (b) => SubscriptionSchema.parseAsync(b));
   const { type, endpoint } = body;
 
   try {
