@@ -11,3 +11,8 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## Pull-to-Refresh Visual Feedback (UiButton)
+- **Learning:** Instead of relying only on a loading spinner, adding a tactile rotation to refresh icons when a button is pressed creates a much more satisfying "Pull-to-Refresh" feeling.
+- **Interaction:** Applied `group` to the button and `transition-transform duration-300 group-active:rotate-180` to the icon. This makes the icon spin smoothly in response to the user's touch.
+- **Architecture:** Made this interaction optional via a `rotateIcon` boolean prop on the generic `UiButton` component to avoid unintended side effects on other buttons.

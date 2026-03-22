@@ -275,6 +275,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
               rounded="full"
               :loading="pending"
               icon="fluent:arrow-sync-24-regular"
+              rotate-icon
               @click="refresh()"
             >
               {{ t('weather.refresh') }}
