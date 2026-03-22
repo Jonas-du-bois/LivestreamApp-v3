@@ -319,15 +319,24 @@ useAutoRefresh(handleRefresh, STREAM_AUTO_REFRESH)
           </div>
         </div>
 
-        <div v-else class="glass-panel p-6 text-center">
-          <p class="text-white/60">{{ t('stream.noCurrentPassage') }}</p>
-        </div>
+        <UiEmptyState
+          v-else
+          :description="t('stream.noCurrentPassage')"
+          icon-class="text-white/40"
+        />
       </div>
 
-      <div v-else key="stream-id-error" class="glass-panel p-8 text-center">
-        <h2 class="text-white font-bold text-xl mb-2">{{ t('stream.streamNotFound') }}</h2>
-        <NuxtLink to="/stream" class="text-cyan-400 hover:underline">{{ t('stream.backToList') }}</NuxtLink>
-      </div>
+      <UiEmptyState
+        v-else
+        key="stream-id-error"
+        :title="t('stream.streamNotFound')"
+        icon="fluent:video-off-24-regular"
+        icon-class="text-white/40"
+      >
+        <template #actions>
+          <NuxtLink to="/stream" class="text-cyan-400 hover:underline">{{ t('stream.backToList') }}</NuxtLink>
+        </template>
+      </UiEmptyState>
     </Transition>
   </div>
 </template>

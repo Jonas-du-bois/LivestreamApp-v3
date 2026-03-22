@@ -782,17 +782,22 @@ const hasActiveFilters = computed(() => {
             
             <template v-else>
               <!-- Empty State -->
-              <div v-if="filteredPassages.length === 0" class="text-center py-16">
-                <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white/5 mb-6">
-                  <Icon name="fluent:search-24-regular" class="w-12 h-12 text-white/30" />
-                </div>
-                <h3 class="text-xl font-semibold text-white/60 mb-2">{{ t('admin.noPassagesFound') }}</h3>
-                <p class="text-white/40 mb-6">{{ t('admin.tryModifyFilters') }}</p>
-                <button @click="clearAllFilters" class="btn-secondary">
-                  <Icon name="fluent:arrow-reset-24-regular" class="w-5 h-5" />
-                  {{ t('admin.resetFilters') }}
-                </button>
-              </div>
+              <UiEmptyState
+                v-if="filteredPassages.length === 0"
+                icon="fluent:search-24-regular"
+                icon-class="text-white/30"
+                :title="t('admin.noPassagesFound')"
+                :description="t('admin.tryModifyFilters')"
+                :glass="false"
+                class="py-16"
+              >
+                <template #actions>
+                  <button @click="clearAllFilters" class="btn-secondary">
+                    <Icon name="fluent:arrow-reset-24-regular" class="w-5 h-5" />
+                    {{ t('admin.resetFilters') }}
+                  </button>
+                </template>
+              </UiEmptyState>
               
               <!-- Passages Cards -->
               <div class="space-y-3">

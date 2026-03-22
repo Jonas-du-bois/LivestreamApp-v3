@@ -1,0 +1,27 @@
+--- app/components/ui/EmptyState.vue
++++ app/components/ui/EmptyState.vue
+@@ -7,6 +7,7 @@
+   title?: string
+   description?: string
+   icon?: string
++  iconClass?: string
+   glass?: boolean
+   pulse?: boolean
+ }
+@@ -15,6 +16,7 @@
+   title: undefined,
+   description: '',
+   icon: 'fluent:info-24-regular',
++  iconClass: 'text-white/40',
+   glass: true,
+   pulse: false
+ })
+@@ -34,7 +36,7 @@
+       :class="{ 'animate-pulse-slow': pulse }"
+       aria-hidden="true"
+     >
+-      <Icon :name="icon" class="h-8 w-8 text-white/40" />
++      <Icon :name="icon" class="h-8 w-8" :class="iconClass" />
+     </div>
+
+     <h3 v-if="title" class="text-white text-lg font-bold">
