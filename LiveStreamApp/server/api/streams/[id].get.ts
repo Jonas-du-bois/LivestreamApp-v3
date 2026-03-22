@@ -14,20 +14,25 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    // BOLT: Optimized memory usage and payload size by explicitly projecting
+    // only the necessary fields on populated relational documents, preventing
+    // large unbound arrays (like history) from being loaded into memory.
     const stream = await StreamModel.findById(id).populate({
       path: 'currentPassage',
       model: PassageModel,
       populate: [
         {
           path: 'group',
-          model: GroupModel
+          model: GroupModel,
+          select: 'name category'
         },
         {
           path: 'apparatus',
-          model: ApparatusModel
+          model: ApparatusModel,
+          select: 'name code icon'
         }
       ]
-    })
+    }).lean()
 
     if (!stream) {
       throw createError({
