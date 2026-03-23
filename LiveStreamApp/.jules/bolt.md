@@ -4,3 +4,6 @@
 ## 2024-05-19 - Bulk Database Operations in Nitro Background Jobs
 **Learning:** Performing multiple database mutations (e.g., `findByIdAndUpdate`, `findByIdAndDelete`) inside a `Promise.all()` loop within background tasks (like `setInterval` in Nitro plugins) causes significant N+1 query problems. This spams the database and can stall the connection pool.
 **Action:** Always collect target IDs during the loop execution into an array, and perform a single bulk operation (e.g., `updateMany`, `deleteMany`) after the loop concludes to optimize performance to O(1) DB calls.
+## 2024-05-20 - Mongoose memory optimization in endpoints
+**Learning:** Using Mongoose `find()` or `findOne()` without `.lean()` in backend routes that return large lists of documents, such as retrieving all subscriptions for notifications, creates massive memory overhead due to hydrating internal MongoDB document objects instead of lightweight JS arrays.
+**Action:** Always ensure `.lean()` is appended to any `.find()` or `.findById()` queries if the retrieved documents are only used to be mapped/read rather than calling `document.save()`.

@@ -87,7 +87,7 @@ export default defineEventHandler(async (event) => {
         // Find subscribers who have this passage in favorites
         const subscriptions = await SubscriptionModel.find({
           favorites: passageId
-        });
+        }).lean(); // BOLT: Optimize memory usage by returning raw JS objects
 
         if (subscriptions.length > 0) {
           const groupName = (updated.group as any)?.name || 'Groupe';
