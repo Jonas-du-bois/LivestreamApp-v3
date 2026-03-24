@@ -314,9 +314,14 @@ useAutoRefresh(handleRefresh, STREAM_AUTO_REFRESH)
         <!-- Context Section -->
         <div v-if="currentGroup">
           <h3 class="text-white/60 font-medium mb-3 ml-1">{{ t('stream.onPracticable') }}</h3>
-          <div @click="currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
+          <button
+            type="button"
+            @click="currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)"
+            class="w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] rounded-[24px] cursor-pointer active:scale-[0.98] transition-transform"
+            :aria-label="t('results.openGroupDetails', { group: currentGroup.name })"
+          >
              <GroupInfoCard :group="currentGroup" :passage-monitors="passageMonitors" />
-          </div>
+          </button>
         </div>
 
         <div v-else class="glass-panel p-6 text-center">
