@@ -5,7 +5,7 @@
  */
 
 interface Props {
-  variant?: 'green' | 'red' | 'violet' | 'cyan' | 'white' | 'solid-red'
+  variant?: 'green' | 'emerald' | 'red' | 'violet' | 'cyan' | 'white' | 'solid-red'
   showDot?: boolean
   pulse?: boolean
   containerClass?: string
@@ -21,10 +21,11 @@ const props = withDefaults(defineProps<Props>(), {
 // Mappage des couleurs du conteneur et du texte
 const variantClasses = computed(() => {
   const maps = {
-    green: 'bg-green-500/20 border-green-500/30 text-green-400',
+    green: 'bg-emerald-500/18 border-emerald-400/30 text-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.14)]',
+    emerald: 'bg-emerald-500/18 border-emerald-400/30 text-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.14)]',
     red: 'bg-red-500/20 border-red-500/30 text-red-400',
-    violet: 'bg-violet-500/20 border-violet-400/30 text-white',
-    cyan: 'bg-cyan-500/20 border-cyan-400/30 text-cyan-400',
+    violet: 'bg-violet-500/18 border-violet-400/30 text-violet-100 shadow-[0_0_18px_rgba(139,92,246,0.14)]',
+    cyan: 'bg-cyan-500/18 border-cyan-400/30 text-cyan-300 shadow-[0_0_18px_rgba(6,182,212,0.14)]',
     white: 'bg-white/10 border-white/20 text-white',
     'solid-red': 'bg-red-500/90 border-red-400/50 text-white shadow-red-900/20'
   }
@@ -34,7 +35,8 @@ const variantClasses = computed(() => {
 // Mappage des couleurs du point indicateur
 const dotClasses = computed(() => {
   const maps = {
-    green: 'bg-green-500',
+    green: 'bg-emerald-400',
+    emerald: 'bg-emerald-400',
     red: 'bg-red-500',
     violet: 'bg-violet-500',
     cyan: 'bg-cyan-400',

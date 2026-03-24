@@ -90,17 +90,17 @@ const usefulLinks = [
     <Transition name="premium-swap" appear>
       <div class="space-y-6">
         <UiGlassCard class="relative overflow-hidden" padding="p-5">
-          <div class="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-cyan-500/20 blur-2xl" />
+          <div class="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-emerald-500/20 blur-2xl" />
           <div class="relative">
-            <p class="text-cyan-400 text-xs uppercase tracking-[0.2em] font-bold mb-2">Infos concours</p>
+            <p class="text-emerald-300 text-xs uppercase tracking-[0.2em] font-bold mb-2">Infos concours</p>
             <h2 class="text-white text-2xl font-black leading-tight mb-4">{{ eventInfo.name }}</h2>
             <div class="space-y-2 text-sm text-white/80">
               <p class="flex items-start gap-2">
-                <Icon name="fluent:calendar-24-regular" class="w-4 h-4 mt-0.5 text-cyan-400" />
+                <Icon name="fluent:calendar-24-regular" class="w-4 h-4 mt-0.5 text-emerald-300" />
                 <span>{{ eventInfo.dates }}</span>
               </p>
               <p class="flex items-start gap-2">
-                <Icon name="fluent:location-24-regular" class="w-4 h-4 mt-0.5 text-cyan-400" />
+                <Icon name="fluent:location-24-regular" class="w-4 h-4 mt-0.5 text-emerald-300" />
                 <span>{{ eventInfo.location }} - {{ eventInfo.venues }}</span>
               </p>
             </div>
@@ -115,7 +115,7 @@ const usefulLinks = [
               :key="item.day"
               class="glass-card p-4 border border-white/10"
             >
-              <p class="text-cyan-300 text-xs font-bold uppercase tracking-[0.18em] mb-1">{{ item.day }}</p>
+              <p class="text-emerald-300 text-xs font-bold uppercase tracking-[0.18em] mb-1">{{ item.day }}</p>
               <h4 class="text-white font-bold mb-1">{{ item.title }}</h4>
               <p class="text-white/70 text-sm">{{ item.details }}</p>
             </article>
@@ -158,7 +158,7 @@ const usefulLinks = [
               :key="line"
               class="text-sm text-white/85 flex items-start gap-2"
             >
-              <Icon name="fluent:checkmark-circle-24-filled" class="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
+              <Icon name="fluent:checkmark-circle-24-filled" class="w-4 h-4 text-emerald-300 mt-0.5 shrink-0" />
               <span>{{ line }}</span>
             </p>
           </UiGlassCard>
@@ -173,10 +173,10 @@ const usefulLinks = [
               :href="link.href"
               target="_blank"
               rel="noopener noreferrer"
-              class="glass-card p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 active:bg-white/15 active:scale-[0.98] group"
+              class="glass-card app-focus-ring p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 active:bg-white/15 active:scale-[0.98] group"
             >
-              <span class="text-white text-sm font-medium transition-colors duration-200 group-hover:text-cyan-300 group-active:text-cyan-200">{{ link.label }}</span>
-              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-cyan-400 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:scale-90" />
+              <span class="text-white text-sm font-medium transition-colors duration-200 group-hover:text-emerald-200 group-active:text-emerald-100">{{ link.label }}</span>
+              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-emerald-300 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:scale-90" />
             </a>
           </div>
         </section>

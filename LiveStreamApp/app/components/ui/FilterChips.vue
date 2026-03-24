@@ -15,13 +15,13 @@ interface Props {
   modelValue: string | number
   ariaLabel?: string
   variant?: 'pill' | 'glass'
-  color?: 'cyan' | 'blue'
+  color?: 'cyan' | 'blue' | 'violet' | 'emerald'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   ariaLabel: 'Filtres',
   variant: 'pill',
-  color: 'cyan'
+  color: 'violet'
 })
 
 const emit = defineEmits<{
@@ -36,17 +36,23 @@ const select = (id: string | number) => {
 
 // Détermine la palette de couleurs à appliquer lorsque la pilule est active.
 const colorClasses = computed(() => {
-  if (props.color === 'blue') {
-    return 'bg-blue-600/80 border-blue-400/50 text-white shadow-lg shadow-blue-500/20 ring-1 ring-blue-400/50'
+  if (props.color === 'emerald') {
+    return 'ui-filter-chip--emerald'
   }
-  return 'bg-cyan-500 border-cyan-400 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)]'
+  if (props.color === 'cyan' || props.color === 'blue') {
+    return 'ui-filter-chip--cyan'
+  }
+  return 'ui-filter-chip--violet'
 })
 
 const focusRingClasses = computed(() => {
-  if (props.color === 'blue') {
-    return 'focus-visible:ring-blue-400'
+  if (props.color === 'emerald') {
+    return 'app-focus-ring app-focus-ring-tertiary'
   }
-  return 'focus-visible:ring-cyan-400'
+  if (props.color === 'violet') {
+    return 'app-focus-ring app-focus-ring-secondary'
+  }
+  return 'app-focus-ring'
 })
 </script>
 
@@ -62,12 +68,12 @@ const focusRingClasses = computed(() => {
       type="button"
       role="tab"
       :aria-selected="isSelected(item.id)"
-      class="relative px-4 py-2 rounded-full text-sm font-bold flex-shrink-0 transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)] outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] active:scale-95 border"
+      class="ui-filter-chip relative px-4 py-2 rounded-full text-sm font-bold flex-shrink-0 transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)] active:scale-95 border"
       :class="[
         focusRingClasses,
         isSelected(item.id)
           ? colorClasses
-          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white hover:shadow-[0_0_15px_rgba(6,182,212,0.1)] active:bg-white/15 active:shadow-[0_0_20px_rgba(6,182,212,0.2)] backdrop-blur-xl'
+          : 'ui-filter-chip--inactive backdrop-blur-xl'
       ]"
       @click="select(item.id)"
     >
@@ -83,5 +89,45 @@ const focusRingClasses = computed(() => {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.ui-filter-chip--inactive {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgb(255 255 255 / 0.62);
+}
+
+.ui-filter-chip--inactive:hover {
+  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.08), rgba(255, 255, 255, 0.08));
+  border-color: rgb(var(--color-secondary-rgb) / 0.2);
+  color: #ffffff;
+  box-shadow: 0 0 18px rgb(var(--color-secondary-rgb) / 0.12);
+}
+
+.ui-filter-chip--cyan {
+  background: linear-gradient(135deg, rgb(var(--color-primary-rgb) / 0.96), rgb(var(--color-secondary-rgb) / 0.82));
+  border-color: rgb(var(--color-primary-rgb) / 0.58);
+  color: #ffffff;
+  box-shadow:
+    0 0 20px rgb(var(--color-primary-rgb) / 0.34),
+    0 10px 20px rgb(var(--color-secondary-rgb) / 0.14);
+}
+
+.ui-filter-chip--violet {
+  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.96), rgb(var(--color-primary-rgb) / 0.76));
+  border-color: rgb(var(--color-secondary-rgb) / 0.6);
+  color: #ffffff;
+  box-shadow:
+    0 0 20px rgb(var(--color-secondary-rgb) / 0.34),
+    0 10px 20px rgb(var(--color-primary-rgb) / 0.14);
+}
+
+.ui-filter-chip--emerald {
+  background: linear-gradient(135deg, rgb(var(--color-tertiary-rgb) / 0.96), rgb(var(--color-primary-rgb) / 0.82));
+  border-color: rgb(var(--color-tertiary-rgb) / 0.6);
+  color: #ffffff;
+  box-shadow:
+    0 0 20px rgb(var(--color-tertiary-rgb) / 0.3),
+    0 10px 20px rgb(var(--color-primary-rgb) / 0.14);
 }
 </style>

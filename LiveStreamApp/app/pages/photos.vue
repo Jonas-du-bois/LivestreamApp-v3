@@ -75,8 +75,8 @@ const handleNewPhotosBanner = () => {
       :title="t('photos.title')"
       :subtitle="t('photos.subtitle')"
       icon="fluent:camera-24-filled"
-      icon-color="text-cyan-500"
-      accent-color="text-cyan-500"
+      icon-color="accent-text-primary"
+      accent-color="accent-text-primary"
     >
       <template #badge>
         <!-- Badge LIVE animé -->
@@ -109,7 +109,7 @@ const handleNewPhotosBanner = () => {
         <Transition name="fade">
           <div
             v-if="pending && hasLoadedOnce"
-            class="flex items-center gap-1.5 text-cyan-400/60 text-xs"
+            class="flex items-center gap-1.5 text-cyan-300/70 text-xs"
           >
             <Icon name="fluent:arrow-sync-24-regular" class="w-3 h-3 animate-spin" />
             <span>{{ t('common.loading') }}</span>
@@ -123,8 +123,7 @@ const handleNewPhotosBanner = () => {
       <div v-if="newPhotoCount > 0" class="px-6 mb-5">
         <button
           type="button"
-          class="w-full text-left active:scale-[0.98] transition-transform duration-200 outline-none
-                 focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-xl"
+          class="app-focus-ring w-full text-left active:scale-[0.98] transition-transform duration-200 rounded-xl"
           @click="handleNewPhotosBanner"
         >
           <UiInfoTile
@@ -133,9 +132,9 @@ const handleNewPhotosBanner = () => {
             accent="cyan"
             icon="fluent:arrow-download-24-regular"
             :label="t('photos.newPhotos', { count: newPhotoCount })"
-            class="bg-cyan-500/10 border-cyan-400/30 rounded-xl"
+            class="rounded-xl"
           >
-            <span class="text-cyan-300/70">{{ t('photos.seeNew') }}</span>
+            <span class="text-cyan-200/80">{{ t('photos.seeNew') }}</span>
           </UiInfoTile>
         </button>
       </div>
@@ -155,9 +154,9 @@ const handleNewPhotosBanner = () => {
         <template #actions>
           <button
             type="button"
-            class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500/15 border border-cyan-400/30
+            class="app-focus-ring flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500/15 border border-cyan-400/30
                    text-cyan-300 text-sm font-semibold active:scale-95 transition-transform duration-150
-                   hover:bg-cyan-500/25 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
+                   hover:bg-cyan-500/25"
             @click="refresh()"
           >
             <Icon name="fluent:arrow-sync-24-regular" class="w-4 h-4" :class="{ 'animate-spin': pending }" />

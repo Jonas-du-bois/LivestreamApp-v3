@@ -12,15 +12,15 @@
       :title="t('food.title')"
       :subtitle="t('food.subtitle')"
       icon="fluent:food-pizza-24-filled"
-      icon-color="text-blue-500"
-      accent-color="text-blue-500"
+      icon-color="accent-text-tertiary"
+      accent-color="accent-text-tertiary"
     />
 
     <!-- Filtres Catégories -->
     <UiFilterChips
       v-model="activeCategory"
       :items="categories"
-      color="blue"
+      color="emerald"
       :aria-label="t('food.title')"
       class="mb-8 px-4"
     />
@@ -29,12 +29,12 @@
       <UiInfoTile
         variant="feature"
         icon-shape="circle"
-        accent="blue"
+        accent="emerald"
         icon="fluent:wallet-credit-card-24-regular"
         :label="t('food.paymentMethods')"
-        class="bg-blue-500/5 border-blue-500/20 rounded-xl"
+        class="rounded-xl"
       >
-        <span class="text-blue-200/70">{{ t('food.paymentInfo') }}</span>
+        <span class="text-emerald-200/80">{{ t('food.paymentInfo') }}</span>
       </UiInfoTile>
     </div>
 
@@ -50,7 +50,7 @@
         :alt="spot.name"
         variant="split"
         :interactive="true"
-        class="premium-cascade-item rounded-2xl bg-gray-900/40 backdrop-blur-xl border-white/10 shadow-xl hover:border-blue-400/30 hover:shadow-blue-900/20 active:border-blue-400/60 active:bg-gray-800/60 active:scale-[0.98] transition-all duration-300"
+        class="premium-cascade-item rounded-2xl bg-gray-900/40 backdrop-blur-xl border-white/10 shadow-xl hover:border-emerald-400/30 hover:shadow-emerald-900/20 active:border-emerald-400/60 active:bg-gray-800/60 active:scale-[0.98] transition-all duration-300"
         :style="{ '--cascade-index': index }"
       >
         <template #image-top>
@@ -70,12 +70,12 @@
             <UiIconBox
               :icon="spot.icon"
               variant="solid"
-              color="blue"
+              color="emerald"
               shape="rounded"
               size="md"
             />
             <div>
-              <p class="text-blue-400 text-xs font-bold uppercase tracking-wider mb-0.5">{{ spot.type }}</p>
+              <p class="text-emerald-300 text-xs font-bold uppercase tracking-wider mb-0.5">{{ spot.type }}</p>
               <h2 class="text-xl font-bold text-white leading-none">{{ spot.name }}</h2>
             </div>
           </div>
@@ -95,7 +95,7 @@
               <li v-for="(item, idx) in spot.menu" :key="idx" class="flex items-end justify-between text-sm group/item">
                 <span class="text-white/90 font-medium relative pr-2 z-10">{{ item.item }}</span>
                 <span class="flex-grow border-b border-dashed border-white/10 mb-1 mx-1"></span>
-                <span class="text-blue-400 font-bold pl-2 z-10">{{ item.price }}</span>
+                <span class="text-emerald-300 font-bold pl-2 z-10">{{ item.price }}</span>
               </li>
             </ul>
           </div>

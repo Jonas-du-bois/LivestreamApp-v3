@@ -8,7 +8,6 @@ interface NavItem {
   iconFilled: string
   labelKey: string
   to: string
-  isCenter?: boolean
 }
 
 const route = useRoute()
@@ -53,7 +52,7 @@ useNotificationSocket()
 const mainNavItems: NavItem[] = [
   { id: 'home', icon: 'fluent:home-24-regular', iconFilled: 'fluent:home-24-filled', labelKey: 'nav.home', to: '/' },
   { id: 'schedule', icon: 'fluent:calendar-24-regular', iconFilled: 'fluent:calendar-24-filled', labelKey: 'nav.schedule', to: '/schedule' },
-  { id: 'stream', icon: 'fluent:play-circle-24-regular', iconFilled: 'fluent:play-circle-24-filled', labelKey: 'nav.stream', to: '/stream', isCenter: true },
+  { id: 'stream', icon: 'fluent:play-circle-24-regular', iconFilled: 'fluent:play-circle-24-filled', labelKey: 'nav.stream', to: '/stream' },
   { id: 'results', icon: 'fluent:trophy-24-regular', iconFilled: 'fluent:trophy-24-filled', labelKey: 'nav.results', to: '/results' }
 ]
 
@@ -178,7 +177,7 @@ const openNotifications = () => { isNotificationsOpen.value = true }
                   icon="fluent:arrow-download-24-regular"
                   :label="t('pwa.installApp')"
                   variant="bubble"
-                  class="text-cyan-400"
+                  class="accent-text-primary"
                   @click="showInstallPrompt(true)"
                 />
               </Transition>
@@ -234,23 +233,24 @@ const openNotifications = () => { isNotificationsOpen.value = true }
       <nav v-show="showFooter" class="fixed bottom-0 left-0 right-0 z-50 px-3 nav-safe-area">
         <div class="flex items-center gap-2 py-1">
           <!-- Main Nav Bubble -->
-          <div class="ios26-bubble h-16 nav-dock flex-1 justify-around px-2">
+          <div class="ios26-bubble h-16 nav-dock nav-dock-main flex-1 justify-around px-2">
             <NuxtLink
               v-for="item in mainNavItems"
               :key="item.id"
               :to="item.to"
-              class="nav-item relative flex items-center justify-center group transition-colors"
-              :class="{ 'nav-item-center': item.isCenter }"
+              class="nav-item app-focus-ring relative flex items-center justify-center group transition-colors"
+              :class="[
+                isActive(item.to) ? 'nav-item-active' : 'nav-item-inactive'
+              ]"
               :aria-label="t(item.labelKey)"
             >
               <div 
                 class="nav-icon-wrap p-2 rounded-full transition-colors duration-200"
                 :class="[
-                  isActive(item.to) ? 'text-cyan-400' : 'text-white/90 group-hover:text-cyan-200',
-                  isActive(item.to) && item.isCenter ? 'glow-cyan' : '',
+                  isActive(item.to) ? 'nav-icon-wrap-active' : 'nav-icon-wrap-idle',
                 ]"
               >
-                <span :class="[item.isCenter ? 'w-7 h-7' : 'w-6 h-6']" class="nav-icon-stack relative block">
+                <span class="w-6 h-6 nav-icon-stack relative block">
                   <Icon
                     :name="item.icon"
                     class="nav-icon-layer absolute inset-0 w-full h-full"
@@ -269,10 +269,11 @@ const openNotifications = () => { isNotificationsOpen.value = true }
           <!-- Separated Favorite Bubble -->
           <NuxtLink
             :to="separatedNavItem.to"
-            class="ios26-bubble ios26-bubble-interactive h-16 nav-item-separated justify-center px-5 shrink-0"
+            class="ios26-bubble ios26-bubble-interactive app-focus-ring app-focus-ring-tertiary h-16 nav-item-separated justify-center px-5 shrink-0"
+            :class="isActive(separatedNavItem.to) ? 'nav-item-separated-active' : 'nav-item-separated-idle'"
             :aria-label="t(separatedNavItem.labelKey)"
           >
-            <span class="w-6 h-6 nav-icon-stack relative block" :class="isActive(separatedNavItem.to) ? 'text-cyan-400' : 'text-white/90'">
+            <span class="w-6 h-6 nav-icon-stack relative block" :class="isActive(separatedNavItem.to) ? 'nav-separated-icon-active' : 'nav-separated-icon-idle'">
               <Icon
                 :name="separatedNavItem.icon"
                 class="nav-icon-layer absolute inset-0 w-full h-full"
@@ -339,13 +340,30 @@ const openNotifications = () => { isNotificationsOpen.value = true }
   transform: translateZ(0);
 }
 
+.nav-dock-main {
+  position: relative;
+  overflow: hidden;
+  border-color: rgb(var(--color-primary-rgb) / 0.18);
+  box-shadow:
+    0 20px 36px rgba(2, 6, 23, 0.2),
+    0 0 0 1px rgb(var(--color-primary-rgb) / 0.06);
+}
+
+.nav-dock-main::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 0%, rgb(var(--color-primary-rgb) / 0.12), transparent 42%),
+    linear-gradient(90deg, transparent 0%, rgb(var(--color-secondary-rgb) / 0.1) 50%, transparent 100%);
+}
+
 .nav-item {
   min-width: 52px;
   height: 100%;
-}
-
-.nav-item-center {
-  min-width: 60px;
+  z-index: 1;
 }
 
 .nav-icon-wrap {
@@ -354,6 +372,83 @@ const openNotifications = () => { isNotificationsOpen.value = true }
 
 .nav-icon-stack {
   transform: translateZ(0);
+}
+
+.nav-icon-wrap-idle {
+  color: rgb(255 255 255 / 0.9);
+}
+
+.nav-item-inactive:hover .nav-icon-wrap-idle,
+.nav-item-inactive:focus-visible .nav-icon-wrap-idle {
+  color: #ffffff;
+  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.14), rgb(var(--color-primary-rgb) / 0.08));
+  box-shadow: 0 0 18px rgb(var(--color-secondary-rgb) / 0.12);
+}
+
+.nav-icon-wrap-active {
+  color: var(--color-primary);
+  background: rgb(var(--color-primary-rgb) / 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 18px rgb(var(--color-primary-rgb) / 0.18);
+}
+
+.nav-item-separated {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.nav-item-separated-idle {
+  border-color: rgb(255 255 255 / 0.16);
+}
+
+.nav-item-separated-idle:hover,
+.nav-item-separated-idle:focus-visible {
+  border-color: rgb(var(--color-tertiary-rgb) / 0.24);
+  box-shadow:
+    0 18px 32px rgba(2, 6, 23, 0.18),
+    0 0 20px rgb(var(--color-tertiary-rgb) / 0.1);
+}
+
+.nav-item-separated-active {
+  border-color: rgb(var(--color-tertiary-rgb) / 0.46);
+  background:
+    radial-gradient(circle at top center, rgba(255, 255, 255, 0.22), transparent 54%),
+    linear-gradient(135deg, rgb(var(--color-tertiary-rgb) / 0.92) 0%, rgb(var(--color-primary-rgb) / 0.8) 100%);
+  box-shadow:
+    0 20px 34px rgb(var(--color-tertiary-rgb) / 0.22),
+    0 10px 24px rgb(var(--color-primary-rgb) / 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.nav-item-separated-active::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 40%);
+  opacity: 0.8;
+}
+
+.nav-item-separated-active:hover {
+  box-shadow:
+    0 24px 38px rgb(var(--color-tertiary-rgb) / 0.26),
+    0 12px 28px rgb(var(--color-primary-rgb) / 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.nav-separated-icon-idle {
+  color: rgb(255 255 255 / 0.9);
+}
+
+.nav-separated-icon-active {
+  color: #ffffff;
+  transform: scale(1.06);
+  filter:
+    drop-shadow(0 0 10px rgb(var(--color-tertiary-rgb) / 0.28))
+    drop-shadow(0 0 14px rgba(255, 255, 255, 0.16));
 }
 
 .nav-icon-layer {

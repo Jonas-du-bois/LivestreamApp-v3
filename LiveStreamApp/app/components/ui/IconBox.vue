@@ -11,7 +11,7 @@ interface Props {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   shape?: 'circle' | 'rounded' | 'square'
   variant?: 'solid' | 'glass' | 'outline' | 'gradient' | 'ghost'
-  color?: 'cyan' | 'violet' | 'blue' | 'white' | 'gray' | 'orange' | 'red' | 'green' | 'emerald' | 'pink'
+  color?: 'cyan' | 'violet' | 'blue' | 'white' | 'gray' | 'orange' | 'red' | 'green' | 'emerald' | 'pink' | 'amber'
   pulse?: boolean
   glow?: boolean
   interactive?: boolean
@@ -23,7 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'md',
   shape: 'rounded',
   variant: 'solid',
-  color: 'blue',
+  color: 'cyan',
   pulse: false,
   glow: false,
   interactive: false,
@@ -57,14 +57,15 @@ const colorClasses = computed(() => {
   const colors = {
     cyan: { text: 'text-cyan-400', bg: 'bg-cyan-500', border: 'border-cyan-500' },
     violet: { text: 'text-violet-400', bg: 'bg-violet-500', border: 'border-violet-500' },
-    blue: { text: 'text-blue-400', bg: 'bg-blue-600', border: 'border-blue-500' },
+    blue: { text: 'text-cyan-400', bg: 'bg-cyan-500', border: 'border-cyan-500' },
     white: { text: 'text-white', bg: 'bg-white', border: 'border-white' },
     gray: { text: 'text-gray-400', bg: 'bg-gray-600', border: 'border-gray-500' },
     orange: { text: 'text-orange-400', bg: 'bg-orange-500', border: 'border-orange-500' },
     red: { text: 'text-red-400', bg: 'bg-red-500', border: 'border-red-500' },
     green: { text: 'text-green-400', bg: 'bg-green-500', border: 'border-green-500' },
     emerald: { text: 'text-emerald-400', bg: 'bg-emerald-500', border: 'border-emerald-500' },
-    pink: { text: 'text-pink-400', bg: 'bg-pink-500', border: 'border-pink-500' }
+    pink: { text: 'text-pink-400', bg: 'bg-pink-500', border: 'border-pink-500' },
+    amber: { text: 'text-amber-400', bg: 'bg-amber-500', border: 'border-amber-500' }
   }
 
   const c = colors[props.color] || colors.blue
@@ -83,9 +84,11 @@ const colorClasses = computed(() => {
       return `bg-transparent hover:bg-white/10 ${c.text}`
 
     case 'gradient':
-      if (props.color === 'violet') return `bg-gradient-to-br from-violet-500 to-purple-600 text-white border border-white/10`
-      if (props.color === 'cyan') return `bg-gradient-to-br from-cyan-400 to-blue-600 text-white border border-white/10`
+      if (props.color === 'violet') return `bg-gradient-to-br from-violet-500 to-cyan-500 text-white border border-white/10`
+      if (props.color === 'cyan' || props.color === 'blue') return `bg-gradient-to-br from-cyan-400 to-violet-500 text-white border border-white/10`
+      if (props.color === 'emerald') return `bg-gradient-to-br from-emerald-400 to-cyan-500 text-white border border-white/10`
       if (props.color === 'orange') return `bg-gradient-to-br from-orange-400 to-red-600 text-white border border-white/10`
+      if (props.color === 'amber') return `bg-gradient-to-br from-amber-400 to-orange-600 text-white border border-white/10`
       return `${c.bg} text-white`
 
     default:
@@ -100,13 +103,14 @@ const glowClasses = computed(() => {
   const glows = {
     cyan: 'shadow-[0_0_20px_rgba(6,182,212,0.4)]',
     violet: 'shadow-[0_0_30px_rgba(139,92,246,0.6)]',
-    blue: 'shadow-[0_0_20px_rgba(37,99,235,0.4)]',
+    blue: 'shadow-[0_0_20px_rgba(6,182,212,0.4)]',
     orange: 'shadow-[0_0_20px_rgba(249,115,22,0.4)]',
     white: 'shadow-[0_0_20px_rgba(255,255,255,0.2)]',
     red: 'shadow-lg shadow-red-500/30',
     green: 'shadow-lg shadow-green-500/30',
     emerald: 'shadow-lg shadow-emerald-500/30',
     pink: 'shadow-lg shadow-pink-500/30',
+    amber: 'shadow-lg shadow-amber-500/30',
     gray: 'shadow-lg'
   }
   return glows[props.color] || 'shadow-lg'
@@ -114,7 +118,7 @@ const glowClasses = computed(() => {
 
 const interactiveClasses = computed(() => {
   if (!props.interactive && !props.to && props.as !== 'button') return ''
-  return 'cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-200 outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
+  return 'app-focus-ring cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-200'
 })
 
 const finalComponent = computed(() => {

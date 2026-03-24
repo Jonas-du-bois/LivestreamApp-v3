@@ -15,13 +15,15 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   subtitle: undefined,
   icon: undefined,
-  iconColor: 'text-cyan-500',
-  accentColor: 'text-cyan-500'
+  iconColor: 'accent-text-secondary',
+  accentColor: 'accent-text-primary'
 })
 </script>
 
 <template>
-  <div class="relative py-6 mb-4">
+  <div class="ui-page-header relative isolate overflow-hidden py-6 mb-4">
+    <div class="ui-page-header__wash pointer-events-none absolute -top-12 right-0 w-56 h-40 rounded-full" aria-hidden="true" />
+
     <!-- Glow décoratif en arrière-plan -->
     <div
       v-if="icon"
@@ -55,3 +57,11 @@ withDefaults(defineProps<Props>(), {
     <slot name="bottom" />
   </div>
 </template>
+
+<style scoped>
+.ui-page-header__wash {
+  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.32), rgb(var(--color-primary-rgb) / 0.18));
+  filter: blur(48px);
+  opacity: 0.65;
+}
+</style>

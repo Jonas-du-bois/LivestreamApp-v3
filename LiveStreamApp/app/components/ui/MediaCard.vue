@@ -34,7 +34,7 @@ const heightClass = computed(() => {
     :to="to"
     :interactive="interactive"
     padding="p-0"
-    class="overflow-hidden group relative flex flex-col"
+    class="ui-media-card overflow-hidden group relative flex flex-col"
     :class="[variant === 'cover' ? heightClass : '']"
   >
     <div
@@ -69,3 +69,20 @@ const heightClass = computed(() => {
     </div>
   </UiGlassCard>
 </template>
+
+<style scoped>
+.ui-media-card::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgb(var(--color-primary-rgb) / 0.08));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ui-media-card:hover::after {
+  opacity: 1;
+}
+</style>

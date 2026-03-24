@@ -34,11 +34,11 @@ const emit = defineEmits<{
 
 const variantClasses = computed(() => {
   const maps = {
-    glass: 'glass-card hover:bg-white/20 active:bg-white/25 text-white border-white/10',
-    primary: 'bg-cyan-500 hover:bg-cyan-400 text-white shadow-lg shadow-cyan-500/20 border border-transparent',
-    secondary: 'bg-white/10 hover:bg-white/20 text-white border border-white/5',
-    ghost: 'hover:bg-white/10 text-white border border-transparent',
-    outline: 'border-2 border-white/20 hover:bg-white/10 text-white'
+    glass: 'glass-card ui-button--glass text-white border-white/10',
+    primary: 'ui-button--primary text-white border border-transparent',
+    secondary: 'ui-button--secondary text-white border',
+    ghost: 'ui-button--ghost text-white border border-transparent',
+    outline: 'ui-button--outline text-white border'
   }
   return maps[props.variant] || maps.glass
 })
@@ -56,7 +56,7 @@ const sizeClasses = computed(() => {
 const roundedClasses = computed(() => `rounded-${props.rounded}`)
 
 const commonClasses = computed(() => [
-  'inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
+  'ui-button app-focus-ring relative isolate overflow-hidden inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
   variantClasses.value,
   sizeClasses.value,
   roundedClasses.value,
@@ -97,3 +97,66 @@ const commonClasses = computed(() => [
     />
   </component>
 </template>
+
+<style scoped>
+.ui-button {
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.12);
+}
+
+.ui-button--primary {
+  background: linear-gradient(135deg, rgb(var(--color-primary-rgb)) 0%, rgb(var(--color-secondary-rgb)) 100%);
+  box-shadow:
+    0 14px 30px rgb(var(--color-primary-rgb) / 0.2),
+    0 8px 20px rgb(var(--color-secondary-rgb) / 0.12);
+}
+
+.ui-button--primary:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    0 18px 34px rgb(var(--color-primary-rgb) / 0.24),
+    0 10px 24px rgb(var(--color-secondary-rgb) / 0.16);
+}
+
+.ui-button--secondary {
+  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.26), rgb(var(--color-primary-rgb) / 0.16));
+  border-color: rgb(var(--color-secondary-rgb) / 0.28);
+  box-shadow: 0 14px 28px rgb(var(--color-secondary-rgb) / 0.12);
+}
+
+.ui-button--secondary:hover {
+  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.34), rgb(var(--color-primary-rgb) / 0.2));
+  border-color: rgb(var(--color-secondary-rgb) / 0.42);
+}
+
+.ui-button--glass {
+  border-color: rgb(var(--color-primary-rgb) / 0.16);
+}
+
+.ui-button--glass:hover {
+  background:
+    radial-gradient(circle at top right, rgb(var(--color-primary-rgb) / 0.14), transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(11, 17, 32, 0.18) 100%);
+  border-color: rgb(var(--color-secondary-rgb) / 0.26);
+  box-shadow: 0 16px 28px rgb(var(--color-secondary-rgb) / 0.12);
+}
+
+.ui-button--ghost:hover {
+  background: linear-gradient(135deg, rgb(var(--color-primary-rgb) / 0.12), rgb(var(--color-secondary-rgb) / 0.08));
+}
+
+.ui-button--outline {
+  background: rgb(var(--color-secondary-rgb) / 0.06);
+  border-color: rgb(var(--color-secondary-rgb) / 0.4);
+}
+
+.ui-button--outline:hover {
+  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.16), rgb(var(--color-primary-rgb) / 0.08));
+  border-color: rgb(var(--color-secondary-rgb) / 0.58);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-button--primary:hover {
+    filter: none;
+  }
+}
+</style>

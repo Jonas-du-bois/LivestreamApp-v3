@@ -282,7 +282,7 @@ useSocketRoom('schedule-updates', [
             >
               <template #actions>
                 <button
-                  class="inline-flex items-center gap-2 rounded-full gradient-cyan-purple px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90 active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  class="app-focus-ring app-focus-ring-secondary inline-flex items-center gap-2 rounded-full gradient-cyan-purple px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90 active:scale-95"
                   type="button"
                   @click="clearScheduleFilters"
                 >

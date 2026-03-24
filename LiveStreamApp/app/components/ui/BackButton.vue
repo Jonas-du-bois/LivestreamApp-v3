@@ -40,8 +40,8 @@ const handleClick = (event: MouseEvent) => {
 }
 
 const commonClasses = computed(() => [
-  'inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 active:scale-95 text-white shadow-lg group outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
-  props.glass ? 'glass-panel bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/20 hover:border-white/20 hover:shadow-cyan-500/20 active:bg-white/30 active:shadow-cyan-500/40' : 'hover:bg-white/10 active:bg-white/20'
+  'ui-back-button app-focus-ring inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 active:scale-95 text-white shadow-lg group',
+  props.glass ? 'glass-panel ui-back-button--glass border border-white/10' : 'ui-back-button--plain'
 ])
 </script>
 
@@ -53,10 +53,47 @@ const commonClasses = computed(() => [
   >
     <Icon
       name="fluent:chevron-left-24-regular"
-      class="w-5 h-5 text-white transition-transform duration-300 group-hover:-translate-x-1 group-active:-translate-x-2 group-active:scale-90"
+      class="ui-back-button__icon w-5 h-5 text-white transition-transform duration-300 group-hover:-translate-x-1 group-active:-translate-x-2 group-active:scale-90"
     />
     <span class="text-sm font-medium">
       <slot>{{ label }}</slot>
     </span>
   </button>
 </template>
+
+<style scoped>
+.ui-back-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.ui-back-button--glass {
+  background:
+    radial-gradient(circle at top right, rgb(var(--color-secondary-rgb) / 0.16), transparent 40%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.07) 55%, rgba(11, 17, 32, 0.22) 100%);
+}
+
+.ui-back-button--glass:hover {
+  border-color: rgb(var(--color-primary-rgb) / 0.28);
+  box-shadow:
+    0 18px 32px rgb(var(--color-primary-rgb) / 0.12),
+    0 10px 20px rgb(var(--color-secondary-rgb) / 0.1);
+}
+
+.ui-back-button--glass:active {
+  border-color: rgb(var(--color-secondary-rgb) / 0.34);
+}
+
+.ui-back-button--plain:hover {
+  background: linear-gradient(135deg, rgb(var(--color-primary-rgb) / 0.12), rgb(var(--color-secondary-rgb) / 0.08));
+}
+
+.ui-back-button--plain:active {
+  background: linear-gradient(135deg, rgb(var(--color-primary-rgb) / 0.18), rgb(var(--color-secondary-rgb) / 0.12));
+}
+
+.ui-back-button:hover .ui-back-button__icon {
+  color: var(--color-primary);
+}
+</style>

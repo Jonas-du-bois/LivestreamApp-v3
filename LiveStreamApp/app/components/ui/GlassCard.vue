@@ -23,9 +23,9 @@ const isInteractive = computed(() => props.interactive ?? !!props.to)
 
 // Compose dynamiquement les classes CSS : applique des effets de survol uniquement si le composant est interactif.
 const cardClasses = computed(() => [
-  'glass-card transition-all duration-300 block outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]',
+  'glass-card ui-glass-card app-focus-ring transition-all duration-300 block',
   props.padding,
-  isInteractive.value ? 'cursor-pointer hover:bg-white/15 hover:border-white/30 hover:shadow-lg hover:shadow-cyan-900/10 active:scale-[0.97] active:bg-white/20 active:border-cyan-400/50 active:shadow-cyan-500/20' : '',
+  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer active:scale-[0.97]' : '',
   props.class
 ])
 
@@ -53,3 +53,39 @@ const handleKeyDown = (event: KeyboardEvent) => {
     <slot />
   </component>
 </template>
+
+<style scoped>
+.ui-glass-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.ui-glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(140deg, transparent 0%, rgb(var(--color-primary-rgb) / 0.08) 45%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ui-glass-card--interactive:hover {
+  border-color: rgb(var(--color-secondary-rgb) / 0.28);
+  box-shadow:
+    0 20px 36px rgba(2, 6, 23, 0.24),
+    0 0 0 1px rgb(var(--color-secondary-rgb) / 0.1);
+}
+
+.ui-glass-card--interactive:hover::before {
+  opacity: 1;
+}
+
+.ui-glass-card--interactive:active {
+  border-color: rgb(var(--color-tertiary-rgb) / 0.36);
+  box-shadow:
+    0 16px 30px rgba(2, 6, 23, 0.2),
+    0 0 0 1px rgb(var(--color-tertiary-rgb) / 0.12);
+}
+</style>

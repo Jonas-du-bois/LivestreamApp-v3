@@ -12,16 +12,24 @@
   --foreground: #ffffff;
   --card: rgba(255, 255, 255, 0.1);
   --card-foreground: #ffffff;
-  --primary: #06B6D4;
+  --color-primary: #06B6D4;
+  --color-primary-rgb: 6 182 212;
+  --color-secondary: #8B5CF6;
+  --color-secondary-rgb: 139 92 246;
+  --color-tertiary: #34D399;
+  --color-tertiary-rgb: 52 211 153;
+  --primary: var(--color-primary);
   --primary-foreground: #0B1120;
-  --secondary: #8B5CF6;
+  --secondary: var(--color-secondary);
   --secondary-foreground: #ffffff;
   --muted: rgba(255, 255, 255, 0.6);
   --muted-foreground: rgba(255, 255, 255, 0.4);
-  --accent: #22d3ee;
+  --accent: var(--color-tertiary);
   --destructive: #ef4444;
   --border: rgba(255, 255, 255, 0.15);
-  --ring: rgba(6, 182, 212, 0.5);
+  --ring: rgb(var(--color-primary-rgb) / 0.5);
+  --focus-ring-color: var(--color-primary);
+  --focus-ring-rgb: var(--color-primary-rgb);
   --radius: 16px;
   --header-safe-extra: 1rem;
   --nav-safe-extra: 1rem;
@@ -63,29 +71,74 @@ body {
 
 /* Glass Card - Primary glassmorphism effect */
 .glass-card {
-  background: rgba(255, 255, 255, 0.048);
+  background:
+    radial-gradient(circle at top right, rgb(var(--color-primary-rgb) / 0.14), transparent 36%),
+    radial-gradient(circle at bottom left, rgb(var(--color-secondary-rgb) / 0.1), transparent 32%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.085) 0%, rgba(255, 255, 255, 0.05) 46%, rgba(11, 17, 32, 0.22) 100%);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
+  box-shadow:
+    0 18px 34px rgba(2, 6, 23, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 /* Glass Panel - Stronger glassmorphism for modals/overlays */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top left, rgb(var(--color-secondary-rgb) / 0.16), transparent 34%),
+    radial-gradient(circle at bottom right, rgb(var(--color-tertiary-rgb) / 0.14), transparent 36%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 45%, rgba(11, 17, 32, 0.26) 100%);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
+  box-shadow:
+    0 24px 44px rgba(2, 6, 23, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.app-focus-ring {
+  outline: none;
+}
+
+.app-focus-ring:focus-visible {
+  outline: 2px solid rgb(var(--focus-ring-rgb) / 0.95);
+  outline-offset: 2px;
+}
+
+.app-focus-ring-secondary:focus-visible {
+  outline-color: rgb(var(--color-secondary-rgb) / 0.95);
+}
+
+.app-focus-ring-tertiary:focus-visible {
+  outline-color: rgb(var(--color-tertiary-rgb) / 0.95);
+}
+
+.accent-text-primary {
+  color: var(--color-primary);
+}
+
+.accent-text-secondary {
+  color: var(--color-secondary);
+}
+
+.accent-text-tertiary {
+  color: var(--color-tertiary);
 }
 
 /* Glow Effects */
 .glow-cyan {
-  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
+  filter: drop-shadow(0 0 10px rgb(var(--color-primary-rgb) / 0.62));
 }
 
 .glow-purple {
-  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+  filter: drop-shadow(0 0 10px rgb(var(--color-secondary-rgb) / 0.62));
+}
+
+.glow-emerald {
+  filter: drop-shadow(0 0 10px rgb(var(--color-tertiary-rgb) / 0.58));
 }
 
 .glow-red {
@@ -94,7 +147,15 @@ body {
 
 /* Gradient Backgrounds */
 .gradient-cyan-purple {
-  background: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+}
+
+.gradient-primary-tertiary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-tertiary) 100%);
+}
+
+.gradient-secondary-tertiary {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-tertiary) 100%);
 }
 
 .gradient-overlay {
@@ -266,7 +327,9 @@ body {
    ============================================ */
 
 .ios26-bubble {
-  background: rgba(255, 255, 255, 0.10);
+  background:
+    radial-gradient(circle at top center, rgb(var(--color-primary-rgb) / 0.09), transparent 58%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 58%, rgba(11, 17, 32, 0.18) 100%);
   backdrop-filter: blur(40px) saturate(1.8);
   -webkit-backdrop-filter: blur(40px) saturate(1.8);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -287,7 +350,9 @@ body {
 }
 
 .ios26-bubble-interactive:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(circle at top center, rgb(var(--color-secondary-rgb) / 0.12), transparent 58%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.11) 55%, rgba(11, 17, 32, 0.16) 100%);
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.12),
     0 8px 24px rgba(0, 0, 0, 0.08),
@@ -296,5 +361,7 @@ body {
 
 .ios26-bubble-interactive:active {
   transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.22);
+  background:
+    radial-gradient(circle at bottom center, rgb(var(--color-primary-rgb) / 0.14), transparent 54%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.14) 55%, rgba(11, 17, 32, 0.12) 100%);
 }
