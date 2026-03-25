@@ -96,3 +96,13 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+## 2026-03-06 - Extraction de la logique Historique des Groupes
+
+- **Logic Extracted:** Duplicated logic to calculate and aggregate historical statistics (`historyByYear` array map/reduce/sort and `averageHistoryScore` computation) from `GroupInfoCard.vue` and `GroupDetailsModal.vue`.
+- **Destination:** `app/utils/history.ts`
+- **Changes:**
+  - Created pure utility function `aggregateHistoryByYear(history, apparatusCode?)` to handle grouping by year, averaging, and sorting.
+  - Created pure utility function `calculateAverageHistoryScore(aggregated)` to handle the overall average calculation.
+  - Extracted the `HistoryPoint` interface into the utility file.
+  - Refactored `GroupInfoCard.vue` and `GroupDetailsModal.vue` to auto-import and use these utilities instead of raw array manipulations.
+- **Outcome:** Removed ~45 lines of duplicated, non-reactive array manipulation logic from components. Improved testability of core historical statistics calculations.

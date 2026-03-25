@@ -30,14 +30,15 @@ const gymnastsCount = computed(() => props.group.gymnastsCount ?? 0)
 const monitors = computed(() => props.passageMonitors ?? props.group.monitors ?? [])
 const monitorsCount = computed(() => monitors.value.length)
 
+// Prépare les données de l'historique en faisant une moyenne des scores par année pour affichage dans le graphique.
+const historyByYear = computed(() => aggregateHistoryByYear(props.group.history))
+
 // Calcule la note moyenne, en privilégiant la statistique pré-calculée par l'API si elle existe, sinon via l'historique complet.
 const averageScore = computed(() => {
   if (typeof (props.group as any).averageScore === 'number') {
     return (props.group as any).averageScore.toFixed(2)
   }
-  if (!props.group.history?.length) return '0.00'
-  const sum = props.group.history.reduce((acc: number, curr: HistoryEntry) => acc + curr.score, 0)
-  return (sum / props.group.history.length).toFixed(2)
+  return calculateOverallAverage(props.group.history)
 })
 
 const categoryLabel = computed(() => {
@@ -46,22 +47,6 @@ const categoryLabel = computed(() => {
 
 const categoryColor = computed(() => {
   return props.group.category === 'MIXTE' ? 'bg-purple-500/20 text-purple-400' : 'bg-cyan-500/20 text-cyan-400'
-})
-
-// Prépare les données de l'historique en faisant une moyenne des scores par année pour affichage dans le graphique.
-const historyByYear = computed(() => {
-  if (!props.group.history) return []
-
-  const map = new Map<number, number[]>()
-  props.group.history.forEach((h: HistoryEntry) => {
-    if (!map.has(h.year)) map.set(h.year, [])
-    map.get(h.year)?.push(h.score)
-  })
-
-  return Array.from(map.entries()).map(([year, scores]) => {
-    const avg = scores.reduce((a, b) => a + b, 0) / scores.length
-    return { year, score: avg }
-  }).sort((a, b) => a.year - b.year)
 })
 
 // Regroupe les statistiques dans un tableau pour faciliter le rendu et l'application des animations (v-for dans le template).
