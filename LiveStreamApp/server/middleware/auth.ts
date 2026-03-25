@@ -1,4 +1,4 @@
-import { normalize } from 'node:path';
+import { posix } from 'node:path';
 
 export default defineEventHandler(async (event) => {
   // Security: Normalize path to prevent bypass (e.g. //api/admin) and handle query params
@@ -13,7 +13,8 @@ export default defineEventHandler(async (event) => {
   // Fix: Resolve . and .. segments using node:path.normalize
   // Replace backslashes with forward slashes for cross-platform consistency
   // Also ensure multiple slashes are collapsed (normalize usually handles this on POSIX but good to be safe)
-  const normalizedPath = normalize(path).replace(/\\/g, '/');
+  // And prepend a single leading slash to jail .. segments to the virtual root
+  const normalizedPath = posix.normalize('/' + path.replace(/\\/g, '/').replace(/^\/+/, ''));
 
   // Define protected zones (exclude login endpoint)
   // Security: Use strict equality check to prevent bypass (e.g. /api/admin/users/login)
