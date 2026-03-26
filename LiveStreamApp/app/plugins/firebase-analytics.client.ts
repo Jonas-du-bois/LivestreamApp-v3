@@ -71,7 +71,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     provide: {
       analytics: {
         /** Enregistre un événement personnalisé */
-        log: (eventName: string, params?: Record<string, any>) => {
+        log: (eventName: string, params?: Record<string, unknown>) => {
           logEvent(analytics, eventName, params)
         },
         /** Identifie l'utilisateur connecté (admin) */

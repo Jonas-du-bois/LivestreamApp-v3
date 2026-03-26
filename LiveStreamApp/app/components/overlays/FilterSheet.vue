@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ScheduleResponse } from '~/types/api'
+
 /**
  * FilterSheet
  * Modale "bottom sheet" (tiroir du bas) permettant de filtrer le programme/les résultats.
@@ -17,7 +19,7 @@ const { t } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
 
 // Récupère les métadonnées (agrès, catégories, salles) préparées et partagées par la page schedule.vue
-const meta = useState<any>('scheduleMeta')
+const meta = useState<ScheduleResponse['meta']>('scheduleMeta')
 const availableApparatus = computed(() => meta.value?.availableApparatus || [])
 const availableCategories = computed(() => meta.value?.availableCategories || [])
 const availableLocations = computed(() => meta.value?.availableLocations || [])
