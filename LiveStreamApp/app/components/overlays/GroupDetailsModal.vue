@@ -205,13 +205,8 @@ const gymnastsCount = computed(() => details.value?.info?.gymnastsCount ?? 0)
 const monitorsCount = computed(() => details.value?.monitors?.length ?? 0)
 const monitors = computed(() => details.value?.monitors ?? [])
 
-interface HistoryPoint {
-  year: number
-  score: number
-}
-
 // Agrége l'historique par année pour le graphique, avec un filtre optionnel par agrès.
-const historyByYear = computed<HistoryPoint[]>(() => {
+const historyByYear = computed(() => {
   if (!details.value?.history) return []
 
   let rawHistory = details.value.history
@@ -220,20 +215,7 @@ const historyByYear = computed<HistoryPoint[]>(() => {
     rawHistory = rawHistory.filter(h => h.apparatus === props.apparatusCode)
   }
 
-  const yearMap = new Map<number, { total: number; count: number }>()
-  rawHistory.forEach(h => {
-     if (!yearMap.has(h.year)) yearMap.set(h.year, { total: 0, count: 0 })
-     const entry = yearMap.get(h.year)!
-     entry.total += h.score
-     entry.count++
-  })
-
-  const aggregated: HistoryPoint[] = Array.from(yearMap.entries()).map(([year, data]) => ({
-    year,
-    score: data.total / data.count
-  }))
-
-  return aggregated.sort((a, b) => a.year - b.year)
+  return aggregateHistoryByYear(rawHistory)
 })
 
 const averageHistoryScore = computed(() => {
