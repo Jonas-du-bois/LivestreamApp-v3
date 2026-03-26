@@ -220,10 +220,21 @@ const stats = computed(() => {
               <UiButton
                 variant="glass"
                 size="sm"
-                :loading="isRefreshing"
-                icon="fluent:arrow-clockwise-24-regular"
+                class="group"
                 @click="handleRefresh"
               >
+                <Icon
+                  v-if="isRefreshing"
+                  name="svg-spinners:ring-resize"
+                  class="animate-spin"
+                  size="16"
+                />
+                <Icon
+                  v-else
+                  name="fluent:arrow-clockwise-24-regular"
+                  class="transition-transform duration-500 group-active:rotate-180"
+                  size="16"
+                />
                 {{ isRefreshing ? t('common.loading') : t('weather.refresh') }}
               </UiButton>
             </div>
