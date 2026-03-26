@@ -1,0 +1,2 @@
+## 2024-05-19 - Création de `<UiGlassBadge>`
+**Règle établie:** Tous les badges d'information simples avec un effet glassmorphism (bordure, fond semi-transparent, icône optionnelle) doivent utiliser le composant `<UiGlassBadge>` situé dans `app/components/ui/`. Cela maintient la cohérence visuelle ("Liquid Glassmorphism") et réduit la duplication des classes Tailwind (comme `px-3 py-1.5 rounded-full backdrop-blur-md`).

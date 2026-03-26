@@ -234,12 +234,12 @@ const stats = computed(() => {
             </div>
 
             <div class="mt-4 flex flex-wrap gap-2 text-xs text-white/70">
-              <span class="px-3 py-1.5 rounded-full border border-white/20 bg-white/10">
+              <UiGlassBadge border-color="border-white/20" bg-class="bg-white/10" text-class="" padding-class="px-3 py-1.5">
                 {{ t('weather.updated') }}: {{ updatedDisplay }}
-              </span>
-              <span class="px-3 py-1.5 rounded-full border border-white/20 bg-white/10">
+              </UiGlassBadge>
+              <UiGlassBadge border-color="border-white/20" bg-class="bg-white/10" text-class="" padding-class="px-3 py-1.5">
                 {{ t('weather.wind') }}: {{ windDisplay }}
-              </span>
+              </UiGlassBadge>
             </div>
           </div>
         </div>
