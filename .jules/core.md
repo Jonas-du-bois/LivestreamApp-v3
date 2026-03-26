@@ -96,3 +96,13 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+
+## 2026-03-08: History Aggregation Logic Extraction
+
+- **Logic Extracted:** Duplicated logic calculating the average historical scores grouped by year from an array of history entries. Found in `GroupInfoCard.vue` and `GroupDetailsModal.vue`.
+- **Destination:** `app/utils/history.ts`
+- **Changes:**
+  - Created a pure utility function `aggregateHistoryByYear`.
+  - Defined `HistoryPoint` and `RawHistoryEntry` types to handle both normal `HistoryEntry` arrays and objects with extra parameters (like `apparatus` in the modal).
+  - Refactored `GroupInfoCard.vue` and `GroupDetailsModal.vue` to import and use this utility function instead of calculating the aggregation inline.
+- **Outcome:** Cleaned up ~30 lines of duplicated code across the components. Standardized the display logic for the history performance chart, and ensured proper typing.
