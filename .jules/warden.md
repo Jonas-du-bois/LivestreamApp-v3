@@ -55,3 +55,14 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Robust Typing and Any Removal Across App
+- **Target:** `app/pages/favorites.vue`, `app/components/overlays/FilterSheet.vue`, `app/components/group/GroupInfoCard.vue`, `app/stores/favorites.ts`, `app/pages/stream/index.vue`, `app/plugins/firebase-analytics.client.ts`
+- **Risks Mitigated:**
+    - **Weak Typing / Fragility:** Explicit use of the `any` keyword masked potential runtime issues and ignored type benefits for `PassageEnriched`, `Group`, `PopulatedPassage`, `ScheduleResponse` and `analytics` payloads. This risked errors if expected properties changed or hydration mismatches occurred.
+- **Solution:**
+    - Replaced `any` in `filter` callbacks with `PassageEnriched`.
+    - Used intersection types (`Group & { averageScore?: number }`) instead of `any` casts.
+    - Exported and typed `useState` logic explicitly using `ScheduleResponse['meta']`.
+    - Removed `any` cast in `useFavoritesStore` and used explicit `import('pinia-plugin-persistedstate').StorageLike`.
+    - Improved `firebase-analytics` with `Record<string, unknown>`.

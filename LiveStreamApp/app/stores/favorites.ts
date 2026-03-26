@@ -130,6 +130,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
 }, {
   // Persistance multi-plateforme : NSUserDefaults / SharedPreferences (natif) ou localStorage (web)
   persist: {
-    storage: capacitorStorage as any
+    storage: capacitorStorage as import('pinia-plugin-persistedstate').StorageLike
   }
 })
