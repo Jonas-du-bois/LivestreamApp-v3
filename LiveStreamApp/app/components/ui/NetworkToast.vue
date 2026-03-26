@@ -71,6 +71,7 @@ const alertConfig = computed(() => {
               v-if="status === 'poor'" 
               @click="showPoorWarning = false"
               class="flex-shrink-0 text-white/70 hover:text-white transition-colors"
+              :aria-label="t('common.close')"
             >
               <Icon name="fluent:dismiss-20-regular" class="w-5 h-5" />
             </button>
