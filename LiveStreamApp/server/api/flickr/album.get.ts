@@ -15,6 +15,23 @@ interface FlickrRawPhoto {
   originalformat?: string
 }
 
+interface FlickrAlbumResponse {
+  stat: 'ok' | 'fail'
+  message?: string
+  photoset?: {
+    id: string
+    primary: string
+    owner: string
+    ownername: string
+    photo: FlickrRawPhoto[]
+    page: number
+    per_page: number
+    perpage: number
+    pages: number
+    total: number
+  }
+}
+
 /**
  * GET /api/flickr/album
  * Proxy sécurisé vers l'API Flickr REST.
@@ -57,7 +74,7 @@ export default defineCachedEventHandler(async (_event) => {
 
   console.log('[flickr] Fetching album', albumId)
 
-  const response: Record<string, any> = await $fetch(url)
+  const response = await $fetch<FlickrAlbumResponse>(url)
 
   if (response?.stat !== 'ok') {
     throw createError({

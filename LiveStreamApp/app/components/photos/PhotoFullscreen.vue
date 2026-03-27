@@ -47,11 +47,15 @@ const fetchOriginalUrl = async () => {
 
 onMounted(() => {
   fetchOriginalUrl()
-  document.addEventListener('keydown', handleKeyDown)
+  if (import.meta.client) {
+    document.addEventListener('keydown', handleKeyDown)
+  }
 })
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown)
+  if (import.meta.client) {
+    document.removeEventListener('keydown', handleKeyDown)
+  }
 })
 
 const displayUrl = computed(() => originalUrl.value || props.fallbackUrl)

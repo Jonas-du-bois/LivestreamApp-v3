@@ -1,3 +1,23 @@
+interface FlickrSize {
+  label: string
+  width: number | string
+  height: number | string
+  source: string
+  url: string
+  media: string
+}
+
+interface FlickrSizesResponse {
+  stat: 'ok' | 'fail'
+  message?: string
+  sizes?: {
+    canblog: number
+    canprint: number
+    candownload: number
+    size: FlickrSize[]
+  }
+}
+
 /**
  * GET /api/flickr/photo/:id/sizes
  * Proxy vers flickr.photos.getSizes – retourne les URLs de toutes les tailles
@@ -31,7 +51,7 @@ export default defineEventHandler(async (event) => {
 
   const url = `https://www.flickr.com/services/rest/?${params.toString()}`
 
-  const response: Record<string, any> = await $fetch(url)
+  const response = await $fetch<FlickrSizesResponse>(url)
 
   if (response?.stat !== 'ok') {
     throw createError({
@@ -41,19 +61,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const sizes: Array<{
-    label: string
-    width: number
-    height: number
-    source: string
-    url: string
-    media: string
-  }> = response.sizes?.size ?? []
+  const sizes: FlickrSize[] = response.sizes?.size ?? []
 
   // Chercher la taille originale, puis la plus grande disponible
   const original = sizes.find(s => s.label === 'Original')
   const largest = sizes.length > 0
-    ? sizes.reduce((a, b) => (a.width * a.height > b.width * b.height ? a : b))
+    ? sizes.reduce((a, b) => (Number(a.width) * Number(a.height) > Number(b.width) * Number(b.height) ? a : b))
     : null
 
   const best = original || largest
@@ -62,14 +75,14 @@ export default defineEventHandler(async (event) => {
     photoId,
     sizes: sizes.map(s => ({
       label: s.label,
-      width: s.width,
-      height: s.height,
+      width: Number(s.width),
+      height: Number(s.height),
       source: s.source
     })),
     original: best ? {
       label: best.label,
-      width: best.width,
-      height: best.height,
+      width: Number(best.width),
+      height: Number(best.height),
       source: best.source
     } : null
   }
