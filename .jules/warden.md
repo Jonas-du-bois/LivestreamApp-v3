@@ -55,3 +55,15 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Weather and Schedule Types Strictness & Leak Prevention
+
+- **Target:** `app/pages/weather.vue`, `app/pages/favorites.vue`, `app/pages/results.vue`, `app/pages/stream/[id].vue`
+- **Risks Mitigated:**
+    - **Memory Leaks:** Uncleaned `setTimeout` timer in `weather.vue` could have caused state updates on unmounted components and memory leaks.
+    - **Weak Typing:** Replaced implicit `any` in API payloads and iterations with strict typed interfaces to prevent property access errors.
+- **Solution:**
+    - Extracted `WeatherResponse` and `WeatherCurrent` interfaces for weather payload.
+    - Implemented strictly cleaned `refreshTimer` in `weather.vue`.
+    - Typed `favoritePassages` iteration with `PassageEnriched`.
+    - Replaced `any` assertions with specific strict definitions in `results.vue` and `[id].vue`.

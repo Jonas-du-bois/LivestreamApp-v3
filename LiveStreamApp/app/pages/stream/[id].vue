@@ -160,7 +160,7 @@ watch(streamUrl, (url) => {
 })
 
 // Refresh data on any real-time event
-const handleRefresh = async (payload?: any) => {
+const handleRefresh = async (payload?: unknown) => {
   console.log('[stream/id] 🔄 Handling refresh event...', payload)
   try {
     await fetchAll()
@@ -174,7 +174,7 @@ const handleRefresh = async (payload?: any) => {
 const handleStreamUpdate = (payload: unknown) => {
   console.log('[stream/id] 📺 Stream update received:', payload)
   
-  const streamPayload = payload as { _id?: string; currentPassage?: any }
+  const streamPayload = payload as { _id?: string; currentPassage?: PopulatedPassage | null }
 
   // Si le payload contient les données du stream actuel, les utiliser directement
   if (streamPayload && streamPayload._id === route.params.id && stream.value) {

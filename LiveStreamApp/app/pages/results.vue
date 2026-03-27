@@ -151,7 +151,7 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
 
   // Handle new entry dynamically (e.g. first score for an apparatus)
   if (!found && data.group && data.apparatus) {
-    const code = data.apparatus.code || (data as any).apparatusCode
+    const code = data.apparatus.code || (data as { apparatusCode?: string }).apparatusCode
     
     if (code) {
       console.log('[results] Adding new entry for apparatus:', code, 'Score:', data.score)
