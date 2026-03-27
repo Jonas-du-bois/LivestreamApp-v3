@@ -11,3 +11,8 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2023-10-27 - Tactile Micro-Interactions on Generic Components
+
+**Learning:** Adding the `group` class to the wrapper of reusable components like `<UiButton>` allows for synchronized tactile animations on child elements (like icons) without needing complex JavaScript logic or multiple Vue directives. Using `group-active` modifiers (e.g., `group-active:rotate-180`, `group-active:-rotate-12`) provides instant, physical touch feedback that significantly enhances the mobile experience.
+
+**Action:** Whenever building or updating small interactive elements (buttons, link cards), apply `group` and `active:scale-95` to the parent and `group-active` transformations to the icon to create a unified tactile interaction.
