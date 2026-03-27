@@ -96,3 +96,13 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+
+## 2026-03-06: Group History Aggregation Abstraction
+
+- **Logic Extracted:** Duplicated logic for aggregating historical scores by year and calculating the overall average score from `GroupDetailsModal.vue` and `GroupInfoCard.vue`.
+- **Destination:** `app/utils/history.ts`
+- **Changes:**
+  - Created `aggregateHistoryByYear()` pure function to compute total counts and calculate average scores grouped by year, with an optional apparatus filter.
+  - Created `calculateAverageScore()` pure function to derive a formatted global average from an array of history items.
+  - Replaced the duplicate logic in `historyByYear` and `averageScore`/`averageHistoryScore` computed properties within `GroupDetailsModal.vue` and `GroupInfoCard.vue`.
+- **Outcome:** Removed ~30 lines of duplicated logic. Centralized pure business logic related to history statistics calculations outside of reactive component setups.
