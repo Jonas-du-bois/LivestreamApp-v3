@@ -150,12 +150,16 @@ watch(isOpen, (open) => {
 
 // Nettoyage rigoureux des événements globaux pour éviter les fuites de mémoire.
 onMounted(() => {
-  document.addEventListener('keydown', handleKeyDown)
+  if (import.meta.client) {
+    document.addEventListener('keydown', handleKeyDown)
+  }
 })
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown)
-  if (import.meta.client) document.body.style.overflow = ''
+  if (import.meta.client) {
+    document.removeEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = ''
+  }
 })
 </script>
 

@@ -77,3 +77,13 @@ Suivi des refactorisations, sécurisations et améliorations de qualité de code
     - Updated `useFirstLoad.ts` to only import `type Ref`.
     - Updated `useNetworkStatus.ts` to use `import.meta.client` for SSR-safe window access.
     - *Règle respectée :* "Toujours utiliser import.meta.client avant d'accéder à window" et "Supprimer les imports inutiles (Nuxt auto-importe ref, computed, onMounted, etc.)."
+
+## 2026-02-21: API Flickr Strict Typing
+
+- **Target:** `server/api/flickr/album.get.ts`, `server/api/flickr/photo/[id]/sizes.get.ts`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced `Record<string, any>` usage for `$fetch` responses with strict `FlickrAlbumResponse` and `FlickrSizesResponse` interfaces to guarantee safety in subsequent mapping functions, and converted numerical attributes mapped as strings into actual numbers.
+- **Solution:**
+    - Defined `FlickrAlbumResponse` with `FlickrRawPhoto`.
+    - Defined `FlickrSizesResponse` with `FlickrSize`.
+    - Replaced implicit string concatenation and logical flaws with explicit `Number()` castings during `reduce` comparison logic in `sizes.get.ts`.
