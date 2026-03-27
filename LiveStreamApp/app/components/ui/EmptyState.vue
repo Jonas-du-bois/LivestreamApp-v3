@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
 <template>
   <div 
     class="ui-empty-state text-center p-8 transition-all flex flex-col items-center justify-center rounded-xl"
-    :class="[glass ? 'glass-card' : 'ui-empty-state--plain', 'app-focus-ring']"
+    :class="[glass ? 'glass-card' : 'ui-empty-state--plain', 'app-focus-ring', 'focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none']"
     role="status"
     aria-live="polite"
     tabindex="0"
