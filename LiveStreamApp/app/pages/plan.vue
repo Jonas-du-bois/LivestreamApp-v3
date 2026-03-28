@@ -159,20 +159,36 @@ onMounted(async () => {
 
     <Transition name="premium-swap" appear>
       <div class="absolute bottom-24 right-4 z-[500]">
-        <UiIconBox
-          as="button"
+        <button
+          type="button"
           @click="toggleMapStyle"
-          :icon="isSatellite ? 'fluent:map-24-regular' : 'fluent:earth-24-regular'"
-          :variant="isSatellite ? 'solid' : 'solid'"
-          :color="isSatellite ? 'blue' : 'gray'"
-          shape="circle"
-          size="lg"
-          interactive
-          glow
-          class="pointer-events-auto"
-          :class="!isSatellite ? '!bg-gray-900/60 !border-white/20' : ''"
+          class="pointer-events-auto w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 shadow-xl border overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 group"
+          :class="isSatellite
+            ? 'bg-blue-600 border-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500'
+            : 'bg-gray-800/80 backdrop-blur-md border-white/20 shadow-[0_4px_16px_rgba(0,0,0,0.5)] hover:bg-gray-700/80'"
           :aria-label="isSatellite ? t('plan.showMap') : t('plan.showSatellite')"
-        />
+        >
+          <Transition
+            enter-active-class="transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            leave-active-class="transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            enter-from-class="opacity-0 -rotate-180 scale-50 blur-sm"
+            leave-to-class="opacity-0 rotate-180 scale-50 blur-sm"
+            mode="out-in"
+          >
+            <Icon
+              v-if="isSatellite"
+              key="map-icon"
+              name="fluent:map-24-regular"
+              class="w-6 h-6 text-white group-active:scale-90 transition-transform duration-300"
+            />
+            <Icon
+              v-else
+              key="earth-icon"
+              name="fluent:earth-24-regular"
+              class="w-6 h-6 text-white group-active:scale-90 transition-transform duration-300"
+            />
+          </Transition>
+        </button>
       </div>
     </Transition>
 
