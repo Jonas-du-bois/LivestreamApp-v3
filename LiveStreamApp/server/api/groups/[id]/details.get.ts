@@ -18,13 +18,18 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 1. Fetch Group Info
-    const group = await GroupModel.findById(groupId).lean()
+    // BOLT: explicitly selecting fields avoids fetching large unused arrays like monitors
+    const group = await GroupModel.findById(groupId)
+      .select('name canton category logo description gymnastsCount history')
+      .lean()
     if (!group) {
       throw createError({ statusCode: 404, message: 'Group not found' })
     }
 
     // 2. Fetch Timeline (Passages)
+    // BOLT: explicitly select fields to limit payload memory impact
     const passages = await PassageModel.find({ group: groupId })
+      .select('apparatus startTime endTime status score monitors location history')
       .populate('apparatus', 'name icon code')
       .sort({ startTime: 1 })
       .lean()
