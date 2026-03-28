@@ -15,6 +15,7 @@ export interface ScoreUpdatePayload {
   // For new entries
   group?: EnrichedGroup
   apparatus?: EnrichedApparatus
+  apparatusCode?: string
   startTime?: string
   endTime?: string
   location?: string

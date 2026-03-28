@@ -55,3 +55,16 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: FilterSheet and Event Listeners SSR Safety & Strict Typing
+
+- **Target:** `app/components/overlays/FilterSheet.vue`, `app/pages/results.vue`, `app/pages/admin/dashboard.vue`, `app/types/socket.ts`
+- **Risks Mitigated:**
+    - **Weak Typing:** Implicit `any` used for schedule meta state prevented build-time validation. Extracted missing explicit interfaces (`ScheduleMeta`) for proper type safety. Replaced `any` in error handlers.
+    - **Nuxt API Misuse / Over-engineering:** Redundant Nuxt `useState` local state copies tied to watch events caused messy reactivity flows. Replaced with simpler reactive `ref` synced properly.
+    - **SSR Safety:** Native `window.addEventListener` in `onMounted`/`onUnmounted` risks crashing SSR hydration if not strictly guarded.
+- **Solution:**
+    - Created `ScheduleMeta` typing and properly bounded explicit refs in `FilterSheet.vue`.
+    - Wrapped window listeners in `import.meta.client` check.
+    - Ensured `ScoreUpdatePayload` included `apparatusCode` to stop `any` usage.
+    - Updated catch blocks from `catch (e: any)` to `catch (e: unknown)` and properly parsed `Error` instances.

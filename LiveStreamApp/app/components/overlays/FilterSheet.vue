@@ -16,20 +16,27 @@ const { t } = useI18n()
 // ⚠️ DEAD CODE : const { locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
 
+interface ScheduleMeta {
+  availableApparatus: { code: string; name: string; icon?: string }[]
+  availableDays: string[]
+  availableCategories: string[]
+  availableLocations: string[]
+}
+
 // Récupère les métadonnées (agrès, catégories, salles) préparées et partagées par la page schedule.vue
-const meta = useState<any>('scheduleMeta')
+const meta = useState<ScheduleMeta>('scheduleMeta')
 const availableApparatus = computed(() => meta.value?.availableApparatus || [])
 const availableCategories = computed(() => meta.value?.availableCategories || [])
 const availableLocations = computed(() => meta.value?.availableLocations || [])
 
 const filtersStore = useScheduleFilters()
 
-// État local des filtres. 
-// L'utilisation de useState() garantit la persistance de la saisie en cours de l'utilisateur même si le composant est démonté/remonté durant l'édition.
-const selectedDivision = useState<string[]>('filter-sheet-division', () => [])
-const selectedSalle = useState<string[]>('filter-sheet-salle', () => [])
-const selectedApparatus = useState<string[]>('filter-sheet-apparatus', () => [])
-const selectedHidePast = useState<boolean>('filter-sheet-hide-past', () => false)
+// État local des filtres sous forme de refs.
+// Plus besoin de useState ici, le store pinia gère déjà la persistance globale.
+const selectedDivision = ref<string[]>([])
+const selectedSalle = ref<string[]>([])
+const selectedApparatus = ref<string[]>([])
+const selectedHidePast = ref<boolean>(false)
 
 // Synchronise l'état local avec l'état global du store à l'ouverture de la modale.
 watch(() => props.isOpen, (isOpen) => {
@@ -78,11 +85,15 @@ const handleKeydown = (e: KeyboardEvent) => {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
+  if (import.meta.client) {
+    window.addEventListener('keydown', handleKeydown)
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
+  if (import.meta.client) {
+    window.removeEventListener('keydown', handleKeydown)
+  }
 })
 </script>
 

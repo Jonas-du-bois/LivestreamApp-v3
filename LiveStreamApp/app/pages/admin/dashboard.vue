@@ -148,11 +148,12 @@ const sendTestNotification = async (type: NotificationType) => {
       notificationResult.value = null
       showTestNotificationMenu.value = false
     }, 1500)
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('[Dashboard] Test notification error:', e)
+    const errorMessage = e instanceof Error ? e.message : String(e)
     notificationResult.value = { 
       success: false, 
-      message: e.message || t('admin.notificationError')
+      message: errorMessage || t('admin.notificationError')
     }
   } finally {
     isSendingNotification.value = false
@@ -317,9 +318,9 @@ const reseedDatabase = async () => {
       const errorMessage = response?.error || 'Unknown error'
       window.alert(t('admin.errorOccurred', { error: errorMessage }))
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('[Dashboard] Failed to reseed DB:', e)
-    const errorMessage = e?.message || String(e)
+    const errorMessage = e instanceof Error ? e.message : String(e)
     window.alert(t('admin.errorOccurred', { error: errorMessage }))
   } finally {
     isReseeding.value = false
