@@ -129,6 +129,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
                 :key="passage._id"
                 class="flex items-center gap-4"
                 :interactive="true"
+                :aria-label="t('results.openGroupDetails', { group: passage.group?.name || '' })"
                 @click="handleGroupClick(passage.group?._id || '')"
               >
                 <div class="text-center min-w-[60px]">
@@ -167,6 +168,7 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
                 :key="passage._id"
                 class="flex items-center gap-4 opacity-70"
                 :interactive="true"
+                :aria-label="t('results.openGroupDetails', { group: passage.group?.name || '' })"
                 @click="handleGroupClick(passage.group?._id || '')"
               >
                 <div class="text-center min-w-[60px]">
