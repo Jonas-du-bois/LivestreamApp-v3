@@ -163,13 +163,13 @@ useSocketRoom('schedule-updates', [
     <Transition name="premium-swap" mode="out-in">
       <div v-if="showHappeningNowSkeleton" key="home-loading" class="space-y-6">
         <!-- Hero Skeleton -->
-        <div class="glass-card overflow-hidden relative h-64 rounded-xl premium-skeleton-shimmer premium-skeleton-surface opacity-50"></div>
+        <UiSkeletonBox class="overflow-hidden relative h-64" />
         
         <!-- Carousel Skeleton -->
         <div>
           <div class="premium-skeleton-line premium-skeleton-shimmer h-6 w-40 mb-4 px-1"></div>
           <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-            <div v-for="i in 3" :key="i" class="glass-card p-4 min-w-[200px] h-[138px] premium-skeleton-surface premium-skeleton-shimmer opacity-50 rounded-xl"></div>
+            <UiSkeletonBox v-for="i in 3" :key="i" class="p-4 min-w-[200px] h-[138px]" />
           </div>
         </div>
       </div>
