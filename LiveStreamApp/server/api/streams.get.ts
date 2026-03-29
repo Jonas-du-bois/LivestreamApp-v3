@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
       // OPTIMIZATION: Select only necessary fields to reduce payload size (avoids large history arrays)
       .populate({
         path: 'currentPassage',
+        select: '-history',
         populate: [
           { path: 'group', select: 'name category' },
           { path: 'apparatus', select: 'name code icon' }

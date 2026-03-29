@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
     const [livePassages, liveStreams] = await Promise.all([
       PassageModel.find({ status: 'LIVE' })
         // OPTIMIZATION: Select only necessary fields to reduce payload size
+        .select('group apparatus startTime endTime location status score monitors')
         .populate('group', 'name category')
         .populate('apparatus', 'name code icon')
         .sort({ startTime: 1 })
@@ -15,6 +16,7 @@ export default defineEventHandler(async (event) => {
         // OPTIMIZATION: Select only necessary fields to reduce payload size (avoids large history arrays)
         .populate({
           path: 'currentPassage',
+          select: '-history',
           populate: [
             { path: 'group', select: 'name category' },
             { path: 'apparatus', select: 'name code icon' }
