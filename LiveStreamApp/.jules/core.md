@@ -14,3 +14,7 @@
 - **Action**: Extracted duplicate regular expression logic for generating thumbnail URLs for streams (YouTube, Twitch) into a new pure utility function `getStreamThumbnailUrl`.
 - **Files Affected**: `app/pages/stream/index.vue`, `app/components/home/HomeHeroCarousel.vue`, `app/utils/stream.ts`.
 - **Reasoning**: Adhere to DRY principles by separating pure string parsing and formatting logic out of Vue components and into a testable utility file (`app/utils/stream.ts`).
+
+## 2026-03-29 - Extraction de la logique aggregateHistoryByYear
+**Learning:** L'agrégation de l'historique d'un groupe par année (calcul de la note moyenne par an à partir des `HistoryEntry`) était dupliquée dans `GroupDetailsModal.vue` et `GroupInfoCard.vue`. Cette logique pure (ne dépendant pas de Vue ni de la réactivité) encombrait le setup des composants.
+**Action:** Création de la fonction `aggregateHistoryByYear` et de l'interface `HistoryPoint` dans `app/utils/history.ts`. La logique a été extraite car elle n'utilise pas la réactivité de Vue. Nuxt 4 auto-importe cette fonction, ce qui permet de nettoyer les composants tout en gardant une logique réutilisable et typée.
