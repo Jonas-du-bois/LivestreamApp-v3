@@ -305,10 +305,15 @@ useAutoRefresh(handleRefresh, STREAM_AUTO_REFRESH)
             </div>
           </div>
 
-          <div v-if="currentApparatus" class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-            <Icon :name="currentApparatus.icon || 'fluent:sport-24-regular'" class="w-5 h-5 text-cyan-400" />
+          <UiGlassBadge
+            v-if="currentApparatus"
+            :icon="currentApparatus.icon || 'fluent:sport-24-regular'"
+            icon-class="w-5 h-5 text-cyan-400"
+            bg-class="bg-white/5"
+            border-class="border-white/10"
+          >
             <span class="text-white font-medium text-sm">{{ translateApparatus(currentApparatus.code, currentApparatus.name) }}</span>
-          </div>
+          </UiGlassBadge>
         </div>
 
         <!-- Context Section -->
