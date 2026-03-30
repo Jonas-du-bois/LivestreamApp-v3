@@ -160,7 +160,7 @@ watch(streamUrl, (url) => {
 })
 
 // Refresh data on any real-time event
-const handleRefresh = async (payload?: any) => {
+const handleRefresh = async (payload?: unknown) => {
   console.log('[stream/id] 🔄 Handling refresh event...', payload)
   try {
     await fetchAll()
@@ -174,7 +174,7 @@ const handleRefresh = async (payload?: any) => {
 const handleStreamUpdate = (payload: unknown) => {
   console.log('[stream/id] 📺 Stream update received:', payload)
   
-  const streamPayload = payload as { _id?: string; currentPassage?: any }
+  const streamPayload = payload as { _id?: string; currentPassage?: PassageEnriched | string }
 
   // Si le payload contient les données du stream actuel, les utiliser directement
   if (streamPayload && streamPayload._id === route.params.id && stream.value) {
@@ -187,7 +187,7 @@ const handleStreamUpdate = (payload: unknown) => {
       console.log('[stream/id] ✅ Direct update from payload')
       
       // Fetch group details if needed
-      if (streamPayload.currentPassage?.group?._id) {
+      if (typeof streamPayload.currentPassage === 'object' && streamPayload.currentPassage !== null && streamPayload.currentPassage.group?._id) {
         fetchGroupDetails(streamPayload.currentPassage.group._id)
       }
       return

@@ -55,3 +55,14 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-05-15: Global Component Type Safety & Any Removal
+
+- **Target:** `app/pages/stream/index.vue`, `app/pages/stream/[id].vue`, `app/pages/favorites.vue`, `app/pages/results.vue`, `app/pages/admin/dashboard.vue`
+- **Risks Mitigated:**
+    - **Weak Typing / Error Propagation:** Multiple critical views were casting incoming payloads to `any` or catching errors as `any`, creating blind spots that bypass TS compiler checks and could lead to runtime UI crashes if server schemas changed.
+- **Solution:**
+    - Removed `any` in stream components (`index.vue`, `[id].vue`) when checking `currentPassage`, properly utilizing `unknown` type guards (`typeof cp === 'object'`).
+    - Enforced `PassageEnriched` type on callback filters in `favorites.vue`.
+    - Removed `any` cast when extending `ScoreUpdatePayload` for apparatus lookups in `results.vue`.
+    - Typed `catch (e: unknown)` blocks globally in the `admin/dashboard.vue` error handlers and implemented safe `instanceof Error` checks before attempting to read `e.message`.
