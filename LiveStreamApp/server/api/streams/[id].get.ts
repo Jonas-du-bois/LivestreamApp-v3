@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import { StreamModel } from '../../models/Stream'
 import { PassageModel } from '../../models/Passage'
 import { GroupModel } from '../../models/Group'
@@ -10,6 +11,13 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 400,
       statusMessage: 'Missing stream ID',
+    })
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid stream ID format',
     })
   }
 
