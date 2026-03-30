@@ -121,8 +121,8 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
     currentApparatusCode = livePassage.apparatus?.code || ''
   } else if (s.currentPassage) {
     // Fallback to currentPassage if no live passage found by location
-    const cp = s.currentPassage as any // currentPassage can be string or object depending on population, but here it might be populated or partially populated
-    if (typeof cp === 'object' && cp && cp.group) {
+    const cp = s.currentPassage as PassageEnriched | string
+    if (typeof cp === 'object' && cp !== null && cp.group) {
       currentGroupName = cp.group.name || ''
       currentApparatusName = cp.apparatus?.name || ''
       currentApparatusCode = cp.apparatus?.code || ''

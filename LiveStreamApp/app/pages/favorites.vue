@@ -35,7 +35,7 @@ const favoritePassages = computed<PassageEnriched[]>(() => {
   const _v = version.value // reactive dep on overrides
   if (!scheduleData.value?.data) return []
   return scheduleData.value.data
-    .filter((p: any) => p._id && favorites.value.includes(p._id))
+    .filter((p: PassageEnriched) => p._id && favorites.value.includes(p._id))
     .map(apply)
     // Note: sorting is done in usePassageTiming for upcoming/past lists
 })
