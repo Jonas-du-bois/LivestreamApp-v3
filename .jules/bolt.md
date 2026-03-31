@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2025-05-15 - Rank Calculation Logic & Functional Regressions
+**Learning:** Replacing `.find().sort().findIndex()` with `.countDocuments()` is a great optimization for standard ranking, but conditional ranking logic must be carefully preserved. In `LiveStreamApp`, unpublished passages must default to a rank of 0 rather than receiving a calculated rank, which a direct replacement skips.
+**Action:** When replacing list operations with direct DB calculations, always verify how edge cases or specific document states (like `isPublished: false`) were handled by the original code's filters before applying the optimization.
