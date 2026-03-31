@@ -282,11 +282,11 @@ useSocketRoom('schedule-updates', [
             >
               <template #actions>
                 <button
-                  class="app-focus-ring app-focus-ring-secondary inline-flex items-center gap-2 rounded-full gradient-cyan-purple px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90 active:scale-95"
+                  class="app-focus-ring app-focus-ring-secondary group inline-flex items-center gap-2 rounded-full gradient-cyan-purple px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/20 transition-all duration-200 hover:opacity-90 hover:shadow-purple-500/40 active:scale-95"
                   type="button"
                   @click="clearScheduleFilters"
                 >
-                  <Icon name="fluent:arrow-reset-24-regular" class="h-4 w-4" />
+                  <Icon name="fluent:arrow-reset-24-regular" class="h-4 w-4 transition-transform duration-300 group-active:-rotate-180" />
                   <span>{{ t('schedule.clearFilters') }}</span>
                 </button>
               </template>
