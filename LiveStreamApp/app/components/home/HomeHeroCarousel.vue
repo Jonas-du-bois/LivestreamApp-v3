@@ -5,10 +5,8 @@
  * Alterne entre les directs, les dernières photos, les résultats récents et les infos de l'événement.
  */
 
-import { useI18n } from 'vue-i18n'
 import { FlickrService } from '~/services/flickr.service'
 import { PublicService } from '~/services/public.service'
-import { useNow } from '~/composables/useNow'
 import type { PassageEnriched, Stream, Passage } from '~/types/api'
 
 // Utilise une technique "Two-Pass Render" pour éviter les erreurs d'hydratation Vue (Mismatch DOM/Server) causées par le temps réel.
@@ -20,6 +18,21 @@ interface Props {
   loading?: boolean
 }
 
+interface CarouselSlide {
+  id: string
+  type: 'live' | 'photo' | 'result' | 'afterparty' | 'food'
+  title: string
+  subtitle: string
+  image: string
+  to: string
+  badge?: {
+    label: string
+    variant: string
+    showDot?: boolean
+    pulse?: boolean
+  }
+}
+
 const props = withDefaults(defineProps<Props>(), {
   livePassages: () => [],
   liveStreams: () => [],
@@ -27,10 +40,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const { t } = useI18n()
-// ⚠️ DEAD CODE : const { locale } = useI18n()
 const { translateApparatus } = useTranslatedData()
 const router = useRouter()
-// ⚠️ DEAD CODE : const { now } = useNow()
 
 const { timeLeftShort: afterpartyCountdown } = usePartyCountdown()
 
@@ -73,7 +84,7 @@ const ssrSlides = computed(() => [
 
 // Construit dynamiquement les slides en fonction de l'actualité de l'événement (Live, Photos, Résultats).
 const dynamicSlides = computed(() => {
-  const items: any[] = []
+  const items: CarouselSlide[] = []
 
   if (props.livePassages.length > 0) {
     props.livePassages.slice(0, 2).forEach((p, idx) => {
