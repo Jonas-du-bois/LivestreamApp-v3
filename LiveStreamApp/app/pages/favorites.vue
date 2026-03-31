@@ -124,35 +124,13 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           <div v-if="upcomingPassages.length > 0">
             <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.mySchedule') }}</h3>
             <TransitionGroup name="list" tag="div" class="space-y-3 relative">
-              <UiGlassCard
+              <FavoritePassageCard
                 v-for="passage in upcomingPassages"
                 :key="passage._id"
-                class="flex items-center gap-4"
-                :interactive="true"
-                @click="handleGroupClick(passage.group?._id || '')"
-              >
-                <div class="text-center min-w-[60px]">
-                   <div class="text-cyan-400 font-bold text-lg">{{ formatTime(passage.startTime) }}</div>
-                   <div class="text-white/40 text-xs uppercase">{{ formatDate(passage.startTime).split(' ')[0] }}</div>
-                </div>
-
-                <div class="flex-1 min-w-0">
-                  <h4 class="text-white font-bold mb-1">{{ passage.group?.name }}</h4>
-                  <div class="flex items-center gap-2 text-sm">
-                     <span class="text-white/60">{{ passage.location }}</span>
-                     <span class="text-white/40">•</span>
-                     <span class="text-purple-400">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }}</span>
-                  </div>
-                </div>
-
-                <div class="flex items-start pt-0.5 flex-shrink-0">
-                  <SparkHeart
-                    :active="true"
-                    :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
-                    @click.stop="passage._id && toggleFavorite(passage._id, $event)"
-                  />
-                </div>
-              </UiGlassCard>
+                :passage="passage"
+                @click:group="handleGroupClick"
+                @toggle:favorite="toggleFavorite"
+              />
             </TransitionGroup>
           </div>
         </ClientOnly>
@@ -162,35 +140,14 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           <div v-if="pastPassages.length > 0">
             <h3 class="text-white text-lg font-bold mb-4 px-1">{{ t('favorites.pastEvents') }}</h3>
             <TransitionGroup name="list" tag="div" class="space-y-3 relative">
-              <UiGlassCard
+              <FavoritePassageCard
                 v-for="passage in pastPassages"
                 :key="passage._id"
-                class="flex items-center gap-4 opacity-70"
-                :interactive="true"
-                @click="handleGroupClick(passage.group?._id || '')"
-              >
-                <div class="text-center min-w-[60px]">
-                   <div class="text-cyan-400 font-bold text-lg">{{ formatTime(passage.startTime) }}</div>
-                   <div class="text-white/40 text-xs uppercase">{{ formatDate(passage.startTime).split(' ')[0] }}</div>
-                </div>
-
-                <div class="flex-1 min-w-0">
-                  <h4 class="text-white font-bold mb-1">{{ passage.group?.name }}</h4>
-                  <div class="flex items-center gap-2 text-sm">
-                     <span class="text-white/60">{{ passage.location }}</span>
-                     <span class="text-white/40">•</span>
-                     <span class="text-purple-400">{{ translateApparatus(passage.apparatus?.code, passage.apparatus?.name) }}</span>
-                  </div>
-                </div>
-
-                <div class="flex items-start pt-0.5 flex-shrink-0">
-                  <SparkHeart
-                    :active="true"
-                    :label="t('favorites.removeFromFavorites', { name: passage.group?.name || '' })"
-                    @click.stop="passage._id && toggleFavorite(passage._id, $event)"
-                  />
-                </div>
-              </UiGlassCard>
+                :passage="passage"
+                :is-past="true"
+                @click:group="handleGroupClick"
+                @toggle:favorite="toggleFavorite"
+              />
             </TransitionGroup>
           </div>
         </ClientOnly>
