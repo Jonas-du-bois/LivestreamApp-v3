@@ -37,3 +37,7 @@
 ## 2025-06-03 - Consistent Focus States on Secondary Elements
 **Learning:** Secondary interactive elements (like `UiBackButton` or `UiInfoTile`) often miss the detailed focus styles applied to primary cards, creating an inconsistent keyboard navigation experience where some elements show a clear ring and others just the browser default (or nothing if `outline-none` is used without replacement).
 **Action:** Systematically apply the design system's focus ring classes (`focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]`) to ALL interactive components, including back buttons, info tiles (when linked), and icon buttons.
+
+## 2025-06-03 - Focus Rings on Custom Standalone Buttons
+**Learning:** Custom interactive elements (like the `.ios26-bubble` language toggle) that don't use standard design system components (like `UiIconButton`) often slip through keyboard accessibility audits because they lack the `app-focus-ring` classes by default. This creates invisible focus traps for screen reader and keyboard users in critical header navigation areas.
+**Action:** Always manually verify that explicit interactive elements (buttons, links) outside of the main UI components (`app/components/ui/`) have explicit focus states. When using custom `.ios26-bubble-interactive` or similar classes, explicitly pair them with `app-focus-ring` and an appropriate color class like `app-focus-ring-secondary`.
