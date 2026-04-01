@@ -4,3 +4,6 @@
 ## 2024-05-19 - Bulk Database Operations in Nitro Background Jobs
 **Learning:** Performing multiple database mutations (e.g., `findByIdAndUpdate`, `findByIdAndDelete`) inside a `Promise.all()` loop within background tasks (like `setInterval` in Nitro plugins) causes significant N+1 query problems. This spams the database and can stall the connection pool.
 **Action:** Always collect target IDs during the loop execution into an array, and perform a single bulk operation (e.g., `updateMany`, `deleteMany`) after the loop concludes to optimize performance to O(1) DB calls.
+## 2024-05-20 - Optimize background scheduler database queries by removing unused populate and fields
+**Learning:** Chaining `.populate()` and omitting `.select()` in background scheduling queries (like checking `passagesToGoLive` or `passagesToFinish`) creates massive memory overhead by fetching entire nested documents that are completely unused (only primitive fields like `_id` and `location` were needed for updates).
+**Action:** When writing background task queries that only trigger boolean checks or ID-based updates, never reuse UI-oriented queries. Strictly apply `.select('_id location')` and `.lean()` to fetch the absolute bare minimum data and avoid memory bloat.
