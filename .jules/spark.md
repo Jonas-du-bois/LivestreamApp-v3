@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-04-03 - Feedback tactile sur les cartes Food
+**Learning:** L'utilisation de `duration-300` avec une échelle modérée (`scale-[0.98]`) sur des éléments interactifs comme des cartes manque parfois du "jus" tactile attendu d'une app Premium. Passer à une durée plus courte (`duration-200`) et une échelle plus marquée (`scale-95`) accompagnées d'un effet visuel (comme `backdrop-blur`) rend le retour tactile instantané et beaucoup plus satisfaisant, respectant la limite des < 300ms requise pour les interactions sur terminaux mobiles.
+**Action:** Systématiquement privilégier `duration-200` et `active:scale-95` (au lieu de 300ms ou de diminutions de scale trop subtiles) pour les micro-interactions d'état "enfoncé" sur des cartes de type Glassmorphism dans cette PWA.
