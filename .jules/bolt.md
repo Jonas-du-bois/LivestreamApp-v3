@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-04-10 - O(N) Rank Calculation Optimization
+**Learning:** Using `PassageModel.find().sort().select('_id').findIndex()` to compute a score's rank pulls all published passages for an apparatus into Node memory and iterates sequentially. This creates an O(N) bottleneck and scales poorly as the competition progresses.
+**Action:** Always use database-level count operations (`PassageModel.countDocuments({ score: { $gt: targetScore } }) + 1`) to determine ranks. This executes natively in MongoDB (O(1) with proper indexing), drastically reducing memory usage, network payload size, and time complexity while correctly implementing Standard Competition Ranking for tied scores.
