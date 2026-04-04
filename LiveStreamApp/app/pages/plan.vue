@@ -159,20 +159,34 @@ onMounted(async () => {
 
     <Transition name="premium-swap" appear>
       <div class="absolute bottom-24 right-4 z-[500]">
-        <UiIconBox
-          as="button"
+        <button
           @click="toggleMapStyle"
-          :icon="isSatellite ? 'fluent:map-24-regular' : 'fluent:earth-24-regular'"
-          :variant="isSatellite ? 'solid' : 'solid'"
-          :color="isSatellite ? 'blue' : 'gray'"
-          shape="circle"
-          size="lg"
-          interactive
-          glow
-          class="pointer-events-auto"
-          :class="!isSatellite ? '!bg-gray-900/60 !border-white/20' : ''"
+          class="group pointer-events-auto relative flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-300 active:scale-90 overflow-hidden"
+          :class="isSatellite ? 'bg-blue-600 border border-blue-400 shadow-blue-500/50' : 'bg-gray-900/60 backdrop-blur-md border border-white/20'"
           :aria-label="isSatellite ? t('plan.showMap') : t('plan.showSatellite')"
-        />
+        >
+          <!-- Glowing effect for the button when dark mode is inactive -->
+          <div v-if="isSatellite" class="absolute inset-0 rounded-full bg-blue-400/20 blur-md pointer-events-none"></div>
+
+          <Transition
+            enter-active-class="transition-all duration-300 cubic-bezier(0.34, 1.56, 0.64, 1)"
+            leave-active-class="transition-all duration-300 cubic-bezier(0.34, 1.56, 0.64, 1)"
+            enter-from-class="opacity-0 -rotate-180 scale-50 blur-sm"
+            leave-to-class="opacity-0 rotate-180 scale-50 blur-sm"
+            mode="out-in"
+          >
+            <Icon
+              v-if="isSatellite"
+              name="fluent:map-24-regular"
+              class="w-7 h-7 text-white absolute"
+            />
+            <Icon
+              v-else
+              name="fluent:earth-24-regular"
+              class="w-7 h-7 text-gray-200 absolute"
+            />
+          </Transition>
+        </button>
       </div>
     </Transition>
 
@@ -327,27 +341,9 @@ onMounted(async () => {
   white-space: nowrap; /* Empêche le texte de passer à la ligne */
 }
 
-/* 3. ANIMATIONS SPARK ✨ */
-
 /* Transition fluide pour les couches de la carte (Cross-fade Satellite/Dark) */
 .leaflet-layer {
   transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.rotate-scale-enter-active,
-.rotate-scale-leave-active {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.rotate-scale-enter-from {
-  opacity: 0;
-  transform: rotate(-120deg) scale(0.5);
-  filter: blur(4px);
-}
-
-.rotate-scale-leave-to {
-  opacity: 0;
-  transform: rotate(120deg) scale(0.5);
-  filter: blur(4px);
-}
 </style>
