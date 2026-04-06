@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2024-04-20 - Feedback tactile sur les boutons de rafraîchissement
+**Learning:** J'ai remarqué que les boutons de rafraîchissement ("Actualiser" ou "Réessayer") étaient un peu statiques. Pour renforcer l'aspect instantané de LiveStreamApp, j'ai ajouté une micro-interaction de rotation sur l'icône lors du toucher.
+**Action:** Pour appliquer cette rotation sans JavaScript et en respectant les contraintes de performance (< 300ms), j'utilise les classes utilitaires de Tailwind. En appliquant la classe `group` sur le bouton parent, l'icône enfant peut réagir à l'événement de pression avec `group-active:rotate-180 transition-transform duration-200`. Cela procure une sensation de "Pull-to-Refresh" tactile et satisfaisante.
