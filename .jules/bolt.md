@@ -25,3 +25,6 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+## $(date +%Y-%m-%d) - O(N) Array Operations to O(1) Database Queries
+**Learning:** For calculating item ranks based on scores within a database collection, fetching the entire collection into memory with `.find().sort()` and using `.findIndex()` creates an O(N) memory bottleneck and transfers excessive data over the network.
+**Action:** Replace memory-heavy array sorting and searching with optimized database-level queries like `Model.countDocuments({ score: { $gt: targetScore } }) + 1`. This reduces application memory complexity to O(1) and correctly implements standard competition ranking (where tied participants receive the same rank).
