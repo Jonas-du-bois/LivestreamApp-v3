@@ -220,10 +220,15 @@ const stats = computed(() => {
               <UiButton
                 variant="glass"
                 size="sm"
-                :loading="isRefreshing"
-                icon="fluent:arrow-clockwise-24-regular"
+                :disabled="isRefreshing"
+                class="group"
                 @click="handleRefresh"
               >
+                <Icon
+                  name="fluent:arrow-clockwise-24-regular"
+                  class="w-4 h-4 transition-transform duration-300 group-active:rotate-180"
+                  :class="{ 'animate-spin': isRefreshing }"
+                />
                 {{ isRefreshing ? t('common.loading') : t('weather.refresh') }}
               </UiButton>
             </div>
