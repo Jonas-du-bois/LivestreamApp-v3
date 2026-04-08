@@ -159,3 +159,14 @@ export interface GroupDetailsResponse {
   }[];
   timeline: TimelineEntry[];
 }
+
+export interface ResultEntry extends PassageEnriched {
+  rank: number;
+}
+
+export interface ResultsResponse {
+  meta: {
+    availableDays: string[];
+  };
+  data: Record<string, ResultEntry[]>;
+}

@@ -55,3 +55,13 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Public API Strict Typing & Vue Strict Typing
+
+- **Target:** `app/services/public.service.ts`, `app/pages/favorites.vue`, `app/types/api.ts`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced pervasive `any` usage in `public.service.ts` parameters and return types (like `getResults`) with strict interfaces and `unknown`. Removed weak `any` array casting on `favorites.vue` computed filters.
+- **Solution:**
+    - Implemented strict `ResultsResponse` and `ResultEntry` in `api.ts`.
+    - Updated `useApiClient` and `apiClient` typings across multiple network requests (`getSchedule`, `fetchWeather`, etc.) to prevent implicit type inference bugs.
+    - Enforced `PassageEnriched` strongly-typed parameters directly in `.filter()` higher order functions.
