@@ -220,27 +220,11 @@ const historyByYear = computed<HistoryPoint[]>(() => {
     rawHistory = rawHistory.filter(h => h.apparatus === props.apparatusCode)
   }
 
-  const yearMap = new Map<number, { total: number; count: number }>()
-  rawHistory.forEach(h => {
-     if (!yearMap.has(h.year)) yearMap.set(h.year, { total: 0, count: 0 })
-     const entry = yearMap.get(h.year)!
-     entry.total += h.score
-     entry.count++
-  })
-
-  const aggregated: HistoryPoint[] = Array.from(yearMap.entries()).map(([year, data]) => ({
-    year,
-    score: data.total / data.count
-  }))
-
-  return aggregated.sort((a, b) => a.year - b.year)
+  return aggregateHistoryByYear(rawHistory)
 })
 
 const averageHistoryScore = computed(() => {
-  const list = historyByYear.value
-  if (!list.length) return '0.00'
-  const sum = list.reduce((acc: number, curr) => acc + (Number(curr.score) || 0), 0)
-  return (sum / list.length).toFixed(2)
+  return calculateAggregatedAverageScore(historyByYear.value)
 })
 
 // ⚠️ DEAD CODE :
