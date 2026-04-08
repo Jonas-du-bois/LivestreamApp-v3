@@ -1,0 +1,3 @@
+## 2024-05-18 - Extraction de `<UiKeyValueList>`
+**Action :** Création du composant `<UiKeyValueList>` dans `app/components/ui/` pour standardiser l'affichage des listes d'informations clé-valeur (contacts, adresses, prix, etc.).
+**Règle établie :** Les listes de paires clé-valeur avec des séparateurs et espacements récurrents doivent être implémentées en utilisant le composant générique `<UiKeyValueList>` pour garantir l'homogénéité du style et éviter la duplication de code boilerplate.
