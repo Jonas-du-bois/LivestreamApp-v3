@@ -39,21 +39,19 @@ export default defineEventHandler(async (event) => {
         }
       },
       { new: true }
-    ).populate('group').populate('apparatus').exec();
+    ).populate('group', 'name').populate('apparatus', 'name code').exec();
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
     // Compute rank among published passages (per apparatus) - Decoupled from status
-    const finished = await PassageModel.find({
+    // Performance: Using countDocuments avoids fetching all documents and computing O(N) array index
+    const higherScoringCount = await PassageModel.countDocuments({
       isPublished: true,
-      apparatus: updated.apparatus._id
-    })
-      .sort({ score: -1 })
-      .select('_id')
-      .lean()
-      .exec();
+      apparatus: updated.apparatus._id,
+      score: { $gt: updated.score }
+    }).exec();
 
-    const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
+    const rank = higherScoringCount + 1;
 
     const payload = {
       passageId: updated._id.toString(),
