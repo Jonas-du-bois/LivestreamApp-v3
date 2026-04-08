@@ -44,16 +44,14 @@ export default defineEventHandler(async (event) => {
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
     // Compute rank among published passages (per apparatus) - Decoupled from status
-    const finished = await PassageModel.find({
+    // BOLT: Optimized standard competition ranking with a database-level count instead of O(N) memory fetch
+    const higherScoresCount = await PassageModel.countDocuments({
       isPublished: true,
-      apparatus: updated.apparatus._id
-    })
-      .sort({ score: -1 })
-      .select('_id')
-      .lean()
-      .exec();
+      apparatus: updated.apparatus._id,
+      score: { $gt: updated.score }
+    }).exec();
 
-    const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
+    const rank = higherScoresCount + 1;
 
     const payload = {
       passageId: updated._id.toString(),
