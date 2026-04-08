@@ -134,25 +134,23 @@ const stats = computed(() => [
         name="staggered-fade"
         appear
       >
-        <div
+        <UiStatCard
           v-for="(stat, index) in stats"
           :key="stat.id"
-          class="glass-card p-4 text-center group hover:bg-white/10 hover:scale-105 transition-transform duration-300 cursor-default relative"
+          :icon="stat.icon"
+          :icon-color="`${stat.color} group-hover:${stat.rotate}`"
+          :label="stat.label"
+          :interactive="true"
           :style="{ transitionDelay: `${index * 100}ms` }"
         >
-          <Icon
-            :name="stat.icon"
-            :class="['w-6 h-6 mx-auto mb-2 transition-transform duration-300 group-hover:scale-110', stat.color, `group-hover:${stat.rotate}`]"
-          />
-          <div class="text-white font-bold text-xl">
+          <template #value>
             <AnimatedCounter
               :value="stat.value"
               :decimals="stat.decimals || 0"
               :duration="stat.duration || 2000"
             />
-          </div>
-          <div class="text-white/60 text-xs">{{ stat.label }}</div>
-        </div>
+          </template>
+        </UiStatCard>
       </TransitionGroup>
 
       <div v-if="group.category === 'MIXTE'" class="glass-card p-4">
