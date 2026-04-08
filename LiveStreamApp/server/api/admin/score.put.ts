@@ -43,17 +43,28 @@ export default defineEventHandler(async (event) => {
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
-    // Compute rank among published passages (per apparatus) - Decoupled from status
-    const finished = await PassageModel.find({
-      isPublished: true,
-      apparatus: updated.apparatus._id
-    })
-      .sort({ score: -1 })
-      .select('_id')
-      .lean()
-      .exec();
+    // BOLT OPTIMIZATION: Compute rank using countDocuments instead of loading all IDs into memory
+    // Reduces O(N) memory allocation and is faster at DB scale.
+    // Count how many published passages on this apparatus have a HIGHER score.
+    let rank = 0;
+    if (updated.isPublished) {
+      const higherScoresCount = await PassageModel.countDocuments({
+        isPublished: true,
+        apparatus: updated.apparatus._id,
+        score: { $gt: updated.score }
+      }).exec();
 
-    const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
+      // Count how many passages have the exact SAME score but were updated/created earlier
+      // This preserves the original sequential tie-breaking behavior based on DB sorting
+      const sameScoreEarlierCount = await PassageModel.countDocuments({
+        isPublished: true,
+        apparatus: updated.apparatus._id,
+        score: updated.score,
+        _id: { $lt: updated._id }
+      }).exec();
+
+      rank = higherScoresCount + sameScoreEarlierCount + 1;
+    }
 
     const payload = {
       passageId: updated._id.toString(),
