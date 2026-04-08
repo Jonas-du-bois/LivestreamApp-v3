@@ -3,7 +3,7 @@ import type { Group, HistoryEntry } from '../../types/api'
 import AnimatedCounter from '../AnimatedCounter.vue'
 
 interface Props {
-  group: Group
+  group: Group & { averageScore?: number }
   // Les moniteurs du passage sont prioritaires par rapport à ceux du groupe global pour une donnée plus précise.
   passageMonitors?: string[] 
 }
@@ -32,8 +32,8 @@ const monitorsCount = computed(() => monitors.value.length)
 
 // Calcule la note moyenne, en privilégiant la statistique pré-calculée par l'API si elle existe, sinon via l'historique complet.
 const averageScore = computed(() => {
-  if (typeof (props.group as any).averageScore === 'number') {
-    return (props.group as any).averageScore.toFixed(2)
+  if (typeof props.group.averageScore === 'number') {
+    return props.group.averageScore.toFixed(2)
   }
   if (!props.group.history?.length) return '0.00'
   const sum = props.group.history.reduce((acc: number, curr: HistoryEntry) => acc + curr.score, 0)

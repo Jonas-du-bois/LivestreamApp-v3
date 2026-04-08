@@ -12,7 +12,8 @@ import {
   Legend,
   Filler,
   type ChartOptions,
-  type ChartData
+  type ChartData,
+  type ScriptableContext
 } from 'chart.js'
 
 ChartJS.register(
@@ -57,7 +58,7 @@ const chartData = computed<ChartData<'line'>>(() => ({
       data: props.data.map(d => d.score),
       fill: true,
       // Création d'un dégradé pour la zone sous la courbe.
-      backgroundColor: (context: any) => {
+      backgroundColor: (context: ScriptableContext<'line'>) => {
         const ctx = context.chart.ctx
         const gradient = ctx.createLinearGradient(0, 0, 0, props.height)
         gradient.addColorStop(0, 'rgba(34, 211, 238, 0.3)')
@@ -66,7 +67,7 @@ const chartData = computed<ChartData<'line'>>(() => ({
         return gradient
       },
       // Création d'un dégradé horizontal pour la ligne de la courbe.
-      borderColor: (context: any) => {
+      borderColor: (context: ScriptableContext<'line'>) => {
         const ctx = context.chart.ctx
         const gradient = ctx.createLinearGradient(0, 0, context.chart.width, 0)
         gradient.addColorStop(0, '#22d3ee')
