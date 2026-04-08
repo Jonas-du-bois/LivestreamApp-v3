@@ -23,6 +23,7 @@ export interface Group {
   gymnastsCount?: number;
   monitors?: string[];
   history?: HistoryEntry[];
+  averageScore?: number;
 }
 
 export type PassageStatus = 'SCHEDULED' | 'LIVE' | 'FINISHED';

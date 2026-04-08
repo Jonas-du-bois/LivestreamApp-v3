@@ -45,12 +45,27 @@ const displayCountdown = computed(() =>
   isMounted.value ? afterpartyCountdown.value : '...'
 )
 
+interface CarouselSlide {
+  id: string
+  type: string
+  title: string
+  subtitle: string
+  image: string
+  to: string
+  badge?: {
+    label: string
+    variant: string
+    pulse?: boolean
+    showDot?: boolean
+  }
+}
+
 const currentIndex = ref(0)
 const rotationInterval = ref<ReturnType<typeof setInterval> | null>(null)
 const SLIDE_DURATION = 15000 
 
 // Slides statiques utilisées pour garantir une correspondance exacte entre le serveur (SSR) et le premier rendu client.
-const ssrSlides = computed(() => [
+const ssrSlides = computed<CarouselSlide[]>(() => [
   {
     id: 'afterparty',
     type: 'afterparty',
@@ -72,8 +87,8 @@ const ssrSlides = computed(() => [
 ])
 
 // Construit dynamiquement les slides en fonction de l'actualité de l'événement (Live, Photos, Résultats).
-const dynamicSlides = computed(() => {
-  const items: any[] = []
+const dynamicSlides = computed<CarouselSlide[]>(() => {
+  const items: CarouselSlide[] = []
 
   if (props.livePassages.length > 0) {
     props.livePassages.slice(0, 2).forEach((p, idx) => {
