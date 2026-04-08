@@ -18,42 +18,21 @@ interface StreamDisplay {
   currentApparatusCode?: string
 }
 
-// Use refs for reactive data that updates in real-time
-const liveData = ref<{ passages: PassageEnriched[]; streams: Stream[] } | null>(null)
-const allStreamsData = ref<Stream[] | null>(null)
-const loading = ref(true)
+// Use Nuxt composables for proper SSR data fetching. By not using top-level await here,
+// we allow the component to mount immediately and show the skeleton loader while fetching.
+const { data: liveData, pending: livePending, refresh: refreshLive } = useAsyncData('live-data', () => PublicService.fetchLive(), { lazy: true })
+const { data: allStreamsData, pending: streamsPending, refresh: refreshStreams } = useAsyncData('streams-data', () => PublicService.fetchStreams(), { lazy: true })
+
 const hasLoadedOnce = ref(false)
 
-// Fetch functions using PublicService for real-time updates
-const fetchLive = async () => {
-  try {
-    liveData.value = await PublicService.fetchLive()
-    console.log('[stream/index] Live data fetched:', liveData.value?.streams?.length, 'streams')
-  } catch (err) {
-    console.error('[stream/index] Error fetching live:', err)
-  }
-}
-
-const fetchStreams = async () => {
-  try {
-    allStreamsData.value = await PublicService.fetchStreams()
-    console.log('[stream/index] All streams fetched:', allStreamsData.value?.length)
-  } catch (err) {
-    console.error('[stream/index] Error fetching streams:', err)
-  }
-}
-
-// Initial fetch
-onMounted(async () => {
-  try {
-    await Promise.all([fetchLive(), fetchStreams()])
-  } finally {
-    loading.value = false
+// Set hasLoadedOnce when both initial fetches are complete
+watch([livePending, streamsPending], ([liveIsPending, streamsIsPending]) => {
+  if (!liveIsPending && !streamsIsPending) {
     hasLoadedOnce.value = true
   }
-})
+}, { immediate: true })
 
-const showSkeleton = computed(() => loading.value && !hasLoadedOnce.value)
+const showSkeleton = computed(() => (livePending.value || streamsPending.value) && !hasLoadedOnce.value)
 
 // Build a map of live passages by LOCATION for quick lookup
 const livePassagesByLocation = computed(() => {
@@ -72,7 +51,7 @@ const livePassagesByLocation = computed(() => {
 const handleRefresh = async () => {
   console.log('[stream/index] 🔄 Handling refresh event...')
   try {
-    await Promise.all([fetchLive(), fetchStreams()])
+    await Promise.all([refreshLive(), refreshStreams()])
     console.log('[stream/index] ✅ Data refreshed successfully')
   } catch (err) {
     console.error('[stream/index] ❌ Error refreshing data:', err)

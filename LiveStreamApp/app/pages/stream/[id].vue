@@ -8,34 +8,19 @@ const { translateApparatus } = useTranslatedData()
 const route = useRoute()
 const router = useRouter()
 
-// Use refs for reactive data that updates in real-time
-const stream = ref<PopulatedStream | null>(null)
-const livePassages = ref<PassageEnriched[]>([])
-const groupDetails = ref<GroupDetailsResponse | null>(null) // Full group details from API
-const pending = ref(true)
-const error = ref<unknown>(null)
+// Group details state (loaded separately, client-side mostly)
+const groupDetails = ref<GroupDetailsResponse | null>(null)
 
-// Fetch stream
-const fetchStream = async () => {
-  try {
-    stream.value = await PublicService.fetchStream(route.params.id as string)
-    console.log('[stream/id] Stream fetched:', stream.value?.name, 'location:', stream.value?.location)
-  } catch (err: unknown) {
-    console.error('[stream/id] Error fetching stream:', err)
-    error.value = err
-  }
-}
+// Fetch data using SSR-safe composables, concurrently
+const [{ data: stream, pending: streamPending, error, refresh: refreshStream }, { data: liveData, pending: livePending, refresh: refreshLive }] = await Promise.all([
+  PublicService.getStream(route.params.id as string),
+  PublicService.getLive()
+])
 
-// Fetch live passages to get current group/apparatus info
-const fetchLivePassages = async () => {
-  try {
-    const liveData = await PublicService.fetchLive()
-    livePassages.value = liveData.passages || []
-    console.log('[stream/id] Live passages fetched:', livePassages.value.length)
-  } catch (err: unknown) {
-    console.error('[stream/id] Error fetching live passages:', err)
-  }
-}
+const pending = computed(() => streamPending.value || livePending.value)
+
+// Safely access live passages from liveData
+const livePassages = computed(() => liveData.value?.passages || [])
 
 // Fetch full group details when we have a current passage
 const fetchGroupDetails = async (groupId: string) => {
@@ -48,19 +33,10 @@ const fetchGroupDetails = async (groupId: string) => {
   }
 }
 
-// Fetch all data
+// Refresh all data
 const fetchAll = async () => {
-  await Promise.all([fetchStream(), fetchLivePassages()])
-  pending.value = false
+  await Promise.all([refreshStream(), refreshLive()])
 }
-
-// Initial fetch (SSR + client)
-await fetchAll()
-
-// Also fetch on mount to ensure fresh data
-onMounted(() => {
-  fetchAll()
-})
 
 // Use current passage directly from stream (already populated by API)
 // Falls back to matching from livePassages if stream.currentPassage is not set
@@ -183,7 +159,7 @@ const handleStreamUpdate = (payload: unknown) => {
       stream.value = {
         ...stream.value,
         currentPassage: streamPayload.currentPassage
-      }
+      } as PopulatedStream
       console.log('[stream/id] ✅ Direct update from payload')
       
       // Fetch group details if needed

@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { computed, resolveComponent } from '#imports'
-import { useI18n } from 'vue-i18n'
-import { useTranslatedData } from '~/composables/useTranslatedData'
-
 const NuxtLinkComp = resolveComponent('NuxtLink')
 
 const { t } = useI18n()
