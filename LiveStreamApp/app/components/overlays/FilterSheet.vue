@@ -12,12 +12,13 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { t } = useI18n()
-// ⚠️ DEAD CODE : const { locale } = useI18n()
+import type { ScheduleResponse } from '~/types/api'
+
+const { t, locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
 
 // Récupère les métadonnées (agrès, catégories, salles) préparées et partagées par la page schedule.vue
-const meta = useState<any>('scheduleMeta')
+const meta = useState<ScheduleResponse['meta']>('scheduleMeta')
 const availableApparatus = computed(() => meta.value?.availableApparatus || [])
 const availableCategories = computed(() => meta.value?.availableCategories || [])
 const availableLocations = computed(() => meta.value?.availableLocations || [])
