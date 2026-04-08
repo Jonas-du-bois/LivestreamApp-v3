@@ -154,12 +154,12 @@ const handleNewPhotosBanner = () => {
         <template #actions>
           <button
             type="button"
-            class="app-focus-ring flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500/15 border border-cyan-400/30
-                   text-cyan-300 text-sm font-semibold active:scale-95 transition-transform duration-150
+            class="group app-focus-ring flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500/15 border border-cyan-400/30
+                   text-cyan-300 text-sm font-semibold active:scale-95 transition-all duration-200
                    hover:bg-cyan-500/25"
             @click="refresh()"
           >
-            <Icon name="fluent:arrow-sync-24-regular" class="w-4 h-4" :class="{ 'animate-spin': pending }" />
+            <Icon name="fluent:arrow-sync-24-regular" class="w-4 h-4 transition-transform duration-300 group-active:rotate-180" :class="{ 'animate-spin': pending }" />
             {{ t('photos.retryButton') }}
           </button>
         </template>
