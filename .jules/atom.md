@@ -1,0 +1,1 @@
+03/11 - Création de `<UiKeyValueList>`. Règle établie : Les listes de clés/valeurs (comme les informations de contact, adresse, prix) avec des séparateurs et espacements récurrents doivent être extraites dans un composant générique 'app/components/ui/' si elles sont utilisées deux fois ou plus, même au sein d'une même page, afin de garantir l'homogénéité du style.
