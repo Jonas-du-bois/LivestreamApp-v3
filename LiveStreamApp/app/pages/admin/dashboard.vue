@@ -11,7 +11,7 @@ import { usePassageFilters, type PassageFilterOptions } from '../../composables/
 
 definePageMeta({ header: false, footer: false })
 
-const { t, locale, locales, setLocale } = useI18n()
+const { t, locale } = useI18n()
 const { translateApparatus, translateDay, translateCategory, formatLocalizedTime } = useTranslatedData()
 const { token: adminToken, login, logout, loginError, isLoggingIn } = useAdminAuth()
 const notificationsStore = useNotificationsStore()
@@ -170,20 +170,7 @@ const sendAllTestNotifications = async () => {
 }
 
 // Language toggle
-const availableLocaleCodes = computed(() =>
-  locales.value
-    .map((localeOption) => (typeof localeOption === 'string' ? localeOption : localeOption.code))
-    .filter((code): code is string => Boolean(code))
-)
-
-const toggleLocale = () => {
-  const codes = availableLocaleCodes.value
-  if (!codes.length) return
-
-  const currentIndex = codes.indexOf(locale.value)
-  const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % codes.length
-  setLocale(codes[nextIndex]!)
-}
+const { toggleLocale } = useLocaleToggle()
 
 // Close dropdowns when clicking outside
 const closeMenus = () => {
