@@ -27,10 +27,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const { t } = useI18n()
-// ⚠️ DEAD CODE : const { locale } = useI18n()
 const { translateApparatus } = useTranslatedData()
 const router = useRouter()
-// ⚠️ DEAD CODE : const { now } = useNow()
 
 const { timeLeftShort: afterpartyCountdown } = usePartyCountdown()
 
@@ -49,8 +47,23 @@ const currentIndex = ref(0)
 const rotationInterval = ref<ReturnType<typeof setInterval> | null>(null)
 const SLIDE_DURATION = 15000 
 
+export interface HeroSlide {
+  id: string
+  type: 'live' | 'photo' | 'result' | 'afterparty' | 'food'
+  title: string
+  subtitle: string
+  image: string
+  to: string
+  badge?: {
+    label: string
+    variant: 'solid-red' | 'cyan' | 'orange' | 'violet' | 'green' | string
+    pulse?: boolean
+    showDot?: boolean
+  }
+}
+
 // Slides statiques utilisées pour garantir une correspondance exacte entre le serveur (SSR) et le premier rendu client.
-const ssrSlides = computed(() => [
+const ssrSlides = computed<HeroSlide[]>(() => [
   {
     id: 'afterparty',
     type: 'afterparty',
@@ -72,8 +85,8 @@ const ssrSlides = computed(() => [
 ])
 
 // Construit dynamiquement les slides en fonction de l'actualité de l'événement (Live, Photos, Résultats).
-const dynamicSlides = computed(() => {
-  const items: any[] = []
+const dynamicSlides = computed<HeroSlide[]>(() => {
+  const items: HeroSlide[] = []
 
   if (props.livePassages.length > 0) {
     props.livePassages.slice(0, 2).forEach((p, idx) => {
