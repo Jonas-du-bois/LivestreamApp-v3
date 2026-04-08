@@ -55,3 +55,14 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Strict API Client Typing & Any Removal
+
+- **Target:** `app/composables/useApiClient.ts`
+- **Risks Mitigated:**
+    - **Weak Typing:** Removed excessive `any` usage which undermined the robustness of the network layer.
+    - **Hydration Mismatch / State Mutation:** The API client options, headers, and error states were typed loosely, potentially allowing invalid modifications and unhandled error formats.
+- **Solution:**
+    - Replaced `any` options with `Parameters<typeof $fetch>[1]` and `UseFetchOptions<T>`.
+    - Strongly typed `HeadersInit` and `Record<string, string>`.
+    - Typed `error.value` explicitly as `Error | null`.
