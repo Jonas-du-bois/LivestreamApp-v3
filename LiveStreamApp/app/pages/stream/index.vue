@@ -55,19 +55,6 @@ onMounted(async () => {
 
 const showSkeleton = computed(() => loading.value && !hasLoadedOnce.value)
 
-// Build a map of live passages by LOCATION for quick lookup
-const livePassagesByLocation = computed(() => {
-  const map = new Map<string, PassageEnriched>()
-  if (liveData.value?.passages) {
-    liveData.value.passages.forEach((p: PassageEnriched) => {
-      if (p.location) {
-        map.set(p.location, p)
-      }
-    })
-  }
-  return map
-})
-
 // Refresh all data on any real-time event
 const handleRefresh = async () => {
   console.log('[stream/index] 🔄 Handling refresh event...')
@@ -95,7 +82,7 @@ const liveStreams = computed<StreamDisplay[]>(() => {
   
   return liveData.value.streams
     .filter((s: Stream) => s.isLive)
-    .map((s: Stream) => mapStreamToDisplay(s, livePassagesByLocation.value))
+    .map((s: Stream) => mapStreamToDisplay(s, liveData.value?.passages || []))
 })
 
 // Get offline streams from allStreamsData
@@ -104,29 +91,21 @@ const offlineStreams = computed<StreamDisplay[]>(() => {
   
   return allStreamsData.value
     .filter((s: Stream) => !s.isLive)
-    .map((s: Stream) => mapStreamToDisplay(s, livePassagesByLocation.value))
+    .map((s: Stream) => mapStreamToDisplay(s, liveData.value?.passages || []))
 })
 
-function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEnriched>): StreamDisplay {
+function mapStreamToDisplay(s: Stream, passages: PassageEnriched[]): StreamDisplay {
   let currentGroupName = ''
   let currentApparatusName = ''
   let currentApparatusCode = ''
   
-  // Find live passage by stream's location (most reliable method)
-  const livePassage = s.location ? passagesByLocation.get(s.location) : null
+  // Find associated passage using unified utility
+  const livePassage = matchStreamToPassage(s, passages)
   
   if (livePassage) {
     currentGroupName = livePassage.group?.name || ''
     currentApparatusName = livePassage.apparatus?.name || ''
     currentApparatusCode = livePassage.apparatus?.code || ''
-  } else if (s.currentPassage) {
-    // Fallback to currentPassage if no live passage found by location
-    const cp = s.currentPassage as any // currentPassage can be string or object depending on population, but here it might be populated or partially populated
-    if (typeof cp === 'object' && cp && cp.group) {
-      currentGroupName = cp.group.name || ''
-      currentApparatusName = cp.apparatus?.name || ''
-      currentApparatusCode = cp.apparatus?.code || ''
-    }
   }
 
   // Determine thumbnail
