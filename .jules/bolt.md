@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-04-10 - Server-side explicit projection with select
+**Learning:** Even when avoiding `.populate()` overhead, Mongoose `.findById()` and `.findOne()` queries can still pull down massive documents into memory. `.select()` can significantly reduce the amount of memory and networking time needed for fetching these single documents if we only need to access/modify a subset of their fields.
+**Action:** Audit single document fetches for Mongoose (`findById`, `findOne`) and append `.select(...)` to limit memory footprint. Ensure `.lean()` is also used where write operations (`.save()`) are not required.
