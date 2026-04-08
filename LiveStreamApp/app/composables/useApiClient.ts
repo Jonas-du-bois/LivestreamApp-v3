@@ -27,19 +27,26 @@ const getAuthToken = (): string | null => {
 }
 
 /** Injecte le header Authorization si un token est disponible */
-const getAuthHeaders = (headers: any = {}) => {
+const getAuthHeaders = (headers: HeadersInit = {}): HeadersInit => {
   const token = getAuthToken()
   if (token) {
-    return {
-      ...headers,
-      Authorization: `Bearer ${token}`
+    // Si c'est un objet simple, on merge
+    if (!Array.isArray(headers) && !(headers instanceof Headers)) {
+      return {
+        ...headers,
+        Authorization: `Bearer ${token}`
+      }
     }
+    // Si c'est un objet Headers ou un tableau, on utilise Headers API
+    const newHeaders = new Headers(headers)
+    newHeaders.set('Authorization', `Bearer ${token}`)
+    return newHeaders
   }
   return headers
 }
 
 /** Client $fetch brut avec auth et auto-logout sur 401 */
-export const apiClient = <T>(url: string, options: any = {}) => {
+export const apiClient = <T>(url: string, options: Parameters<typeof $fetch>[1] = {}) => {
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
 
@@ -75,7 +82,7 @@ export const apiClient = <T>(url: string, options: any = {}) => {
  */
 export const useApiClient = <T>(
   url: string,
-  options: any = {}
+  options: Parameters<typeof useFetch>[1] = {}
 ) => {
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase as string
@@ -84,10 +91,10 @@ export const useApiClient = <T>(
 
   // Détecte si on est dans un setup() actif et non encore monté
   const vm = getCurrentInstance?.()
-  if (!vm || (vm as any).isMounted) {
+  if (!vm || (vm as unknown as { isMounted: boolean }).isMounted) {
     const data = ref<T | null>(null)
     const pending = ref(false)
-    const error = ref<any>(null)
+    const error = ref<Error | unknown>(null)
 
     const refresh = async () => {
       pending.value = true
@@ -96,7 +103,7 @@ export const useApiClient = <T>(
         const res = await $fetch<T>(url, { baseURL: apiBase, ...options })
         data.value = res
         return res
-      } catch (err: any) {
+      } catch (err: unknown) {
         error.value = err
         console.error('API Error:', err)
         throw err
