@@ -14,3 +14,8 @@
 - **Action**: Extracted duplicate regular expression logic for generating thumbnail URLs for streams (YouTube, Twitch) into a new pure utility function `getStreamThumbnailUrl`.
 - **Files Affected**: `app/pages/stream/index.vue`, `app/components/home/HomeHeroCarousel.vue`, `app/utils/stream.ts`.
 - **Reasoning**: Adhere to DRY principles by separating pure string parsing and formatting logic out of Vue components and into a testable utility file (`app/utils/stream.ts`).
+
+## Get Initials & History Aggregation Abstraction
+- **Action**: Extracted the pure function `getInitials` into `app/utils/string.ts` and `aggregateHistoryByYear` into `app/utils/history.ts`.
+- **Files Affected**: `app/components/group/GroupInfoCard.vue`, `app/components/overlays/GroupDetailsModal.vue`.
+- **Reasoning**: Removed ~30 lines of duplicated code. Standardized string initializations and group history metric aggregation logic across the app.
