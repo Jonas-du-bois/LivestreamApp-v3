@@ -13,6 +13,11 @@ export interface HistoryEntry {
   score: number;
 }
 
+export interface HistoryPoint {
+  year: number;
+  score: number;
+}
+
 export interface Group {
   _id?: string;
   name: string;
