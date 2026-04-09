@@ -1,3 +1,92 @@
+<script setup lang="ts">
+
+const { t } = useI18n()
+
+// --- Configuration ---
+interface FoodCategory { id: string; label: string }
+interface MenuItem { item: string; price: string }
+interface FoodSpot { id: number; category: string; name: string; type: string; description: string; icon: string; isOpen: boolean; image: string; menu: MenuItem[] }
+
+const activeCategory = ref<string>('all');
+
+const categories = computed<FoodCategory[]>(() => [
+  { id: 'all', label: t('food.all') },
+  { id: 'hot', label: t('food.hotMeals') },
+  { id: 'snack', label: t('food.snacks') },
+  { id: 'drink', label: t('food.drinks') },
+]);
+
+// --- Données ---
+const foodSpots = computed<FoodSpot[]>(() => [
+  {
+    id: 1,
+    category: 'hot',
+    name: t('food.spots.cantine.name'),
+    type: t('food.spots.cantine.type'),
+    description: t('food.spots.cantine.description'),
+    icon: "fluent:food-24-filled",
+    isOpen: true,
+    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800",
+    menu: [
+      { item: t('food.menu.steakFrites'), price: "18.-" },
+      { item: t('food.menu.pasta'), price: "14.-" },
+      { item: t('food.menu.salad'), price: "8.-" }
+    ]
+  },
+  {
+    id: 2,
+    category: 'snack',
+    name: t('food.spots.burger.name'),
+    type: t('food.spots.burger.type'),
+    description: t('food.spots.burger.description'),
+    icon: "fluent:food-24-filled",
+    isOpen: true,
+    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800",
+    menu: [
+      { item: t('food.menu.classicBurger'), price: "15.-" },
+      { item: t('food.menu.vaudoisBurger'), price: "17.-" },
+      { item: t('food.menu.fries'), price: "6.-" }
+    ]
+  },
+  {
+    id: 3,
+    category: 'hot',
+    name: t('food.spots.raclette.name'),
+    type: t('food.spots.raclette.type'),
+    description: t('food.spots.raclette.description'),
+    icon: "fluent:food-toast-24-filled",
+    isOpen: true,
+    image: "https://images.unsplash.com/photo-1706363447064-1ae8d6d3bc5d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    menu: [
+      { item: t('food.menu.raclettePortion'), price: "7.-" },
+      { item: t('food.menu.valaisanBoard'), price: "16.-" },
+      { item: t('food.menu.hotTea'), price: "4.-" }
+    ]
+  },
+  {
+    id: 4,
+    category: 'drink',
+    name: t('food.spots.bar.name'),
+    type: t('food.spots.bar.type'),
+    description: t('food.spots.bar.description'),
+    icon: "fluent:drink-beer-24-filled",
+    isOpen: true,
+    image: "https://images.unsplash.com/photo-1575444758702-4a6b9222336e?auto=format&fit=crop&q=80&w=800",
+    menu: [
+      { item: t('food.menu.beer'), price: "5.-" },
+      { item: t('food.menu.water'), price: "4.-" },
+      { item: t('food.menu.coffee'), price: "3.50" }
+    ]
+  }
+]);
+
+// --- Computed ---
+const filteredSpots = computed<FoodSpot[]>(() => {
+  if (activeCategory.value === 'all') return foodSpots.value;
+  return foodSpots.value.filter(spot => spot.category === activeCategory.value);
+});
+</script>
+
 <template>
   <div class="px-4 space-y-6 pb-6">
     <!-- Bouton retour -->
@@ -113,90 +202,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
 
-const { t } = useI18n()
-
-// --- Configuration ---
-const activeCategory = ref('all');
-
-const categories = computed(() => [
-  { id: 'all', label: t('food.all') },
-  { id: 'hot', label: t('food.hotMeals') },
-  { id: 'snack', label: t('food.snacks') },
-  { id: 'drink', label: t('food.drinks') },
-]);
-
-// --- Données ---
-const foodSpots = computed(() => [
-  {
-    id: 1,
-    category: 'hot',
-    name: t('food.spots.cantine.name'),
-    type: t('food.spots.cantine.type'),
-    description: t('food.spots.cantine.description'),
-    icon: "fluent:food-24-filled",
-    isOpen: true,
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800",
-    menu: [
-      { item: t('food.menu.steakFrites'), price: "18.-" },
-      { item: t('food.menu.pasta'), price: "14.-" },
-      { item: t('food.menu.salad'), price: "8.-" }
-    ]
-  },
-  {
-    id: 2,
-    category: 'snack',
-    name: t('food.spots.burger.name'),
-    type: t('food.spots.burger.type'),
-    description: t('food.spots.burger.description'),
-    icon: "fluent:food-24-filled",
-    isOpen: true,
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800",
-    menu: [
-      { item: t('food.menu.classicBurger'), price: "15.-" },
-      { item: t('food.menu.vaudoisBurger'), price: "17.-" },
-      { item: t('food.menu.fries'), price: "6.-" }
-    ]
-  },
-  {
-    id: 3,
-    category: 'hot',
-    name: t('food.spots.raclette.name'),
-    type: t('food.spots.raclette.type'),
-    description: t('food.spots.raclette.description'),
-    icon: "fluent:food-toast-24-filled",
-    isOpen: true,
-    image: "https://images.unsplash.com/photo-1706363447064-1ae8d6d3bc5d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    menu: [
-      { item: t('food.menu.raclettePortion'), price: "7.-" },
-      { item: t('food.menu.valaisanBoard'), price: "16.-" },
-      { item: t('food.menu.hotTea'), price: "4.-" }
-    ]
-  },
-  {
-    id: 4,
-    category: 'drink',
-    name: t('food.spots.bar.name'),
-    type: t('food.spots.bar.type'),
-    description: t('food.spots.bar.description'),
-    icon: "fluent:drink-beer-24-filled",
-    isOpen: true,
-    image: "https://images.unsplash.com/photo-1575444758702-4a6b9222336e?auto=format&fit=crop&q=80&w=800",
-    menu: [
-      { item: t('food.menu.beer'), price: "5.-" },
-      { item: t('food.menu.water'), price: "4.-" },
-      { item: t('food.menu.coffee'), price: "3.50" }
-    ]
-  }
-]);
-
-// --- Computed ---
-const filteredSpots = computed(() => {
-  if (activeCategory.value === 'all') return foodSpots.value;
-  return foodSpots.value.filter(spot => spot.category === activeCategory.value);
-});
-</script>
 
 <style scoped>
 /* Hide scrollbar */

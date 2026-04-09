@@ -1,14 +1,19 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const eventInfo = {
+interface EventInfo { name: string; location: string; dates: string; venues: string }
+interface WeekendDay { day: string; title: string; details: string }
+interface InfoRow { label: string; value: string }
+interface UsefulLink { label: string; href: string }
+
+const eventInfo: EventInfo = {
   name: 'Coupe des Bains - 39e edition',
   location: 'Yverdon-les-Bains',
   dates: 'Samedi 9 mai et dimanche 10 mai 2026',
   venues: 'Centre sportif des Isles et salle Leon-Michaud'
 }
 
-const weekendOrganization = [
+const weekendOrganization: WeekendDay[] = [
   {
     day: 'Samedi 9 mai 2026',
     title: 'Concours actifs-actives',
@@ -21,7 +26,7 @@ const weekendOrganization = [
   }
 ]
 
-const parkingInfo = [
+const parkingInfo: InfoRow[] = [
   {
     label: 'Prix du parking',
     value: 'A completer (tarification communale, places blanches).'
@@ -36,7 +41,7 @@ const parkingInfo = [
   }
 ]
 
-const samaritansInfo = [
+const samaritansInfo: InfoRow[] = [
   {
     label: 'Poste samaritain',
     value: 'A completer (emplacement exact sur site).'
@@ -51,7 +56,7 @@ const samaritansInfo = [
   }
 ]
 
-const importantInfo = [
+const importantInfo: string[] = [
   'Entree spectateurs: a completer selon la communication officielle.',
   'Restauration sur place pendant le week-end.',
   'Presence de deux sites de competition (Les Isles / Leon-Michaud).',
@@ -59,7 +64,7 @@ const importantInfo = [
   'Verifier les annonces de derniere minute (organisation, acces, meteo).'
 ]
 
-const usefulLinks = [
+const usefulLinks: UsefulLink[] = [
   {
     label: 'Site officiel Coupe des Bains',
     href: 'https://agy.ch/cdb/'
