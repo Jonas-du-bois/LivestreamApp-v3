@@ -1,4 +1,4 @@
-import type { ScheduleResponse, PassageEnriched, Stream, PopulatedStream, GroupDetailsResponse } from '../types/api'
+import type { ScheduleResponse, PassageEnriched, Stream, PopulatedStream, GroupDetailsResponse, WeatherResponse } from '../types/api'
 import { type MaybeRef, toValue } from 'vue'
 import type { UseFetchOptions } from '#app'
 
@@ -55,12 +55,12 @@ export const PublicService = {
   },
 
   fetchWeather() {
-    return apiClient<{ temperature: number; raw?: any }>('/weather')
+    return apiClient<WeatherResponse>('/weather')
   },
 
   getWeather() {
     // Returns current temperature for Yverdon-les-Bains (proxy to external weather API)
-    return useApiClient<{ temperature: number; raw?: any }>('/weather', {
+    return useApiClient<WeatherResponse>('/weather', {
       key: 'weather'
     })
   },

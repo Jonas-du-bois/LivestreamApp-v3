@@ -159,3 +159,22 @@ export interface GroupDetailsResponse {
   }[];
   timeline: TimelineEntry[];
 }
+
+// --- Weather ---
+
+export interface WeatherCurrentResponse {
+  temperature: number;
+  windspeed: number;
+  winddirection: number;
+  weathercode: number;
+}
+
+export interface WeatherRawData {
+  current_weather?: WeatherCurrentResponse;
+  [key: string]: unknown;
+}
+
+export interface WeatherResponse {
+  temperature: number;
+  raw?: WeatherRawData;
+}
