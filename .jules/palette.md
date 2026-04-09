@@ -37,3 +37,7 @@
 ## 2025-06-03 - Consistent Focus States on Secondary Elements
 **Learning:** Secondary interactive elements (like `UiBackButton` or `UiInfoTile`) often miss the detailed focus styles applied to primary cards, creating an inconsistent keyboard navigation experience where some elements show a clear ring and others just the browser default (or nothing if `outline-none` is used without replacement).
 **Action:** Systematically apply the design system's focus ring classes (`focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]`) to ALL interactive components, including back buttons, info tiles (when linked), and icon buttons.
+
+## 2025-06-03 - Consistent Empty States
+**Learning:** Hardcoded empty states (like the one in `stream/index.vue`) break visual consistency by missing standard design system classes (like `focus-visible` rings) and subtle animations (like `pulse`).
+**Action:** Always use the design system's `UiEmptyState` component for empty list states to maintain visual harmony and built-in accessibility/animations.
