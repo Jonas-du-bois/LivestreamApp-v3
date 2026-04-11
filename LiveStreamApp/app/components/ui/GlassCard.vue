@@ -23,9 +23,9 @@ const isInteractive = computed(() => props.interactive ?? !!props.to)
 
 // Compose dynamiquement les classes CSS : applique des effets de survol uniquement si le composant est interactif.
 const cardClasses = computed(() => [
-  'glass-card ui-glass-card app-focus-ring transition-all duration-300 block',
+  'glass-card ui-glass-card app-focus-ring transition-all duration-200 block',
   props.padding,
-  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer active:scale-[0.97]' : '',
+  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer active:scale-[0.98] active:border-white/30 active:bg-white/5' : '',
   props.class
 ])
 
@@ -68,7 +68,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
   pointer-events: none;
   background: linear-gradient(140deg, transparent 0%, rgb(var(--color-primary-rgb) / 0.08) 45%, transparent 100%);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .ui-glass-card--interactive:hover {
