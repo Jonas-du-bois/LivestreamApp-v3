@@ -4,3 +4,6 @@
 ## 2024-05-19 - Bulk Database Operations in Nitro Background Jobs
 **Learning:** Performing multiple database mutations (e.g., `findByIdAndUpdate`, `findByIdAndDelete`) inside a `Promise.all()` loop within background tasks (like `setInterval` in Nitro plugins) causes significant N+1 query problems. This spams the database and can stall the connection pool.
 **Action:** Always collect target IDs during the loop execution into an array, and perform a single bulk operation (e.g., `updateMany`, `deleteMany`) after the loop concludes to optimize performance to O(1) DB calls.
+## 2024-05-20 - Delegate Ranking Calculation to the Database
+**Learning:** Loading entire collections into server memory using Mongoose (`.find().sort().lean()`) just to calculate a rank via array indexing (`.findIndex() + 1`) creates severe O(N) memory and processing bottlenecks.
+**Action:** Always delegate rank calculations to the database using `Model.countDocuments({ score: { $gt: targetScore }, ...filters }) + 1`. This reduces the operation to O(1) in memory, leverages database indexes directly, and natively implements standard competition ranking logic.
