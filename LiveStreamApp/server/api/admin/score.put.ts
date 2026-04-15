@@ -39,21 +39,23 @@ export default defineEventHandler(async (event) => {
         }
       },
       { new: true }
-    ).populate('group').populate('apparatus').exec();
+    ).populate('group', '-history -monitors').populate('apparatus').exec();
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
     // Compute rank among published passages (per apparatus) - Decoupled from status
-    const finished = await PassageModel.find({
+    // BOLT OPTIMIZATION: Replaced O(N) in-memory .findIndex() on a full collection fetch
+    // with a highly optimized database-level countDocuments query.
+    // Impact: Drastically reduces server memory footprint and DB transfer payload,
+    // especially as the competition data grows over the day. Also naturally implements
+    // Standard Competition Ranking (ties share the same rank).
+    const higherScoringPassagesCount = await PassageModel.countDocuments({
       isPublished: true,
-      apparatus: updated.apparatus._id
-    })
-      .sort({ score: -1 })
-      .select('_id')
-      .lean()
-      .exec();
+      apparatus: updated.apparatus._id,
+      score: { $gt: updated.score }
+    }).exec();
 
-    const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
+    const rank = higherScoringPassagesCount + 1;
 
     const payload = {
       passageId: updated._id.toString(),
