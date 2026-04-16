@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-04-16 - Standard Competition Ranking via DB Aggregation
+**Learning:** For calculating competition ranks, querying the entire collection of published passages and sorting it in-memory via `find().sort().findIndex()` causes an O(N) memory bottleneck and slow response times on frequent admin updates.
+**Action:** Replace in-memory sorting and finding with `countDocuments({ score: { $gt: targetScore } }) + 1`. This delegates the load to the database level, uses indexed fields properly, and naturally implements standard competition ranking where tied participants receive the same rank.
