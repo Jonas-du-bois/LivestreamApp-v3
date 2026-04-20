@@ -273,10 +273,15 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <UiButton
               variant="secondary"
               rounded="full"
-              :loading="pending"
-              icon="fluent:arrow-sync-24-regular"
+              class="group"
+              :disabled="pending"
               @click="refresh()"
             >
+              <Icon
+                name="fluent:arrow-sync-24-regular"
+                class="w-5 h-5 transition-transform duration-200 group-active:rotate-180"
+                :class="{ 'animate-spin': pending }"
+              />
               {{ t('weather.refresh') }}
             </UiButton>
           </template>
