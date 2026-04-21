@@ -39,7 +39,9 @@ export default defineEventHandler(async (event) => {
         }
       },
       { new: true }
-    ).populate('group').populate('apparatus').exec();
+    )
+    // BOLT: Optimize memory and payload size by selecting only necessary fields in populate
+    .populate('group', 'name').populate('apparatus', 'name code icon').exec();
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
