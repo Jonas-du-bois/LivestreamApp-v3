@@ -196,7 +196,8 @@ const stats = computed(() => {
         <Icon name="fluent:cloud-error-24-regular" class="w-16 h-16 text-red-400 mx-auto mb-4" />
         <h2 class="text-white font-bold text-xl mb-2">{{ t('weather.errorTitle') || 'Erreur Météo' }}</h2>
         <p class="text-white/60 mb-6">{{ t('weather.errorDescription') || 'Impossible de charger la météo.' }}</p>
-        <UiButton variant="secondary" @click="handleRefresh" class="mx-auto" icon="fluent:arrow-clockwise-24-regular">
+        <UiButton variant="secondary" @click="handleRefresh" class="mx-auto group" :disabled="isRefreshing">
+          <Icon name="fluent:arrow-clockwise-24-regular" class="w-5 h-5 transition-transform duration-200 group-active:rotate-180" :class="{ 'animate-spin': isRefreshing }" />
           {{ t('weather.retry') || 'Réessayer' }}
         </UiButton>
       </div>
@@ -220,10 +221,11 @@ const stats = computed(() => {
               <UiButton
                 variant="glass"
                 size="sm"
-                :loading="isRefreshing"
-                icon="fluent:arrow-clockwise-24-regular"
+                class="group"
+                :disabled="isRefreshing"
                 @click="handleRefresh"
               >
+                <Icon name="fluent:arrow-clockwise-24-regular" class="w-4 h-4 transition-transform duration-200 group-active:rotate-180" :class="{ 'animate-spin': isRefreshing }" />
                 {{ isRefreshing ? t('common.loading') : t('weather.refresh') }}
               </UiButton>
             </div>

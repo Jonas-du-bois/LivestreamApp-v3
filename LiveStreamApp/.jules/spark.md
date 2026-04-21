@@ -59,3 +59,6 @@ La liste statique "Liens utiles" dans la page `/infos` utilisait de simples ancr
 **Apprentissages (LiveStreamApp) :**
 - Les listes statiques, même simples (comme des liens sortants), bénéficient énormément de la classe `group` couplée aux états `active:`. Cela transforme un lien web classique en un véritable bouton d'application native, sans ajouter la moindre complexité Javascript.
 - Utiliser de minuscules translations (ex: `0.5` = `2px` via Tailwind) suffit à donner une direction à une interaction. Un lien sortant doit pointer "vers l'extérieur".
+## 2024-05-18 - Feedback tactile sur les boutons de rafraîchissement
+**Learning:** Lors de la personnalisation d'un composant global tel que `UiButton` pour y ajouter des micro-interactions sur mesure (comme une icône animée personnalisée plutôt que le spinner de base), le retrait de la prop `:loading` native nécessite de réimplémenter manuellement la désactivation du bouton (`:disabled=\loadingState\`) pour éviter que les utilisateurs ne déclenchent des requêtes en cascade de façon involontaire.
+**Action:** Toujours vérifier les conséquences sur l'état fonctionnel natif du composant (état `disabled`, attributs `aria`) lorsqu'on remplace une prop générique qui gère de la logique en interne.
