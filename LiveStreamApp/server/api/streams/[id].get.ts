@@ -14,17 +14,20 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    // BOLT: Optimize memory usage by selecting only necessary fields for stream currentPassage
     const stream = await StreamModel.findById(id).populate({
       path: 'currentPassage',
       model: PassageModel,
       populate: [
         {
           path: 'group',
-          model: GroupModel
+          model: GroupModel,
+          select: 'name category'
         },
         {
           path: 'apparatus',
-          model: ApparatusModel
+          model: ApparatusModel,
+          select: 'name code icon'
         }
       ]
     })
