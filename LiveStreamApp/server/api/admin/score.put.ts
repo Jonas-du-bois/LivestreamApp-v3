@@ -39,7 +39,13 @@ export default defineEventHandler(async (event) => {
         }
       },
       { new: true }
-    ).populate('group').populate('apparatus').exec();
+    )
+      // OPTIMIZATION: Explicit field projections strictly limit socket.io payload size
+      // preventing massive nested arrays like history from blowing up network traffic.
+      .populate('group', 'name category canton logo')
+      .populate('apparatus', 'name code icon')
+      .lean()
+      .exec();
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 

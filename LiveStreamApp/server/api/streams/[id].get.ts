@@ -20,14 +20,16 @@ export default defineEventHandler(async (event) => {
       populate: [
         {
           path: 'group',
-          model: GroupModel
+          model: GroupModel,
+          select: 'name category canton logo'
         },
         {
           path: 'apparatus',
-          model: ApparatusModel
+          model: ApparatusModel,
+          select: 'name code icon'
         }
       ]
-    })
+    }).lean()
 
     if (!stream) {
       throw createError({
