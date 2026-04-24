@@ -85,9 +85,10 @@ export default defineEventHandler(async (event) => {
       const config = useRuntimeConfig();
       if (config.vapidPrivateKey && config.public.vapidPublicKey) {
         // Find subscribers who have this passage in favorites
+        // BOLT: Use .lean() for faster query response
         const subscriptions = await SubscriptionModel.find({
           favorites: passageId
-        });
+        }).lean();
 
         if (subscriptions.length > 0) {
           const groupName = (updated.group as any)?.name || 'Groupe';
@@ -100,12 +101,16 @@ export default defineEventHandler(async (event) => {
             url: '/results'
           });
 
-          const notifications = subscriptions.map(sub => {
+          // BOLT: Collect expired subscriptions for batch deletion
+          const expiredSubscriptionIds: string[] = [];
+
+          const notifications = subscriptions.map((sub: any) => {
             return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, pushPayload)
               .catch(err => {
                 if (err.statusCode === 410 || err.statusCode === 404) {
-                  console.log(`[score] Removing expired subscription ${sub._id}`);
-                  return SubscriptionModel.findByIdAndDelete(sub._id);
+                  console.log(`[score] Marking expired subscription ${sub._id} for deletion`);
+                  expiredSubscriptionIds.push(sub._id);
+                  return;
                 }
                 console.error('[score] Error sending push:', err);
               });
@@ -113,6 +118,12 @@ export default defineEventHandler(async (event) => {
 
           await Promise.all(notifications);
           console.log(`[score] Sent ${subscriptions.length} push notifications for score update`);
+
+          // BOLT: Batch delete expired subscriptions to avoid N+1 query overhead
+          if (expiredSubscriptionIds.length > 0) {
+            await SubscriptionModel.deleteMany({ _id: { $in: expiredSubscriptionIds } });
+            console.log(`[score] Removed ${expiredSubscriptionIds.length} expired subscriptions in batch`);
+          }
         }
       }
     } catch (pushErr) {

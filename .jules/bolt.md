@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-04-23 - Batch WebPush Subscription Cleanup Optimization
+**Learning:** Using Mongoose `findByIdAndDelete` iteratively inside a `.map` loop when handling failed web push notifications (e.g., 410 or 404 errors) causes an N+1 query problem, creating significant database load and slowing down the main thread when many subscriptions expire concurrently.
+**Action:** Always collect target IDs into an array during iteration and use a single `deleteMany({ _id: { $in: targetIds } })` after the loop to handle bulk deletions. Additionally, use `.lean()` on read-only lookup queries like `SubscriptionModel.find()` to reduce memory overhead before batch processing.
