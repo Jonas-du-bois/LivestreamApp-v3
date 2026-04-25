@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    // BOLT: Added .lean() to optimize performance by avoiding Mongoose document instantiation overhead for read-only responses
     const stream = await StreamModel.findById(id).populate({
       path: 'currentPassage',
       model: PassageModel,
@@ -27,7 +28,7 @@ export default defineEventHandler(async (event) => {
           model: ApparatusModel
         }
       ]
-    })
+    }).lean()
 
     if (!stream) {
       throw createError({
