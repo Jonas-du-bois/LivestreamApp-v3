@@ -39,7 +39,13 @@ export default defineEventHandler(async (event) => {
         }
       },
       { new: true }
-    ).populate('group').populate('apparatus').exec();
+    )
+      // BOLT: Optimize Mongoose populate to explicitly select fields.
+      // This prevents sending massive nested arrays (like history or monitors)
+      // within the Socket.io ScoreUpdatePayload, drastically reducing network size.
+      .populate('group', 'name category canton logo')
+      .populate('apparatus', 'name code icon')
+      .exec();
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
