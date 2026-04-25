@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-04-10 - Server-side projection for Mongoose populate queries returning Real-Time Payloads
+**Learning:** Returning unprojected Mongoose `.populate()` results within a Socket.io event payload (e.g., `score-update`) can inadvertently serialize and transmit massive nested arrays (like previous `history` scores or `monitors`), drastically increasing the WebSocket frame size and network overhead for connected clients.
+**Action:** Always verify what is being sent over WebSocket. When a Mongoose document containing relations is serialized directly into a socket emission, explicitly add exclusionary/inclusive field projections (e.g., `.populate('group', 'name category')`) to only send primitive data required by the UI.
