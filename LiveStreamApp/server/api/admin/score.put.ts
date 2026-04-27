@@ -87,7 +87,7 @@ export default defineEventHandler(async (event) => {
         // Find subscribers who have this passage in favorites
         const subscriptions = await SubscriptionModel.find({
           favorites: passageId
-        });
+        }).select('endpoint keys').lean();
 
         if (subscriptions.length > 0) {
           const groupName = (updated.group as any)?.name || 'Groupe';
@@ -100,18 +100,27 @@ export default defineEventHandler(async (event) => {
             url: '/results'
           });
 
+          const expiredSubscriptions: string[] = [];
+
           const notifications = subscriptions.map(sub => {
-            return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, pushPayload)
+            return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys as any }, pushPayload)
               .catch(err => {
                 if (err.statusCode === 410 || err.statusCode === 404) {
-                  console.log(`[score] Removing expired subscription ${sub._id}`);
-                  return SubscriptionModel.findByIdAndDelete(sub._id);
+                  console.log(`[score] Expired subscription ${sub._id}`);
+                  expiredSubscriptions.push(sub._id.toString());
+                } else {
+                  console.error('[score] Error sending push:', err);
                 }
-                console.error('[score] Error sending push:', err);
               });
           });
 
           await Promise.all(notifications);
+
+          if (expiredSubscriptions.length > 0) {
+            await SubscriptionModel.deleteMany({ _id: { $in: expiredSubscriptions } });
+            console.log(`[score] Removed ${expiredSubscriptions.length} expired subscriptions`);
+          }
+
           console.log(`[score] Sent ${subscriptions.length} push notifications for score update`);
         }
       }
