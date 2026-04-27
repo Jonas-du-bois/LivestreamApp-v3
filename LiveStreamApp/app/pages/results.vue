@@ -109,27 +109,18 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
     const passageIndex = list.findIndex(p => p._id === data.passageId)
 
     if (passageIndex !== -1) {
-      // Create a new array with updated passage to trigger reactivity
-      const updatedList = list.map((p, i) => {
-        if (i !== passageIndex) return p
-        return {
-          ...p,
-          score: data.score !== undefined ? data.score : p.score,
-          status: data.status || p.status
-        }
-      })
+      // ⚡ Bolt: Perform in-place update to avoid full array re-mapping
+      if (data.score !== undefined) list[passageIndex].score = data.score
+      if (data.status) list[passageIndex].status = data.status
 
       // Re-sort and re-rank
-      updatedList.sort((a, b) => (b.score || 0) - (a.score || 0))
-      updatedList.forEach((p, i) => {
+      list.sort((a, b) => (b.score || 0) - (a.score || 0))
+      list.forEach((p, i) => {
         p.rank = i + 1
       })
 
-      // Trigger reactivity by creating a new object reference
-      resultsMap.value = {
-        ...resultsMap.value,
-        [key]: updatedList
-      }
+      // ⚡ Bolt: Trigger reactivity for this specific array without cloning the entire object
+      resultsMap.value[key] = [...list]
 
       // Trigger Flash Effect
       nextTick(() => {
@@ -169,17 +160,14 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         location: data.location
       }
 
-      const updatedList = [...existingList, newEntry]
-      updatedList.sort((a, b) => (b.score || 0) - (a.score || 0))
-      updatedList.forEach((p, i) => {
+      existingList.push(newEntry)
+      existingList.sort((a, b) => (b.score || 0) - (a.score || 0))
+      existingList.forEach((p, i) => {
         p.rank = i + 1
       })
 
-      // Trigger reactivity
-      resultsMap.value = {
-        ...resultsMap.value,
-        [code]: updatedList
-      }
+      // ⚡ Bolt: Trigger reactivity for this specific array without cloning the entire object
+      resultsMap.value[code] = [...existingList]
 
       // Flash effect for new entry
       nextTick(() => {
@@ -207,16 +195,11 @@ const handleStatusUpdate = (data: ScoreUpdatePayload) => {
     const passageIndex = list.findIndex(p => p._id === data.passageId)
     
     if (passageIndex !== -1 && data.status) {
-      // Create new array with updated status to trigger reactivity
-      const updatedList = list.map((p, i) => {
-        if (i !== passageIndex) return p
-        return { ...p, status: data.status }
-      })
+      // ⚡ Bolt: Perform in-place update
+      list[passageIndex].status = data.status
       
-      resultsMap.value = {
-        ...resultsMap.value,
-        [key]: updatedList
-      }
+      // ⚡ Bolt: Trigger reactivity for this specific array without cloning the entire object
+      resultsMap.value[key] = [...list]
       break
     }
   }
