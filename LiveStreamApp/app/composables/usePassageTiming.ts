@@ -26,16 +26,22 @@ export const usePassageTiming = (
   const timeEnrichedPassages = computed<PassageTimeEnriched[]>(() => {
     if (!passages.value) return []
 
+    // ⚡ Bolt: Reuse a single Date instance to prevent excessive allocation
+    // and garbage collection cycles when mapping large arrays.
+    const sharedDate = new Date()
+
     return passages.value.map(p => {
-      const dStart = new Date(p.startTime)
-      const dEnd = new Date(p.endTime)
-      const dayStart = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate()).getTime()
+      const _startTime = Date.parse(p.startTime)
+      const _endTime = Date.parse(p.endTime)
+
+      sharedDate.setTime(_startTime)
+      const _dayStart = sharedDate.setHours(0, 0, 0, 0)
 
       return {
         ...p,
-        _startTime: dStart.getTime(),
-        _endTime: dEnd.getTime(),
-        _dayStart: dayStart
+        _startTime,
+        _endTime,
+        _dayStart
       }
     })
   })
