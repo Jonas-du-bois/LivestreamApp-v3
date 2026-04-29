@@ -13,8 +13,7 @@
       <div class="splash-screen__logo-wrap" aria-hidden="true">
         <span class="splash-screen__halo" />
         <!-- On utilise un chargement eager pour l'image du splash screen car c'est le premier élément visible -->
-        <img
-          src="/icons/logo_livestreamappv3-192.png"
+        <NuxtImg format="webp" loading="lazy"           src="/icons/logo_livestreamappv3-192.png"
           alt=""
           width="96"
           height="96"

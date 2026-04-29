@@ -264,8 +264,7 @@ onUnmounted(() => {
                 class="absolute inset-[15%] rounded-2xl premium-skeleton-surface premium-skeleton-shimmer"
               />
 
-              <img
-                v-if="!imgError"
+              <NuxtImg format="webp" loading="lazy"                 v-if="!imgError"
                 :key="`img-${currentPhoto.id}`"
                 :src="bestUrl"
                 :alt="currentPhoto.title || 'Photo'"

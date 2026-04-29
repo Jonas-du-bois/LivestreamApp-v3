@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { PassageEnriched } from '~/types/api'
+import type { TimelineEntry } from '../../types/api'
 
 interface Props {
-  item: PassageEnriched & { _startTime?: number; _endTime?: number }
+  item: TimelineEntry & { _startTime?: number; _endTime?: number }
 }
 
 const props = defineProps<Props>()

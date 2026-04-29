@@ -130,13 +130,13 @@ function mapStreamToDisplay(s: Stream, passagesByLocation: Map<string, PassageEn
   }
 
   // Determine thumbnail
-  const defaultImg = 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  const defaultImg = '/img/stream-fallback.png'
 
-  const thumb = s.thumbnail || getStreamThumbnailUrl(s.url, defaultImg)
+  const thumb = getStreamThumbnailUrl(s.url || '', defaultImg)
 
   return {
-    id: s._id,
-    title: s.name || s.title || 'Stream',
+    id: s._id || '',
+    title: s.name || 'Stream',
     thumbnail: thumb,
     isLive: !!s.isLive,
     salle: s.location || '',

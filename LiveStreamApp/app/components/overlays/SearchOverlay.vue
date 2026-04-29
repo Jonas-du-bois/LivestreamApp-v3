@@ -275,7 +275,7 @@ onUnmounted(() => {
                     class="w-full glass-card p-3 text-left hover:bg-white/15 transition-colors rounded-xl flex items-center gap-3 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none"
                   >
                     <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center overflow-hidden">
-                      <img v-if="group.logo" :src="group.logo" :alt="group.name" class="w-full h-full object-cover" />
+                      <NuxtImg format="webp" loading="lazy" v-if="group.logo" :src="group.logo" :alt="group.name" class="w-full h-full object-cover" />
                       <Icon v-else name="fluent:people-team-24-regular" class="w-5 h-5 text-cyan-400" />
                     </div>
                     <div class="flex-1 min-w-0">

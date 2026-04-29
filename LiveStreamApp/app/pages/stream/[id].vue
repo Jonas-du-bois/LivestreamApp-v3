@@ -93,8 +93,6 @@ const currentGroup = computed(() => {
   // Merge group details with additional stats
   return {
     ...groupDetails.value.info,
-    monitors: groupDetails.value.monitors || [],
-    history: groupDetails.value.history || [],
     // Add computed average from stats
     averageScore: groupDetails.value.stats?.currentTotalScore || 0
   }
@@ -122,7 +120,6 @@ if (stream.value && !stream.value.isLive) {
 const streamUrl = computed(() => stream.value?.url)
 const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl.value?.includes('vimeo'))
 const currentApparatus = computed(() => currentPassage.value?.apparatus || null)
-const passageMonitors = computed(() => currentPassage.value?.monitors || [])
 
 const { open: openGroupDetails } = useGroupDetails()
 
@@ -315,7 +312,7 @@ useAutoRefresh(handleRefresh, STREAM_AUTO_REFRESH)
         <div v-if="currentGroup">
           <h3 class="text-white/60 font-medium mb-3 ml-1">{{ t('stream.onPracticable') }}</h3>
           <div @click="currentGroup._id && openGroupDetails(currentGroup._id, currentApparatus?.code)" class="cursor-pointer active:scale-[0.98] transition-transform">
-             <GroupInfoCard :group="currentGroup" :passage-monitors="passageMonitors" />
+             <GroupInfoCard :group="currentGroup" />
           </div>
         </div>
 

@@ -36,12 +36,15 @@ export default defineEventHandler(async (event) => {
 
       if (conflictingPassages.length > 0) {
         const now = new Date();
-        for (const conflict of conflictingPassages) {
-          conflict.status = 'FINISHED';
-          conflict.endTime = now;
-          await conflict.save();
+        const conflictIds = conflictingPassages.map(p => p._id);
+        
+        await PassageModel.updateMany(
+          { _id: { $in: conflictIds } },
+          { $set: { status: 'FINISHED', endTime: now } }
+        );
 
-          if (io) {
+        if (io) {
+          for (const conflict of conflictingPassages) {
             io.to('schedule-updates').emit('status-update', {
               passageId: conflict._id,
               status: 'FINISHED',

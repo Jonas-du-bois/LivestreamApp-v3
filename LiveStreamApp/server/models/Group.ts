@@ -1,43 +1,20 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
-export interface HistoryEntry {
-  year: number;
-  competition: string;
-  apparatusCode: string;
-  score: number;
-}
-
 export interface IGroup extends Document {
   name: string;
   canton?: string;
-  category?: 'ACTIFS' | 'MIXTE';
+  category?: string;
   logo?: string;
   description?: string;
-  gymnastsCount?: number;
-  monitors?: string[];
-  history?: HistoryEntry[];
 }
-
-const HistorySchema = new Schema<HistoryEntry>(
-  {
-    year: { type: Number, required: true },
-    competition: { type: String, required: true },
-    apparatusCode: { type: String, required: true },
-    score: { type: Number, required: true },
-  },
-  { _id: false }
-);
 
 const GroupSchema = new Schema<IGroup>(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, index: true },
     description: { type: String },
-    canton: { type: String },
+    canton: { type: String, index: true },
     logo: { type: String },
-    gymnastsCount: { type: Number },
-    monitors: { type: [String], default: [] },
-    history: { type: [HistorySchema], default: [] },
-    category: { type: String, enum: ['ACTIFS', 'MIXTE'] },
+    category: { type: String, index: true },
   },
   { timestamps: true }
 );

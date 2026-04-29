@@ -1,43 +1,20 @@
 <script setup lang="ts">
-import type { Group, HistoryEntry } from '../../types/api'
-import AnimatedCounter from '../AnimatedCounter.vue'
+import type { Group } from '../../types/api'
 
 interface Props {
   group: Group
-  // Les moniteurs du passage sont prioritaires par rapport à ceux du groupe global pour une donnée plus précise.
-  passageMonitors?: string[] 
 }
 
 const props = defineProps<Props>()
 const { t } = useI18n()
 const { translateCategory } = useTranslatedData()
 
-const getInitials = (name: string) => {
-  if (!name) return ''
-  return name.split(' ').map((n: string) => n[0]).join('')
-}
-
-// ⚠️ DEAD CODE :
-/*
-const isFavorite = ref(false)
-
-const toggleFavorite = () => {
-  isFavorite.value = !isFavorite.value
-}
-*/
-
-const gymnastsCount = computed(() => props.group.gymnastsCount ?? 0)
-const monitors = computed(() => props.passageMonitors ?? props.group.monitors ?? [])
-const monitorsCount = computed(() => monitors.value.length)
-
-// Calcule la note moyenne, en privilégiant la statistique pré-calculée par l'API si elle existe, sinon via l'historique complet.
+// Calcule la note moyenne
 const averageScore = computed(() => {
   if (typeof (props.group as any).averageScore === 'number') {
     return (props.group as any).averageScore.toFixed(2)
   }
-  if (!props.group.history?.length) return '0.00'
-  const sum = props.group.history.reduce((acc: number, curr: HistoryEntry) => acc + curr.score, 0)
-  return (sum / props.group.history.length).toFixed(2)
+  return '0.00'
 })
 
 const categoryLabel = computed(() => {
@@ -48,40 +25,8 @@ const categoryColor = computed(() => {
   return props.group.category === 'MIXTE' ? 'bg-purple-500/20 text-purple-400' : 'bg-cyan-500/20 text-cyan-400'
 })
 
-// Prépare les données de l'historique en faisant une moyenne des scores par année pour affichage dans le graphique.
-const historyByYear = computed(() => {
-  if (!props.group.history) return []
-
-  const map = new Map<number, number[]>()
-  props.group.history.forEach((h: HistoryEntry) => {
-    if (!map.has(h.year)) map.set(h.year, [])
-    map.get(h.year)?.push(h.score)
-  })
-
-  return Array.from(map.entries()).map(([year, scores]) => {
-    const avg = scores.reduce((a, b) => a + b, 0) / scores.length
-    return { year, score: avg }
-  }).sort((a, b) => a.year - b.year)
-})
-
-// Regroupe les statistiques dans un tableau pour faciliter le rendu et l'application des animations (v-for dans le template).
+// Regroupe les statistiques dans un tableau pour faciliter le rendu.
 const stats = computed(() => [
-  {
-    id: 'gymnasts',
-    label: t('group.gymnasts'),
-    value: gymnastsCount.value,
-    icon: 'fluent:people-24-regular',
-    color: 'text-cyan-400',
-    rotate: '-rotate-6'
-  },
-  {
-    id: 'monitors',
-    label: t('group.monitors'),
-    value: monitorsCount.value,
-    icon: 'fluent:person-24-regular',
-    color: 'text-purple-400',
-    rotate: 'rotate-6'
-  },
   {
     id: 'average',
     label: t('group.average'),
@@ -99,7 +44,7 @@ const stats = computed(() => [
   <div class="glass-panel overflow-hidden flex flex-col">
     <div class="relative h-48 overflow-hidden flex-shrink-0">
       <ImageWithFallback
-        :src="group.logo || 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'"
+        :src="group.logo || '/img/group-fallback.png'"
         :alt="group.name"
         class="w-full h-full object-cover"
       />
@@ -130,7 +75,7 @@ const stats = computed(() => [
     <div class="flex-1 p-6 space-y-6 overflow-y-auto">
       <TransitionGroup
         tag="div"
-        class="grid grid-cols-3 gap-3"
+        class="grid grid-cols-1 gap-3"
         name="staggered-fade"
         appear
       >
@@ -166,53 +111,7 @@ const stats = computed(() => [
           </div>
         </div>
       </div>
-
-      <div v-if="monitors.length > 0">
-        <h3 class="text-white font-bold mb-3">{{ t('group.monitors') }}</h3>
-        <div class="glass-card p-4 space-y-3">
-          <div
-            v-for="coach in monitors"
-            :key="coach"
-            class="flex items-center gap-3"
-          >
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-purple-400 flex items-center justify-center flex-shrink-0">
-              <span class="text-white text-sm font-bold">
-                {{ getInitials(coach) }}
-              </span>
-            </div>
-            <span class="text-white">{{ coach }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="historyByYear.length > 0">
-        <div class="flex items-center gap-2 mb-3">
-          <Icon name="fluent:history-24-regular" class="w-5 h-5 text-cyan-400" />
-          <h3 class="text-white font-bold">{{ t('group.historicalPerformance') }}</h3>
-        </div>
-        <div class="glass-card p-4">
-          <ChartsHistoryLineChart
-            :data="historyByYear"
-            :height="150"
-            :compact="true"
-          />
-        </div>
-      </div>
     </div>
-
-    <!-- ⚠️ DEAD CODE : (Le bouton favori commenté dans le template a été conservé tel quel car il était déjà commenté en HTML) -->
-    <!-- <div class="p-6 border-t border-white/10 flex-shrink-0">
-      <button
-        @click="toggleFavorite"
-        class="w-full gradient-cyan-purple py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-      >
-        <Icon
-          :name="isFavorite ? 'fluent:heart-24-filled' : 'fluent:heart-24-regular'"
-          class="w-5 h-5"
-        />
-        {{ isFavorite ? 'Retirer des Favoris' : 'Ajouter aux Favoris' }}
-      </button>
-    </div> -->
   </div>
 </template>
 

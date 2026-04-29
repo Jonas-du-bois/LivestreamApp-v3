@@ -27,3 +27,16 @@ logs
 
 #google-services.json
 google-services.json
+
+# image 
+public/img
+
+# documentation .md
+FULL_CODEBASE_AUDIT.md
+Migration_Guide.md
+NOTIFICATION_AUDIT.md
+MIGRATION_PLAN.md
+PERFORMANCE_AUDIT.md
+
+# Donnée brut 
+server/schedule_import

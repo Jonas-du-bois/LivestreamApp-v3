@@ -5,7 +5,14 @@ const { t } = useI18n()
 const { formatLocalizedTime } = useTranslatedData()
 
 type WeatherKind =
-// ... existing types
+  | 'sunny'
+  | 'partly_cloudy'
+  | 'cloudy'
+  | 'rain'
+  | 'snow'
+  | 'thunder'
+  | 'fog'
+  | 'windy'
   | 'unknown'
 
 // Fetch weather data using useAsyncData for better control over SSR/Client hydration

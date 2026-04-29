@@ -13,7 +13,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@nuxt/icon',
-    '@nuxtjs/i18n'
+    '@nuxtjs/i18n',
+    '@nuxt/image'
   ],
 
   i18n: {
@@ -43,12 +44,12 @@ export default defineNuxtConfig({
     rollupConfig: {
       external: ['@nuxt/nitro-server/dist/runtime/utils/cache-driver.js']
     },
-    // CORS headers pour permettre les requêtes depuis Capacitor (origin: http://localhost)
+    // CORS headers pour permettre les requêtes depuis Capacitor
     routeRules: {
       '/api/**': {
         cors: true,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': process.env.NODE_ENV === 'development' ? '*' : (process.env.CORS_ORIGIN || 'https://livestreamapp-v3.onrender.com'),
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization'
         }
@@ -94,6 +95,12 @@ export default defineNuxtConfig({
     },
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'fade', mode: 'in-out' }
+  },
+
+  vite: {
+    esbuild: {
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
+    }
   },
 
   pwa: {

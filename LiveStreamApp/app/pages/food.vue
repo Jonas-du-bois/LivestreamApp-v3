@@ -137,7 +137,7 @@ const foodSpots = computed(() => [
     description: t('food.spots.cantine.description'),
     icon: "fluent:food-24-filled",
     isOpen: true,
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800",
+    image: "/img/food-1.png",
     menu: [
       { item: t('food.menu.steakFrites'), price: "18.-" },
       { item: t('food.menu.pasta'), price: "14.-" },
@@ -152,7 +152,7 @@ const foodSpots = computed(() => [
     description: t('food.spots.burger.description'),
     icon: "fluent:food-24-filled",
     isOpen: true,
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800",
+    image: "/img/food-2.png",
     menu: [
       { item: t('food.menu.classicBurger'), price: "15.-" },
       { item: t('food.menu.vaudoisBurger'), price: "17.-" },
@@ -167,7 +167,7 @@ const foodSpots = computed(() => [
     description: t('food.spots.raclette.description'),
     icon: "fluent:food-toast-24-filled",
     isOpen: true,
-    image: "https://images.unsplash.com/photo-1706363447064-1ae8d6d3bc5d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/img/food-3.png",
     menu: [
       { item: t('food.menu.raclettePortion'), price: "7.-" },
       { item: t('food.menu.valaisanBoard'), price: "16.-" },
@@ -182,7 +182,7 @@ const foodSpots = computed(() => [
     description: t('food.spots.bar.description'),
     icon: "fluent:drink-beer-24-filled",
     isOpen: true,
-    image: "https://images.unsplash.com/photo-1575444758702-4a6b9222336e?auto=format&fit=crop&q=80&w=800",
+    image: "/img/food-4.png",
     menu: [
       { item: t('food.menu.beer'), price: "5.-" },
       { item: t('food.menu.water'), price: "4.-" },

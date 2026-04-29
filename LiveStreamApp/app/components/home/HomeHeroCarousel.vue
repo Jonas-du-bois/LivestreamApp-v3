@@ -56,7 +56,7 @@ const ssrSlides = computed(() => [
     type: 'afterparty',
     title: 'AFTER PARTY',
     subtitle: t('afterparty.themeValue') || 'Thème: Bad Taste',
-    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2340&auto=format&fit=crop',
+    image: '/img/hero-1.png',
     to: '/afterparty',
     badge: { label: 'Soon', variant: 'violet', pulse: true, showDot: false }
   },
@@ -65,7 +65,7 @@ const ssrSlides = computed(() => [
     type: 'food',
     title: t('food.title'),
     subtitle: t('food.subtitle'),
-    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=2340',
+    image: '/img/hero-2.png',
     to: '/food',
     badge: { label: t('common.open'), variant: 'green', showDot: true, pulse: false }
   }
@@ -83,7 +83,7 @@ const dynamicSlides = computed(() => {
         return (stream.currentPassage as Passage)._id === p._id
       })
 
-      const heroImage = getStreamThumbnailUrl(s?.url, 'https://images.unsplash.com/photo-1764622078388-df36863688d3?q=80&w=2340&auto=format&fit=crop')
+      const heroImage = getStreamThumbnailUrl(s?.url, '/img/hero-fallback.png')
 
       items.push({
         id: `live-${p._id}`,
@@ -128,7 +128,7 @@ const dynamicSlides = computed(() => {
       type: 'result',
       title: lastResult.group?.name || 'Résultat',
       subtitle: `${lastResult.score} pts • ${t('results.title')}`,
-      image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2340&auto=format&fit=crop',
+      image: '/img/hero-3.png',
       to: '/results',
       badge: {
         label: t('nav.results'),
@@ -142,7 +142,7 @@ const dynamicSlides = computed(() => {
     type: 'afterparty',
     title: 'AFTER PARTY',
     subtitle: t('afterparty.themeValue') || 'Thème: Bad Taste',
-    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2340&auto=format&fit=crop',
+    image: '/img/hero-4.png',
     to: '/afterparty',
     badge: {
       label: 'Soon',
@@ -156,7 +156,7 @@ const dynamicSlides = computed(() => {
     type: 'food',
     title: t('food.title'),
     subtitle: t('food.subtitle'),
-    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=2340',
+    image: '/img/hero-5.png',
     to: '/food',
     badge: {
       label: t('common.open'),

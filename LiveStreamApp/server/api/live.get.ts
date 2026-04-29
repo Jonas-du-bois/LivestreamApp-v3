@@ -31,8 +31,7 @@ export default defineEventHandler(async (event) => {
       endTime: p.endTime,
       location: p.location,
       status: p.status,
-      score: p.score,
-      monitors: p.monitors || []
+      score: p.score
     }));
 
     return {

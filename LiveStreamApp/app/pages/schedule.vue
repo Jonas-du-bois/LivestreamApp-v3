@@ -208,6 +208,8 @@ const filteredSchedule = computed(() => {
   })
 })
 
+const { list, containerProps, wrapperProps } = useVirtualList(filteredSchedule, { itemHeight: 120 })
+
 const clearScheduleFilters = () => {
   selectedFilter.value = t('common.all')
   filtersStore.value.division = []
@@ -292,22 +294,24 @@ useSocketRoom('schedule-updates', [
               </template>
             </UiEmptyState>
 
-            <TransitionGroup
+            <div
               v-else
-              name="list"
-              tag="div"
-              class="flex flex-col gap-2 relative"
               key="list"
+              class="relative"
+              v-bind="containerProps"
+              style="height: 600px; overflow-y: auto;"
             >
-              <SchedulePassageCard
-                v-for="(item, index) in filteredSchedule"
-                :key="item._id || `${item.group?._id || 'g'}-${item.startTime || 's'}-${item.apparatus?.code || 'a'}-${index}`"
-                :passage="item"
-                :is-favorite="!!(item._id && isFavorite(item._id))"
-                @click:group="handleGroupClick"
-                @toggle:favorite="(id, event) => toggleFavorite(id, event)"
-              />
-            </TransitionGroup>
+              <div v-bind="wrapperProps" class="flex flex-col gap-2">
+                <SchedulePassageCard
+                  v-for="item in list"
+                  :key="item.data._id || `${item.data.group?._id || 'g'}-${item.data.startTime || 's'}-${item.data.apparatus?.code || 'a'}-${item.index}`"
+                  :passage="item.data"
+                  :is-favorite="!!(item.data._id && isFavorite(item.data._id))"
+                  @click:group="handleGroupClick"
+                  @toggle:favorite="(id, event) => toggleFavorite(id, event)"
+                />
+              </div>
+            </div>
           </Transition>
         </div>
       </Transition>

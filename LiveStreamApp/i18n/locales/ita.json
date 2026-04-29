@@ -402,7 +402,10 @@
     "BF": "Sbarra Fissa",
     "GYAE": "Ginn. con attrezzi",
     "GYSE": "Ginn. senza attrezzi",
-    "ST": "Salto"
+    "ST": "Salto",
+    "12x12": "12x12 m",
+    "12x18": "12x18 m",
+    "12x24": "12x24 m"
   },
 
   "days": {
@@ -417,7 +420,9 @@
 
   "categories": {
     "ACTIFS": "Attivi",
-    "MIXTE": "Misto"
+    "MIXTE": "Misto",
+    "JEUNESSE_A": "Gioventù A (-16 anni)",
+    "JEUNESSE_B": "Gioventù B (-12 anni)"
   },
 
   "status": {

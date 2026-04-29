@@ -219,7 +219,14 @@ export const useNotificationsStore = defineStore('notifications', {
 
   persist: {
     key: 'app-notifications',
-    storage: typeof window !== 'undefined' ? localStorage : undefined,
+    storage: {
+      getItem: (key: string) => {
+        try { return typeof window !== 'undefined' ? localStorage.getItem(key) : null; } catch (e) { return null; }
+      },
+      setItem: (key: string, value: string) => {
+        try { if (typeof window !== 'undefined') localStorage.setItem(key, value); } catch (e) { console.warn('Storage quota exceeded'); }
+      }
+    },
     pick: ['notifications']
   }
 })

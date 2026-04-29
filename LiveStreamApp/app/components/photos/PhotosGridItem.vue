@@ -60,8 +60,7 @@ const formattedTime = computed(() => {
       class="absolute inset-0 premium-skeleton-surface premium-skeleton-shimmer rounded-xl"
     />
 
-    <img
-      v-if="!imgError"
+    <NuxtImg format="webp" loading="lazy"       v-if="!imgError"
       :src="photo.urls.z"
       :alt="photo.title || `Photo ${index + 1}`"
       loading="lazy"

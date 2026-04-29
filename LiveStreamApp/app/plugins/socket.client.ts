@@ -55,11 +55,17 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // PWA: Reconnect when app comes back to foreground
   if (typeof document !== 'undefined') {
-    document.addEventListener('visibilitychange', () => {
+    const onVisibilityChange = () => {
       if (document.visibilityState === 'visible' && !socket.connected) {
         console.log('[Socket] App visible, reconnecting...')
         socket.connect()
       }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+
+    nuxtApp.hook('app:unmount', () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      socket.disconnect()
     })
   }
 

@@ -84,6 +84,8 @@ const filterOptions = computed<PassageFilterOptions>(() => ({
 
 const { filteredPassages } = usePassageFilters(passages, filterOptions)
 
+const { list, containerProps, wrapperProps } = useVirtualList(filteredPassages, { itemHeight: 150 })
+
 // ===== Computed Filter Options =====
 const availableDays = computed(() => {
   return scheduleData.value?.meta?.availableDays || []
@@ -1290,6 +1292,11 @@ html {
 }
 
 /* Focus visible for accessibility */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-cyan-400;
+}
+</style>
+ble for accessibility */
 :focus-visible {
   @apply outline-2 outline-offset-2 outline-cyan-400;
 }

@@ -3,9 +3,9 @@
  * Gère automatiquement le nettoyage au démontage du composant.
  */
 export function useAutoRefresh(
-  callback: () => void | Promise<void>,
+  callback: () => any,
   intervalMs: number,
-  onVisibility?: () => void | Promise<void>
+  onVisibility?: () => any
 ) {
   let timer: ReturnType<typeof setInterval> | null = null
 

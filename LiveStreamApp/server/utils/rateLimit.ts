@@ -1,44 +1,18 @@
-type RateLimitRecord = {
-  count: number;
-  start: number;
-  timeout: any;
-};
-
-const limits = new Map<string, RateLimitRecord>();
-const WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS = 5;
-
-/**
- * Checks if the given IP address (or key) is rate limited.
- * Returns true if the limit is exceeded.
- */
-export const isRateLimited = (key: string, maxRequests = MAX_REQUESTS, windowMs = WINDOW_MS): boolean => {
+export const isRateLimited = async (key: string, maxRequests = 5, windowMs = 60000): Promise<boolean> => {
+  const storage = useStorage('cache:rate-limit');
   const now = Date.now();
-  const record = limits.get(key);
-
-  // If no record, create one
-  if (!record) {
-    const timeout = setTimeout(() => limits.delete(key), windowMs);
-    limits.set(key, { count: 1, start: now, timeout });
+  
+  const record: any = await storage.getItem(key);
+  if (!record || now - record.start > windowMs) {
+    await storage.setItem(key, { count: 1, start: now });
     return false;
   }
-
-  // If window expired (safety check, though setTimeout should handle it)
-  if (now - record.start > windowMs) {
-    clearTimeout(record.timeout);
-    limits.delete(key);
-
-    const timeout = setTimeout(() => limits.delete(key), windowMs);
-    limits.set(key, { count: 1, start: now, timeout });
-    return false;
-  }
-
-  // Check limit
+  
   if (record.count >= maxRequests) {
     return true;
   }
-
-  // Increment
+  
   record.count++;
+  await storage.setItem(key, record);
   return false;
 };

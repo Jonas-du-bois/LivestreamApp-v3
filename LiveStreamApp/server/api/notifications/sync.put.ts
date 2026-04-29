@@ -4,7 +4,7 @@ import { SyncFavoritesSchema } from '../../utils/validation';
 export default defineEventHandler(async (event) => {
   // Security: Rate Limit (60 req/min) - Looser limit for sync to allow frequent updates
   const ip = getRequestIP(event) || 'unknown';
-  if (isRateLimited(`${ip}:sync`, 60, 60000)) {
+  if (await isRateLimited(`${ip}:sync`, 60, 60000)) {
     throw createError({
       statusCode: 429,
       statusMessage: 'Too Many Requests',

@@ -16,7 +16,7 @@ interface OverrideData {
  * appliqués par-dessus les données API. Après STATUS_OVERRIDE_DEFER ms,
  * les overrides sont vidés et un refresh API est déclenché pour consolider.
  */
-export function useRealtimeStatus(refreshCallback?: () => void | Promise<void>) {
+export function useRealtimeStatus(refreshCallback?: () => any) {
   const overrides = new Map<string, OverrideData>()
   const version = ref(0)
   let deferTimer: ReturnType<typeof setTimeout> | null = null

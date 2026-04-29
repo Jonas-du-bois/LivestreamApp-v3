@@ -1,5 +1,6 @@
 import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime';
 import { SCHEDULER_INTERVAL } from '../utils/timings';
+import { updateScheduleMetadata } from '../utils/schedule-helpers';
 
 import webPush from 'web-push';
 import admin from 'firebase-admin';
@@ -98,11 +99,24 @@ export default defineNitroPlugin((nitroApp) => {
   }
 
   console.log('[Scheduler] Starting scheduler for status updates...');
+  
+  // Initial run of metadata update
+  updateScheduleMetadata().catch(err => console.error('[Scheduler] Initial metadata update failed:', err));
 
   // Schedule Job: Check at configured interval
   setInterval(async () => {
     try {
       const now = new Date();
+      const lockKey = 'scheduler:last-run';
+      const storage = useStorage('cache');
+      const lastRun = (await storage.getItem(lockKey)) as number;
+      if (lastRun && now.getTime() - lastRun < SCHEDULER_INTERVAL - 500) {
+        return; // Another instance already processed this tick
+      }
+      await storage.setItem(lockKey, now.getTime());
+      
+      // Update schedule metadata in background
+      updateScheduleMetadata().catch(err => console.error('[Scheduler] Metadata update failed:', err));
 
       // --- 1. STATUS UPDATE LOGIC (AUTO-PILOT) ---
       let scheduleChanged = false;

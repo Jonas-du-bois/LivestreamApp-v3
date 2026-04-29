@@ -405,7 +405,10 @@
     "BF": "Barre Fixe",
     "GYAE": "Gym. avec engins",
     "GYSE": "Gym. sans engins",
-    "ST": "Saut"
+    "ST": "Saut",
+    "12x12": "12x12 m",
+    "12x18": "12x18 m",
+    "12x24": "12x24 m"
   },
 
   "days": {
@@ -420,7 +423,9 @@
 
   "categories": {
     "ACTIFS": "Actifs",
-    "MIXTE": "Mixte"
+    "MIXTE": "Mixte",
+    "JEUNESSE_A": "Jeunesse A (-16 ans)",
+    "JEUNESSE_B": "Jeunesse B (-12 ans)"
   },
 
   "status": {

@@ -403,7 +403,10 @@
     "BF": "Reck",
     "GYAE": "Gym. mit Grät",
     "GYSE": "Gym. ohni Grät",
-    "ST": "Sprung"
+    "ST": "Sprung",
+    "12x12": "12x12 m",
+    "12x18": "12x18 m",
+    "12x24": "12x24 m"
   },
 
   "days": {
@@ -418,7 +421,9 @@
 
   "categories": {
     "ACTIFS": "Aktivi",
-    "MIXTE": "Gmischt"
+    "MIXTE": "Gmischt",
+    "JEUNESSE_A": "Jugend A (-16 J.)",
+    "JEUNESSE_B": "Jugend B (-12 J.)"
   },
 
   "status": {

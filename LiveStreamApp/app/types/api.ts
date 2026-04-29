@@ -6,13 +6,6 @@ export interface Apparatus {
   isActive?: boolean;
 }
 
-export interface HistoryEntry {
-  year: number;
-  competition: string;
-  apparatusCode: string;
-  score: number;
-}
-
 export interface Group {
   _id?: string;
   name: string;
@@ -20,9 +13,6 @@ export interface Group {
   logo?: string;
   description?: string;
   category?: string;
-  gymnastsCount?: number;
-  monitors?: string[];
-  history?: HistoryEntry[];
 }
 
 export type PassageStatus = 'SCHEDULED' | 'LIVE' | 'FINISHED';
@@ -37,7 +27,6 @@ export interface Passage {
   score: number | null;
   isPublished?: boolean;
   status?: PassageStatus;
-  monitors?: string[];
 }
 
 export interface Stream {
@@ -132,7 +121,6 @@ export interface TimelineEntry {
   endTime: string;
   status: PassageStatus;
   score?: number;
-  monitors: string[];
   location?: string;
 }
 
@@ -144,18 +132,11 @@ export interface GroupDetailsResponse {
     category?: string;
     logo?: string;
     description?: string;
-    gymnastsCount: number;
   };
   stats: {
     completedPassages: number;
     totalPassages: number;
     currentTotalScore: number; // The API returns number here, although formatted as string in some places, let's double check.
   };
-  monitors: string[];
-  history: {
-    year: number;
-    score: number;
-    apparatus: string;
-  }[];
   timeline: TimelineEntry[];
 }

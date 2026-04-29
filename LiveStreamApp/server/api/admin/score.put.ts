@@ -15,7 +15,7 @@ const schema = z.object({
 export default defineEventHandler(async (event) => {
   // Security: Rate Limit (60 req/min) to prevent notification spam/DoS
   const ip = getRequestIP(event) || 'unknown';
-  if (isRateLimited(`${ip}:score`, 60, 60000)) {
+  if (await isRateLimited(`${ip}:score`, 60, 60000)) {
     throw createError({
       statusCode: 429,
       statusMessage: 'Too Many Requests',
@@ -111,7 +111,7 @@ export default defineEventHandler(async (event) => {
               });
           });
 
-          await Promise.all(notifications);
+          Promise.all(notifications).catch(e => console.error('[score] Push Background Error:', e));
           console.log(`[score] Sent ${subscriptions.length} push notifications for score update`);
         }
       }

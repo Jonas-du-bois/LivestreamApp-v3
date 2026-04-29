@@ -3,11 +3,6 @@ import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 export const PASSAGE_STATUS = ['SCHEDULED', 'LIVE', 'FINISHED'] as const;
 export type PassageStatus = typeof PASSAGE_STATUS[number];
 
-export interface IPassageHistoryEntry {
-  year: number;
-  score: number;
-}
-
 export interface IPassage extends Document {
   group: Types.ObjectId;
   apparatus: Types.ObjectId;
@@ -17,8 +12,6 @@ export interface IPassage extends Document {
   score?: number;
   isPublished?: boolean;
   status?: PassageStatus;
-  monitors?: string[];
-  history?: IPassageHistoryEntry[];
   // Tracking pour éviter les notifications en double
   notifiedAt15?: Date;  // Notification 15 min avant
   notifiedAt3?: Date;   // Notification 3 min avant
@@ -34,14 +27,6 @@ const PassageSchema = new Schema<IPassage>(
     score: { type: Number, min: 0, max: 10, default: null },
     isPublished: { type: Boolean, default: false },
     status: { type: String, enum: [...PASSAGE_STATUS], default: 'SCHEDULED' },
-    monitors: { type: [String], default: [] },
-    history: { 
-      type: [{
-        year: { type: Number, required: true },
-        score: { type: Number, required: true }
-      }], 
-      default: [] 
-    },
     // Tracking pour éviter les notifications en double
     notifiedAt15: { type: Date, default: null },
     notifiedAt3: { type: Date, default: null },

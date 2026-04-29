@@ -8,10 +8,10 @@ const { timeLeftFull } = usePartyCountdown()
 definePageMeta({ header: false, footer: false })
 
 const galleryImages = [
-  'https://images.unsplash.com/photo-1533241258671-55c65f0851ec?q=80&w=1000&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1513271168-9b37c0aa89ac?q=80&w=1000&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1516997184976-5faac3ce5173?q=80&w=1000&auto=format&fit=crop'
+  '/img/afterparty-1.png',
+  '/img/afterparty-2.png',
+  '/img/afterparty-3.png',
+  '/img/afterparty-4.png'
 ]
 
 const highlights = computed(() => [
@@ -210,7 +210,7 @@ const drinkMenu = computed(() => [
                 <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 group-hover:from-black/70 transition-all"></div>
                 <!-- Overlay rayures sur hover -->
                 <div class="gallery-stripe-overlay"></div>
-                <img :src="img" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Party ambiance" />
+                <NuxtImg format="webp" loading="lazy" :src="img" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Party ambiance" />
               </div>
             </div>
           </div>

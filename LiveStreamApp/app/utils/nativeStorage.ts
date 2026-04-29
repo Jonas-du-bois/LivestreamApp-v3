@@ -28,7 +28,11 @@ export const capacitorStorage = {
     if (isNativePlatform()) {
       await Preferences.set({ key, value })
     } else {
-      localStorage.setItem(key, value)
+      try {
+        localStorage.setItem(key, value)
+      } catch (e) {
+        console.warn('[nativeStorage] LocalStorage quota exceeded or disabled', e)
+      }
     }
   },
 

@@ -8,10 +8,7 @@ const detailsCache = new Map<string, { data: GroupDetailsResponse; ts: number }>
 
 <script setup lang="ts">
 import { PublicService } from '../../services/public.service'
-//import { useSocket } from '../../composables/useSocket'
 import { useFavoritesStore } from '../../stores/favorites'
-//import type { PassageEnriched, HistoryEntry } from '../../types/api'
-//import type { ScoreUpdatePayload } from '../../types/socket'
 
 interface Props {
   isOpen: boolean
@@ -27,7 +24,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { translateCategory, translateApparatus } = useTranslatedData()
-// ⚠️ DEAD CODE : const socket = useSocket()
 const favoritesStore = useFavoritesStore()
 
 const { now: nowTimestamp } = useNow()
@@ -87,7 +83,6 @@ const enrichedTimeline = computed(() => {
   if (!details.value?.timeline) return []
   
   // Cette dépendance force la réévaluation quand une mise à jour websocket est reçue.
-  // ⚠️ DEAD CODE : const _v = version.value
   version.value 
   const now = nowTimestamp.value
 
@@ -152,8 +147,6 @@ onUnmounted(() => {
   }
 })
 
-// ⚠️ DEAD CODE : const formatTime = (iso: string) => formatLocalizedTime(iso)
-
 const groupPassageIds = computed(() => {
   if (!details.value?.timeline) return []
   return details.value.timeline.map((p) => p._id).filter(Boolean)
@@ -175,11 +168,6 @@ const toggleFavorite = async () => {
   }
 }
 
-const getInitials = (name: string) => {
-  if (!name) return ''
-  return name.split(' ').map((n: string) => n[0]).join('')
-}
-
 const categoryLabel = computed(() => {
   if (!details.value?.info) return translateCategory('ACTIFS')
   return translateCategory(details.value.info.category)
@@ -197,86 +185,9 @@ const cantonDisplay = computed(() => {
   if (!details.value?.info) return null
   if (details.value.info.canton) return details.value.info.canton
   const name = details.value.info.name || ''
-  if (name.includes(':')) return name.split(':')[0].trim()
+  if (name && name.includes(':')) return name.split(':')[0].trim()
   return null
 })
-
-const gymnastsCount = computed(() => details.value?.info?.gymnastsCount ?? 0)
-const monitorsCount = computed(() => details.value?.monitors?.length ?? 0)
-const monitors = computed(() => details.value?.monitors ?? [])
-
-interface HistoryPoint {
-  year: number
-  score: number
-}
-
-// Agrége l'historique par année pour le graphique, avec un filtre optionnel par agrès.
-const historyByYear = computed<HistoryPoint[]>(() => {
-  if (!details.value?.history) return []
-
-  let rawHistory = details.value.history
-
-  if (props.apparatusCode) {
-    rawHistory = rawHistory.filter(h => h.apparatus === props.apparatusCode)
-  }
-
-  const yearMap = new Map<number, { total: number; count: number }>()
-  rawHistory.forEach(h => {
-     if (!yearMap.has(h.year)) yearMap.set(h.year, { total: 0, count: 0 })
-     const entry = yearMap.get(h.year)!
-     entry.total += h.score
-     entry.count++
-  })
-
-  const aggregated: HistoryPoint[] = Array.from(yearMap.entries()).map(([year, data]) => ({
-    year,
-    score: data.total / data.count
-  }))
-
-  return aggregated.sort((a, b) => a.year - b.year)
-})
-
-const averageHistoryScore = computed(() => {
-  const list = historyByYear.value
-  if (!list.length) return '0.00'
-  const sum = list.reduce((acc: number, curr) => acc + (Number(curr.score) || 0), 0)
-  return (sum / list.length).toFixed(2)
-})
-
-// ⚠️ DEAD CODE :
-/*
-const firstHistoryScore = computed(() => {
-  const list = historyByYear.value
-  return list.length > 0 ? list[0]?.score ?? 0 : 0
-})
-
-const lastHistoryScore = computed(() => {
-  const list = historyByYear.value
-  return list.length > 0 ? list[list.length - 1]?.score ?? 0 : 0
-})
-
-const historyTrend = computed(() => {
-  const list = historyByYear.value
-  if (list.length <= 1) return 'stable'
-  const first = firstHistoryScore.value
-  const last = lastHistoryScore.value
-  if (last > first) return 'up'
-  if (last < first) return 'down'
-  return 'stable'
-})
-
-const historyEvolutionValue = computed(() => {
-  const list = historyByYear.value
-  if (list.length <= 1) return '0.00'
-  return Math.abs(lastHistoryScore.value - firstHistoryScore.value).toFixed(2)
-})
-
-const maxHistoryScore = computed(() => {
-  const list = historyByYear.value
-  if (!list.length) return '0.00'
-  return Math.max(...list.map((d) => d.score ?? 0)).toFixed(2)
-})
-*/
 </script>
 
 <template>
@@ -319,7 +230,7 @@ const maxHistoryScore = computed(() => {
         <template v-else-if="details">
             <div class="relative h-52 overflow-hidden flex-shrink-0">
               <ImageWithFallback
-                :src="details.info.logo || 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=2340&auto=format&fit=crop'"
+                :src="details.info.logo || '/img/group-fallback.png'"
                 :alt="details.info.name"
                 class="w-full h-full object-cover"
               />
@@ -417,30 +328,6 @@ const maxHistoryScore = computed(() => {
               </div>
 
               <div v-show="activeTab === 'stats'" class="p-6 space-y-6" id="panel-stats" role="tabpanel">
-                <div>
-                  <h3 class="text-white font-bold mb-4 flex items-center gap-2">
-                    <Icon name="fluent:data-bar-vertical-24-regular" class="w-5 h-5 text-cyan-400" />
-                    {{ t('group.overview') }}
-                  </h3>
-                  <div class="grid grid-cols-3 gap-3">
-                    <div class="glass-card p-4 text-center bg-white/5">
-                      <Icon name="fluent:people-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-                      <div class="text-white font-bold text-xl">{{ gymnastsCount }}</div>
-                      <div class="text-white/60 text-xs">{{ t('group.gymnasts') }}</div>
-                    </div>
-                    <div class="glass-card p-4 text-center bg-white/5">
-                      <Icon name="fluent:person-24-regular" class="w-6 h-6 text-purple-400 mx-auto mb-2" />
-                      <div class="text-white font-bold text-xl">{{ monitorsCount }}</div>
-                      <div class="text-white/60 text-xs">{{ t('group.monitors') }}</div>
-                    </div>
-                    <div class="glass-card p-4 text-center bg-white/5">
-                      <Icon name="fluent:trophy-24-regular" class="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-                      <div class="text-white font-bold text-xl">{{ averageHistoryScore }}</div>
-                      <div class="text-white/60 text-xs">{{ t('group.historyAvg') }}</div>
-                    </div>
-                  </div>
-                </div>
-
                 <div v-if="details.info.category === 'MIXTE'" class="glass-card p-4 bg-purple-500/5 border border-purple-500/20">
                   <div class="flex items-start gap-3">
                     <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
@@ -450,40 +337,6 @@ const maxHistoryScore = computed(() => {
                         {{ t('group.mixedGroupInfo') }}
                       </p>
                     </div>
-                  </div>
-                </div>
-
-                <div v-if="monitors.length > 0">
-                  <h3 class="text-white font-bold mb-3 flex items-center gap-2">
-                    <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-cyan-400" />
-                    {{ t('group.staffTeam') }}
-                  </h3>
-                  <div class="glass-card p-4 space-y-3 bg-white/5">
-                    <div
-                      v-for="coach in monitors"
-                      :key="coach"
-                      class="flex items-center gap-3"
-                    >
-                      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-purple-400 flex items-center justify-center flex-shrink-0">
-                        <span class="text-white text-sm font-bold">
-                          {{ getInitials(coach) }}
-                        </span>
-                      </div>
-                      <span class="text-white">{{ coach }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="historyByYear.length > 0">
-                  <div class="flex items-center gap-2 mb-3">
-                    <Icon name="fluent:history-24-regular" class="w-5 h-5 text-cyan-400" />
-                    <h3 class="text-white font-bold">{{ t('group.historicalPerformance') }}</h3>
-                  </div>
-                  <div class="glass-card p-5 bg-white/5">
-                    <ChartsHistoryLineChart
-                      :data="historyByYear"
-                      :height="200"
-                    />
                   </div>
                 </div>
               </div>
