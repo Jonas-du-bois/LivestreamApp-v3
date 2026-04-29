@@ -39,7 +39,11 @@ export default defineEventHandler(async (event) => {
         }
       },
       { new: true }
-    ).populate('group').populate('apparatus').exec();
+    )
+    // BOLT: Explicitly select fields to prevent populating large history arrays
+    .populate('group', 'name category canton logo')
+    .populate('apparatus', 'name code icon')
+    .exec();
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
