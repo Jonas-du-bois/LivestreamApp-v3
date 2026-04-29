@@ -1296,8 +1296,3 @@ html {
   @apply outline-2 outline-offset-2 outline-cyan-400;
 }
 </style>
-ble for accessibility */
-:focus-visible {
-  @apply outline-2 outline-offset-2 outline-cyan-400;
-}
-</style>
