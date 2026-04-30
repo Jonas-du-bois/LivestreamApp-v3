@@ -1,0 +1,2774 @@
+{
+  "passages": [
+    {
+      "groupName": "Lausanne Amis-Gym : GDance",
+      "societe": "Lausanne Amis-Gym",
+      "groupe": "GDance",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T14:15:00.000Z"
+    },
+    {
+      "groupName": "Morges : GD Actives",
+      "societe": "Morges",
+      "groupe": "GD Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T14:01:00.000Z"
+    },
+    {
+      "groupName": "Lucens : Actives",
+      "societe": "Lucens",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T14:22:00.000Z"
+    },
+    {
+      "groupName": "Blonay : Actives Gym&Danse",
+      "societe": "Blonay",
+      "groupe": "Actives Gym&Danse",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T13:47:00.000Z"
+    },
+    {
+      "groupName": "Rolle : Actives",
+      "societe": "Rolle",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T12:58:00.000Z"
+    },
+    {
+      "groupName": "Lucens : Gym danse 35+",
+      "societe": "Lucens",
+      "groupe": "Gym danse 35+",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T13:40:00.000Z"
+    },
+    {
+      "groupName": "Aubonne : Actives",
+      "societe": "Aubonne",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T14:29:00.000Z"
+    },
+    {
+      "groupName": "Prilly : active",
+      "societe": "Prilly",
+      "groupe": "active",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T12:37:00.000Z"
+    },
+    {
+      "groupName": "Cossonay : Actives",
+      "societe": "Cossonay",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T12:51:00.000Z"
+    },
+    {
+      "groupName": "Chailly-Montreux : G&D Actives",
+      "societe": "Chailly-Montreux",
+      "groupe": "G&D Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T13:05:00.000Z"
+    },
+    {
+      "groupName": "Vallorbe : Gym-danse actives",
+      "societe": "Vallorbe",
+      "groupe": "Gym-danse actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T14:08:00.000Z"
+    },
+    {
+      "groupName": "Bex : Actives",
+      "societe": "Bex",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-09T13:33:00.000Z"
+    },
+    {
+      "groupName": "Fémina Vicques : Minis 7-8H",
+      "societe": "Fémina Vicques",
+      "groupe": "Minis 7-8H",
+      "category": "JEUNESSE_B",
+      "canton": "JU",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:34:00.000Z"
+    },
+    {
+      "groupName": "Ollon/St-Triphon : Gym et Danse 2",
+      "societe": "Ollon/St-Triphon",
+      "groupe": "Gym et Danse 2",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T10:10:00.000Z"
+    },
+    {
+      "groupName": "Aubonne : Gym & Danse 8-12 1",
+      "societe": "Aubonne",
+      "groupe": "Gym & Danse 8-12 1",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:46:00.000Z"
+    },
+    {
+      "groupName": "Aubonne : Gym & Danse 8-12 2",
+      "societe": "Aubonne",
+      "groupe": "Gym & Danse 8-12 2",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:46:00.000Z"
+    },
+    {
+      "groupName": "Vallorbe : Mini-gym Danse",
+      "societe": "Vallorbe",
+      "groupe": "Mini-gym Danse",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:10:00.000Z"
+    },
+    {
+      "groupName": "Lucens : Gym Danse",
+      "societe": "Lucens",
+      "groupe": "Gym Danse",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T10:22:00.000Z"
+    },
+    {
+      "groupName": "Amis-Gym Fully : Junior",
+      "societe": "Amis-Gym Fully",
+      "groupe": "Junior",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T13:36:00.000Z"
+    },
+    {
+      "groupName": "Morges : GD jeunesse",
+      "societe": "Morges",
+      "groupe": "GD jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:24:00.000Z"
+    },
+    {
+      "groupName": "Roche : GroupeConcours",
+      "societe": "Roche",
+      "groupe": "GroupeConcours",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:00:00.000Z"
+    },
+    {
+      "groupName": "Chardonne-Jongny : Jeunesse M16",
+      "societe": "Chardonne-Jongny",
+      "groupe": "Jeunesse M16",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:48:00.000Z"
+    },
+    {
+      "groupName": "Lausanne-Ville : Gym Danse Junior",
+      "societe": "Lausanne-Ville",
+      "groupe": "Gym Danse Junior",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:48:00.000Z"
+    },
+    {
+      "groupName": "Ollon/St-Triphon : Gym et Danse 1",
+      "societe": "Ollon/St-Triphon",
+      "groupe": "Gym et Danse 1",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:36:00.000Z"
+    },
+    {
+      "groupName": "Chailly-Montreux : Gym & Danse compétition",
+      "societe": "Chailly-Montreux",
+      "groupe": "Gym & Danse compétition",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:36:00.000Z"
+    },
+    {
+      "groupName": "Prilly : Moyennes",
+      "societe": "Prilly",
+      "groupe": "Moyennes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:36:00.000Z"
+    },
+    {
+      "groupName": "Lucens : GD M17",
+      "societe": "Lucens",
+      "groupe": "GD M17",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:12:00.000Z"
+    },
+    {
+      "groupName": "Rolle : Gym danse 12-16 ans",
+      "societe": "Rolle",
+      "groupe": "Gym danse 12-16 ans",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T13:48:00.000Z"
+    },
+    {
+      "groupName": "Echallens : Gym-danse moyenne",
+      "societe": "Echallens",
+      "groupe": "Gym-danse moyenne",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:12:00.000Z"
+    },
+    {
+      "groupName": "Cossonay : Jeunesse",
+      "societe": "Cossonay",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:00:00.000Z"
+    },
+    {
+      "groupName": "Sion Fémina : Niveau 3 Sion Fémina",
+      "societe": "Sion Fémina",
+      "groupe": "Niveau 3 Sion Fémina",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:24:00.000Z"
+    },
+    {
+      "groupName": "Aubonne : Gym & Danse 13-16 ans",
+      "societe": "Aubonne",
+      "groupe": "Gym & Danse 13-16 ans",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:48:00.000Z"
+    },
+    {
+      "groupName": "Chardonne-Jongny : Actifs-Actives",
+      "societe": "Chardonne-Jongny",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-09T12:30:00.000Z"
+    },
+    {
+      "groupName": "Lausanne-Ville : Gym Danse Actives",
+      "societe": "Lausanne-Ville",
+      "groupe": "Gym Danse Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-09T13:19:00.000Z"
+    },
+    {
+      "groupName": "Gym Attalens : Actives Juniors",
+      "societe": "Gym Attalens",
+      "groupe": "Actives Juniors",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-09T12:44:00.000Z"
+    },
+    {
+      "groupName": "Le Mont-sur-Lausanne : Gym et Danse Actives",
+      "societe": "Le Mont-sur-Lausanne",
+      "groupe": "Gym et Danse Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-09T13:12:00.000Z"
+    },
+    {
+      "groupName": "Fémina Hauterive : actives",
+      "societe": "Fémina Hauterive",
+      "groupe": "actives",
+      "category": "ACTIFS",
+      "canton": "NE",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-09T13:26:00.000Z"
+    },
+    {
+      "groupName": "Fémina Club Develier : Jeunesse 1B",
+      "societe": "Fémina Club Develier",
+      "groupe": "Jeunesse 1B",
+      "category": "JEUNESSE_B",
+      "canton": "JU",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:22:00.000Z"
+    },
+    {
+      "groupName": "Rolle : Gym et danse 6 - 11 ans",
+      "societe": "Rolle",
+      "groupe": "Gym et danse 6 - 11 ans",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:34:00.000Z"
+    },
+    {
+      "groupName": "Cossonay : Pupillettes",
+      "societe": "Cossonay",
+      "groupe": "Pupillettes",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:58:00.000Z"
+    },
+    {
+      "groupName": "Prilly : Petites B",
+      "societe": "Prilly",
+      "groupe": "Petites B",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:58:00.000Z"
+    },
+    {
+      "groupName": "Le Mont-sur-Lausanne : Gym danse 10-12 ans",
+      "societe": "Le Mont-sur-Lausanne",
+      "groupe": "Gym danse 10-12 ans",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T10:34:00.000Z"
+    },
+    {
+      "groupName": "Le Mont-sur-Lausanne : Gym Danse 13-16 ans",
+      "societe": "Le Mont-sur-Lausanne",
+      "groupe": "Gym Danse 13-16 ans",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:00:00.000Z"
+    },
+    {
+      "groupName": "Courtepin : Danse 2",
+      "societe": "Courtepin",
+      "groupe": "Danse 2",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:24:00.000Z"
+    },
+    {
+      "groupName": "La Tour-de-Trême : Actives",
+      "societe": "La Tour-de-Trême",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x24",
+      "location": "LM 1",
+      "startTime": "2026-05-09T13:54:00.000Z"
+    },
+    {
+      "groupName": "La Tour-de-Trême : Jeunesse -16 ans",
+      "societe": "La Tour-de-Trême",
+      "groupe": "Jeunesse -16 ans",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x24",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:12:00.000Z"
+    },
+    {
+      "groupName": "Amis-Gym Fully : Actifs-Actives",
+      "societe": "Amis-Gym Fully",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VS",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T09:24:00.000Z"
+    },
+    {
+      "groupName": "Charmey : Société Actifs",
+      "societe": "Charmey",
+      "groupe": "Société Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T11:58:00.000Z"
+    },
+    {
+      "groupName": "Gym Ursy : Actifs",
+      "societe": "Gym Ursy",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T10:48:00.000Z"
+    },
+    {
+      "groupName": "Bulle : Juniors mixtes",
+      "societe": "Bulle",
+      "groupe": "Juniors mixtes",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T11:16:00.000Z"
+    },
+    {
+      "groupName": "Fusion La Tour / Montreux : Actifs Mixtes",
+      "societe": "Fusion La Tour / Montreux",
+      "groupe": "Actifs Mixtes",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T10:34:00.000Z"
+    },
+    {
+      "groupName": "Morges : Actifs-Actives",
+      "societe": "Morges",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T10:06:00.000Z"
+    },
+    {
+      "groupName": "Fribourg : Actifs",
+      "societe": "Fribourg",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T11:30:00.000Z"
+    },
+    {
+      "groupName": "Blonay : Actifs-Actives",
+      "societe": "Blonay",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T11:44:00.000Z"
+    },
+    {
+      "groupName": "Avenches : Actif",
+      "societe": "Avenches",
+      "groupe": "Actif",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T09:52:00.000Z"
+    },
+    {
+      "groupName": "Gym Peseux : Actifs",
+      "societe": "Gym Peseux",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "NE",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T15:14:00.000Z"
+    },
+    {
+      "groupName": "Vevey : Team Vevey",
+      "societe": "Vevey",
+      "groupe": "Team Vevey",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T16:38:00.000Z"
+    },
+    {
+      "groupName": "Domdidier : Actifs-Actives",
+      "societe": "Domdidier",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T09:38:00.000Z"
+    },
+    {
+      "groupName": "Neuenhof : Aktive",
+      "societe": "Neuenhof",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "AG",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T12:12:00.000Z"
+    },
+    {
+      "groupName": "Lancy : Actifs",
+      "societe": "Lancy",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "GE",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T15:56:00.000Z"
+    },
+    {
+      "groupName": "Chardonne-Jongny : Actifs-Actives",
+      "societe": "Chardonne-Jongny",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T08:56:00.000Z"
+    },
+    {
+      "groupName": "Aigle-Alliance : Actifs-Actives",
+      "societe": "Aigle-Alliance",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T10:20:00.000Z"
+    },
+    {
+      "groupName": "Lausanne : Lausanne Team Agrès",
+      "societe": "Lausanne",
+      "groupe": "Lausanne Team Agrès",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T09:10:00.000Z"
+    },
+    {
+      "groupName": "Gym Nyon : Actives/Actifs",
+      "societe": "Gym Nyon",
+      "groupe": "Actives/Actifs",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T08:00:00.000Z"
+    },
+    {
+      "groupName": "Romont Gym : Actifs-Actives",
+      "societe": "Romont Gym",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T15:42:00.000Z"
+    },
+    {
+      "groupName": "Yverdon Amis-Gyms : Actifs-Actives",
+      "societe": "Yverdon Amis-Gyms",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T16:52:00.000Z"
+    },
+    {
+      "groupName": "Wettingen : Aktive",
+      "societe": "Wettingen",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "AG",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T17:06:00.000Z"
+    },
+    {
+      "groupName": "La Grônarde : La Grônarde - actifs",
+      "societe": "La Grônarde",
+      "groupe": "La Grônarde - actifs",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T15:28:00.000Z"
+    },
+    {
+      "groupName": "Prilly : active",
+      "societe": "Prilly",
+      "groupe": "active",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T15:00:00.000Z"
+    },
+    {
+      "groupName": "Corsier-Corseaux : Actifs-Actives",
+      "societe": "Corsier-Corseaux",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T08:42:00.000Z"
+    },
+    {
+      "groupName": "Granges-Marnand : Actifs-Actives",
+      "societe": "Granges-Marnand",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T08:14:00.000Z"
+    },
+    {
+      "groupName": "Bussigny : Actifs-Actives",
+      "societe": "Bussigny",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T08:28:00.000Z"
+    },
+    {
+      "groupName": "Mendrisio : Attivi",
+      "societe": "Mendrisio",
+      "groupe": "Attivi",
+      "category": "ACTIFS",
+      "canton": "TI",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T16:24:00.000Z"
+    },
+    {
+      "groupName": "St-Prex : Actifs-Actives",
+      "societe": "St-Prex",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T16:10:00.000Z"
+    },
+    {
+      "groupName": "Pully : Actifs-Actives",
+      "societe": "Pully",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "LM 1",
+      "startTime": "2026-05-09T11:02:00.000Z"
+    },
+    {
+      "groupName": "Blonay : Agrès 1",
+      "societe": "Blonay",
+      "groupe": "Agrès 1",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T12:19:00.000Z"
+    },
+    {
+      "groupName": "Vevey Jeunes Patriotes : Groupe Mixte B",
+      "societe": "Vevey Jeunes Patriotes",
+      "groupe": "Groupe Mixte B",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T10:55:00.000Z"
+    },
+    {
+      "groupName": "Grandson : Agrès 7-11 ans",
+      "societe": "Grandson",
+      "groupe": "Agrès 7-11 ans",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T11:23:00.000Z"
+    },
+    {
+      "groupName": "Gym La Tour : 7-13 compétition",
+      "societe": "Gym La Tour",
+      "groupe": "7-13 compétition",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T11:51:00.000Z"
+    },
+    {
+      "groupName": "Avenches : Mixtes7-11 ans",
+      "societe": "Avenches",
+      "groupe": "Mixtes7-11 ans",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T10:41:00.000Z"
+    },
+    {
+      "groupName": "Chardonne-Jongny : Jeunesse M12",
+      "societe": "Chardonne-Jongny",
+      "groupe": "Jeunesse M12",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T11:09:00.000Z"
+    },
+    {
+      "groupName": "Amis-Gym Forel-Savigny : Jeunesse M13",
+      "societe": "Amis-Gym Forel-Savigny",
+      "groupe": "Jeunesse M13",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T12:05:00.000Z"
+    },
+    {
+      "groupName": "La Grônarde : La Grônarde JB",
+      "societe": "La Grônarde",
+      "groupe": "La Grônarde JB",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T11:37:00.000Z"
+    },
+    {
+      "groupName": "Chexbres : Jeunesses Mixtes",
+      "societe": "Chexbres",
+      "groupe": "Jeunesses Mixtes",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T10:27:00.000Z"
+    },
+    {
+      "groupName": "Chézard-St-Martin : Jeunesse M17",
+      "societe": "Chézard-St-Martin",
+      "groupe": "Jeunesse M17",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T15:35:00.000Z"
+    },
+    {
+      "groupName": "Fribourg : M16",
+      "societe": "Fribourg",
+      "groupe": "M16",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T15:21:00.000Z"
+    },
+    {
+      "groupName": "Vevey-Ancienne : Groupe Mixte Jeunesse",
+      "societe": "Vevey-Ancienne",
+      "groupe": "Groupe Mixte Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T16:31:00.000Z"
+    },
+    {
+      "groupName": "Vevey Jeunes Patriotes : Groupe Mixte A",
+      "societe": "Vevey Jeunes Patriotes",
+      "groupe": "Groupe Mixte A",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T17:13:00.000Z"
+    },
+    {
+      "groupName": "Vevey Jeunes Patriotes : Jeunesses-Mixtes",
+      "societe": "Vevey Jeunes Patriotes",
+      "groupe": "Jeunesses-Mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T14:25:00.000Z"
+    },
+    {
+      "groupName": "Gym Ursy : Groupe mixte",
+      "societe": "Gym Ursy",
+      "groupe": "Groupe mixte",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T12:33:00.000Z"
+    },
+    {
+      "groupName": "Morges : Jeunesses",
+      "societe": "Morges",
+      "groupe": "Jeunesses",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T14:11:00.000Z"
+    },
+    {
+      "groupName": "Corsier - Corseaux : Jeunesses mixte",
+      "societe": "Corsier - Corseaux",
+      "groupe": "Jeunesses mixte",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T14:39:00.000Z"
+    },
+    {
+      "groupName": "Chardonne-Jongny : Jeunesse M16",
+      "societe": "Chardonne-Jongny",
+      "groupe": "Jeunesse M16",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T13:43:00.000Z"
+    },
+    {
+      "groupName": "Bussigny : Agrès Jeunesse",
+      "societe": "Bussigny",
+      "groupe": "Agrès Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T12:47:00.000Z"
+    },
+    {
+      "groupName": "Niederscherli : Juenesse",
+      "societe": "Niederscherli",
+      "groupe": "Juenesse",
+      "category": "JEUNESSE_A",
+      "canton": "BE",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T16:45:00.000Z"
+    },
+    {
+      "groupName": "Lausanne : Agrès",
+      "societe": "Lausanne",
+      "groupe": "Agrès",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T13:29:00.000Z"
+    },
+    {
+      "groupName": "La Grônarde : La Grônarde JA",
+      "societe": "La Grônarde",
+      "groupe": "La Grônarde JA",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T13:01:00.000Z"
+    },
+    {
+      "groupName": "Bulle : AM 10-16",
+      "societe": "Bulle",
+      "groupe": "AM 10-16",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T16:59:00.000Z"
+    },
+    {
+      "groupName": "Corsier-Corseaux : Agrès-mixte",
+      "societe": "Corsier-Corseaux",
+      "groupe": "Agrès-mixte",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T16:03:00.000Z"
+    },
+    {
+      "groupName": "Biasca : Jeunesse",
+      "societe": "Biasca",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "TI",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T16:17:00.000Z"
+    },
+    {
+      "groupName": "St-Prex : Agrès productions",
+      "societe": "St-Prex",
+      "groupe": "Agrès productions",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T15:07:00.000Z"
+    },
+    {
+      "groupName": "AG 13* Sion : jeunesse A",
+      "societe": "AG 13* Sion",
+      "groupe": "jeunesse A",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T15:49:00.000Z"
+    },
+    {
+      "groupName": "Pully : TeamGym-16",
+      "societe": "Pully",
+      "groupe": "TeamGym-16",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T14:53:00.000Z"
+    },
+    {
+      "groupName": "Ependes : Jeunesse",
+      "societe": "Ependes",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T13:57:00.000Z"
+    },
+    {
+      "groupName": "Charmey : Jeunesse",
+      "societe": "Charmey",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T13:15:00.000Z"
+    },
+    {
+      "groupName": "Yverdon Amis-Gyms : Agrès mixtes",
+      "societe": "Yverdon Amis-Gyms",
+      "groupe": "Agrès mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "SO",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T17:27:00.000Z"
+    },
+    {
+      "groupName": "Gym Ursy : Actifs",
+      "societe": "Gym Ursy",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T09:15:00.000Z"
+    },
+    {
+      "groupName": "Morges : Actifs-Actives",
+      "societe": "Morges",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T08:33:00.000Z"
+    },
+    {
+      "groupName": "Fribourg : Actifs",
+      "societe": "Fribourg",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T10:11:00.000Z"
+    },
+    {
+      "groupName": "Avenches : Actif",
+      "societe": "Avenches",
+      "groupe": "Actif",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T08:47:00.000Z"
+    },
+    {
+      "groupName": "Vevey : Team Vevey",
+      "societe": "Vevey",
+      "groupe": "Team Vevey",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T10:25:00.000Z"
+    },
+    {
+      "groupName": "Domdidier : Actifs-Actives",
+      "societe": "Domdidier",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T08:19:00.000Z"
+    },
+    {
+      "groupName": "Düdingen & Getu Sense : Aktive",
+      "societe": "Düdingen & Getu Sense",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T09:43:00.000Z"
+    },
+    {
+      "groupName": "Romont Gym : Actifs-Actives",
+      "societe": "Romont Gym",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T09:57:00.000Z"
+    },
+    {
+      "groupName": "Gym La Coudre : Actifs-Actives",
+      "societe": "Gym La Coudre",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "NE",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T09:01:00.000Z"
+    },
+    {
+      "groupName": "Luzern : Turn Leistungs-Zentrum",
+      "societe": "Luzern",
+      "groupe": "Turn Leistungs-Zentrum",
+      "category": "ACTIFS",
+      "canton": "LU",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T10:39:00.000Z"
+    },
+    {
+      "groupName": "Wettingen : Aktive",
+      "societe": "Wettingen",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "AG",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T10:53:00.000Z"
+    },
+    {
+      "groupName": "Gym Attalens : Agrès Société mixte Actifs",
+      "societe": "Gym Attalens",
+      "groupe": "Agrès Société mixte Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T08:05:00.000Z"
+    },
+    {
+      "groupName": "St-Prex : Actifs-Actives",
+      "societe": "St-Prex",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T09:29:00.000Z"
+    },
+    {
+      "groupName": "Pully : Actifs-Actives",
+      "societe": "Pully",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T07:51:00.000Z"
+    },
+    {
+      "groupName": "Lausanne : Lausanne Team Agrès",
+      "societe": "Lausanne",
+      "groupe": "Lausanne Team Agrès",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T07:37:00.000Z"
+    },
+    {
+      "groupName": "La Coudre : Jeunesse",
+      "societe": "La Coudre",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_B",
+      "canton": "NE",
+      "apparatusCode": "AB",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T09:24:00.000Z"
+    },
+    {
+      "groupName": "Vevey-Ancienne : Groupe Mixte Jeunesse",
+      "societe": "Vevey-Ancienne",
+      "groupe": "Groupe Mixte Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T08:56:00.000Z"
+    },
+    {
+      "groupName": "Vevey Jeunes Patriotes : Groupe Mixte A",
+      "societe": "Vevey Jeunes Patriotes",
+      "groupe": "Groupe Mixte A",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T09:10:00.000Z"
+    },
+    {
+      "groupName": "Gym Ursy : Groupe mixte",
+      "societe": "Gym Ursy",
+      "groupe": "Groupe mixte",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "AB",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T08:42:00.000Z"
+    },
+    {
+      "groupName": "Gym Attalens : Agrès Société -16",
+      "societe": "Gym Attalens",
+      "groupe": "Agrès Société -16",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "AB",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T08:00:00.000Z"
+    },
+    {
+      "groupName": "La Coudre : Jeunesse",
+      "societe": "La Coudre",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "NE",
+      "apparatusCode": "AB",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T08:14:00.000Z"
+    },
+    {
+      "groupName": "Pully : TeamGym -16",
+      "societe": "Pully",
+      "groupe": "TeamGym -16",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "AB",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T08:28:00.000Z"
+    },
+    {
+      "groupName": "Morges : GD Actives",
+      "societe": "Morges",
+      "groupe": "GD Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T15:40:00.000Z"
+    },
+    {
+      "groupName": "Fémina Club Develier : Actives",
+      "societe": "Fémina Club Develier",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "JU",
+      "apparatusCode": "12x12",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T16:36:00.000Z"
+    },
+    {
+      "groupName": "Blonay : Actives Gym&Danse",
+      "societe": "Blonay",
+      "groupe": "Actives Gym&Danse",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T16:50:00.000Z"
+    },
+    {
+      "groupName": "Lausanne-Ville : Gym Danse Actives",
+      "societe": "Lausanne-Ville",
+      "groupe": "Gym Danse Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T16:08:00.000Z"
+    },
+    {
+      "groupName": "Aubonne : Actives",
+      "societe": "Aubonne",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T16:22:00.000Z"
+    },
+    {
+      "groupName": "Prilly : active",
+      "societe": "Prilly",
+      "groupe": "active",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T16:56:00.000Z"
+    },
+    {
+      "groupName": "Yverdon Amis-Gyms : Gym Active 35+",
+      "societe": "Yverdon Amis-Gyms",
+      "groupe": "Gym Active 35+",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T15:26:00.000Z"
+    },
+    {
+      "groupName": "Vallorbe : Gym-danse actives",
+      "societe": "Vallorbe",
+      "groupe": "Gym-danse actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T17:30:00.000Z"
+    },
+    {
+      "groupName": "Amis-Gym Fully : Jeunesse B",
+      "societe": "Amis-Gym Fully",
+      "groupe": "Jeunesse B",
+      "category": "JEUNESSE_B",
+      "canton": "VS",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:40:00.000Z"
+    },
+    {
+      "groupName": "Lausanne Amis-Gym : Mini GGD",
+      "societe": "Lausanne Amis-Gym",
+      "groupe": "Mini GGD",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:14:00.000Z"
+    },
+    {
+      "groupName": "Fémina Vicques : Minis 5-6H",
+      "societe": "Fémina Vicques",
+      "groupe": "Minis 5-6H",
+      "category": "JEUNESSE_B",
+      "canton": "JU",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T10:28:00.000Z"
+    },
+    {
+      "groupName": "Courroux-Courcelon : Minis 2",
+      "societe": "Courroux-Courcelon",
+      "groupe": "Minis 2",
+      "category": "JEUNESSE_B",
+      "canton": "JU",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T10:04:00.000Z"
+    },
+    {
+      "groupName": "Echallens : Gym-danse 7-12 ans",
+      "societe": "Echallens",
+      "groupe": "Gym-danse 7-12 ans",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:07:00.000Z"
+    },
+    {
+      "groupName": "Lausanne-Ville : Gym Danse Jeunesse",
+      "societe": "Lausanne-Ville",
+      "groupe": "Gym Danse Jeunesse",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T10:16:00.000Z"
+    },
+    {
+      "groupName": "Ollon/St-Triphon : Gym et Danse 2",
+      "societe": "Ollon/St-Triphon",
+      "groupe": "Gym et Danse 2",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:04:00.000Z"
+    },
+    {
+      "groupName": "Rolle : Petites gymnastique",
+      "societe": "Rolle",
+      "groupe": "Petites gymnastique",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:28:00.000Z"
+    },
+    {
+      "groupName": "Sion Fémina : Niveau2 Sion Fémina",
+      "societe": "Sion Fémina",
+      "groupe": "Niveau2 Sion Fémina",
+      "category": "JEUNESSE_B",
+      "canton": "VS",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:21:00.000Z"
+    },
+    {
+      "groupName": "Aubonne : Gym & Danse 8-12 2",
+      "societe": "Aubonne",
+      "groupe": "Gym & Danse 8-12 2",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T10:40:00.000Z"
+    },
+    {
+      "groupName": "Lucens : Gym Danse",
+      "societe": "Lucens",
+      "groupe": "Gym Danse",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:28:00.000Z"
+    },
+    {
+      "groupName": "Lausanne Amis-Gym : Junior GGD",
+      "societe": "Lausanne Amis-Gym",
+      "groupe": "Junior GGD",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:42:00.000Z"
+    },
+    {
+      "groupName": "Morges : GD jeunesse",
+      "societe": "Morges",
+      "groupe": "GD jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:06:00.000Z"
+    },
+    {
+      "groupName": "Roche : Groupe Concours",
+      "societe": "Roche",
+      "groupe": "Groupe Concours",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:18:00.000Z"
+    },
+    {
+      "groupName": "Fémina Vicques : Cracks",
+      "societe": "Fémina Vicques",
+      "groupe": "Cracks",
+      "category": "JEUNESSE_A",
+      "canton": "JU",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:54:00.000Z"
+    },
+    {
+      "groupName": "Fémina Club Develier : Juniors",
+      "societe": "Fémina Club Develier",
+      "groupe": "Juniors",
+      "category": "JEUNESSE_A",
+      "canton": "JU",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:06:00.000Z"
+    },
+    {
+      "groupName": "Lausanne-Ville : Gym Danse Junior",
+      "societe": "Lausanne-Ville",
+      "groupe": "Gym Danse Junior",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:54:00.000Z"
+    },
+    {
+      "groupName": "Ollon/St-Triphon : Gym et Danse 1",
+      "societe": "Ollon/St-Triphon",
+      "groupe": "Gym et Danse 1",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T13:54:00.000Z"
+    },
+    {
+      "groupName": "Fémina Hauterive : JF3",
+      "societe": "Fémina Hauterive",
+      "groupe": "JF3",
+      "category": "JEUNESSE_A",
+      "canton": "NE",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:30:00.000Z"
+    },
+    {
+      "groupName": "Prilly : Moyennes",
+      "societe": "Prilly",
+      "groupe": "Moyennes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T16:30:00.000Z"
+    },
+    {
+      "groupName": "Lucens : GD M17",
+      "societe": "Lucens",
+      "groupe": "GD M17",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T13:42:00.000Z"
+    },
+    {
+      "groupName": "Sion Fémina : Niveau4 Sion Fémina",
+      "societe": "Sion Fémina",
+      "groupe": "Niveau4 Sion Fémina",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:54:00.000Z"
+    },
+    {
+      "groupName": "Yverdon Amis-Gyms : Jeunesse",
+      "societe": "Yverdon Amis-Gyms",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:18:00.000Z"
+    },
+    {
+      "groupName": "Vallorbe : Gym-Danse",
+      "societe": "Vallorbe",
+      "groupe": "Gym-Danse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x12",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:30:00.000Z"
+    },
+    {
+      "groupName": "Lausanne Amis-Gym : GDance",
+      "societe": "Lausanne Amis-Gym",
+      "groupe": "GDance",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T17:24:00.000Z"
+    },
+    {
+      "groupName": "Courroux-Courcelon : Actives",
+      "societe": "Courroux-Courcelon",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "JU",
+      "apparatusCode": "12x18",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T15:12:00.000Z"
+    },
+    {
+      "groupName": "Lucens : Actives",
+      "societe": "Lucens",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T17:36:00.000Z"
+    },
+    {
+      "groupName": "Gym Rolle : Actives gymnastique",
+      "societe": "Gym Rolle",
+      "groupe": "Actives gymnastique",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T17:10:00.000Z"
+    },
+    {
+      "groupName": "Bex : Actives",
+      "societe": "Bex",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T15:54:00.000Z"
+    },
+    {
+      "groupName": "Corcelles-le-Jorat : Gym-danse 7-12 ans",
+      "societe": "Corcelles-le-Jorat",
+      "groupe": "Gym-danse 7-12 ans",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:00:00.000Z"
+    },
+    {
+      "groupName": "Courroux-Courcelon : Minis 1",
+      "societe": "Courroux-Courcelon",
+      "groupe": "Minis 1",
+      "category": "JEUNESSE_B",
+      "canton": "JU",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:16:00.000Z"
+    },
+    {
+      "groupName": "Fémina Hauterive : JF2",
+      "societe": "Fémina Hauterive",
+      "groupe": "JF2",
+      "category": "JEUNESSE_B",
+      "canton": "NE",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:40:00.000Z"
+    },
+    {
+      "groupName": "Prilly : Petites B",
+      "societe": "Prilly",
+      "groupe": "Petites B",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T08:52:00.000Z"
+    },
+    {
+      "groupName": "Courroux-Courcelon : FSG Courroux-Courcelon",
+      "societe": "Courroux-Courcelon",
+      "groupe": "FSG Courroux-Courcelon",
+      "category": "JEUNESSE_A",
+      "canton": "JU",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T13:30:00.000Z"
+    },
+    {
+      "groupName": "Rolle : Grandes gymnastique",
+      "societe": "Rolle",
+      "groupe": "Grandes gymnastique",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:42:00.000Z"
+    },
+    {
+      "groupName": "Chailly-Montreux : Gym & Danse compétition",
+      "societe": "Chailly-Montreux",
+      "groupe": "Gym & Danse compétition",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:06:00.000Z"
+    },
+    {
+      "groupName": "Chailly-Lausanne : Gymnastique et Danse",
+      "societe": "Chailly-Lausanne",
+      "groupe": "Gymnastique et Danse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "12x18",
+      "location": "LM 1",
+      "startTime": "2026-05-10T14:42:00.000Z"
+    },
+    {
+      "groupName": "Fémina Club Develier : Jeunesse 1A",
+      "societe": "Fémina Club Develier",
+      "groupe": "Jeunesse 1A",
+      "category": "JEUNESSE_B",
+      "canton": "JU",
+      "apparatusCode": "12x24",
+      "location": "LM 1",
+      "startTime": "2026-05-10T09:52:00.000Z"
+    },
+    {
+      "groupName": "Fémina Club Develier : Jeunesse 2",
+      "societe": "Fémina Club Develier",
+      "groupe": "Jeunesse 2",
+      "category": "JEUNESSE_A",
+      "canton": "JU",
+      "apparatusCode": "12x24",
+      "location": "LM 1",
+      "startTime": "2026-05-10T15:18:00.000Z"
+    },
+    {
+      "groupName": "Blonay : Actifs-Actives",
+      "societe": "Blonay",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T16:15:00.000Z"
+    },
+    {
+      "groupName": "Courroux-Courcelon : Actives",
+      "societe": "Courroux-Courcelon",
+      "groupe": "Actives",
+      "category": "ACTIFS",
+      "canton": "JU",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T16:29:00.000Z"
+    },
+    {
+      "groupName": "St-Cierges : Actifs - Actives Société",
+      "societe": "St-Cierges",
+      "groupe": "Actifs - Actives Société",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T16:43:00.000Z"
+    },
+    {
+      "groupName": "Amis-Gym Fully : Jeunesse B",
+      "societe": "Amis-Gym Fully",
+      "groupe": "Jeunesse B",
+      "category": "JEUNESSE_B",
+      "canton": "VS",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T09:45:00.000Z"
+    },
+    {
+      "groupName": "Corcelles-Le-Jorat : Agrès Kids",
+      "societe": "Corcelles-Le-Jorat",
+      "groupe": "Agrès Kids",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T09:59:00.000Z"
+    },
+    {
+      "groupName": "Amis-Gym Fully : Junior",
+      "societe": "Amis-Gym Fully",
+      "groupe": "Junior",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T08:35:00.000Z"
+    },
+    {
+      "groupName": "Blonay : Agrès 2",
+      "societe": "Blonay",
+      "groupe": "Agrès 2",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T09:17:00.000Z"
+    },
+    {
+      "groupName": "Corsier - Corseaux : Jeunesses mixte",
+      "societe": "Corsier - Corseaux",
+      "groupe": "Jeunesses mixte",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T08:21:00.000Z"
+    },
+    {
+      "groupName": "Chailly-Montreux : Jeunesses13-16 ans",
+      "societe": "Chailly-Montreux",
+      "groupe": "Jeunesses13-16 ans",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T08:07:00.000Z"
+    },
+    {
+      "groupName": "Martigny-Aurore : Grand-Mixte",
+      "societe": "Martigny-Aurore",
+      "groupe": "Grand-Mixte",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T08:49:00.000Z"
+    },
+    {
+      "groupName": "Sion Fémina : Agrès Sion Fémina",
+      "societe": "Sion Fémina",
+      "groupe": "Agrès Sion Fémina",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T09:03:00.000Z"
+    },
+    {
+      "groupName": "Sins-Oberrüti : Jugend",
+      "societe": "Sins-Oberrüti",
+      "groupe": "Jugend",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "Barre asymétrique scolaires",
+      "location": "Iles 2",
+      "startTime": "2026-05-10T09:31:00.000Z"
+    },
+    {
+      "groupName": "Le Lieu - Vallée de Joux : Actifs",
+      "societe": "Le Lieu - Vallée de Joux",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "BF",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T17:03:00.000Z"
+    },
+    {
+      "groupName": "Lutry La Riveraine : Actives et actif",
+      "societe": "Lutry La Riveraine",
+      "groupe": "Actives et actif",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "BF",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T17:17:00.000Z"
+    },
+    {
+      "groupName": "Yvonand : Kids FSG Yvonand",
+      "societe": "Yvonand",
+      "groupe": "Kids FSG Yvonand",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "BF",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T10:48:00.000Z"
+    },
+    {
+      "groupName": "Baulmes : Team Agrès",
+      "societe": "Baulmes",
+      "groupe": "Team Agrès",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "BF",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T11:02:00.000Z"
+    },
+    {
+      "groupName": "Corcelles-le-Jorat : Jeunesse mixte",
+      "societe": "Corcelles-le-Jorat",
+      "groupe": "Jeunesse mixte",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "BF",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T09:52:00.000Z"
+    },
+    {
+      "groupName": "AG13* Sion : Jeunesses A",
+      "societe": "AG13* Sion",
+      "groupe": "Jeunesses A",
+      "category": "JEUNESSE_A",
+      "canton": "VS",
+      "apparatusCode": "BF",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T10:06:00.000Z"
+    },
+    {
+      "groupName": "Chernex : Agrès Mixtes",
+      "societe": "Chernex",
+      "groupe": "Agrès Mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "BF",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T10:20:00.000Z"
+    },
+    {
+      "groupName": "Lausanne Bourgeoise : Jeunesse A",
+      "societe": "Lausanne Bourgeoise",
+      "groupe": "Jeunesse A",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "BF",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T10:34:00.000Z"
+    },
+    {
+      "groupName": "Amis-Gym Fully : Actifs-Actives",
+      "societe": "Amis-Gym Fully",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VS",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T11:00:00.000Z"
+    },
+    {
+      "groupName": "Gym Serrières : Actifs-Actives",
+      "societe": "Gym Serrières",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T13:34:00.000Z"
+    },
+    {
+      "groupName": "Chézard-St-Martin : Actif",
+      "societe": "Chézard-St-Martin",
+      "groupe": "Actif",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T10:18:00.000Z"
+    },
+    {
+      "groupName": "Fusion La Tour / Montreux : Actifs Mixtes",
+      "societe": "Fusion La Tour / Montreux",
+      "groupe": "Actifs Mixtes",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T13:06:00.000Z"
+    },
+    {
+      "groupName": "Yvonand : Actifs-Actives",
+      "societe": "Yvonand",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T14:16:00.000Z"
+    },
+    {
+      "groupName": "Gym Peseux : Actifs",
+      "societe": "Gym Peseux",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "NE",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T13:20:00.000Z"
+    },
+    {
+      "groupName": "Vevey Jeunes Patriotes : Actifs-Actives",
+      "societe": "Vevey Jeunes Patriotes",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T12:38:00.000Z"
+    },
+    {
+      "groupName": "Neuenhof : Aktive",
+      "societe": "Neuenhof",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "AG",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T14:44:00.000Z"
+    },
+    {
+      "groupName": "Chavornay : Actifs-Actives",
+      "societe": "Chavornay",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T11:14:00.000Z"
+    },
+    {
+      "groupName": "Le Lieu - Vallée de Joux : Actifs",
+      "societe": "Le Lieu - Vallée de Joux",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T10:46:00.000Z"
+    },
+    {
+      "groupName": "Aigle-Alliance : Actifs-Actives",
+      "societe": "Aigle-Alliance",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T11:28:00.000Z"
+    },
+    {
+      "groupName": "Gym La Coudre : Actifs-Actives",
+      "societe": "Gym La Coudre",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "NE",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T10:32:00.000Z"
+    },
+    {
+      "groupName": "Grandson : Actifs-Actives",
+      "societe": "Grandson",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T11:42:00.000Z"
+    },
+    {
+      "groupName": "Chernex : Actifs-mixtes",
+      "societe": "Chernex",
+      "groupe": "Actifs-mixtes",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T12:10:00.000Z"
+    },
+    {
+      "groupName": "Yverdon-Ancienne : Actifs-Actives",
+      "societe": "Yverdon-Ancienne",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T11:56:00.000Z"
+    },
+    {
+      "groupName": "Biasca : Actives actifs",
+      "societe": "Biasca",
+      "groupe": "Actives actifs",
+      "category": "ACTIFS",
+      "canton": "TI",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T14:30:00.000Z"
+    },
+    {
+      "groupName": "Echallens : Agrès Actifs Plaisir",
+      "societe": "Echallens",
+      "groupe": "Agrès Actifs Plaisir",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T10:04:00.000Z"
+    },
+    {
+      "groupName": "Chexbres : Actifs",
+      "societe": "Chexbres",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T12:52:00.000Z"
+    },
+    {
+      "groupName": "Riddes Etoile : Actifs-Actives",
+      "societe": "Riddes Etoile",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T14:02:00.000Z"
+    },
+    {
+      "groupName": "Mendrisio : Attivi",
+      "societe": "Mendrisio",
+      "groupe": "Attivi",
+      "category": "ACTIFS",
+      "canton": "TI",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T13:48:00.000Z"
+    },
+    {
+      "groupName": "Rolle : Agrès mixte actifs",
+      "societe": "Rolle",
+      "groupe": "Agrès mixte actifs",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T12:24:00.000Z"
+    },
+    {
+      "groupName": "Ependes : Actifs-Actives",
+      "societe": "Ependes",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T09:50:00.000Z"
+    },
+    {
+      "groupName": "Gym Chézard-St-Martin : Jeunesse M13",
+      "societe": "Gym Chézard-St-Martin",
+      "groupe": "Jeunesse M13",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T13:50:00.000Z"
+    },
+    {
+      "groupName": "Sport gym Courtételle : Les Warriors",
+      "societe": "Sport gym Courtételle",
+      "groupe": "Les Warriors",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T13:22:00.000Z"
+    },
+    {
+      "groupName": "Sport gym Courtételle : Les Starlettes",
+      "societe": "Sport gym Courtételle",
+      "groupe": "Les Starlettes",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T12:40:00.000Z"
+    },
+    {
+      "groupName": "Yvonand : Kids FSG Yvonand",
+      "societe": "Yvonand",
+      "groupe": "Kids FSG Yvonand",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T12:54:00.000Z"
+    },
+    {
+      "groupName": "Chexbres : Maxi-Mixtes",
+      "societe": "Chexbres",
+      "groupe": "Maxi-Mixtes",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T11:30:00.000Z"
+    },
+    {
+      "groupName": "Ursy : Mini-mixtes -12ans",
+      "societe": "Ursy",
+      "groupe": "Mini-mixtes -12ans",
+      "category": "JEUNESSE_B",
+      "canton": "FR",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T13:08:00.000Z"
+    },
+    {
+      "groupName": "Gym Attalens : Agrès société -12",
+      "societe": "Gym Attalens",
+      "groupe": "Agrès société -12",
+      "category": "JEUNESSE_B",
+      "canton": "FR",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T12:12:00.000Z"
+    },
+    {
+      "groupName": "Grandson : Mixtes7-12ans",
+      "societe": "Grandson",
+      "groupe": "Mixtes7-12ans",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T12:26:00.000Z"
+    },
+    {
+      "groupName": "Baulmes : Team Agrès",
+      "societe": "Baulmes",
+      "groupe": "Team Agrès",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T14:18:00.000Z"
+    },
+    {
+      "groupName": "Chernex : Agrès Mixtes",
+      "societe": "Chernex",
+      "groupe": "Agrès Mixtes",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T14:04:00.000Z"
+    },
+    {
+      "groupName": "Pully : TeamGym -12",
+      "societe": "Pully",
+      "groupe": "TeamGym -12",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T13:36:00.000Z"
+    },
+    {
+      "groupName": "Lausanne Bourgeoise : Jeunesse B",
+      "societe": "Lausanne Bourgeoise",
+      "groupe": "Jeunesse B",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T11:44:00.000Z"
+    },
+    {
+      "groupName": "Chézard-St-Martin : Jeunesse M17",
+      "societe": "Chézard-St-Martin",
+      "groupe": "Jeunesse M17",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T16:52:00.000Z"
+    },
+    {
+      "groupName": "Gym Peseux : M17",
+      "societe": "Gym Peseux",
+      "groupe": "M17",
+      "category": "JEUNESSE_A",
+      "canton": "NE",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T15:00:00.000Z"
+    },
+    {
+      "groupName": "Blonay : Agrès 2",
+      "societe": "Blonay",
+      "groupe": "Agrès 2",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T14:32:00.000Z"
+    },
+    {
+      "groupName": "Chavornay : Jeunesses",
+      "societe": "Chavornay",
+      "groupe": "Jeunesses",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T15:42:00.000Z"
+    },
+    {
+      "groupName": "Gym La Tour : 13-16 ans",
+      "societe": "Gym La Tour",
+      "groupe": "13-16 ans",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T15:28:00.000Z"
+    },
+    {
+      "groupName": "Yverdon-Ancienne : Agrès mixtes",
+      "societe": "Yverdon-Ancienne",
+      "groupe": "Agrès mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T16:38:00.000Z"
+    },
+    {
+      "groupName": "Le Lieu - Vallée de Joux : Junior Mixtes",
+      "societe": "Le Lieu - Vallée de Joux",
+      "groupe": "Junior Mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T15:56:00.000Z"
+    },
+    {
+      "groupName": "Gym Rolle : Agrès Mixte 11-16 ans",
+      "societe": "Gym Rolle",
+      "groupe": "Agrès Mixte 11-16 ans",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T16:10:00.000Z"
+    },
+    {
+      "groupName": "Yvonand : Mixtes",
+      "societe": "Yvonand",
+      "groupe": "Mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T16:24:00.000Z"
+    },
+    {
+      "groupName": "Grandson : Agrès 12-16ans",
+      "societe": "Grandson",
+      "groupe": "Agrès 12-16ans",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T15:14:00.000Z"
+    },
+    {
+      "groupName": "Corsier-Corseaux : Agrès- mixte",
+      "societe": "Corsier-Corseaux",
+      "groupe": "Agrès- mixte",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T17:06:00.000Z"
+    },
+    {
+      "groupName": "Chernex : Agrès Mixtes",
+      "societe": "Chernex",
+      "groupe": "Agrès Mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T14:46:00.000Z"
+    },
+    {
+      "groupName": "Sins-Oberrüti : Jugend",
+      "societe": "Sins-Oberrüti",
+      "groupe": "Jugend",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "CE",
+      "location": "Iles 1",
+      "startTime": "2026-05-10T17:20:00.000Z"
+    },
+    {
+      "groupName": "Charmey : Société Actifs",
+      "societe": "Charmey",
+      "groupe": "Société Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T14:09:00.000Z"
+    },
+    {
+      "groupName": "Gym Serrières : Actifs-Actives",
+      "societe": "Gym Serrières",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T15:05:00.000Z"
+    },
+    {
+      "groupName": "Bulle : Juniors mixtes",
+      "societe": "Bulle",
+      "groupe": "Juniors mixtes",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T14:51:00.000Z"
+    },
+    {
+      "groupName": "Chézard-St-Martin : Actif",
+      "societe": "Chézard-St-Martin",
+      "groupe": "Actif",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T13:27:00.000Z"
+    },
+    {
+      "groupName": "Rickenbach : Aktive",
+      "societe": "Rickenbach",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T16:01:00.000Z"
+    },
+    {
+      "groupName": "Yvonand : Actifs-Actives",
+      "societe": "Yvonand",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T13:13:00.000Z"
+    },
+    {
+      "groupName": "Avenches : Actif",
+      "societe": "Avenches",
+      "groupe": "Actif",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T14:37:00.000Z"
+    },
+    {
+      "groupName": "Domdidier : Actifs-Actives",
+      "societe": "Domdidier",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T12:59:00.000Z"
+    },
+    {
+      "groupName": "Neuenhof : Aktive",
+      "societe": "Neuenhof",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "AG",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T13:41:00.000Z"
+    },
+    {
+      "groupName": "Chavornay : Actifs-Actives",
+      "societe": "Chavornay",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T14:23:00.000Z"
+    },
+    {
+      "groupName": "Gym La Coudre : Actifs-Actives",
+      "societe": "Gym La Coudre",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "NE",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T13:55:00.000Z"
+    },
+    {
+      "groupName": "Yverdon Amis-Gyms : Actifs-Actives",
+      "societe": "Yverdon Amis-Gyms",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T15:19:00.000Z"
+    },
+    {
+      "groupName": "Luzern : Turn Leistungs-Zentrum",
+      "societe": "Luzern",
+      "groupe": "Turn Leistungs-Zentrum",
+      "category": "ACTIFS",
+      "canton": "LU",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T15:47:00.000Z"
+    },
+    {
+      "groupName": "Wettingen : Aktive",
+      "societe": "Wettingen",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "AG",
+      "apparatusCode": "ST",
+      "location": "Iles 2",
+      "startTime": "2026-05-09T15:33:00.000Z"
+    },
+    {
+      "groupName": "Gym Chézard-St-Martin : Jeunesse M13",
+      "societe": "Gym Chézard-St-Martin",
+      "groupe": "Jeunesse M13",
+      "category": "JEUNESSE_B",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T11:39:00.000Z"
+    },
+    {
+      "groupName": "Romont Gym : Jeunesse B -12 ans",
+      "societe": "Romont Gym",
+      "groupe": "Jeunesse B -12 ans",
+      "category": "JEUNESSE_B",
+      "canton": "FR",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T11:27:00.000Z"
+    },
+    {
+      "groupName": "La Coudre : Jeunesse",
+      "societe": "La Coudre",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_B",
+      "canton": "NE",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T11:15:00.000Z"
+    },
+    {
+      "groupName": "Chézard-St-Martin : Jeunesse M17",
+      "societe": "Chézard-St-Martin",
+      "groupe": "Jeunesse M17",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T13:03:00.000Z"
+    },
+    {
+      "groupName": "Gym Peseux : M17",
+      "societe": "Gym Peseux",
+      "groupe": "M17",
+      "category": "JEUNESSE_A",
+      "canton": "NE",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T12:39:00.000Z"
+    },
+    {
+      "groupName": "Yverdon-Ancienne : Agrès mixtes",
+      "societe": "Yverdon-Ancienne",
+      "groupe": "Agrès mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T12:27:00.000Z"
+    },
+    {
+      "groupName": "Romont Gym : Jeunesse A -16ans",
+      "societe": "Romont Gym",
+      "groupe": "Jeunesse A -16ans",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T12:15:00.000Z"
+    },
+    {
+      "groupName": "Bulle : AM 10-16",
+      "societe": "Bulle",
+      "groupe": "AM 10-16",
+      "category": "JEUNESSE_A",
+      "canton": "FR",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T12:51:00.000Z"
+    },
+    {
+      "groupName": "La Coudre : Jeunesse",
+      "societe": "La Coudre",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "NE",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T12:03:00.000Z"
+    },
+    {
+      "groupName": "Ependes : Jeunesse",
+      "societe": "Ependes",
+      "groupe": "Jeunesse",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T11:51:00.000Z"
+    },
+    {
+      "groupName": "Yverdon Amis-Gyms : Agrès mixtes",
+      "societe": "Yverdon Amis-Gyms",
+      "groupe": "Agrès mixtes",
+      "category": "JEUNESSE_A",
+      "canton": "VD",
+      "apparatusCode": "ST",
+      "location": "LM 1",
+      "startTime": "2026-05-10T13:15:00.000Z"
+    },
+    {
+      "groupName": "Gym Ursy : Actifs",
+      "societe": "Gym Ursy",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T08:12:00.000Z"
+    },
+    {
+      "groupName": "Chézard-St-Martin : Actif",
+      "societe": "Chézard-St-Martin",
+      "groupe": "Actif",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T08:40:00.000Z"
+    },
+    {
+      "groupName": "Fribourg : Actifs",
+      "societe": "Fribourg",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T08:54:00.000Z"
+    },
+    {
+      "groupName": "Rickenbach : Aktive",
+      "societe": "Rickenbach",
+      "groupe": "Aktive",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T09:22:00.000Z"
+    },
+    {
+      "groupName": "Yvonand : Actifs-Actives",
+      "societe": "Yvonand",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T09:08:00.000Z"
+    },
+    {
+      "groupName": "Le Lieu - Vallée de Joux : Actifs",
+      "societe": "Le Lieu - Vallée de Joux",
+      "groupe": "Actifs",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T07:58:00.000Z"
+    },
+    {
+      "groupName": "Chardonne-Jongny : Actifs-Actives",
+      "societe": "Chardonne-Jongny",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T07:44:00.000Z"
+    },
+    {
+      "groupName": "Gym Attalens : Actifs Hommes",
+      "societe": "Gym Attalens",
+      "groupe": "Actifs Hommes",
+      "category": "ACTIFS",
+      "canton": "FR",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T08:26:00.000Z"
+    },
+    {
+      "groupName": "Luzern : Turn Leistungs-Zentrum",
+      "societe": "Luzern",
+      "groupe": "Turn Leistungs-Zentrum",
+      "category": "ACTIFS",
+      "canton": "LU",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T09:36:00.000Z"
+    },
+    {
+      "groupName": "Corsier-Corseaux : Actifs-Actives",
+      "societe": "Corsier-Corseaux",
+      "groupe": "Actifs-Actives",
+      "category": "ACTIFS",
+      "canton": "VD",
+      "apparatusCode": "Barres parallèles",
+      "location": "Iles 1",
+      "startTime": "2026-05-09T07:30:00.000Z"
+    }
+  ]
+}

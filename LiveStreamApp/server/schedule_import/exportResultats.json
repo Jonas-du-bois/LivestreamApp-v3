@@ -1,0 +1,2774 @@
+{
+    "inscriptions": [
+        {
+            "Societe": "Lausanne Amis-Gym",
+            "Groupe": "GDance",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:15",
+            "Note": ""
+        },
+        {
+            "Societe": "Morges",
+            "Groupe": "GD Actives ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:01",
+            "Note": ""
+        },
+        {
+            "Societe": "Lucens",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:22",
+            "Note": ""
+        },
+        {
+            "Societe": "Blonay",
+            "Groupe": "Actives Gym&Danse",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:47",
+            "Note": ""
+        },
+        {
+            "Societe": "Rolle",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:58",
+            "Note": ""
+        },
+        {
+            "Societe": "Lucens",
+            "Groupe": "Gym danse 35+",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:40",
+            "Note": ""
+        },
+        {
+            "Societe": "Aubonne",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:29",
+            "Note": ""
+        },
+        {
+            "Societe": "Prilly",
+            "Groupe": "active",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:37",
+            "Note": ""
+        },
+        {
+            "Societe": "Cossonay",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:51",
+            "Note": ""
+        },
+        {
+            "Societe": "Chailly-Montreux",
+            "Groupe": "G&D Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:05",
+            "Note": ""
+        },
+        {
+            "Societe": "Vallorbe",
+            "Groupe": "Gym-danse actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:08",
+            "Note": ""
+        },
+        {
+            "Societe": "Bex",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:33",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Vicques ",
+            "Groupe": "Minis 7-8H",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:34",
+            "Note": ""
+        },
+        {
+            "Societe": "Ollon/St-Triphon",
+            "Groupe": "Gym et Danse 2",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:10",
+            "Note": ""
+        },
+        {
+            "Societe": "Aubonne",
+            "Groupe": "Gym & Danse 8-12 1",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:46",
+            "Note": ""
+        },
+        {
+            "Societe": "Aubonne",
+            "Groupe": "Gym & Danse 8-12 2",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:46",
+            "Note": ""
+        },
+        {
+            "Societe": "Vallorbe",
+            "Groupe": "Mini-gym Danse",
+            "Categorie": "Jeunesse B -12ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:10",
+            "Note": ""
+        },
+        {
+            "Societe": "Lucens",
+            "Groupe": "Gym Danse",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10: 22",
+            "Note": ""
+        },
+        {
+            "Societe": "Amis-Gym Fully",
+            "Groupe": "Junior",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:36",
+            "Note": ""
+        },
+        {
+            "Societe": "Morges",
+            "Groupe": "GD jeunesse ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:24",
+            "Note": ""
+        },
+        {
+            "Societe": "Roche",
+            "Groupe": "GroupeConcours",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:00",
+            "Note": ""
+        },
+        {
+            "Societe": "Chardonne-Jongny",
+            "Groupe": "Jeunesse M16",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:48",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne-Ville ",
+            "Groupe": "Gym Danse Junior",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:48",
+            "Note": ""
+        },
+        {
+            "Societe": "Ollon/St-Triphon",
+            "Groupe": "Gym et Danse 1",
+            "Categorie": "JeunesseA -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:36",
+            "Note": ""
+        },
+        {
+            "Societe": "Chailly-Montreux",
+            "Groupe": "Gym & Danse compétition",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:36",
+            "Note": ""
+        },
+        {
+            "Societe": "Prilly",
+            "Groupe": "Moyennes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14: 36",
+            "Note": ""
+        },
+        {
+            "Societe": "Lucens",
+            "Groupe": "GD M17",
+            "Categorie": "Jeunesse A-16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:12",
+            "Note": ""
+        },
+        {
+            "Societe": "Rolle",
+            "Groupe": "Gym danse 12-16 ans ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:48",
+            "Note": ""
+        },
+        {
+            "Societe": "Echallens ",
+            "Groupe": "Gym-danse moyenne ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:12",
+            "Note": ""
+        },
+        {
+            "Societe": "Cossonay",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:00",
+            "Note": ""
+        },
+        {
+            "Societe": "Sion Fémina",
+            "Groupe": "Niveau 3 Sion Fémina",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:24",
+            "Note": ""
+        },
+        {
+            "Societe": "Aubonne",
+            "Groupe": "Gym & Danse 13-16 ans",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:48",
+            "Note": ""
+        },
+        {
+            "Societe": "Chardonne-Jongny",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12: 30",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne-Ville ",
+            "Groupe": "Gym Danse Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:19",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Attalens",
+            "Groupe": "Actives Juniors",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:44",
+            "Note": ""
+        },
+        {
+            "Societe": "Le Mont-sur-Lausanne",
+            "Groupe": "Gym et Danse Actives ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:12",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Hauterive",
+            "Groupe": "actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:26",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Club Develier",
+            "Groupe": "Jeunesse 1B",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:22",
+            "Note": ""
+        },
+        {
+            "Societe": "Rolle",
+            "Groupe": "Gym et danse 6 - 11 ans",
+            "Categorie": "Jeunesse B-12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:34",
+            "Note": ""
+        },
+        {
+            "Societe": "Cossonay",
+            "Groupe": "Pupillettes",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:58",
+            "Note": ""
+        },
+        {
+            "Societe": "Prilly",
+            "Groupe": "Petites B",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:58",
+            "Note": ""
+        },
+        {
+            "Societe": "Le Mont-sur-Lausanne",
+            "Groupe": "Gym danse 10-12 ans ",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:34",
+            "Note": ""
+        },
+        {
+            "Societe": "Le Mont-sur-Lausanne",
+            "Groupe": "Gym Danse 13-16 ans ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:00",
+            "Note": ""
+        },
+        {
+            "Societe": "Courtepin ",
+            "Groupe": "Danse 2",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:24",
+            "Note": ""
+        },
+        {
+            "Societe": "La Tour-de-Tr�me",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x24 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:54",
+            "Note": ""
+        },
+        {
+            "Societe": "La Tour-de-Tr�me",
+            "Groupe": "Jeunesse -16 ans",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x24 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:12",
+            "Note": ""
+        },
+        {
+            "Societe": "Amis-Gym Fully",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:24",
+            "Note": ""
+        },
+        {
+            "Societe": "Charmey",
+            "Groupe": "Société Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:58",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Ursy",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:48",
+            "Note": ""
+        },
+        {
+            "Societe": "Bulle",
+            "Groupe": "Juniors mixtes",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:16",
+            "Note": ""
+        },
+        {
+            "Societe": "Fusion La Tour / Montreux",
+            "Groupe": "Actifs Mixtes",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:34",
+            "Note": ""
+        },
+        {
+            "Societe": "Morges",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:06",
+            "Note": ""
+        },
+        {
+            "Societe": "Fribourg",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:30",
+            "Note": ""
+        },
+        {
+            "Societe": "Blonay",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:44",
+            "Note": ""
+        },
+        {
+            "Societe": "Avenches",
+            "Groupe": "Actif",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:52",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Peseux",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:14",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey",
+            "Groupe": "Team Vevey",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:38",
+            "Note": ""
+        },
+        {
+            "Societe": "Domdidier",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:38",
+            "Note": ""
+        },
+        {
+            "Societe": "Neuenhof",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:12",
+            "Note": ""
+        },
+        {
+            "Societe": "Lancy",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:56",
+            "Note": ""
+        },
+        {
+            "Societe": "Chardonne-Jongny",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:56",
+            "Note": ""
+        },
+        {
+            "Societe": "Aigle-Alliance",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:20",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne",
+            "Groupe": "Lausanne Team Agrès",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:10",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Nyon",
+            "Groupe": "Actives/Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:00",
+            "Note": ""
+        },
+        {
+            "Societe": "Romont Gym",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:42",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon Amis-Gyms",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:52",
+            "Note": ""
+        },
+        {
+            "Societe": "Wettingen ",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "17:06",
+            "Note": ""
+        },
+        {
+            "Societe": "La Grônarde",
+            "Groupe": "La Grônarde - actifs ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:28",
+            "Note": ""
+        },
+        {
+            "Societe": "Prilly",
+            "Groupe": "active",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:00",
+            "Note": ""
+        },
+        {
+            "Societe": "Corsier-Corseaux",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:42",
+            "Note": ""
+        },
+        {
+            "Societe": "Granges-Marnand",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:14",
+            "Note": ""
+        },
+        {
+            "Societe": "Bussigny",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:28",
+            "Note": ""
+        },
+        {
+            "Societe": "Mendrisio",
+            "Groupe": "Attivi ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:24",
+            "Note": ""
+        },
+        {
+            "Societe": "St-Prex",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:10",
+            "Note": ""
+        },
+        {
+            "Societe": "Pully",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Sol",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:02",
+            "Note": ""
+        },
+        {
+            "Societe": "Blonay",
+            "Groupe": "Agrès 1",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "12:19",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey Jeunes Patriotes",
+            "Groupe": "Groupe Mixte B",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "10:55",
+            "Note": ""
+        },
+        {
+            "Societe": "Grandson",
+            "Groupe": "Agrès 7-11 ans",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "11:23",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym La Tour",
+            "Groupe": "7-13 compétition ",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "11:51",
+            "Note": ""
+        },
+        {
+            "Societe": "Avenches",
+            "Groupe": "Mixtes7-11 ans",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "10:41",
+            "Note": ""
+        },
+        {
+            "Societe": "Chardonne-Jongny",
+            "Groupe": "Jeunesse M12",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "11:09",
+            "Note": ""
+        },
+        {
+            "Societe": "Amis-Gym Forel-Savigny",
+            "Groupe": "Jeunesse M13",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "12:05",
+            "Note": ""
+        },
+        {
+            "Societe": "La Grônarde ",
+            "Groupe": "La Grônarde JB",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "11:37",
+            "Note": ""
+        },
+        {
+            "Societe": "Chexbres",
+            "Groupe": "Jeunesses Mixtes",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "10:27",
+            "Note": ""
+        },
+        {
+            "Societe": "Chézard-St-Martin ",
+            "Groupe": "Jeunesse M17",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "15:35",
+            "Note": ""
+        },
+        {
+            "Societe": "Fribourg",
+            "Groupe": "M16",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "15:21",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey-Ancienne",
+            "Groupe": "Groupe Mixte Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:31",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey Jeunes Patriotes",
+            "Groupe": "Groupe Mixte A",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "17:13",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey Jeunes Patriotes ",
+            "Groupe": "Jeunesses-Mixtes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "14:25",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Ursy",
+            "Groupe": "Groupe mixte",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "12:33",
+            "Note": ""
+        },
+        {
+            "Societe": "Morges",
+            "Groupe": "Jeunesses",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "14:11",
+            "Note": ""
+        },
+        {
+            "Societe": "Corsier - Corseaux",
+            "Groupe": "Jeunesses mixte ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "14:39",
+            "Note": ""
+        },
+        {
+            "Societe": "Chardonne-Jongny",
+            "Groupe": "Jeunesse M16",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:43",
+            "Note": ""
+        },
+        {
+            "Societe": "Bussigny",
+            "Groupe": "Agrès Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "12:47",
+            "Note": ""
+        },
+        {
+            "Societe": "Niederscherli",
+            "Groupe": "Juenesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:45",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne",
+            "Groupe": "Agrès ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:29",
+            "Note": ""
+        },
+        {
+            "Societe": "La Grônarde",
+            "Groupe": "La Grônarde JA",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:01",
+            "Note": ""
+        },
+        {
+            "Societe": "Bulle",
+            "Groupe": "AM 10-16",
+            "Categorie": "Jeunesse A-16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:59",
+            "Note": ""
+        },
+        {
+            "Societe": "Corsier-Corseaux",
+            "Groupe": "Agrès-mixte",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:03",
+            "Note": ""
+        },
+        {
+            "Societe": "Biasca",
+            "Groupe": "Jeunesse ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:17",
+            "Note": ""
+        },
+        {
+            "Societe": "St-Prex",
+            "Groupe": "Agrès productions",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "15:07",
+            "Note": ""
+        },
+        {
+            "Societe": "AG 13* Sion",
+            "Groupe": "jeunesse A",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "15:49",
+            "Note": ""
+        },
+        {
+            "Societe": "Pully",
+            "Groupe": "TeamGym-16",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "14:53",
+            "Note": ""
+        },
+        {
+            "Societe": "Ependes",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:57",
+            "Note": ""
+        },
+        {
+            "Societe": "Charmey",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:15",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon Amis-Gyms",
+            "Groupe": "Agrès mixtes ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Sol",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "17:27",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Ursy",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:15",
+            "Note": ""
+        },
+        {
+            "Societe": "Morges",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "08:33",
+            "Note": ""
+        },
+        {
+            "Societe": "Fribourg",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "10:11",
+            "Note": ""
+        },
+        {
+            "Societe": "Avenches",
+            "Groupe": "Actif",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "08:47",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey",
+            "Groupe": "Team Vevey",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "10:25",
+            "Note": ""
+        },
+        {
+            "Societe": "Domdidier",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "08:19",
+            "Note": ""
+        },
+        {
+            "Societe": "D�dingen & Getu Sense",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:43",
+            "Note": ""
+        },
+        {
+            "Societe": "Romont Gym",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:57",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym La Coudre",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:01",
+            "Note": ""
+        },
+        {
+            "Societe": "Luzern",
+            "Groupe": "Turn Leistungs-Zentrum",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "10:39",
+            "Note": ""
+        },
+        {
+            "Societe": "Wettingen ",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "10: 53",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Attalens",
+            "Groupe": "Agrès Société mixte Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "08: 05",
+            "Note": ""
+        },
+        {
+            "Societe": "St-Prex",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:29",
+            "Note": ""
+        },
+        {
+            "Societe": "Pully",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "07:51",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne",
+            "Groupe": "Lausanne Team Agrès",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "07:37",
+            "Note": ""
+        },
+        {
+            "Societe": "La Coudre",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "09:24",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey-Ancienne",
+            "Groupe": "Groupe Mixte Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08:56",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey Jeunes Patriotes",
+            "Groupe": "Groupe Mixte A",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "09:10",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Ursy",
+            "Groupe": "Groupe mixte",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08:42",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Attalens",
+            "Groupe": "Agrès Société -16",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08:00",
+            "Note": ""
+        },
+        {
+            "Societe": "La Coudre",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08:14",
+            "Note": ""
+        },
+        {
+            "Societe": "Pully",
+            "Groupe": "TeamGym -16",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Anneaux balançants",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08:28",
+            "Note": ""
+        },
+        {
+            "Societe": "Morges",
+            "Groupe": "GD Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15:40",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Club Develier",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16:36",
+            "Note": ""
+        },
+        {
+            "Societe": "Blonay",
+            "Groupe": "Actives Gym&Danse",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16:50",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne-Ville",
+            "Groupe": "Gym Danse Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16:08",
+            "Note": ""
+        },
+        {
+            "Societe": "Aubonne",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16:22",
+            "Note": ""
+        },
+        {
+            "Societe": "Prilly",
+            "Groupe": "active",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16:56",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon Amis-Gyms",
+            "Groupe": "Gym Active 35+",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15:26",
+            "Note": ""
+        },
+        {
+            "Societe": "Vallorbe",
+            "Groupe": "Gym-danse actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x12 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "17:30",
+            "Note": ""
+        },
+        {
+            "Societe": "Amis-Gym Fully",
+            "Groupe": "Jeunesse B",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:40",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne Amis-Gym",
+            "Groupe": "Mini GGD",
+            "Categorie": "Jeunesse B-12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:14",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Vicques",
+            "Groupe": "Minis 5-6H",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:28",
+            "Note": ""
+        },
+        {
+            "Societe": "Courroux-Courcelon",
+            "Groupe": "Minis 2",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:04",
+            "Note": ""
+        },
+        {
+            "Societe": "Echallens",
+            "Groupe": "Gym-danse 7-12 ans",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:07",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne-Ville ",
+            "Groupe": "Gym Danse Jeunesse ",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:16",
+            "Note": ""
+        },
+        {
+            "Societe": "Ollon/St-Triphon",
+            "Groupe": "Gym et Danse 2",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:04",
+            "Note": ""
+        },
+        {
+            "Societe": "Rolle",
+            "Groupe": "Petites gymnastique",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:28",
+            "Note": ""
+        },
+        {
+            "Societe": "Sion Fémina",
+            "Groupe": "Niveau2 Sion Fémina",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:21",
+            "Note": ""
+        },
+        {
+            "Societe": "Aubonne",
+            "Groupe": "Gym & Danse 8-12 2",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "10:40",
+            "Note": ""
+        },
+        {
+            "Societe": "Lucens",
+            "Groupe": "Gym Danse",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:28",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne Amis-Gym",
+            "Groupe": "Junior GGD",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16: 42",
+            "Note": ""
+        },
+        {
+            "Societe": "Morges",
+            "Groupe": "GD jeunesse ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:06",
+            "Note": ""
+        },
+        {
+            "Societe": "Roche",
+            "Groupe": "Groupe Concours",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:18",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Vicques ",
+            "Groupe": "Cracks",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:54",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Club Develier",
+            "Groupe": "Juniors",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:06",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne-Ville ",
+            "Groupe": "Gym Danse Junior",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:54",
+            "Note": ""
+        },
+        {
+            "Societe": "Ollon/St-Triphon",
+            "Groupe": "Gym et Danse 1",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:54",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Hauterive",
+            "Groupe": "JF3",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:30",
+            "Note": ""
+        },
+        {
+            "Societe": "Prilly",
+            "Groupe": "Moyennes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "16:30",
+            "Note": ""
+        },
+        {
+            "Societe": "Lucens",
+            "Groupe": "GD M17",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:42",
+            "Note": ""
+        },
+        {
+            "Societe": "Sion Fémina",
+            "Groupe": "Niveau4 Sion Fémina",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:54",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon Amis-Gyms",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:18",
+            "Note": ""
+        },
+        {
+            "Societe": "Vallorbe",
+            "Groupe": "Gym-Danse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x12 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:30",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne Amis-Gym",
+            "Groupe": "GDance",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "17:24",
+            "Note": ""
+        },
+        {
+            "Societe": "Courroux-Courcelon",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15:12",
+            "Note": ""
+        },
+        {
+            "Societe": "Lucens",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "17:36",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Rolle",
+            "Groupe": "Actives gymnastique",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "17:10",
+            "Note": ""
+        },
+        {
+            "Societe": "Bex",
+            "Groupe": "Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "12x18 m",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15:54",
+            "Note": ""
+        },
+        {
+            "Societe": "Corcelles-le-Jorat",
+            "Groupe": "Gym-danse 7-12 ans",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:00",
+            "Note": ""
+        },
+        {
+            "Societe": "Courroux-Courcelon",
+            "Groupe": "Minis 1",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:16",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Hauterive",
+            "Groupe": "JF2",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:40",
+            "Note": ""
+        },
+        {
+            "Societe": "Prilly",
+            "Groupe": "Petites B",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "08:52",
+            "Note": ""
+        },
+        {
+            "Societe": "Courroux-Courcelon",
+            "Groupe": "FSG Courroux-Courcelon",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:30",
+            "Note": ""
+        },
+        {
+            "Societe": "Rolle",
+            "Groupe": "Grandes gymnastique",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15: 42",
+            "Note": ""
+        },
+        {
+            "Societe": "Chailly-Montreux",
+            "Groupe": "Gym & Danse compétition",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:06",
+            "Note": ""
+        },
+        {
+            "Societe": "Chailly-Lausanne",
+            "Groupe": "Gymnastique et Danse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x18 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "14:42",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Club Develier",
+            "Groupe": "Jeunesse 1A",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "12x24 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "09:52",
+            "Note": ""
+        },
+        {
+            "Societe": "Fémina Club Develier",
+            "Groupe": "Jeunesse 2",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "12x24 m",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "15:18",
+            "Note": ""
+        },
+        {
+            "Societe": "Blonay",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:15",
+            "Note": ""
+        },
+        {
+            "Societe": "Courroux-Courcelon ",
+            "Groupe": "Actives ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:29",
+            "Note": ""
+        },
+        {
+            "Societe": "St-Cierges",
+            "Groupe": "Actifs - Actives Société",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:43",
+            "Note": ""
+        },
+        {
+            "Societe": "Amis-Gym Fully",
+            "Groupe": "Jeunesse B",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:45",
+            "Note": ""
+        },
+        {
+            "Societe": "Corcelles-Le-Jorat",
+            "Groupe": "Agrès Kids ",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:59",
+            "Note": ""
+        },
+        {
+            "Societe": "Amis-Gym Fully",
+            "Groupe": "Junior",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "08:35",
+            "Note": ""
+        },
+        {
+            "Societe": "Blonay",
+            "Groupe": "Agrès 2",
+            "Categorie": "Jeunesse A-16 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:17",
+            "Note": ""
+        },
+        {
+            "Societe": "Corsier - Corseaux ",
+            "Groupe": "Jeunesses mixte ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "08: 21",
+            "Note": ""
+        },
+        {
+            "Societe": "Chailly-Montreux",
+            "Groupe": "Jeunesses13-16 ans",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "08:07",
+            "Note": ""
+        },
+        {
+            "Societe": "Martigny-Aurore",
+            "Groupe": "Grand-Mixte",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "08:49",
+            "Note": ""
+        },
+        {
+            "Societe": "Sion Fémina",
+            "Groupe": "Agrès Sion Fémina",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:03",
+            "Note": ""
+        },
+        {
+            "Societe": "Sins-Oberr�ti",
+            "Groupe": "Jugend",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre asymétrique scolaires",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "09:31",
+            "Note": ""
+        },
+        {
+            "Societe": "Le Lieu - Vallée de Joux",
+            "Groupe": "Actifs ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barre fixe",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "17:03",
+            "Note": ""
+        },
+        {
+            "Societe": "Lutry La Riveraine",
+            "Groupe": "Actives et actif",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barre fixe",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "17:17",
+            "Note": ""
+        },
+        {
+            "Societe": "Yvonand",
+            "Groupe": "Kids FSG Yvonand",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Barre fixe",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "10:48",
+            "Note": ""
+        },
+        {
+            "Societe": "Baulmes",
+            "Groupe": "Team Agrès",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Barre fixe",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "11:02",
+            "Note": ""
+        },
+        {
+            "Societe": "Corcelles-le-Jorat",
+            "Groupe": "Jeunesse mixte",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre fixe",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "09:52",
+            "Note": ""
+        },
+        {
+            "Societe": "AG13* Sion",
+            "Groupe": "Jeunesses A",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre fixe",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "10:06",
+            "Note": ""
+        },
+        {
+            "Societe": "Chernex",
+            "Groupe": "Agrès Mixtes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre fixe",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "10:20",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne Bourgeoise",
+            "Groupe": "Jeunesse A",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Barre fixe",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "10: 34",
+            "Note": ""
+        },
+        {
+            "Societe": "Amis-Gym Fully",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "11:00",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Serri�res",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "13:34",
+            "Note": ""
+        },
+        {
+            "Societe": "Chézard-St-Martin",
+            "Groupe": "Actif ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "10:18",
+            "Note": ""
+        },
+        {
+            "Societe": "Fusion La Tour / Montreux",
+            "Groupe": "Actifs Mixtes",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "13:06",
+            "Note": ""
+        },
+        {
+            "Societe": "Yvonand",
+            "Groupe": "Actifs-Actives ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "14:16",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Peseux",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "13:20",
+            "Note": ""
+        },
+        {
+            "Societe": "Vevey Jeunes Patriotes ",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "12:38",
+            "Note": ""
+        },
+        {
+            "Societe": "Neuenhof",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "14:44",
+            "Note": ""
+        },
+        {
+            "Societe": "Chavornay",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "11:14",
+            "Note": ""
+        },
+        {
+            "Societe": "Le Lieu - Vallée de Joux",
+            "Groupe": "Actifs ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "10:46",
+            "Note": ""
+        },
+        {
+            "Societe": "Aigle-Alliance",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "11:28",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym La Coudre",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "10:32",
+            "Note": ""
+        },
+        {
+            "Societe": "Grandson",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "11:42",
+            "Note": ""
+        },
+        {
+            "Societe": "Chernex ",
+            "Groupe": "Actifs-mixtes ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "12:10",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon-Ancienne",
+            "Groupe": "Actifs-Actives ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "11:56",
+            "Note": ""
+        },
+        {
+            "Societe": "Biasca ",
+            "Groupe": "Actives actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "14:30",
+            "Note": ""
+        },
+        {
+            "Societe": "Echallens",
+            "Groupe": "Agrès Actifs Plaisir",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "10:04",
+            "Note": ""
+        },
+        {
+            "Societe": "Chexbres",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "12:52",
+            "Note": ""
+        },
+        {
+            "Societe": "Riddes Etoile",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "14:02",
+            "Note": ""
+        },
+        {
+            "Societe": "Mendrisio",
+            "Groupe": "Attivi ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "13:48",
+            "Note": ""
+        },
+        {
+            "Societe": "Rolle",
+            "Groupe": "Agrès mixte actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "12:24",
+            "Note": ""
+        },
+        {
+            "Societe": "Ependes",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "09:50",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Chézard-St-Martin",
+            "Groupe": "Jeunesse M13",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "13:50",
+            "Note": ""
+        },
+        {
+            "Societe": "Sport gym Court�telle",
+            "Groupe": "Les Warriors",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "13:22",
+            "Note": ""
+        },
+        {
+            "Societe": "Sport gym Court�telle",
+            "Groupe": "Les Starlettes ",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "12:40",
+            "Note": ""
+        },
+        {
+            "Societe": "Yvonand",
+            "Groupe": "Kids FSG Yvonand",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "12:54",
+            "Note": ""
+        },
+        {
+            "Societe": "Chexbres",
+            "Groupe": "Maxi-Mixtes",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "11:30",
+            "Note": ""
+        },
+        {
+            "Societe": "Ursy",
+            "Groupe": "Mini-mixtes -12ans",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "13:08",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Attalens",
+            "Groupe": "Agrès société -12",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "12:12",
+            "Note": ""
+        },
+        {
+            "Societe": "Grandson",
+            "Groupe": "Mixtes7-12ans",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "12:26",
+            "Note": ""
+        },
+        {
+            "Societe": "Baulmes",
+            "Groupe": "Team Agrès",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "14: 18",
+            "Note": ""
+        },
+        {
+            "Societe": "Chernex",
+            "Groupe": "Agrès Mixtes ",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "14: 04",
+            "Note": ""
+        },
+        {
+            "Societe": "Pully",
+            "Groupe": "TeamGym -12",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "13: 36",
+            "Note": ""
+        },
+        {
+            "Societe": "Lausanne Bourgeoise",
+            "Groupe": "Jeunesse B",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "11:44",
+            "Note": ""
+        },
+        {
+            "Societe": "Chézard-St-Martin ",
+            "Groupe": "Jeunesse M17",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16:52",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Peseux",
+            "Groupe": "M17",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15: 00",
+            "Note": ""
+        },
+        {
+            "Societe": "Blonay",
+            "Groupe": "Agrès 2",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "14: 32",
+            "Note": ""
+        },
+        {
+            "Societe": "Chavornay",
+            "Groupe": "Jeunesses",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15: 42",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym La Tour",
+            "Groupe": "13-16 ans",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15: 28",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon-Ancienne",
+            "Groupe": "Agrès mixtes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16: 38",
+            "Note": ""
+        },
+        {
+            "Societe": "Le Lieu - Vallée de Joux",
+            "Groupe": "Junior Mixtes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15:56",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Rolle",
+            "Groupe": "Agrès Mixte 11-16 ans",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16:10",
+            "Note": ""
+        },
+        {
+            "Societe": "Yvonand",
+            "Groupe": "Mixtes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "16: 24",
+            "Note": ""
+        },
+        {
+            "Societe": "Grandson",
+            "Groupe": "Agrès 12-16ans",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "15: 14",
+            "Note": ""
+        },
+        {
+            "Societe": "Corsier-Corseaux",
+            "Groupe": "Agrès- mixte",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "17: 06",
+            "Note": ""
+        },
+        {
+            "Societe": "Chernex",
+            "Groupe": "Agrès Mixtes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "14: 46",
+            "Note": ""
+        },
+        {
+            "Societe": "Sins-Oberr�ti",
+            "Groupe": "Jugend",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Combinaison d'engins",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "17: 20",
+            "Note": ""
+        },
+        {
+            "Societe": "Charmey",
+            "Groupe": "Société Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "14:09",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Serri�res",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "15:05",
+            "Note": ""
+        },
+        {
+            "Societe": "Bulle",
+            "Groupe": "Juniors mixtes",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "14:51",
+            "Note": ""
+        },
+        {
+            "Societe": "Chézard-St-Martin",
+            "Groupe": "Actif ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:27",
+            "Note": ""
+        },
+        {
+            "Societe": "Rickenbach",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "16:01",
+            "Note": ""
+        },
+        {
+            "Societe": "Yvonand",
+            "Groupe": "Actifs-Actives ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:13",
+            "Note": ""
+        },
+        {
+            "Societe": "Avenches",
+            "Groupe": "Actif",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "14:37",
+            "Note": ""
+        },
+        {
+            "Societe": "Domdidier",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "12:59",
+            "Note": ""
+        },
+        {
+            "Societe": "Neuenhof",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:41",
+            "Note": ""
+        },
+        {
+            "Societe": "Chavornay",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "14:23",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym La Coudre",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "13:55",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon Amis-Gyms",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "15:19",
+            "Note": ""
+        },
+        {
+            "Societe": "Luzern",
+            "Groupe": "Turn Leistungs-Zentrum",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "15:47",
+            "Note": ""
+        },
+        {
+            "Societe": "Wettingen ",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Saut",
+            "Lieu1": "Iles",
+            "Lieu2": "2",
+            "Horaire": "15:33",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Chézard-St-Martin",
+            "Groupe": "Jeunesse M13",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:39",
+            "Note": ""
+        },
+        {
+            "Societe": "Romont Gym",
+            "Groupe": "Jeunesse B -12 ans",
+            "Categorie": "Jeunesse B-12 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:27",
+            "Note": ""
+        },
+        {
+            "Societe": "La Coudre",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse B -12 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:15",
+            "Note": ""
+        },
+        {
+            "Societe": "Chézard-St-Martin ",
+            "Groupe": "Jeunesse M17",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:03",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Peseux",
+            "Groupe": "M17",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:39",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon-Ancienne",
+            "Groupe": "Agrès mixtes",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:27",
+            "Note": ""
+        },
+        {
+            "Societe": "Romont Gym",
+            "Groupe": "Jeunesse A -16ans",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:15",
+            "Note": ""
+        },
+        {
+            "Societe": "Bulle",
+            "Groupe": "AM 10-16",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:51",
+            "Note": ""
+        },
+        {
+            "Societe": "La Coudre",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "12:03",
+            "Note": ""
+        },
+        {
+            "Societe": "Ependes",
+            "Groupe": "Jeunesse",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "11:51",
+            "Note": ""
+        },
+        {
+            "Societe": "Yverdon Amis-Gyms",
+            "Groupe": "Agrès mixtes ",
+            "Categorie": "Jeunesse A -16 ans",
+            "Discipline": "Saut",
+            "Lieu1": "LM",
+            "Lieu2": "1",
+            "Horaire": "13:15",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Ursy",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08:12",
+            "Note": ""
+        },
+        {
+            "Societe": "Chézard-St-Martin",
+            "Groupe": "Actif ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08: 40",
+            "Note": ""
+        },
+        {
+            "Societe": "Fribourg",
+            "Groupe": "Actifs",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08:54",
+            "Note": ""
+        },
+        {
+            "Societe": "Rickenbach",
+            "Groupe": "Aktive",
+            "Categorie": "Actifs- Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "09:22",
+            "Note": ""
+        },
+        {
+            "Societe": "Yvonand",
+            "Groupe": "Actifs-Actives ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "09:08",
+            "Note": ""
+        },
+        {
+            "Societe": "Le Lieu - Vallée de Joux",
+            "Groupe": "Actifs ",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "07:58",
+            "Note": ""
+        },
+        {
+            "Societe": "Chardonne-Jongny",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "07:44",
+            "Note": ""
+        },
+        {
+            "Societe": "Gym Attalens",
+            "Groupe": "Actifs Hommes",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "08:26",
+            "Note": ""
+        },
+        {
+            "Societe": "Luzern",
+            "Groupe": "Turn Leistungs-Zentrum",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "09:36",
+            "Note": ""
+        },
+        {
+            "Societe": "Corsier-Corseaux",
+            "Groupe": "Actifs-Actives",
+            "Categorie": "Actifs-Actives",
+            "Discipline": "Barres parallèles",
+            "Lieu1": "Iles",
+            "Lieu2": "1",
+            "Horaire": "07: 30",
+            "Note": ""
+        }
+    ]
+}
