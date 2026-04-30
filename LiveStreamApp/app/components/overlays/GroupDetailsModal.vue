@@ -23,7 +23,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { translateCategory, translateApparatus } = useTranslatedData()
+const { translateCategory } = useTranslatedData()
 const favoritesStore = useFavoritesStore()
 
 const { now: nowTimestamp } = useNow()
@@ -32,7 +32,6 @@ const isLoading = ref(false)
 const isTogglingFavorite = ref(false)
 const error = ref<string | null>(null)
 const details = ref<GroupDetailsResponse | null>(null)
-const activeTab = ref<'timeline' | 'stats'>('timeline')
 
 // Récupère les données avec possibilité de forcer le bypass du cache (ex: mise à jour websocket).
 const fetchData = async (force = false) => {
@@ -67,7 +66,6 @@ watch(() => props.isOpen, (newVal) => {
   if (newVal && props.groupId) {
     reset()
     fetchData()
-    activeTab.value = 'timeline'
   }
 })
 
@@ -106,28 +104,6 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
   { event: 'status-update', handler: handleStatusUpdate },
   { event: 'schedule-update', handler: handleScheduleUpdate }
 ])
-
-// Recalcule les statistiques à la volée en se basant sur les données de la timeline enrichie.
-const recomputeStats = () => {
-   const finishedPassages = enrichedTimeline.value.filter((p) => p.status === 'FINISHED')
-   const scoredPassages = finishedPassages.filter((p) => typeof p.score === 'number')
-   
-   const totalScore = scoredPassages.reduce((acc, curr) => acc + (curr.score || 0), 0)
-   const finishedCount = finishedPassages.length
-   const scoredCount = scoredPassages.length
-
-   if (details.value) {
-     details.value.stats = {
-       ...details.value.stats,
-       completedPassages: finishedCount,
-       currentTotalScore: scoredCount > 0 ? Number((totalScore / scoredCount).toFixed(2)) : 0
-     }
-   }
-}
-
-watch(enrichedTimeline, () => {
-  recomputeStats()
-}, { deep: true })
 
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && props.isOpen) {
@@ -264,51 +240,17 @@ const cantonDisplay = computed(() => {
               </div>
             </div>
 
-            <div class="flex border-b border-white/10 bg-[#0B1120]/80 backdrop-blur-sm flex-shrink-0" role="tablist">
-              <button
-                @click="activeTab = 'timeline'"
-                :class="[
-                  'flex-1 py-4 px-6 font-semibold transition-colors relative focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none',
-                  activeTab === 'timeline' ? 'text-cyan-400' : 'text-white/60 hover:text-white/80'
-                ]"
-                role="tab"
-                :aria-selected="activeTab === 'timeline'"
-                aria-controls="panel-timeline"
-              >
-                <Icon name="fluent:timeline-24-regular" class="w-5 h-5 inline-block mr-2" />
-                {{ t('group.timeline') }}
-                <div v-if="activeTab === 'timeline'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400" />
-              </button>
-              <button
-                @click="activeTab = 'stats'"
-                :class="[
-                  'flex-1 py-4 px-6 font-semibold transition-colors relative focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none',
-                  activeTab === 'stats' ? 'text-cyan-400' : 'text-white/60 hover:text-white/80'
-                ]"
-                role="tab"
-                :aria-selected="activeTab === 'stats'"
-                aria-controls="panel-stats"
-              >
-                <Icon name="fluent:data-bar-vertical-24-regular" class="w-5 h-5 inline-block mr-2" />
-                {{ t('group.statistics') }}
-                <div v-if="activeTab === 'stats'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-400" />
-              </button>
-            </div>
-
             <div class="flex-1 overflow-y-auto">
-              <div v-show="activeTab === 'timeline'" class="p-6" id="panel-timeline" role="tabpanel">
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                  <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
-                    <Icon name="fluent:checkmark-circle-24-regular" class="w-6 h-6 text-cyan-400 mb-2" />
-                    <div class="text-2xl font-bold text-white leading-none mb-1">
-                      {{ details.stats.completedPassages }} <span class="text-sm text-white/40 font-normal">/ {{ details.stats.totalPassages }}</span>
+              <div class="p-6">
+                <div v-if="details.info.category === 'MIXTE'" class="glass-card p-4 bg-purple-500/5 border border-purple-500/20 mb-6">
+                  <div class="flex items-start gap-3">
+                    <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 class="text-white font-semibold text-sm mb-1">{{ t('group.mixedGroup') }}</h4>
+                      <p class="text-white/60 text-xs">
+                        {{ t('group.mixedGroupInfo') }}
+                      </p>
                     </div>
-                    <div class="text-xs text-white/50">{{ t('group.completedPassages') }}</div>
-                  </div>
-                  <div class="glass-card p-4 flex flex-col items-center justify-center bg-white/5">
-                    <Icon name="fluent:arrow-trending-24-regular" class="w-6 h-6 text-purple-400 mb-2" />
-                    <div class="text-2xl font-bold text-white leading-none mb-1">{{ details.stats.currentTotalScore }}</div>
-                    <div class="text-xs text-white/50">{{ t('group.averageScore') }}</div>
                   </div>
                 </div>
 
@@ -324,20 +266,6 @@ const cantonDisplay = computed(() => {
                     :key="item._id"
                     :item="item"
                   />
-                </div>
-              </div>
-
-              <div v-show="activeTab === 'stats'" class="p-6 space-y-6" id="panel-stats" role="tabpanel">
-                <div v-if="details.info.category === 'MIXTE'" class="glass-card p-4 bg-purple-500/5 border border-purple-500/20">
-                  <div class="flex items-start gap-3">
-                    <Icon name="fluent:people-team-24-regular" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 class="text-white font-semibold text-sm mb-1">{{ t('group.mixedGroup') }}</h4>
-                      <p class="text-white/60 text-xs">
-                        {{ t('group.mixedGroupInfo') }}
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

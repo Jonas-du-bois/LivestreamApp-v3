@@ -93,6 +93,7 @@
   },
   "results": {
     "noResults": "Aucun résultat disponible pour le moment.",
+    "noResultsHint": "Les résultats seront affichés ici dès qu'ils seront disponibles.",
     "podium": "Podium",
     "fullRanking": "Classement complet",
     "noApparatusResults": "Aucun résultat pour cet agrès.",

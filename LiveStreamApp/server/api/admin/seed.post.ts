@@ -7,6 +7,74 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+const SCHEDULE_TIME_ZONE = 'Europe/Zurich';
+
+const getTimeZoneOffsetMs = (date: Date, timeZone: string) => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date);
+
+  const values = Object.fromEntries(
+    parts
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, Number(part.value)])
+  );
+
+  const zonedTimestamp = Date.UTC(
+    values.year,
+    values.month - 1,
+    values.day,
+    values.hour,
+    values.minute,
+    values.second
+  );
+
+  return zonedTimestamp - date.getTime();
+};
+
+const zonedTimeToUtc = (
+  year: number,
+  month: number,
+  day: number,
+  hour: number,
+  minute: number,
+  second: number,
+  timeZone: string
+) => {
+  const utcGuess = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  const offset = getTimeZoneOffsetMs(utcGuess, timeZone);
+  const firstPass = new Date(utcGuess.getTime() - offset);
+  const correctedOffset = getTimeZoneOffsetMs(firstPass, timeZone);
+
+  return new Date(utcGuess.getTime() - correctedOffset);
+};
+
+// cleanedResultats stores Swiss wall-clock times with a trailing "Z".
+// Treat the date/time fields as Europe/Zurich local time instead of true UTC.
+const parseScheduleImportStartTime = (value: string) => {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!match) return new Date(value);
+
+  const [, year, month, day, hour, minute, second = '0'] = match;
+
+  return zonedTimeToUtc(
+    Number(year),
+    Number(month),
+    Number(day),
+    Number(hour),
+    Number(minute),
+    Number(second),
+    SCHEDULE_TIME_ZONE
+  );
+};
+
 export default defineEventHandler(async (event) => {
   // Security: Rate Limit (1 req/10min) to prevent DoS via DB exhaustion
   const ip = getRequestIP(event) || 'unknown';
@@ -94,14 +162,14 @@ export default defineEventHandler(async (event) => {
     const bigHalls = new Map<string, any[]>();
     
     scheduleData.forEach((p: any) => {
-        const startTime = new Date(p.startTime);
+        const startTime = parseScheduleImportStartTime(p.startTime);
         
         let key = "Autre";
         if (p.location.startsWith("Iles")) key = "Iles";
         else if (p.location.startsWith("Léon") || p.location.startsWith("LM")) key = "Léon";
 
-        // Separate by Day as well
-        const dayKey = key + "_" + startTime.getDate();
+        // Separate by local schedule day as well. The imported string encodes a Swiss wall-clock time.
+        const dayKey = `${key}_${String(p.startTime).slice(0, 10)}`;
         
         if (!bigHalls.has(dayKey)) bigHalls.set(dayKey, []);
         bigHalls.get(dayKey)?.push({ ...p, startTime });

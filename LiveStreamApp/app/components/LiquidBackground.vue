@@ -42,11 +42,11 @@ const blobs: Blob[] = [
 </script>
 
 <template>
-  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-[#0B1120] isolate">
     <div
       v-for="blob in blobs"
       :key="blob.id"
-      class="absolute rounded-full blur-3xl animate-blob"
+      class="absolute rounded-full blur-[64px] animate-blob will-change-transform"
       :style="{
         width: `${blob.size}px`,
         height: `${blob.size}px`,
@@ -60,18 +60,21 @@ const blobs: Blob[] = [
 </template>
 
 <style scoped>
+.will-change-transform {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
 @keyframes blob {
   0%, 100% {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
-  25% {
-    transform: translate(50px, -50px) scale(1.1);
+  33% {
+    transform: translate3d(30px, -50px, 0) scale(1.1);
   }
-  50% {
-    transform: translate(-50px, 50px) scale(0.9);
-  }
-  75% {
-    transform: translate(50px, 50px) scale(1.05);
+  66% {
+    transform: translate3d(-20px, 20px, 0) scale(0.9);
   }
 }
 

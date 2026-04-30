@@ -84,7 +84,12 @@ const filterOptions = computed<PassageFilterOptions>(() => ({
 
 const { filteredPassages } = usePassageFilters(passages, filterOptions)
 
-const { list, containerProps, wrapperProps } = useVirtualList(filteredPassages, { itemHeight: 150 })
+// Fix SSR 500 error with useVirtualList
+const vl = import.meta.client 
+  ? useVirtualList(filteredPassages, { itemHeight: 150 })
+  : { list: computed(() => []), containerProps: ref({}), wrapperProps: ref({}) }
+
+const { list, containerProps, wrapperProps } = vl
 
 // ===== Computed Filter Options =====
 const availableDays = computed(() => {

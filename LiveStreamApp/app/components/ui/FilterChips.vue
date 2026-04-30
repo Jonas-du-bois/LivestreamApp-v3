@@ -92,42 +92,32 @@ const focusRingClasses = computed(() => {
 }
 
 .ui-filter-chip--inactive {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: rgb(255 255 255 / 0.62);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .ui-filter-chip--inactive:hover {
-  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.08), rgba(255, 255, 255, 0.08));
-  border-color: rgb(var(--color-secondary-rgb) / 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  box-shadow: 0 0 18px rgb(var(--color-secondary-rgb) / 0.12);
 }
 
 .ui-filter-chip--cyan {
-  background: linear-gradient(135deg, rgb(var(--color-primary-rgb) / 0.96), rgb(var(--color-secondary-rgb) / 0.82));
-  border-color: rgb(var(--color-primary-rgb) / 0.58);
-  color: #ffffff;
-  box-shadow:
-    0 0 20px rgb(var(--color-primary-rgb) / 0.34),
-    0 10px 20px rgb(var(--color-secondary-rgb) / 0.14);
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.3);
+  color: rgb(103, 232, 249); /* cyan-300 */
 }
 
 .ui-filter-chip--violet {
-  background: linear-gradient(135deg, rgb(var(--color-secondary-rgb) / 0.96), rgb(var(--color-primary-rgb) / 0.76));
-  border-color: rgb(var(--color-secondary-rgb) / 0.6);
-  color: #ffffff;
-  box-shadow:
-    0 0 20px rgb(var(--color-secondary-rgb) / 0.34),
-    0 10px 20px rgb(var(--color-primary-rgb) / 0.14);
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: rgb(167, 139, 250); /* violet-400 */
 }
 
 .ui-filter-chip--emerald {
-  background: linear-gradient(135deg, rgb(var(--color-tertiary-rgb) / 0.96), rgb(var(--color-primary-rgb) / 0.82));
-  border-color: rgb(var(--color-tertiary-rgb) / 0.6);
-  color: #ffffff;
-  box-shadow:
-    0 0 20px rgb(var(--color-tertiary-rgb) / 0.3),
-    0 10px 20px rgb(var(--color-primary-rgb) / 0.14);
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: rgb(110, 231, 183); /* emerald-300 */
 }
 </style>
