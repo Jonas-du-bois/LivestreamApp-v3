@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-04-21 - Memory Optimization in Rank Calculation
+**Learning:** Fetching an entire filtered collection into memory with `.find().sort().lean().exec()` and then performing a linear search in Node.js (`findIndex()`) to compute a rank creates a significant N-scale memory bottleneck and slows down response times, especially as the number of finished items grows.
+**Action:** Replace in-memory array manipulation for ranking with direct database-level counting operations: `Model.countDocuments({ score: { $gt: targetScore } })`. This completely offloads the memory overhead to the database and is significantly faster.
