@@ -7,6 +7,7 @@ import type { StreamUpdatePayload, ScoreUpdatePayload } from '../../types/socket
 import type { PassageSearchable } from '../../types/ui'
 import { useAdminAuth } from '../../composables/useAdminAuth'
 import { useSocketRoom } from '../../composables/useSocketRoom'
+import { useVirtualList } from '@vueuse/core'
 import { usePassageFilters, type PassageFilterOptions } from '../../composables/usePassageFilters'
 
 definePageMeta({ header: false, footer: false })
