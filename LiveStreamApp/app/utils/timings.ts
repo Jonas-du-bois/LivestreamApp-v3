@@ -32,6 +32,9 @@ export const COUNTDOWN_TICK = 1_000
  *  clearing the local override and fetching fresh data from the API (ms) */
 export const STATUS_OVERRIDE_DEFER = 8_000
 
+/** Minimum delay between two API refreshes triggered by results websocket events (ms) */
+export const RESULTS_SOCKET_REFRESH_THROTTLE = 1_500
+
 /** Intervalle de polling de l'album Flickr (ms) – vérifie les nouvelles photos de la compétition */
 export const FLICKR_PHOTOS_REFRESH = 60_000 // 1 minute
 

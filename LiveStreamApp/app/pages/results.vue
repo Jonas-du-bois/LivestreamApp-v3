@@ -4,6 +4,7 @@ import type { PassageEnriched } from '~/types/api'
 import type { ScoreUpdatePayload } from '~/types/socket'
 import CascadeSkeletonList from '~/components/loading/CascadeSkeletonList.vue'
 import ResultCard from '~/components/results/ResultCard.vue'
+import { RESULTS_SOCKET_REFRESH_THROTTLE } from '~/utils/timings'
 
 const { t, locale } = useI18n()
 const { translateApparatus, translateCategory } = useTranslatedData()
@@ -32,6 +33,63 @@ const { showSkeleton } = useFirstLoad(pending, resultsResponse)
 // Create a local reactive copy that we can mutate properly
 const resultsMap = ref<Record<string, PassageResult[]>>({})
 const availableDays = useState<string[]>('results-available-days', () => [])
+const DAY_ALL = 'Tout'
+
+const normalizeDayKey = (day?: string | null) => (day || '').toLowerCase().trim()
+
+const getDayFromStartTime = (startTime?: string) => {
+  if (!startTime) return undefined
+  const parsed = new Date(startTime)
+  if (Number.isNaN(parsed.getTime())) return undefined
+  return parsed.toLocaleDateString('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+}
+
+const mergeAvailableDays = (incomingDay?: string) => {
+  if (!incomingDay) return false
+  const incomingKey = normalizeDayKey(incomingDay)
+  if (!incomingKey || incomingKey === normalizeDayKey(DAY_ALL)) return false
+
+  const current = availableDays.value || []
+  if (current.some(day => normalizeDayKey(day) === incomingKey)) return false
+
+  const daysWithoutAll = current.filter(day => normalizeDayKey(day) !== normalizeDayKey(DAY_ALL))
+  availableDays.value = [DAY_ALL, ...daysWithoutAll, incomingDay]
+  return true
+}
+
+const shouldApplyLiveUpdateForSelectedDay = (payloadDay?: string) => {
+  const selectedKey = normalizeDayKey(selectedDay.value)
+  if (!selectedKey || selectedKey === normalizeDayKey(DAY_ALL)) return true
+  if (!payloadDay) return true
+  return normalizeDayKey(payloadDay) === selectedKey
+}
+
+let lastSocketRefreshAt = 0
+let refreshTimer: ReturnType<typeof setTimeout> | null = null
+const requestResultsRefresh = () => {
+  const elapsed = Date.now() - lastSocketRefreshAt
+  const waitMs = RESULTS_SOCKET_REFRESH_THROTTLE - elapsed
+
+  if (waitMs <= 0) {
+    lastSocketRefreshAt = Date.now()
+    void refresh()
+    return
+  }
+
+  if (refreshTimer) return
+  refreshTimer = setTimeout(() => {
+    refreshTimer = null
+    lastSocketRefreshAt = Date.now()
+    void refresh()
+  }, waitMs)
+}
+
+onBeforeUnmount(() => {
+  if (refreshTimer) {
+    clearTimeout(refreshTimer)
+    refreshTimer = null
+  }
+})
 
 // Sync API data to local reactive state
 watch(resultsResponse, (newData) => {
@@ -126,6 +184,14 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
   // Ignore updates that don't match the currently viewed round
   if (data.round && data.round !== selectedRound.value) return
 
+  const payloadDay = getDayFromStartTime(data.startTime)
+  const addedNewDay = mergeAvailableDays(payloadDay)
+  if (addedNewDay) {
+    requestResultsRefresh()
+  }
+
+  if (!shouldApplyLiveUpdateForSelectedDay(payloadDay)) return
+
   // Data payload: { passageId, score, rank, apparatusCode, ... }
   if (!resultsMap.value) return
 
@@ -194,7 +260,7 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
 
   // Handle new entry dynamically (e.g. first score for an apparatus)
   if (!found && data.group && data.apparatus) {
-    const code = data.apparatus.code || (data as any).apparatusCode
+    const code = data.apparatus.code || data.apparatusCode
     
     if (code) {
       console.log('[results] Adding new entry for apparatus:', code, 'Score:', data.score)
@@ -279,10 +345,15 @@ const handleStatusUpdate = (data: ScoreUpdatePayload) => {
   }
 }
 
+const handleScheduleUpdate = () => {
+  requestResultsRefresh()
+}
+
 // Use the new composable for proper socket room management
 useSocketRoom(['live-scores', 'schedule-updates'], [
   { event: 'score-update', handler: handleScoreUpdate },
-  { event: 'status-update', handler: handleStatusUpdate }
+  { event: 'status-update', handler: handleStatusUpdate },
+  { event: 'schedule-update', handler: handleScheduleUpdate }
 ])
 </script>
 
