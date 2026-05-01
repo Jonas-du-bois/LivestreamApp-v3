@@ -146,6 +146,7 @@ export default defineEventHandler(async (event) => {
             groupDocsMap.set(p.groupName, {
                 name: p.groupName,
                 category: p.category,
+                subCategory: p.subCategory,
                 canton: p.canton
             });
         }
@@ -234,12 +235,9 @@ export default defineEventHandler(async (event) => {
 
     // 4. STREAMS
     const definedCameras = [
-        { loc: "Iles 1-2", name: "Iles 1-2", url: "https://www.youtube.com/embed/jfKfPfyJRdk" },
-        { loc: "Iles 2-3", name: "Iles 2-3", url: "https://www.youtube.com/embed/36YnV9STBqc?si=ns2_QOjchVwyyqUL" },
-        // Configuration Samedi
-        { loc: "LM 1", name: "Léon-Michaud 1", url: "https://www.youtube.com/embed/mKCieTImjvU?si=mCOGyTE4VSpU8WVV" },
-        // Configuration Dimanche
-        { loc: "LM 2", name: "Léon-Michaud 2", url: "https://www.youtube.com/embed/AJmaVPfyudQ?si=gkESlR5mbTwNYLaz" }
+        { loc: "Iles 1", name: "Iles 1", url: "https://www.youtube.com/embed/jfKfPfyJRdk" },
+        { loc: "Iles 2", name: "Iles 2", url: "https://www.youtube.com/embed/36YnV9STBqc?si=ns2_QOjchVwyyqUL" },
+        { loc: "LM 1", name: "Léon-Michaud 1", url: "https://www.youtube.com/embed/mKCieTImjvU?si=mCOGyTE4VSpU8WVV" }
     ];
 
     const streamsData = [];

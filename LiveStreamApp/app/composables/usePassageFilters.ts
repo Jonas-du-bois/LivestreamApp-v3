@@ -36,6 +36,7 @@ export interface PassageFilterOptions {
   day?: string
   apparatus?: string
   status?: '' | PassageStatus
+  round?: '' | 'QUALIFIER' | 'FINAL'
   location?: string
   category?: string
   hideFinished?: boolean
@@ -69,6 +70,10 @@ export const usePassageFilters = (
 
     if (opts.status) {
       result = result.filter(p => p.status === opts.status)
+    }
+
+    if (opts.round) {
+      result = result.filter(p => p.round === opts.round)
     }
 
     if (opts.location) {

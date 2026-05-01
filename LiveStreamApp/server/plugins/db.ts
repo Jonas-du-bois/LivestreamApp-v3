@@ -40,8 +40,8 @@ export default defineNitroPlugin(async (nitroApp) => {
     console.log('[db] Connecting to MongoDB (masked):', maskedUri);
     mongoose.connection.on('connected', () => console.log('[db] mongoose connected, readyState=', mongoose.connection.readyState));
     mongoose.connection.on('error', (e) => console.error('[db] mongoose connection error', e));
-    // Use a short server selection timeout to fail fast when DB is unreachable
-    await mongoose.connect(uri!, { serverSelectionTimeoutMS: 5000 });
+    // Provide sufficient server selection timeout to handle slow initial negotiation
+    await mongoose.connect(uri!, { serverSelectionTimeoutMS: 15000 });
     console.log('[db] Connected to MongoDB');
   } catch (err) {
     console.error('[db] Connection error:', err);

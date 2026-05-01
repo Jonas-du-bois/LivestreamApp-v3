@@ -12,6 +12,7 @@ export interface ScoreUpdatePayload {
   passageId: string
   score?: number | null
   status?: PassageStatus
+  round?: 'QUALIFIER' | 'FINAL'
   // For new entries
   group?: EnrichedGroup
   apparatus?: EnrichedApparatus

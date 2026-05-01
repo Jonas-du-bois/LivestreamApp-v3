@@ -19,11 +19,23 @@ const notificationsStore = useNotificationsStore()
 const passwordInput = ref('')
 
 // ===== UI State =====
-const activeView = ref<'passages' | 'streams'>('passages')
+const activeView = ref<'passages' | 'streams' | 'finals'>('passages')
 const showAdvancedFilters = ref(false)
 const showMobileMenu = ref(false)
 const isReseeding = ref(false)
+const isGeneratingFinals = ref(false)
 const isHeaderCollapsed = ref(false)
+
+// Finals Generation State
+const finalsForm = ref({
+  apparatusId: '',
+  category: '',
+  qualifiersCount: 3,
+  startTime: '',
+  intervalMinutes: 8,
+  location: ''
+})
+const finalsResult = ref<{ success: boolean; message: string } | null>(null)
 const searchQuery = ref('')
 const debouncedSearchQuery = ref('')
 const searchCategory = ref<'all' | 'group' | 'apparatus' | 'location'>('all')
@@ -49,6 +61,7 @@ const advancedFilters = ref({
   onlyWithScore: false,
   onlyWithoutScore: false,
   status: '' as '' | PassageStatus,
+  round: '' as '' | 'QUALIFIER' | 'FINAL',
   location: '',
   category: ''
 })
@@ -66,6 +79,46 @@ const handleForceRefresh = () => {
   refreshTrigger.value++
 }
 
+const handleGenerateFinals = async () => {
+  if (!finalsForm.value.apparatusId || !finalsForm.value.startTime) {
+    finalsResult.value = { success: false, message: 'Veuillez remplir les champs obligatoires (Engin et Heure).' }
+    return
+  }
+
+  isGeneratingFinals.value = true
+  finalsResult.value = null
+  
+  try {
+    const res = await AdminService.generateFinals({
+      ...finalsForm.value,
+      // Pass the date string directly or format it if needed
+    })
+    
+    if (res.success) {
+      finalsResult.value = { success: true, message: res.message }
+      handleForceRefresh()
+    } else {
+      finalsResult.value = { success: false, message: res.message || 'Erreur lors de la génération.' }
+    }
+  } catch (err: any) {
+    finalsResult.value = { success: false, message: err.data?.statusMessage || 'Une erreur est survenue.' }
+  } finally {
+    isGeneratingFinals.value = false
+  }
+}
+
+const handleMigrateRounds = async () => {
+  try {
+    const res = await AdminService.migrateRounds()
+    if (res.success) {
+      alert(res.message)
+      handleForceRefresh()
+    }
+  } catch (err) {
+    alert('Erreur lors de la migration.')
+  }
+}
+
 const passages = shallowRef<PassageEnriched[]>([])
 const streams = shallowRef<Stream[]>([])
 
@@ -76,6 +129,7 @@ const filterOptions = computed<PassageFilterOptions>(() => ({
   day: selectedDay.value,
   apparatus: selectedApparatus.value,
   status: advancedFilters.value.status,
+  round: advancedFilters.value.round,
   location: advancedFilters.value.location,
   category: advancedFilters.value.category,
   hideFinished: advancedFilters.value.hideFinished,
@@ -357,6 +411,11 @@ const getStatusIcon = (status?: PassageStatus) => {
   }
 }
 
+const formatPassageDay = (date: Date | string) => {
+  const d = new Date(date)
+  return d.toLocaleDateString(locale.value, { weekday: 'short', timeZone: 'Europe/Zurich' }).toUpperCase().replace('.', '')
+}
+
 const formatPassageTime = (date: Date | string) => {
   const dateStr = typeof date === 'string' ? date : date.toISOString()
   return formatLocalizedTime(dateStr)
@@ -370,6 +429,7 @@ const clearAllFilters = () => {
     onlyWithScore: false,
     onlyWithoutScore: false,
     status: '',
+    round: '',
     location: '',
     category: ''
   }
@@ -382,8 +442,8 @@ const hasActiveFilters = computed(() => {
   return selectedDay.value || selectedApparatus.value || 
          advancedFilters.value.hideFinished || advancedFilters.value.onlyWithScore ||
          advancedFilters.value.onlyWithoutScore || advancedFilters.value.status ||
-         advancedFilters.value.location || advancedFilters.value.category ||
-         searchQuery.value.trim()
+         advancedFilters.value.round || advancedFilters.value.location || 
+         advancedFilters.value.category || searchQuery.value.trim()
 })
 </script>
 
@@ -478,6 +538,14 @@ const hasActiveFilters = computed(() => {
                   <Icon name="fluent:video-24-regular" class="w-4 h-4 inline mr-2" />
                   {{ t('admin.streamsView') }}
                 </button>
+                <button
+                  @click="activeView = 'finals'"
+                  class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                  :class="activeView === 'finals' ? 'bg-white/20 text-white shadow-sm' : 'text-white/60 hover:text-white'"
+                >
+                  <Icon name="fluent:trophy-24-regular" class="w-4 h-4 inline mr-2" />
+                  Finales
+                </button>
               </div>
               
               <!-- Language Toggle -->
@@ -561,22 +629,30 @@ const hasActiveFilters = computed(() => {
           <div v-if="showMobileMenu" @click.stop class="md:hidden border-t border-white/10 bg-slate-900/95 backdrop-blur-xl">
             <div class="px-4 py-4 space-y-3">
               <!-- View Toggle Mobile -->
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-3 gap-2">
                 <button
                   @click="activeView = 'passages'; showMobileMenu = false"
-                  class="px-4 py-3 rounded-xl text-sm font-medium transition-all"
+                  class="px-2 py-3 rounded-xl text-[10px] font-medium transition-all"
                   :class="activeView === 'passages' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-white/5 text-white/60'"
                 >
                   <Icon name="fluent:people-team-24-regular" class="w-5 h-5 mx-auto mb-1" />
-                  {{ t('admin.passagesView') }}
+                  Passages
                 </button>
                 <button
                   @click="activeView = 'streams'; showMobileMenu = false"
-                  class="px-4 py-3 rounded-xl text-sm font-medium transition-all"
+                  class="px-2 py-3 rounded-xl text-[10px] font-medium transition-all"
                   :class="activeView === 'streams' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-white/5 text-white/60'"
                 >
                   <Icon name="fluent:video-24-regular" class="w-5 h-5 mx-auto mb-1" />
-                  {{ t('admin.streamsView') }}
+                  Streams
+                </button>
+                <button
+                  @click="activeView = 'finals'; showMobileMenu = false"
+                  class="px-2 py-3 rounded-xl text-[10px] font-medium transition-all"
+                  :class="activeView === 'finals' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30' : 'bg-white/5 text-white/60'"
+                >
+                  <Icon name="fluent:trophy-24-regular" class="w-5 h-5 mx-auto mb-1" />
+                  Finales
                 </button>
               </div>
               
@@ -717,6 +793,16 @@ const hasActiveFilters = computed(() => {
                     <option v-for="cat in availableCategories" :key="cat" :value="cat" class="bg-slate-800">{{ translateCategory(cat) }}</option>
                   </select>
                 </div>
+
+                <!-- Round Filter -->
+                <div>
+                  <label class="block text-xs font-medium text-white/60 mb-2">Round</label>
+                  <select v-model="advancedFilters.round" class="select-modern w-full text-sm">
+                    <option value="" class="bg-slate-800">Tous les rounds</option>
+                    <option value="QUALIFIER" class="bg-slate-800">Qualifications</option>
+                    <option value="FINAL" class="bg-slate-800">Finales</option>
+                  </select>
+                </div>
               </div>
               
               <!-- Toggle Filters -->
@@ -814,13 +900,13 @@ const hasActiveFilters = computed(() => {
                   <!-- Time Badge -->
                   <div class="flex-shrink-0 text-center min-w-[70px]">
                     <div class="text-xs font-medium text-white/50 mb-1">
-                      {{ formatPassageTime(passage.startTime).split(' ')[0] }}
+                      {{ formatPassageDay(passage.startTime) }}
                     </div>
                     <div class="text-2xl font-bold text-cyan-300">
-                      {{ formatPassageTime(passage.startTime).split(' ')[1] }}
+                      {{ formatPassageTime(passage.startTime) }}
                     </div>
                     <div class="text-xs text-white/30 mt-1">
-                      {{ formatPassageTime(passage.endTime).split(' ')[1] }}
+                      {{ formatPassageTime(passage.endTime) }}
                     </div>
                   </div>
                   
@@ -837,6 +923,9 @@ const hasActiveFilters = computed(() => {
                       <span v-if="passage.group.category" class="text-white/30">•</span>
                       <span v-if="passage.group.category" class="px-2 py-0.5 rounded-full bg-white/10 text-white/50 text-xs">
                         {{ translateCategory(passage.group.category) }}
+                      </span>
+                      <span v-if="passage.round === 'FINAL'" class="px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 text-[10px] font-bold uppercase tracking-wider">
+                        FINALE
                       </span>
                     </div>
                   </div>
@@ -928,6 +1017,150 @@ const hasActiveFilters = computed(() => {
                 </article>
               </div>
             </template>
+          </div>
+
+          <!-- Finals View -->
+          <div v-if="activeView === 'finals'" class="max-w-3xl mx-auto py-6">
+            <div class="glass-card p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl">
+              <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                  <Icon name="fluent:trophy-24-filled" class="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-white">Générateur de Finales</h2>
+                  <p class="text-white/40 text-sm">Créez automatiquement les passages de finale basés sur les résultats des qualifications.</p>
+                </div>
+              </div>
+
+              <div class="space-y-6">
+                <!-- Form Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Apparatus -->
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium text-white/60 ml-1">Engin <span class="text-red-400">*</span></label>
+                    <select 
+                      v-model="finalsForm.apparatusId"
+                      class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all appearance-none"
+                    >
+                      <option value="" disabled selected>Sélectionner un engin</option>
+                      <option 
+                        v-for="app in availableApparatus" 
+                        :key="app.code" 
+                        :value="passages.find(p => p.apparatus.code === app.code)?.apparatus._id"
+                      >
+                        {{ translateApparatus(app.code, app.name) }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Category -->
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium text-white/60 ml-1">Catégorie (Optionnel)</label>
+                    <select 
+                      v-model="finalsForm.category"
+                      class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all appearance-none"
+                    >
+                      <option value="">Toutes les catégories</option>
+                      <option v-for="cat in availableCategories" :key="cat" :value="cat">
+                        {{ translateCategory(cat) }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Qualifiers Count -->
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium text-white/60 ml-1">Nombre de finalistes</label>
+                    <div class="flex items-center gap-3">
+                      <input 
+                        v-model.number="finalsForm.qualifiersCount"
+                        type="number"
+                        min="1"
+                        max="20"
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all"
+                      />
+                      <div class="flex flex-col gap-1">
+                        <button @click="finalsForm.qualifiersCount++" class="p-1 hover:bg-white/10 rounded-lg text-white/40"><Icon name="fluent:chevron-up-24-regular" /></button>
+                        <button @click="finalsForm.qualifiersCount = Math.max(1, finalsForm.qualifiersCount - 1)" class="p-1 hover:bg-white/10 rounded-lg text-white/40"><Icon name="fluent:chevron-down-24-regular" /></button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Start Time -->
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium text-white/60 ml-1">Heure de début <span class="text-red-400">*</span></label>
+                    <input 
+                      v-model="finalsForm.startTime"
+                      type="datetime-local"
+                      class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all [color-scheme:dark]"
+                    />
+                  </div>
+
+                  <!-- Interval -->
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium text-white/60 ml-1">Intervalle (minutes)</label>
+                    <input 
+                      v-model.number="finalsForm.intervalMinutes"
+                      type="number"
+                      class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all"
+                    />
+                  </div>
+
+                  <!-- Location -->
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium text-white/60 ml-1">Lieu (Optionnel)</label>
+                    <input 
+                      v-model="finalsForm.location"
+                      type="text"
+                      placeholder="Ex: Salle Principale"
+                      class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <!-- Feedback Message -->
+                <Transition name="fade">
+                  <div v-if="finalsResult" :class="finalsResult.success ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'" class="p-4 rounded-2xl border text-sm flex items-center gap-3">
+                    <Icon :name="finalsResult.success ? 'fluent:checkmark-circle-24-regular' : 'fluent:error-circle-24-regular'" class="w-5 h-5 flex-shrink-0" />
+                    {{ finalsResult.message }}
+                  </div>
+                </Transition>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                  <button 
+                    @click="handleGenerateFinals"
+                    :disabled="isGeneratingFinals"
+                    class="flex-1 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Icon v-if="isGeneratingFinals" name="svg-spinners:ring-resize" class="w-5 h-5" />
+                    <Icon v-else name="fluent:flash-24-filled" class="w-5 h-5" />
+                    Générer les Finales
+                  </button>
+
+                  <button 
+                    @click="handleMigrateRounds"
+                    class="px-6 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 text-sm font-medium border border-white/10 transition-all"
+                  >
+                    Migrer les anciens passages
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-8 pt-8 border-t border-white/5">
+                <h4 class="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">Règles de génération</h4>
+                <ul class="space-y-2">
+                  <li class="text-xs text-white/40 flex gap-2">
+                    <span class="text-orange-500">•</span> Seuls les passages <strong>publiés</strong> avec une note sont pris en compte.
+                  </li>
+                  <li class="text-xs text-white/40 flex gap-2">
+                    <span class="text-orange-500">•</span> Les finalistes sont triés du score le plus bas au plus haut (le meilleur passe en dernier).
+                  </li>
+                  <li class="text-xs text-white/40 flex gap-2">
+                    <span class="text-orange-500">•</span> Un nouveau passage est créé pour chaque finaliste avec le round "FINAL".
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
           
           <!-- Streams View -->

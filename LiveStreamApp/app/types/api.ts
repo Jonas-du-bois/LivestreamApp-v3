@@ -16,6 +16,7 @@ export interface Group {
 }
 
 export type PassageStatus = 'SCHEDULED' | 'LIVE' | 'FINISHED';
+export type PassageRound = 'QUALIFIER' | 'FINAL';
 
 export interface Passage {
   _id?: string;
@@ -27,6 +28,7 @@ export interface Passage {
   score: number | null;
   isPublished?: boolean;
   status?: PassageStatus;
+  round?: PassageRound;
 }
 
 export interface Stream {
@@ -120,6 +122,7 @@ export interface TimelineEntry {
   startTime: string;
   endTime: string;
   status: PassageStatus;
+  round?: PassageRound;
   score?: number;
   location?: string;
 }

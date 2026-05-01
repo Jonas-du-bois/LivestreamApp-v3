@@ -34,5 +34,25 @@ export const AdminService = {
     return apiClient<{ success: boolean; summary?: any; error?: string }>('/admin/seed', {
       method: 'POST'
     })
+  },
+
+  generateFinals(payload: { 
+    apparatusId: string; 
+    category?: string; 
+    qualifiersCount: number; 
+    startTime: string; 
+    intervalMinutes: number; 
+    location?: string 
+  }) {
+    return apiClient<{ success: boolean; message: string; data?: any }>('/admin/finals-generate', {
+      method: 'POST',
+      body: payload
+    })
+  },
+
+  migrateRounds() {
+    return apiClient<{ success: boolean; message: string }>('/admin/migrate-rounds', {
+      method: 'POST'
+    })
   }
 }

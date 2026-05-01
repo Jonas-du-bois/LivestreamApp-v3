@@ -86,7 +86,7 @@ const selectDay = (day: string) => {
     >
       <!-- Pillule animée (Sliding background) -->
       <div 
-        class="days-switcher__thumb absolute top-0 bottom-0 left-0 rounded-[10px] transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0"
+        class="days-switcher__thumb absolute top-0 bottom-0 left-0 rounded-full transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0"
         :style="{ 
           width: indicatorStyle.width, 
           transform: indicatorStyle.transform,
@@ -116,7 +116,7 @@ const selectDay = (day: string) => {
   <!-- Fallback Skeleton -->
   <div v-else class="glass-card days-switcher p-1.5 flex items-center shadow-lg animate-pulse">
     <div class="relative flex w-full h-[44px] bg-white/5 rounded-full overflow-hidden">
-      <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent shimmer-animation"></div>
+      <div class="absolute inset-0 -translate-x-full rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent shimmer-animation"></div>
     </div>
   </div>
 </template>
@@ -132,6 +132,7 @@ const selectDay = (day: string) => {
 
 .days-switcher {
   border-radius: 9999px;
+  overflow: hidden;
   background: rgba(15, 23, 42, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(16px);
@@ -161,6 +162,3 @@ const selectDay = (day: string) => {
   100% { transform: translateX(100%); }
 }
 </style>
-
-
-

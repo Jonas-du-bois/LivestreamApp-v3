@@ -9,9 +9,12 @@ export default defineCachedEventHandler(async (event) => {
   if (Array.isArray(dayFilter)) dayFilter = dayFilter[0];
   if (typeof dayFilter !== 'string') dayFilter = undefined;
 
+  let roundFilter = query.round;
+  if (Array.isArray(roundFilter)) roundFilter = roundFilter[0];
+  if (typeof roundFilter !== 'string') roundFilter = undefined;
+
   try {
-    // 1. Metadata: Available Days
-    // BOLT: Extract query-independent data fetching logic to cached function
+    // 1. Metadata: Available Days & Rounds
     const dayAggregation = await getCachedAvailablePublishedDays();
 
     const dayMap = new Map<string, string[]>();
@@ -20,32 +23,48 @@ export default defineCachedEventHandler(async (event) => {
     dayAggregation.forEach((d: any) => {
       if (!d.sampleDate) return;
       const date = new Date(d.sampleDate);
-      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' });
       const key = dayName.toLowerCase();
       availableDaysSet.add(dayName);
       if (!dayMap.has(key)) dayMap.set(key, []);
       dayMap.get(key)?.push(d._id);
     });
 
-    const availableDays = Array.from(availableDaysSet);
+    const availableDays = ['Tout', ...Array.from(availableDaysSet)];
 
-    // 2. Build Filter Query
-    const matchQuery: any = { isPublished: true };
+    // Default to 'Tout' if none provided
+    let activeDay = dayFilter;
+    if (!activeDay) {
+      activeDay = 'Tout';
+    }
 
-    if (dayFilter && dayFilter !== 'Tout') {
-      const targetDateStrings = dayMap.get(dayFilter.toLowerCase());
+    // Check if any finals are published for the ACTIVE DAY to decide default round
+    let dayStartTimeFilter: any = null;
+    if (activeDay && activeDay !== 'Tout') {
+      const targetDateStrings = dayMap.get(activeDay.toLowerCase());
       if (targetDateStrings && targetDateStrings.length > 0) {
         const ranges = targetDateStrings.map((ds: string) => {
-          const start = new Date(`${ds}T00:00:00.000Z`);
-          const end = new Date(`${ds}T23:59:59.999Z`);
+          const start = new Date(`${ds}T00:00:00.000+02:00`); // CEST is +02:00 in May
+          const end = new Date(`${ds}T23:59:59.999+02:00`);
           return { startTime: { $gte: start, $lte: end } };
         });
-        if (ranges.length === 1 && ranges[0]) {
-          matchQuery.startTime = ranges[0].startTime;
-        } else {
-          matchQuery.$or = ranges;
-        }
+        dayStartTimeFilter = ranges.length === 1 ? ranges[0] : { $or: ranges };
       }
+    }
+
+    const hasFinals = await PassageModel.exists({ 
+      round: 'FINAL', 
+      isPublished: true,
+      ...(dayStartTimeFilter ? dayStartTimeFilter : {})
+    });
+
+    const defaultRound = hasFinals ? 'FINAL' : 'QUALIFIER';
+    const activeRound = roundFilter || defaultRound;
+
+    // 2. Build Filter Query
+    const matchQuery: any = { isPublished: true, round: activeRound };
+    if (dayStartTimeFilter) {
+      Object.assign(matchQuery, dayStartTimeFilter);
     }
 
     // 3. Aggregation Pipeline
@@ -60,7 +79,7 @@ export default defineCachedEventHandler(async (event) => {
           localField: 'group',
           foreignField: '_id',
           pipeline: [
-            { $project: { _id: 1, name: 1, category: 1, canton: 1, logo: 1 } }
+            { $project: { _id: 1, name: 1, category: 1, subCategory: 1, canton: 1, logo: 1 } }
           ],
           as: 'group'
         }
@@ -115,27 +134,55 @@ export default defineCachedEventHandler(async (event) => {
        const appInfo = item.apparatusInfo;
        const code = appInfo.code;
 
-       grouped[code] = item.passages.map((p: any, index: number) => ({
-         ...p,
-         group: (p.group && p.group._id) ? p.group : null,
-         apparatus: appInfo,
-         rank: index + 1
-       }));
+       // Group by category locally to assign proper ranks
+       const categoryMap = new Map<string, any[]>();
+       item.passages.forEach((p: any) => {
+         const cat = p.group?.subCategory || p.group?.category || 'Sans catégorie';
+         if (!categoryMap.has(cat)) categoryMap.set(cat, []);
+         categoryMap.get(cat)!.push({
+           ...p,
+           group: (p.group && p.group._id) ? p.group : null,
+           apparatus: appInfo
+         });
+       });
+
+       const finalPassages: any[] = [];
+       // For each category, assign rank (they are already sorted by score)
+       for (const [cat, passList] of categoryMap.entries()) {
+         passList.forEach((p, index) => {
+           p.rank = index + 1;
+           finalPassages.push(p);
+         });
+       }
+
+       grouped[code] = finalPassages;
     });
 
     return {
       meta: {
-        availableDays
+        availableDays,
+        activeDay,
+        activeRound,
+        hasFinals
       },
       data: grouped
     };
 
   } catch (err) {
     console.error('[results] Error fetching results', err);
-    throw createError({ statusCode: 500, statusMessage: 'Failed to fetch results' });
+    throw createError({ statusCode: 500, statusMessage: 'Failed to fetch results: ' + err });
   }
 }, {
   maxAge: RESULTS_CACHE_MAX_AGE,
   swr: true,
-  name: 'api-results-v2'
+  name: 'api-results-v2',
+  getKey: (event) => {
+    const day = getQuery(event).day;
+    const round = getQuery(event).round;
+    return `results-${day ? String(day).toLowerCase() : 'all'}-${round || 'QUALIFIER'}`;
+  },
+  shouldBypassCache(event) {
+    const query = getQuery(event);
+    return !!query._t || !!query.server;
+  }
 });

@@ -119,8 +119,8 @@ export const useApiClient = <T>(
   // En setup() : useFetch gère le SSR/hydratation
   return useFetch<T>(url, {
     baseURL: apiBase,
-    // SPA/Capacitor (ssr: false) : fetch côté client uniquement
-    server: false,
+    // SPA/Capacitor (ssr: false) : fetch côté client uniquement par défaut
+    server: options.server ?? false,
     // Ignore le cache de payload pré-rendu (données vides au build)
     getCachedData: () => undefined,
     ...options,

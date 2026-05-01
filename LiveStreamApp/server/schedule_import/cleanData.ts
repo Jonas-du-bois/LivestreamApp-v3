@@ -109,12 +109,22 @@ const cleanData = () => {
 
         // 2. Mapping
         const apparatusCode = APPARATUS_MAP[rawDiscipline] || rawDiscipline;
-        const category = CATEGORY_MAP[rawCategorie] || 'ACTIFS';
+        let category = CATEGORY_MAP[rawCategorie] || 'ACTIFS';
+        let subCategory = category;
+        
+        // La catégorie mixte englobe Jeunesse A et Jeunesse B
+        if (category === 'JEUNESSE_A' || category === 'JEUNESSE_B') {
+            subCategory = category;
+            category = 'MIXTE';
+        }
+
         const canton = extractCanton(societe);
         const location = `${item.Lieu1} ${item.Lieu2}`.trim();
 
         // 3. Attribution des dates (9 mai ou 10 mai)
-        const isSaturday = category === 'ACTIFS' || category === 'MIXTE';
+        // Le samedi est réservé aux ACTIFS uniquement. 
+        // Le dimanche est pour les catégories Jeunesse (A, B) qui sont devenues MIXTE.
+        const isSaturday = category === 'ACTIFS';
         const dateStr = isSaturday ? '2026-05-09' : '2026-05-10';
         
         const timeStr = item.Horaire.trim().replace(' ', ''); // "14: 15" -> "14:15"
@@ -125,6 +135,7 @@ const cleanData = () => {
             societe,
             groupe,
             category,
+            subCategory,
             canton,
             apparatusCode,
             location,

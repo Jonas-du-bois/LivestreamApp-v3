@@ -85,7 +85,13 @@ const handleFavoriteToggle = (event: Event) => {
 
       <div class="passage-content">
         <h4 class="passage-group">{{ groupName }}</h4>
-        <span class="passage-apparatus">{{ translatedApparatus }}</span>
+        <div class="flex items-center gap-2">
+          <span class="passage-apparatus">{{ translatedApparatus }}</span>
+          <span v-if="isFinal" class="px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[9px] font-bold uppercase tracking-wider flex items-center gap-1">
+            <Icon name="fluent:trophy-12-filled" class="w-3 h-3" />
+            Finale
+          </span>
+        </div>
       </div>
 
       <div class="passage-actions" :class="{ 'has-live': isLive }">

@@ -116,6 +116,7 @@ export default defineEventHandler(async (event) => {
     const payload = {
       passageId: passage._id,
       status: passage.status,
+      round: passage.round,
       location,
       groupName: (passage.group as any)?.name || null,
       group: passage.group,

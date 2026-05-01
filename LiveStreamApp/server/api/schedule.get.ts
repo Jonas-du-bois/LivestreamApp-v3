@@ -122,7 +122,7 @@ export default defineCachedEventHandler(async (event) => {
     }
 
     const passages = await PassageModel.find(dbQuery)
-      .select('startTime endTime location status score group apparatus')
+      .select('startTime endTime location status score group apparatus round isPublished')
       .populate('group', 'name category canton logo')
       .populate('apparatus', 'name code icon')
       .sort({ startTime: 1 }) // Sorting at DB level
@@ -149,7 +149,9 @@ export default defineCachedEventHandler(async (event) => {
       endTime: p.endTime,
       location: p.location,
       status: p.status,
-      score: p.score
+      score: p.score,
+      round: p.round,
+      isPublished: p.isPublished
     }));
 
     return {
@@ -169,5 +171,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
   swr: true,
   maxAge: SCHEDULE_CACHE_MAX_AGE,
-  staleMaxAge: SCHEDULE_CACHE_STALE_MAX_AGE
+  staleMaxAge: SCHEDULE_CACHE_STALE_MAX_AGE,
+  shouldBypassCache(event) {
+    // Bypass cache if _t parameter is present (used by admin dashboard)
+    const query = getQuery(event);
+    return !!query._t || !!query.server;
+  }
 });

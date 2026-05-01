@@ -36,8 +36,11 @@ const statusLabel = computed(() => {
     >
       <div class="flex justify-between items-start gap-3">
         <div class="min-w-0 flex-1">
-          <div class="font-bold text-white text-lg leading-tight mb-0.5 truncate">
+          <div class="font-bold text-white text-lg leading-tight mb-0.5 truncate flex items-center gap-2">
             {{ translateApparatus(item.apparatus?.code, item.apparatus?.name) }}
+            <span v-if="item.round === 'FINAL'" class="px-1.5 py-0.5 rounded-sm bg-orange-500/20 text-orange-300 border border-orange-500/30 text-[10px] font-bold uppercase tracking-wider">
+              FINALE
+            </span>
           </div>
           <div class="text-xs text-white/50 flex items-center gap-1.5 flex-wrap">
             <div class="flex items-center gap-1">

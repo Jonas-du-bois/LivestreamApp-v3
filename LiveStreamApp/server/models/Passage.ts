@@ -3,6 +3,9 @@ import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 export const PASSAGE_STATUS = ['SCHEDULED', 'LIVE', 'FINISHED'] as const;
 export type PassageStatus = typeof PASSAGE_STATUS[number];
 
+export const PASSAGE_ROUND = ['QUALIFIER', 'FINAL'] as const;
+export type PassageRound = typeof PASSAGE_ROUND[number];
+
 export interface IPassage extends Document {
   group: Types.ObjectId;
   apparatus: Types.ObjectId;
@@ -12,6 +15,7 @@ export interface IPassage extends Document {
   score?: number;
   isPublished?: boolean;
   status?: PassageStatus;
+  round?: PassageRound;
   // Tracking pour éviter les notifications en double
   notifiedAt15?: Date;  // Notification 15 min avant
   notifiedAt3?: Date;   // Notification 3 min avant
@@ -27,6 +31,7 @@ const PassageSchema = new Schema<IPassage>(
     score: { type: Number, min: 0, max: 10, default: null },
     isPublished: { type: Boolean, default: false },
     status: { type: String, enum: [...PASSAGE_STATUS], default: 'SCHEDULED' },
+    round: { type: String, enum: [...PASSAGE_ROUND], default: 'QUALIFIER', index: true },
     // Tracking pour éviter les notifications en double
     notifiedAt15: { type: Date, default: null },
     notifiedAt3: { type: Date, default: null },
@@ -35,11 +40,11 @@ const PassageSchema = new Schema<IPassage>(
 );
 
 // Compound indexes for frequent queries
-PassageSchema.index({ status: 1, isPublished: 1 });
-PassageSchema.index({ apparatus: 1, status: 1, isPublished: 1 });
+PassageSchema.index({ status: 1, isPublished: 1, round: 1 });
+PassageSchema.index({ apparatus: 1, status: 1, isPublished: 1, round: 1 });
 // Optimizations for score sorting and rank calculation
-PassageSchema.index({ isPublished: 1, score: -1 });
-PassageSchema.index({ apparatus: 1, isPublished: 1, score: -1 });
+PassageSchema.index({ isPublished: 1, round: 1, score: -1 });
+PassageSchema.index({ apparatus: 1, isPublished: 1, round: 1, score: -1 });
 
 // Optimizations for Schedule Filtering (Apparatus/Location/Group + Time Range)
 PassageSchema.index({ apparatus: 1, startTime: 1 });

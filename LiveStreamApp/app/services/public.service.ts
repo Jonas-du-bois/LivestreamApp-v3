@@ -6,7 +6,7 @@ export const PublicService = {
   getSchedule(filters?: MaybeRef<{ day?: string; apparatus?: string | string[]; division?: string | string[]; salle?: string | string[]; [key: string]: any }>, opts?: { key?: string }) {
     return useApiClient<ScheduleResponse>('/schedule', {
       query: filters,
-      key: opts?.key || ('schedule-' + JSON.stringify(toValue(filters) || {}))
+      ...(opts?.key ? { key: opts.key } : {})
     })
   },
 
@@ -16,11 +16,11 @@ export const PublicService = {
     })
   },
 
-  getResults(options: UseFetchOptions<any> & { day?: MaybeRef<string> } = {}) {
+  getResults(options: UseFetchOptions<any> & { day?: MaybeRef<string>; round?: MaybeRef<string> } = {}) {
     return useApiClient<any>('/results', {
-      key: 'results-' + JSON.stringify(toValue(options.day) || 'all'),
       query: computed(() => ({
-        day: toValue(options.day) || undefined
+        day: toValue(options.day) || undefined,
+        round: toValue(options.round) || undefined
       })),
       ...options
     })
@@ -29,7 +29,6 @@ export const PublicService = {
   getStreams(filters?: MaybeRef<{ isLive?: boolean; [key: string]: any }>) {
     return useApiClient<Stream[]>('/streams', {
       query: filters,
-      key: 'streams-' + JSON.stringify(toValue(filters) || {}),
       getCachedData: () => undefined // Disable cache for real-time data
     })
   },

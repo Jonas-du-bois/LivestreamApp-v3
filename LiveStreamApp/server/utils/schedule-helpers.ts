@@ -6,7 +6,7 @@ export const getCachedAvailableDays = defineCachedFunction(async () => {
   return await PassageModel.aggregate([
     {
       $group: {
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$startTime", timezone: "Europe/Zurich" } },
         sampleDate: { $first: "$startTime" }
       }
     },
@@ -23,7 +23,7 @@ export const getCachedAvailablePublishedDays = defineCachedFunction(async () => 
     { $match: { isPublished: true } },
     {
       $group: {
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$startTime" } },
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$startTime", timezone: "Europe/Zurich" } },
         sampleDate: { $first: "$startTime" }
       }
     },

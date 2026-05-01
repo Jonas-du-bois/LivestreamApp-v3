@@ -4,6 +4,7 @@ export interface IGroup extends Document {
   name: string;
   canton?: string;
   category?: string;
+  subCategory?: string;
   logo?: string;
   description?: string;
 }
@@ -15,6 +16,7 @@ const GroupSchema = new Schema<IGroup>(
     canton: { type: String, index: true },
     logo: { type: String },
     category: { type: String, index: true },
+    subCategory: { type: String, index: true },
   },
   { timestamps: true }
 );

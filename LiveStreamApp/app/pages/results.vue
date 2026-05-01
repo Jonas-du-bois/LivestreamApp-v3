@@ -15,11 +15,13 @@ const { open: openGroupDetails } = useGroupDetails()
 
 // Active day state
 const selectedDay = useState<string>('results-selected-day', () => '')
+// Active round state
+const selectedRound = useState<'QUALIFIER' | 'FINAL'>('results-selected-round', () => 'QUALIFIER')
 
 // Fetch data from API with caching to avoid refetch on tab clicks
 const { data: resultsResponse, pending, refresh } = await PublicService.getResults({
   day: selectedDay,
-  watch: [locale, selectedDay],
+  round: selectedRound,
   server: true,
   lazy: false
 })
@@ -29,20 +31,30 @@ const { showSkeleton } = useFirstLoad(pending, resultsResponse)
 
 // Create a local reactive copy that we can mutate properly
 const resultsMap = ref<Record<string, PassageResult[]>>({})
-const availableDays = computed(() => resultsResponse.value?.meta?.availableDays || [])
+const availableDays = useState<string[]>('results-available-days', () => [])
 
 // Sync API data to local reactive state
 watch(resultsResponse, (newData) => {
   if (newData?.data) {
-    // Deep clone to ensure full reactivity
-    resultsMap.value = structuredClone(toRaw(newData.data))
+    // Deep clone to ensure full reactivity safely
+    resultsMap.value = JSON.parse(JSON.stringify(newData.data))
 
-    // Initialize selected day if not set
-    if (!selectedDay.value && newData.meta?.availableDays?.length) {
-      selectedDay.value = newData.meta.availableDays[0]
+    // Initialize selected day if not set, using the activeDay from API
+    if (!selectedDay.value && newData.meta?.activeDay) {
+      selectedDay.value = newData.meta.activeDay
+    }
+
+    // Initialize round if not set or switch to final if available
+    if (newData.meta?.activeRound) {
+      selectedRound.value = newData.meta.activeRound
+    }
+
+    // Persist available days list
+    if (newData.meta?.availableDays?.length) {
+      availableDays.value = newData.meta.availableDays
     }
   }
-}, { immediate: true, deep: true })
+}, { immediate: true })
 
 // Active tab state
 const activeTab = useState<string | null>('results-active-tab', () => null)
@@ -72,21 +84,38 @@ watch(resultsSections, (sections) => {
   }
 }, { immediate: true })
 
+// Reset to QUALIFIER if switching to Dimanche, as there are no finals on Sunday
+watch(selectedDay, (newDay) => {
+  if (newDay && newDay.toLowerCase() === 'dimanche' && selectedRound.value === 'FINAL') {
+    selectedRound.value = 'QUALIFIER'
+  }
+})
+
 // Get current active section
 const activeSection = computed(() => {
   return resultsSections.value.find(s => s.code === activeTab.value)
 })
 
-// Get podium (top 3)
-const podiumResults = computed(() => {
+// Computed grouping by category/subCategory
+const categoriesRanking = computed(() => {
   if (!activeSection.value) return []
-  return activeSection.value.results.slice(0, 3)
-})
+  
+  const catMap = new Map<string, PassageResult[]>()
+  activeSection.value.results.forEach(p => {
+    const cat = p.group?.subCategory || p.group?.category || 'Sans catégorie'
+    if (!catMap.has(cat)) catMap.set(cat, [])
+    catMap.get(cat)!.push(p)
+  })
 
-// Get full ranking (from rank 4 onwards)
-const fullRanking = computed(() => {
-  if (!activeSection.value) return []
-  return activeSection.value.results.slice(3)
+  // Convert to array and sort lists by rank
+  return Array.from(catMap.entries()).map(([category, list]) => {
+    list.sort((a, b) => a.rank - b.rank)
+    return {
+      category,
+      podium: list.slice(0, 3),
+      ranking: list.slice(3)
+    }
+  }).sort((a, b) => a.category.localeCompare(b.category))
 })
 
 const handleGroupClick = (groupId: string, apparatusCode?: string) => {
@@ -94,6 +123,9 @@ const handleGroupClick = (groupId: string, apparatusCode?: string) => {
 }
 
 const handleScoreUpdate = (data: ScoreUpdatePayload) => {
+  // Ignore updates that don't match the currently viewed round
+  if (data.round && data.round !== selectedRound.value) return
+
   // Data payload: { passageId, score, rank, apparatusCode, ... }
   if (!resultsMap.value) return
 
@@ -119,11 +151,22 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         }
       })
 
-      // Re-sort and re-rank
-      updatedList.sort((a, b) => (b.score || 0) - (a.score || 0))
-      updatedList.forEach((p, i) => {
-        p.rank = i + 1
+      // Re-sort and re-rank per category/subCategory
+      const catMap = new Map<string, PassageResult[]>()
+      updatedList.forEach(p => {
+        const cat = p.group?.subCategory || p.group?.category || 'Sans catégorie'
+        if (!catMap.has(cat)) catMap.set(cat, [])
+        catMap.get(cat)!.push(p)
       })
+
+      updatedList.length = 0 // Clear array
+      for (const [cat, list] of catMap.entries()) {
+        list.sort((a, b) => (b.score || 0) - (a.score || 0))
+        list.forEach((p, i) => {
+          p.rank = i + 1
+          updatedList.push(p)
+        })
+      }
 
       // Trigger reactivity by creating a new object reference
       resultsMap.value = {
@@ -170,10 +213,23 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
       }
 
       const updatedList = [...existingList, newEntry]
-      updatedList.sort((a, b) => (b.score || 0) - (a.score || 0))
-      updatedList.forEach((p, i) => {
-        p.rank = i + 1
+
+      // Re-sort and re-rank per category/subCategory
+      const catMap = new Map<string, PassageResult[]>()
+      updatedList.forEach(p => {
+        const cat = p.group?.subCategory || p.group?.category || 'Sans catégorie'
+        if (!catMap.has(cat)) catMap.set(cat, [])
+        catMap.get(cat)!.push(p)
       })
+
+      updatedList.length = 0 // Clear array
+      for (const [cat, list] of catMap.entries()) {
+        list.sort((a, b) => (b.score || 0) - (a.score || 0))
+        list.forEach((p, i) => {
+          p.rank = i + 1
+          updatedList.push(p)
+        })
+      }
 
       // Trigger reactivity
       resultsMap.value = {
@@ -197,6 +253,7 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
 }
 
 const handleStatusUpdate = (data: ScoreUpdatePayload) => {
+  if (data.round && data.round !== selectedRound.value) return
   if (!resultsMap.value) return
   
   const keys = Object.keys(resultsMap.value)
@@ -252,12 +309,32 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
       </div>
 
       <div v-else key="results-content">
-        <!-- Day Switcher -->
-        <div class=" mb-4">
+        <!-- Day & Round Switcher -->
+        <div class="space-y-4 mb-4">
           <UiDaySwitcher
             v-model="selectedDay"
             :days="availableDays"
           />
+
+          <!-- Round Selector (only if finals are available and not on Sunday) -->
+          <div v-if="(resultsResponse?.meta?.hasFinals || selectedRound === 'FINAL') && selectedDay?.toLowerCase() !== 'dimanche'" class="flex justify-center">
+            <div class="glass-card p-1 rounded-full flex gap-1 border border-white/5 bg-white/5">
+              <button
+                @click="selectedRound = 'QUALIFIER'"
+                class="px-4 py-1.5 rounded-full text-xs font-bold transition-all"
+                :class="selectedRound === 'QUALIFIER' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/60'"
+              >
+                Qualifications
+              </button>
+              <button
+                @click="selectedRound = 'FINAL'"
+                class="px-4 py-1.5 rounded-full text-xs font-bold transition-all"
+                :class="selectedRound === 'FINAL' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/20' : 'text-white/40 hover:text-white/60'"
+              >
+                Finales
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Empty State -->
@@ -296,37 +373,45 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
           <div
             v-if="activeSection"
             :key="activeSection.code"
-            class="mt-6 space-y-6"
+            class="mt-6 space-y-12 transition-opacity duration-300"
+            :class="{ 'opacity-50 grayscale-[0.2]': pending }"
             role="tabpanel"
             :id="'panel-' + activeSection.code"
             :aria-labelledby="'tab-' + activeSection.code"
           >
-            <!-- Podium Section -->
-            <div v-if="podiumResults.length > 0">
-              <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.podium') }}</UiSectionTitle>
-              <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-                <ResultCard
-                  v-for="result in podiumResults"
-                  :key="result._id"
-                  :passage="result"
-                  :is-podium="true"
-                  @click:group="handleGroupClick(result.group._id, activeSection.code)"
-                />
-              </TransitionGroup>
-            </div>
+            <!-- Categories Loop -->
+            <div v-for="catData in categoriesRanking" :key="catData.category" class="space-y-6">
+              <UiSectionTitle tag="h3" size="lg" class="mb-4 text-purple-300 border-b border-white/10 pb-2">
+                {{ translateCategory(catData.category) }}
+              </UiSectionTitle>
 
-            <!-- Full Ranking Section -->
-            <div v-if="fullRanking.length > 0">
-              <UiSectionTitle tag="h2" size="xl" class="mb-4">{{ t('results.fullRanking') }}</UiSectionTitle>
-              <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
-                <ResultCard
-                  v-for="result in fullRanking"
-                  :key="result._id"
-                  :passage="result"
-                  :is-podium="false"
-                  @click:group="handleGroupClick(result.group._id, activeSection.code)"
-                />
-              </TransitionGroup>
+              <!-- Podium Section -->
+              <div v-if="catData.podium.length > 0">
+                <UiSectionTitle tag="h4" size="md" class="mb-4">{{ t('results.podium') }}</UiSectionTitle>
+                <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
+                  <ResultCard
+                    v-for="result in catData.podium"
+                    :key="result._id"
+                    :passage="result"
+                    :is-podium="true"
+                    @click:group="handleGroupClick(result.group._id, activeSection.code)"
+                  />
+                </TransitionGroup>
+              </div>
+
+              <!-- Full Ranking Section -->
+              <div v-if="catData.ranking.length > 0">
+                <UiSectionTitle tag="h4" size="md" class="mb-4">{{ t('results.fullRanking') }}</UiSectionTitle>
+                <TransitionGroup name="list" tag="div" class="flex flex-col gap-3 relative">
+                  <ResultCard
+                    v-for="result in catData.ranking"
+                    :key="result._id"
+                    :passage="result"
+                    :is-podium="false"
+                    @click:group="handleGroupClick(result.group._id, activeSection.code)"
+                  />
+                </TransitionGroup>
+              </div>
             </div>
 
             <!-- No results for this apparatus -->

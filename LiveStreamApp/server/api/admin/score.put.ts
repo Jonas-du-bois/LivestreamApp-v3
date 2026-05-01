@@ -43,15 +43,43 @@ export default defineEventHandler(async (event) => {
 
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
 
-    // Compute rank among published passages (per apparatus) - Decoupled from status
-    const finished = await PassageModel.find({
-      isPublished: true,
-      apparatus: updated.apparatus._id
-    })
-      .sort({ score: -1 })
-      .select('_id')
-      .lean()
-      .exec();
+    // Fetch the updated group's category
+    const groupData = updated.group as any;
+    const groupCategory = groupData?.subCategory || groupData?.category || 'Sans catégorie';
+
+    // Compute rank among published passages (per apparatus, round, AND category/subCategory)
+    const rankPipeline: any[] = [
+      {
+        $match: {
+          isPublished: true,
+          apparatus: updated.apparatus._id,
+          round: updated.round
+        }
+      },
+      {
+        $lookup: {
+          from: 'groups',
+          localField: 'group',
+          foreignField: '_id',
+          as: 'groupInfo'
+        }
+      },
+      { $unwind: '$groupInfo' },
+      {
+        $addFields: {
+          effectiveCategory: { $ifNull: ['$groupInfo.subCategory', '$groupInfo.category'] }
+        }
+      },
+      {
+        $match: {
+          effectiveCategory: groupCategory
+        }
+      },
+      { $sort: { score: -1 } },
+      { $project: { _id: 1 } }
+    ];
+
+    const finished = await PassageModel.aggregate(rankPipeline);
 
     const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
 
@@ -60,6 +88,7 @@ export default defineEventHandler(async (event) => {
       score: updated.score,
       rank,
       status: updated.status,
+      round: updated.round,
       group: updated.group,
       apparatus: updated.apparatus,
       startTime: updated.startTime,
@@ -118,6 +147,18 @@ export default defineEventHandler(async (event) => {
     } catch (pushErr) {
       console.error('[score] Push notification error (non-blocking):', pushErr);
       // Don't fail the request if push fails
+    }
+
+    // Invalidate Nitro server-side cache
+    try {
+      const cacheStorage = useStorage('cache')
+      const allCacheKeys = await cacheStorage.getKeys()
+      if (allCacheKeys.length > 0) {
+        await Promise.all(allCacheKeys.map(key => cacheStorage.removeItem(key)))
+        console.log(`[admin:score] Cleared ${allCacheKeys.length} Nitro cache entries`)
+      }
+    } catch (cacheErr) {
+      console.warn('[admin:score] Could not clear Nitro cache:', cacheErr)
     }
 
     return { ok: true, payload };

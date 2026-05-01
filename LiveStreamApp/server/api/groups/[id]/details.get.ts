@@ -45,6 +45,7 @@ export default defineEventHandler(async (event) => {
         startTime: p.startTime,
         endTime: p.endTime,
         status: p.status,
+        round: p.round,
         score: p.score,
         location: p.location
       }
