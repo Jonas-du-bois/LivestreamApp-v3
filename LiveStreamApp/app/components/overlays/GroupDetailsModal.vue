@@ -179,7 +179,7 @@ const cantonDisplay = computed(() => {
     <Transition name="scale">
       <div
         v-if="isOpen"
-        class="fixed md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90%] md:max-w-2xl glass-panel z-[90] overflow-hidden flex flex-col max-h-[90vh] overlay-safe-all"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] max-w-2xl glass-panel z-[90] overflow-hidden flex flex-col max-h-[85vh]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="group-details-title"
