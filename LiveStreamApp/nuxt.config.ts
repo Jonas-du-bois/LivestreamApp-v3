@@ -106,7 +106,7 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     strategies: 'injectManifest',
-    srcDir: '',
+    srcDir: '../app',
     filename: 'sw.ts',
     manifest: {
       name: 'Coupe des Bains',
