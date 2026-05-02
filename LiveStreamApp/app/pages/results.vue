@@ -234,11 +234,8 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         })
       }
 
-      // Trigger reactivity by creating a new object reference
-      resultsMap.value = {
-        ...resultsMap.value,
-        [key]: updatedList
-      }
+      // Trigger reactivity by updating the key with the modified array reference
+      resultsMap.value[key] = updatedList
 
       // Trigger Flash Effect
       nextTick(() => {
@@ -297,11 +294,8 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         })
       }
 
-      // Trigger reactivity
-      resultsMap.value = {
-        ...resultsMap.value,
-        [code]: updatedList
-      }
+      // Trigger reactivity for the specific array
+      resultsMap.value[code] = updatedList
 
       // Flash effect for new entry
       nextTick(() => {
@@ -336,10 +330,8 @@ const handleStatusUpdate = (data: ScoreUpdatePayload) => {
         return { ...p, status: data.status }
       })
       
-      resultsMap.value = {
-        ...resultsMap.value,
-        [key]: updatedList
-      }
+      // Trigger reactivity for the specific array
+      resultsMap.value[key] = updatedList
       break
     }
   }

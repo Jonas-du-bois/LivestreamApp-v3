@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-04-15 - Vue 3 Reactivity Partial Update Optimization
+**Learning:** When dealing with a nested reactive object or Record (like `Record<string, any[]>`), spreading the entire object (`{ ...resultsMap.value, [key]: updatedList }`) to trigger reactivity for a single changed array forces Vue to re-evaluate and clone the entire object. This is inefficient for large datasets.
+**Action:** To trigger reactivity for a specific array nested within a reactive Record, perform an in-place array copy for just the modified key (`resultsMap.value[key] = [...updatedList]`). This avoids expensive full object clones while ensuring UI re-renders correctly.
