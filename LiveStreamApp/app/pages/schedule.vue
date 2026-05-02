@@ -161,7 +161,7 @@ const filters = computed((): FilterChipItem[] => {
   const apparatusFilters: FilterChipItem[] = apparatus.map((a) => ({
     code: a.name, // On utilise le name pour le filtre API (compatibilité)
     label: translateApparatus(a.code, a.name)
-  }))
+  })).sort((a, b) => a.label.localeCompare(b.label))
   return [allItem, ...apparatusFilters]
 })
 

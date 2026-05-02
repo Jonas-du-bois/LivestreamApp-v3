@@ -18,7 +18,14 @@ const { translateApparatus, translateCategory } = useTranslatedData()
 
 // Récupère les métadonnées (agrès, catégories, salles) préparées et partagées par la page schedule.vue
 const meta = useState<any>('scheduleMeta')
-const availableApparatus = computed(() => meta.value?.availableApparatus || [])
+const availableApparatus = computed(() => {
+  const apps = meta.value?.availableApparatus || []
+  return [...apps].sort((a, b) => {
+    const nameA = translateApparatus(a.code, a.name) || a.name || a
+    const nameB = translateApparatus(b.code, b.name) || b.name || b
+    return nameA.localeCompare(nameB)
+  })
+})
 const availableCategories = computed(() => meta.value?.availableCategories || [])
 const availableLocations = computed(() => meta.value?.availableLocations || [])
 

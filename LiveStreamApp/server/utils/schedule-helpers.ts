@@ -52,7 +52,8 @@ export async function updateScheduleMetadata() {
             },
             { $unwind: "$info" },
             { $replaceRoot: { newRoot: "$info" } },
-            { $project: { name: 1, code: 1 } }
+            { $project: { name: 1, code: 1 } },
+            { $sort: { name: 1 } }
           ],
           categories: [
             { $group: { _id: "$group" } },
@@ -88,7 +89,7 @@ export async function updateScheduleMetadata() {
     const facetsResult = await PassageModel.aggregate(facetPipeline);
     const facets = facetsResult[0];
 
-    const availableApparatus = facets?.apparatus ? facets.apparatus.map((a: any) => ({ code: a.code, name: a.name })) : [];
+    const availableApparatus = facets?.apparatus ? facets.apparatus.map((a: any) => ({ code: a.code, name: a.name })).sort((a: any, b: any) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' })) : [];
     
     const availableCategories = facets?.categories
       ? [...new Set(facets.categories.map((c: any) => c.category).filter(Boolean))]

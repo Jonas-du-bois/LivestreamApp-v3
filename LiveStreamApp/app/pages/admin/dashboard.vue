@@ -159,7 +159,11 @@ const availableApparatus = computed(() => {
       seen.set(p.apparatus.code, { code: p.apparatus.code, name: p.apparatus.name })
     }
   }
-  return Array.from(seen.values())
+  return Array.from(seen.values()).sort((a, b) => {
+    const nameA = translateApparatus(a.code, a.name)
+    const nameB = translateApparatus(b.code, b.name)
+    return nameA.localeCompare(nameB)
+  })
 })
 
 const availableLocations = computed(() => {
