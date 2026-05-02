@@ -407,9 +407,12 @@
     "GYAE": "Gym. avec engins",
     "GYSE": "Gym. sans engins",
     "ST": "Saut",
-    "12x12": "12x12 m",
-    "12x18": "12x18 m",
-    "12x24": "12x24 m"
+    "sans-engin-12x12": "Sans engin 12x12 m",
+    "sans-engin-12x14": "Sans engin 12x14 m",
+    "sans-engin-12x18": "Sans engin 12x18 m",
+    "avec-engin-12x12": "Avec engin 12x12 m",
+    "avec-engin-12x14": "Avec engin 12x14 m",
+    "avec-engin-12x18": "Avec engin 12x18 m"
   },
 
   "days": {

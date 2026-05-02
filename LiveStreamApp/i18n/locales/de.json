@@ -404,9 +404,12 @@
     "GYAE": "Gym. mit Grät",
     "GYSE": "Gym. ohni Grät",
     "ST": "Sprung",
-    "12x12": "12x12 m",
-    "12x18": "12x18 m",
-    "12x24": "12x24 m"
+    "sans-engin-12x12": "Ohni Grät 12x12 m",
+    "sans-engin-12x14": "Ohni Grät 12x14 m",
+    "sans-engin-12x18": "Ohni Grät 12x18 m",
+    "avec-engin-12x12": "Mit Grät 12x12 m",
+    "avec-engin-12x14": "Mit Grät 12x14 m",
+    "avec-engin-12x18": "Mit Grät 12x18 m"
   },
 
   "days": {

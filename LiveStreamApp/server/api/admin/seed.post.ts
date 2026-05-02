@@ -113,9 +113,12 @@ export default defineEventHandler(async (event) => {
       { code: "GYAE", name: "Gymnastique avec engins", icon: "fluent:ribbon-24-regular" },
       { code: "GYSE", name: "Gymnastique sans engins", icon: "fluent:people-24-regular" },
       { code: "ST", name: "Saut", icon: "fluent:arrow-up-24-regular" },
-      { code: "12x12", name: "12x12 m", icon: "fluent:sport-24-regular" },
-      { code: "12x18", name: "12x18 m", icon: "fluent:sport-24-regular" },
-      { code: "12x24", name: "12x24 m", icon: "fluent:sport-24-regular" }
+      { code: "sans-engin-12x12", name: "Sans engin 12x12 m", icon: "fluent:people-24-regular" },
+      { code: "sans-engin-12x14", name: "Sans engin 12x14 m", icon: "fluent:people-24-regular" },
+      { code: "sans-engin-12x18", name: "Sans engin 12x18 m", icon: "fluent:people-24-regular" },
+      { code: "avec-engin-12x12", name: "Avec engin 12x12 m", icon: "fluent:ribbon-24-regular" },
+      { code: "avec-engin-12x14", name: "Avec engin 12x14 m", icon: "fluent:ribbon-24-regular" },
+      { code: "avec-engin-12x18", name: "Avec engin 12x18 m", icon: "fluent:ribbon-24-regular" }
     ];
 
     const insertedApparatus = await ApparatusModel.insertMany(apparatusList);

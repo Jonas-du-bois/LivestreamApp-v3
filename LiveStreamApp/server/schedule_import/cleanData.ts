@@ -100,6 +100,40 @@ const cleanData = () => {
     const rawData = fs.readFileSync(RAW_FILE_PATH, 'utf-8');
     const json = JSON.parse(rawData);
 
+    // --- PARSE MD FILE FOR GYM APPARATUS MAPPING ---
+    const mdPath = path.join(__dirname, 'analyse_groupes_gym.md');
+    let groupToGymApparatus: Record<string, string[]> = {};
+    if (fs.existsSync(mdPath)) {
+        const md = fs.readFileSync(mdPath, 'utf8');
+        const lines = md.split('\n');
+        let currentSection = ''; 
+        let currentSurface = '';
+
+        for (const line of lines) {
+            if (line.includes('## Gym sans engin à main')) {
+                currentSection = 'sans-engin';
+            } else if (line.includes('## Gym avec engin à main')) {
+                currentSection = 'avec-engin';
+            } else if (line.includes('## Groupes pratiquant les deux')) {
+                currentSection = '';
+            } else if (line.match(/### Surface (12x\d+)/)) {
+                let surf = line.match(/### Surface (12x\d+)/)![1];
+                if (surf === '12x24') surf = '12x14'; // User requested 12x14m instead of 12x24m
+                currentSurface = surf;
+            } else if (line.startsWith('|') && !line.includes('Club |') && !line.includes('---|') && currentSection && currentSurface) {
+                const parts = line.split('|').map(p => p.trim());
+                if (parts.length >= 4) {
+                    const club = parts[1];
+                    const groupe = parts[2];
+                    const key = `${club} : ${groupe}`;
+                    if (!groupToGymApparatus[key]) groupToGymApparatus[key] = [];
+                    groupToGymApparatus[key].push(`${currentSection}-${currentSurface}`);
+                }
+            }
+        }
+        console.log('Parsed MD file for apparatus mapping.');
+    }
+
     const cleanedInscriptions = json.inscriptions.map((item: any) => {
         // 1. Correction d'encodage
         const societe = fixEncoding(item.Societe || '').trim();
@@ -108,7 +142,24 @@ const cleanData = () => {
         const rawDiscipline = fixEncoding(item.Discipline || '').trim();
 
         // 2. Mapping
-        const apparatusCode = APPARATUS_MAP[rawDiscipline] || rawDiscipline;
+        let apparatusCode = APPARATUS_MAP[rawDiscipline] || rawDiscipline;
+        
+        // Appliquer le mapping spécifique "avec / sans engin" pour les surfaces 12x
+        const groupKey = `${societe} : ${groupe}`;
+        if (apparatusCode.startsWith('12x')) {
+            if (groupToGymApparatus[groupKey] && groupToGymApparatus[groupKey].length > 0) {
+                // Take the first available mapped apparatus and remove it from the array 
+                // so if a group performs twice, they get both distinct codes.
+                apparatusCode = groupToGymApparatus[groupKey].shift()!;
+            } else {
+                if (apparatusCode === '12x24') {
+                    // Fallback for unmapped 12x24 to 12x14 just in case
+                    apparatusCode = '12x14'; 
+                }
+                apparatusCode = `sans-engin-${apparatusCode}`;
+            }
+        }
+
         let category = CATEGORY_MAP[rawCategorie] || 'ACTIFS';
         let subCategory = category;
         
@@ -131,7 +182,7 @@ const cleanData = () => {
         const startTimeStr = `${dateStr}T${timeStr}:00.000Z`;
 
         return {
-            groupName: `${societe} : ${groupe}`,
+            groupName: groupKey,
             societe,
             groupe,
             category,

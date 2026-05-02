@@ -40,3 +40,8 @@ PERFORMANCE_AUDIT.md
 PRODUCTION_READINESS_TODO.md
 FINALS_MANAGEMENT.md
 CHANGELOG_FINALS.md
+analyse_groupes_gym.md
+
+# scripts
+generateMap.js
+cleanData.ts

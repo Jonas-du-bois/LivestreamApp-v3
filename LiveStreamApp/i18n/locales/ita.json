@@ -403,9 +403,12 @@
     "GYAE": "Ginn. con attrezzi",
     "GYSE": "Ginn. senza attrezzi",
     "ST": "Salto",
-    "12x12": "12x12 m",
-    "12x18": "12x18 m",
-    "12x24": "12x24 m"
+    "sans-engin-12x12": "Senza attrezzi 12x12 m",
+    "sans-engin-12x14": "Senza attrezzi 12x14 m",
+    "sans-engin-12x18": "Senza attrezzi 12x18 m",
+    "avec-engin-12x12": "Con attrezzi 12x12 m",
+    "avec-engin-12x14": "Con attrezzi 12x14 m",
+    "avec-engin-12x18": "Con attrezzi 12x18 m"
   },
 
   "days": {
