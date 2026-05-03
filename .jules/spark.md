@@ -1,13 +1,5 @@
-# Spark's Journal
+## 2024-05-03 - Feedback tactile sur les toggle buttons
 
-## Staggered List Animations
-- **Learning:** Applying `transition-delay` via inline styles on an element that also has `transition-all` (e.g., for hover effects) causes the hover effect to be delayed as well.
-- **Solution:** Use a CSS variable (e.g., `--enter-delay`) for the delay value in the inline style, and then apply `transition-delay: var(--enter-delay)` strictly within the `.v-enter-active` (or `.list-enter-active`) CSS class. This ensures the delay only applies during the entrance animation.
+**Learning:** Les boutons de type "toggle" ou sélecteur (comme le Round Selector dans la page de résultats) n'avaient qu'un effet de survol (`hover:text-white/60`) qui ne se ressentait pas sur mobile. Pour que l'application garde un côté premium et "Touch-friendly", chaque élément de navigation cliquable doit avoir un retour visuel instantané et léger.
 
-## Lockfiles
-- **Learning:** Be careful not to commit large lockfiles (`pnpm-lock.yaml`) if they were not present before, especially when the task requires small changes.
-
-## Glassmorphism & Tactile Feedback (food.vue)
-- **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
-- **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
-- **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+**Action:** Toujours ajouter `duration-200 active:scale-95` pour l'effet de pression, ainsi qu'un léger changement de background avec `active:bg-white/5` (ou équivalent) sur les boutons de navigation, même s'ils ne sont pas de type `UiButton`.
