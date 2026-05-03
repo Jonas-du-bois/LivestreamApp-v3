@@ -26,16 +26,25 @@ export const usePassageTiming = (
   const timeEnrichedPassages = computed<PassageTimeEnriched[]>(() => {
     if (!passages.value) return []
 
+    // ⚡ Bolt: Instantiate a single Date instance for local midnight calculation
+    // to minimize GC cycles across large array iterations.
+    const sharedDate = new Date()
+
     return passages.value.map(p => {
-      const dStart = new Date(p.startTime)
-      const dEnd = new Date(p.endTime)
-      const dayStart = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate()).getTime()
+      // Use standard Date instantiation to handle string/Date runtime variations safely
+      const _startTime = new Date(p.startTime).getTime()
+      const _endTime = new Date(p.endTime).getTime()
+
+      // Reuse shared instance for relative calculation
+      sharedDate.setTime(_startTime)
+      sharedDate.setHours(0, 0, 0, 0)
+      const _dayStart = sharedDate.getTime()
 
       return {
         ...p,
-        _startTime: dStart.getTime(),
-        _endTime: dEnd.getTime(),
-        _dayStart: dayStart
+        _startTime,
+        _endTime,
+        _dayStart
       }
     })
   })
