@@ -7,6 +7,50 @@ import { capacitorStorage } from '../utils/nativeStorage'
 export const useFavoritesStore = defineStore('favorites', () => {
   const favorites = ref<string[]>([])
   const endpoint = ref<string | null>(null)
+  const isLoaded = ref(false)
+
+  async function loadFavorites() {
+    if (isLoaded.value) return
+
+    try {
+      const storedFavorites = await capacitorStorage.getItem('favorites-list')
+      if (storedFavorites) {
+        favorites.value = JSON.parse(storedFavorites)
+      }
+
+      const storedEndpoint = await capacitorStorage.getItem('favorites-endpoint')
+      if (storedEndpoint) {
+        endpoint.value = storedEndpoint
+      }
+    } catch (err) {
+      console.error('[Favorites] Failed to load favorites from storage:', err)
+    } finally {
+      isLoaded.value = true
+    }
+  }
+
+  // Watch for changes and save to storage asynchronously
+  watch(favorites, async (newFavorites) => {
+    if (!isLoaded.value) return // Don't overwrite storage before loading
+    try {
+      await capacitorStorage.setItem('favorites-list', JSON.stringify(newFavorites))
+    } catch (err) {
+      console.error('[Favorites] Failed to save favorites:', err)
+    }
+  }, { deep: true })
+
+  watch(endpoint, async (newEndpoint) => {
+    if (!isLoaded.value) return // Don't overwrite storage before loading
+    try {
+      if (newEndpoint) {
+        await capacitorStorage.setItem('favorites-endpoint', newEndpoint)
+      } else {
+        await capacitorStorage.removeItem('favorites-endpoint')
+      }
+    } catch (err) {
+      console.error('[Favorites] Failed to save endpoint:', err)
+    }
+  })
 
   /**
    * Souscrit aux push notifications selon la plateforme détectée.
@@ -122,14 +166,11 @@ export const useFavoritesStore = defineStore('favorites', () => {
   return {
     favorites,
     endpoint,
+    isLoaded,
+    loadFavorites,
     toggleFavorite,
     toggleGroupFavorites,
     areAllGroupPassagesFavorited,
     isFavorite
-  }
-}, {
-  // Persistance multi-plateforme : NSUserDefaults / SharedPreferences (natif) ou localStorage (web)
-  persist: {
-    storage: capacitorStorage as any
   }
 })
