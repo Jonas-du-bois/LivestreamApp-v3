@@ -16,6 +16,22 @@ export const useFavoritesStore = defineStore('favorites', () => {
       const storedFavorites = await capacitorStorage.getItem('favorites-list')
       if (storedFavorites) {
         favorites.value = JSON.parse(storedFavorites)
+      } else {
+        // Fallback/Migration: try to read old data from pinia-plugin-persistedstate key 'favorites'
+        const oldStateRaw = await capacitorStorage.getItem('favorites')
+        if (oldStateRaw) {
+          try {
+            const oldState = JSON.parse(oldStateRaw)
+            if (Array.isArray(oldState.favorites)) {
+              favorites.value = oldState.favorites
+            }
+            if (oldState.endpoint) {
+              endpoint.value = oldState.endpoint
+            }
+          } catch (e) {
+            console.error('[Favorites] Failed to parse old state:', e)
+          }
+        }
       }
 
       const storedEndpoint = await capacitorStorage.getItem('favorites-endpoint')
@@ -124,6 +140,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   async function toggleFavorite(passageId: string) {
+    if (!isLoaded.value) await loadFavorites()
+
     const isAdding = !favorites.value.includes(passageId)
 
     if (isAdding) {
@@ -138,6 +156,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   async function toggleGroupFavorites(passageIds: string[]) {
+    if (!isLoaded.value) await loadFavorites()
+
     const allFavorited = passageIds.every(id => favorites.value.includes(id))
 
     if (allFavorited) {
@@ -161,6 +181,11 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
   function isFavorite(passageId: string): boolean {
     return favorites.value.includes(passageId)
+  }
+
+  // Auto-load on client initialization (handles HMR and direct store usage without plugin)
+  if (import.meta.client) {
+    loadFavorites()
   }
 
   return {
