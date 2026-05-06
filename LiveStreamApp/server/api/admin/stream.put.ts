@@ -78,9 +78,3 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: 'Failed to update stream' });
   }
 });
-stream: sanitized };
-  } catch (err) {
-    console.error('[stream] error', err);
-    throw createError({ statusCode: 500, statusMessage: 'Failed to update stream' });
-  }
-});

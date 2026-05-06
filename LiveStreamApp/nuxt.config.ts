@@ -243,9 +243,3 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false }
 })
-SE_MEASUREMENT_ID,
-    }
-  },
-
-  devtools: { enabled: false }
-})
