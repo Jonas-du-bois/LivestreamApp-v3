@@ -167,7 +167,7 @@ const foodSpots = computed(() => [
     description: t('food.spots.raclette.description'),
     icon: "fluent:food-toast-24-filled",
     isOpen: true,
-    image: "/img/food-3.png",
+    image: "livestreamapp/food/food-3",
     menu: [
       { item: t('food.menu.raclettePortion'), price: "7.-" },
       { item: t('food.menu.valaisanBoard'), price: "16.-" },

@@ -19,7 +19,7 @@ const notificationsStore = useNotificationsStore()
 const passwordInput = ref('')
 
 // ===== UI State =====
-const activeView = ref<'passages' | 'streams' | 'finals'>('passages')
+const activeView = ref<'passages' | 'streams' | 'finals' | 'media'>('passages')
 const showAdvancedFilters = ref(false)
 const showMobileMenu = ref(false)
 const isReseeding = ref(false)
@@ -391,7 +391,15 @@ const updateScore = async (passage: PassageEnriched) => {
 
 const updateStreamUrl = async (stream: Stream) => {
   try {
-    await AdminService.updateStream({ streamId: stream._id!, url: stream.url, isLive: stream.isLive })
+    await AdminService.updateStream({ 
+      streamId: stream._id!, 
+      url: stream.url, 
+      isLive: stream.isLive,
+      name: stream.name,
+      cameraName: stream.cameraName,
+      record: stream.record,
+      timeshift: stream.timeshift
+    })
   } catch (e) {
     console.error('[Dashboard] Failed to update stream:', e)
   }
@@ -430,6 +438,157 @@ const reseedDatabase = async () => {
 const getStreamForPassage = (passage: PassageEnriched) => {
   return streams.value.find(s => s.location === passage.location)
 }
+
+// ===== Media Management =====
+const mediaUploadType = ref<'groupLogo' | 'hero' | 'food' | 'afterparty'>('groupLogo')
+const selectedGroupForLogo = ref<string>('')
+const isUploading = ref(false)
+const uploadProgress = ref(0)
+const uploadMessage = ref<{ type: 'error' | 'success', text: string } | null>(null)
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  if (mediaUploadType.value === 'groupLogo' && !selectedGroupForLogo.value) {
+    uploadMessage.value = { type: 'error', text: 'Veuillez sélectionner un groupe.' }
+    return
+  }
+
+  isUploading.value = true
+  uploadProgress.value = 10
+  uploadMessage.value = null
+
+  try {
+    // 1. Get Signature
+    let folder = `livestreamapp/${mediaUploadType.value}`
+    let public_id = undefined
+
+    // Optionally set specific public IDs if needed to overwrite, e.g., hero-1
+    if (mediaUploadType.value === 'groupLogo') {
+      public_id = `logo_${selectedGroupForLogo.value}`
+    } else {
+      // Just keep original name for others
+      public_id = file.name.split('.')[0]
+    }
+
+    uploadProgress.value = 30
+    const sigRes = await AdminService.getCloudinarySignature({ folder, public_id })
+    
+    // 2. Upload to Cloudinary
+    uploadProgress.value = 50
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('api_key', sigRes.apiKey)
+    formData.append('timestamp', sigRes.timestamp.toString())
+    formData.append('signature', sigRes.signature)
+    if (sigRes.folder) formData.append('folder', sigRes.folder)
+    if (sigRes.public_id) formData.append('public_id', sigRes.public_id)
+
+    const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${sigRes.cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!cloudRes.ok) {
+      const errText = await cloudRes.text()
+      throw new Error(errText)
+    }
+
+    uploadProgress.value = 80
+    const cloudData = await cloudRes.json()
+
+    // 3. Save to DB if group logo
+    if (mediaUploadType.value === 'groupLogo') {
+      // Store the public_id so NuxtImg can optimize it natively
+      await AdminService.updateGroupLogo(selectedGroupForLogo.value, cloudData.public_id)
+      uploadMessage.value = { type: 'success', text: 'Logo du groupe mis à jour avec succès !' }
+    } else {
+      uploadMessage.value = { type: 'success', text: `Image uplaodée avec succès ! URL (ou ID): ${cloudData.public_id}` }
+    }
+    
+    uploadProgress.value = 100
+  } catch (e: any) {
+    console.error('[Media] Upload error:', e)
+    uploadMessage.value = { type: 'error', text: 'Erreur lors de l\'upload: ' + e.message }
+  } finally {
+    isUploading.value = false
+    setTimeout(() => { uploadProgress.value = 0 }, 1000)
+    if (fileInputRef.value) fileInputRef.value.value = ''
+  }
+}
+
+// ===== Stream Management & Metrics =====
+const mainRooms = ['Iles 1', 'Iles 2', 'LM 1']
+const mainStreams = computed(() => streams.value.filter(s => s.location && mainRooms.includes(s.location)))
+const otherStreams = computed(() => streams.value.filter(s => !(s.location && mainRooms.includes(s.location))))
+
+const streamMetrics = ref<Record<string, { viewers: number }>>({})
+let metricsInterval: ReturnType<typeof setInterval> | null = null
+
+const fetchMetrics = async () => {
+  if (activeView.value !== 'streams') return
+  for (const s of streams.value) {
+    if (s.isLive && s.apiVideoLiveStreamId && s._id) {
+      try {
+        const res = await AdminService.getStreamMetrics(s._id)
+        if (res.ok) {
+          streamMetrics.value = { ...streamMetrics.value, [s._id]: res.metrics }
+        }
+      } catch(e) {
+        console.error('[Dashboard] Failed to fetch metrics', e)
+      }
+    }
+  }
+}
+
+const handleRegenerateStream = async (stream: Stream) => {
+  if (!confirm('Êtes-vous sûr de vouloir régénérer ce stream ? La clé RTMP changera immédiatement.')) return
+  try {
+    const res = await AdminService.regenerateStream(stream._id!)
+    if (res.ok) {
+      alert('Stream régénéré avec succès. Nouvelle clé prête.')
+    }
+  } catch (e: any) {
+    alert('Erreur: ' + (e.data?.statusMessage || e.message))
+  }
+}
+
+const nowTimer = useNow()
+const getEstimatedCost = (stream: Stream) => {
+  if (!stream.isLive || !stream.liveStartedAt) return "0.00"
+  const start = new Date(stream.liveStartedAt).getTime()
+  const current = nowTimer.value.getTime()
+  const mins = Math.max(0, Math.floor((current - start) / 60000))
+  const viewers = streamMetrics.value[stream._id!]?.viewers || 0
+  const rateCHF = 0.00135 // ~ $0.0015 USD to CHF
+  return (mins * viewers * rateCHF).toFixed(2)
+}
+
+const getLiveDuration = (stream: Stream) => {
+  if (!stream.isLive || !stream.liveStartedAt) return "0m"
+  const start = new Date(stream.liveStartedAt).getTime()
+  const current = nowTimer.value.getTime()
+  const mins = Math.max(0, Math.floor((current - start) / 60000))
+  if (mins < 60) return `${mins}m`
+  const hrs = Math.floor(mins / 60)
+  return `${hrs}h ${mins % 60}m`
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeMenus)
+  metricsInterval = setInterval(fetchMetrics, 15000)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeMenus)
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
+  if (notificationTimer) clearTimeout(notificationTimer)
+  if (scoreSaveTimer) clearTimeout(scoreSaveTimer)
+  if (metricsInterval) clearInterval(metricsInterval)
+})
 
 // ===== Helpers =====
 const getStatusColor = (status?: PassageStatus) => {
@@ -585,6 +744,14 @@ const hasActiveFilters = computed(() => {
                   <Icon name="fluent:trophy-24-regular" class="w-4 h-4 inline mr-2" />
                   Finales
                 </button>
+                <button
+                  @click="activeView = 'media'"
+                  class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                  :class="activeView === 'media' ? 'bg-white/20 text-white shadow-sm' : 'text-white/60 hover:text-white'"
+                >
+                  <Icon name="fluent:image-24-regular" class="w-4 h-4 inline mr-2" />
+                  Médias
+                </button>
               </div>
               
               <!-- Language Toggle -->
@@ -668,7 +835,7 @@ const hasActiveFilters = computed(() => {
           <div v-if="showMobileMenu" @click.stop class="md:hidden border-t border-white/10 bg-slate-900/95 backdrop-blur-xl">
             <div class="px-4 py-4 space-y-3">
               <!-- View Toggle Mobile -->
-              <div class="grid grid-cols-3 gap-2">
+              <div class="grid grid-cols-4 gap-2">
                 <button
                   @click="activeView = 'passages'; showMobileMenu = false"
                   class="px-2 py-3 rounded-xl text-[10px] font-medium transition-all"
@@ -692,6 +859,14 @@ const hasActiveFilters = computed(() => {
                 >
                   <Icon name="fluent:trophy-24-regular" class="w-5 h-5 mx-auto mb-1" />
                   Finales
+                </button>
+                <button
+                  @click="activeView = 'media'; showMobileMenu = false"
+                  class="px-2 py-3 rounded-xl text-[10px] font-medium transition-all"
+                  :class="activeView === 'media' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-white/5 text-white/60'"
+                >
+                  <Icon name="fluent:image-24-regular" class="w-5 h-5 mx-auto mb-1" />
+                  Médias
                 </button>
               </div>
               
@@ -1202,6 +1377,124 @@ const hasActiveFilters = computed(() => {
             </div>
           </div>
           
+          <!-- Media View -->
+          <div v-if="activeView === 'media'" class="max-w-4xl mx-auto py-6">
+            <div class="glass-card p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl">
+              <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                  <Icon name="fluent:image-24-filled" class="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-white">Gestion des Médias</h2>
+                  <p class="text-white/40 text-sm">Uploadez vos images sur le CDN Cloudinary pour optimiser les performances.</p>
+                </div>
+              </div>
+
+              <div class="space-y-8">
+                <!-- Type Selection -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <button 
+                    @click="mediaUploadType = 'groupLogo'"
+                    class="p-4 rounded-2xl border transition-all text-center flex flex-col items-center justify-center gap-2"
+                    :class="mediaUploadType === 'groupLogo' ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'"
+                  >
+                    <Icon name="fluent:people-community-24-regular" class="w-6 h-6" />
+                    <span class="text-sm font-medium">Logos Groupes</span>
+                  </button>
+                  <button 
+                    @click="mediaUploadType = 'hero'"
+                    class="p-4 rounded-2xl border transition-all text-center flex flex-col items-center justify-center gap-2"
+                    :class="mediaUploadType === 'hero' ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'"
+                  >
+                    <Icon name="fluent:image-multiple-24-regular" class="w-6 h-6" />
+                    <span class="text-sm font-medium">Images Accueil</span>
+                  </button>
+                  <button 
+                    @click="mediaUploadType = 'food'"
+                    class="p-4 rounded-2xl border transition-all text-center flex flex-col items-center justify-center gap-2"
+                    :class="mediaUploadType === 'food' ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'"
+                  >
+                    <Icon name="fluent:food-pizza-24-regular" class="w-6 h-6" />
+                    <span class="text-sm font-medium">Nourriture</span>
+                  </button>
+                  <button 
+                    @click="mediaUploadType = 'afterparty'"
+                    class="p-4 rounded-2xl border transition-all text-center flex flex-col items-center justify-center gap-2"
+                    :class="mediaUploadType === 'afterparty' ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'"
+                  >
+                    <Icon name="fluent:drink-beer-24-regular" class="w-6 h-6" />
+                    <span class="text-sm font-medium">Afterparty</span>
+                  </button>
+                </div>
+
+                <!-- Group Selection (Only for Group Logos) -->
+                <div v-if="mediaUploadType === 'groupLogo'" class="space-y-2">
+                  <label class="text-sm font-medium text-white/60 ml-1">Sélectionner le Groupe <span class="text-red-400">*</span></label>
+                  <select 
+                    v-model="selectedGroupForLogo"
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all appearance-none"
+                  >
+                    <option value="" disabled>Choisir un groupe...</option>
+                    <!-- Unique groups from passages -->
+                    <option 
+                      v-for="group in Array.from(new Set(passages.filter(p => p.group).map(p => JSON.stringify({id: p.group!._id, name: p.group!.name})))).map(g => JSON.parse(g as string)).sort((a,b) => a.name.localeCompare(b.name))" 
+                      :key="group.id" 
+                      :value="group.id"
+                    >
+                      {{ group.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Upload Area -->
+                <div class="space-y-4">
+                  <div 
+                    class="relative w-full h-48 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-4 transition-all"
+                    :class="isUploading ? 'border-purple-500/50 bg-purple-500/10' : 'border-white/20 bg-white/5 hover:bg-white/10 hover:border-purple-500/50 cursor-pointer'"
+                    @click="!isUploading && fileInputRef?.click()"
+                  >
+                    <input 
+                      type="file" 
+                      ref="fileInputRef" 
+                      class="hidden" 
+                      accept="image/png, image/jpeg, image/webp" 
+                      @change="handleFileUpload" 
+                      :disabled="isUploading"
+                    />
+                    
+                    <template v-if="!isUploading">
+                      <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+                        <Icon name="fluent:cloud-arrow-up-24-regular" class="w-6 h-6 text-white/80" />
+                      </div>
+                      <div class="text-center">
+                        <p class="font-medium text-white">Cliquez pour uploader</p>
+                        <p class="text-xs text-white/40 mt-1">PNG, JPG ou WebP</p>
+                      </div>
+                    </template>
+                    
+                    <template v-else>
+                      <Icon name="svg-spinners:ring-resize" class="w-10 h-10 text-purple-400" />
+                      <div class="text-center w-full px-8">
+                        <p class="font-medium text-white mb-2">Upload en cours... {{ uploadProgress }}%</p>
+                        <div class="w-full bg-white/10 rounded-full h-2">
+                          <div class="bg-gradient-to-r from-purple-400 to-indigo-500 h-2 rounded-full transition-all duration-300" :style="{ width: `${uploadProgress}%` }"></div>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <!-- Feedback Message -->
+                <Transition name="fade">
+                  <div v-if="uploadMessage" :class="uploadMessage.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'" class="p-4 rounded-2xl border text-sm flex items-center gap-3">
+                    <Icon :name="uploadMessage.type === 'success' ? 'fluent:checkmark-circle-24-regular' : 'fluent:error-circle-24-regular'" class="w-5 h-5 flex-shrink-0" />
+                    {{ uploadMessage.text }}
+                  </div>
+                </Transition>
+              </div>
+            </div>
+          </div>
+
           <!-- Streams View -->
           <div v-if="activeView === 'streams'">
             
@@ -1277,87 +1570,221 @@ const hasActiveFilters = computed(() => {
               </article>
             </div>
             
-            <div v-else class="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-              <article v-for="stream in streams" :key="stream._id" class="stream-card">
-                <div class="p-5 sm:p-6">
-                  <!-- Header -->
-                  <div class="flex items-start justify-between mb-6">
-                    <div>
-                      <h3 class="font-bold text-xl mb-2">{{ stream.name || t('admin.stream') }}</h3>
-                      <span class="inline-flex items-center gap-2 text-sm px-3 py-1 rounded-lg bg-white/10 text-white/60">
-                        <Icon name="fluent:location-24-regular" class="w-4 h-4" />
-                        {{ stream.location }}
-                      </span>
-                    </div>
-                    <div
-                      class="px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2"
-                      :class="stream.isLive ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-white/10 text-white/50'"
-                    >
-                      <span v-if="stream.isLive" class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-400"></span>
-                      </span>
-                      <span>{{ stream.isLive ? 'LIVE' : 'OFFLINE' }}</span>
-                    </div>
+            <div v-else class="space-y-10">
+              <!-- Salles Principales -->
+              <div>
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg">
+                    <Icon name="fluent:building-24-filled" class="w-5 h-5 text-white" />
                   </div>
-                  
-                  <!-- Form -->
-                  <div class="space-y-5">
-                    <div>
-                      <label class="block text-sm font-medium text-white/60 mb-2">
-                        Stream URL (YouTube/Vimeo/API.Video)
-                      </label>
-                      <input
-                        v-model="stream.url"
-                        class="input-modern w-full"
-                        placeholder="https://embed.api.video/..."
-                      />
-                    </div>
-                    
-                    <!-- API.video RTMP Info -->
-                    <div v-if="stream.apiVideoLiveStreamId" class="glass-card rounded-xl p-4 space-y-3">
-                      <div class="flex items-center justify-between mb-2">
-                         <span class="text-sm font-bold text-white flex items-center gap-2"><Icon name="fluent:camera-dome-24-regular" class="w-4 h-4"/> Config. Mevo (RTMP)</span>
-                      </div>
-                      <div>
-                        <label class="block text-xs font-medium text-white/50 mb-1">URL du serveur RTMP</label>
-                        <div class="flex items-center gap-2">
-                          <input type="text" readonly value="rtmp://broadcast.api.video/s" class="input-modern w-full text-xs font-mono py-1.5 px-3 opacity-70" />
-                          <button @click="copyToClipboard('rtmp://broadcast.api.video/s')" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="Copier">
-                            <Icon name="fluent:copy-24-regular" class="w-4 h-4 text-white" />
-                          </button>
-                        </div>
-                      </div>
-                      <div>
-                        <label class="block text-xs font-medium text-white/50 mb-1">Clé de stream</label>
-                        <div class="flex items-center gap-2">
-                          <input type="text" readonly :value="stream.streamKey" class="input-modern w-full text-xs font-mono py-1.5 px-3 opacity-70" />
-                          <button @click="copyToClipboard(stream.streamKey || '')" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="Copier">
-                            <Icon name="fluent:copy-24-regular" class="w-4 h-4 text-white" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Live Toggle -->
-                    <div class="glass-card rounded-xl p-4 flex items-center justify-between">
-                      <span class="text-sm font-medium">{{ t('admin.streamLiveToggle') }}</span>
-                      <label class="toggle-switch-large">
-                        <input type="checkbox" v-model="stream.isLive" class="sr-only peer" />
-                        <div class="toggle-bg"></div>
-                      </label>
-                    </div>
-                    
-                    <button
-                      @click="updateStreamUrl(stream)"
-                      class="w-full btn-primary"
-                    >
-                      <Icon name="fluent:save-24-regular" class="w-5 h-5" />
-                      {{ t('admin.updateStreamBtn') }}
-                    </button>
-                  </div>
+                  <h3 class="text-xl font-bold text-white">Salles Principales</h3>
                 </div>
-              </article>
+                
+                <div class="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                  <article v-for="stream in mainStreams" :key="stream._id" class="stream-card ring-1 ring-cyan-500/30">
+                    <div class="p-5 sm:p-6">
+                      <!-- Header -->
+                      <div class="flex items-start justify-between mb-6">
+                        <div>
+                          <h3 class="font-bold text-xl mb-2">{{ stream.name || t('admin.stream') }}</h3>
+                          <span class="inline-flex items-center gap-2 text-sm px-3 py-1 rounded-lg bg-white/10 text-white/60">
+                            <Icon name="fluent:location-24-regular" class="w-4 h-4" />
+                            {{ stream.location }}
+                          </span>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                          <div
+                            class="px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2"
+                            :class="stream.isLive ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-white/10 text-white/50'"
+                          >
+                            <span v-if="stream.isLive" class="relative flex h-2.5 w-2.5">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-400"></span>
+                            </span>
+                            <span>{{ stream.isLive ? 'LIVE' : 'OFFLINE' }}</span>
+                          </div>
+                          <span v-if="stream.isLive" class="text-xs font-medium text-white/40">{{ getLiveDuration(stream) }}</span>
+                        </div>
+                      </div>
+                      
+                      <!-- Monitoring (if live) -->
+                      <Transition name="fade">
+                        <div v-if="stream.isLive" class="mb-5 grid grid-cols-2 gap-3">
+                          <div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center bg-cyan-500/10 border-cyan-500/20">
+                            <span class="text-[10px] uppercase tracking-wider text-cyan-300 mb-1 font-bold">Spectateurs</span>
+                            <div class="flex items-center gap-2 text-xl font-bold text-white">
+                              <Icon name="fluent:people-24-regular" class="w-5 h-5 text-cyan-400" />
+                              {{ streamMetrics[stream._id!]?.viewers || 0 }}
+                            </div>
+                          </div>
+                          <div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center bg-emerald-500/10 border-emerald-500/20">
+                            <span class="text-[10px] uppercase tracking-wider text-emerald-300 mb-1 font-bold">Coût estimé</span>
+                            <div class="flex items-center gap-1.5 text-lg font-bold text-white">
+                              <span class="text-emerald-400 text-sm">CHF</span>
+                              {{ getEstimatedCost(stream) }}
+                            </div>
+                          </div>
+                        </div>
+                      </Transition>
+
+                      <!-- Form -->
+                      <div class="space-y-5">
+                        <div v-if="!stream.apiVideoLiveStreamId" class="glass-card rounded-xl p-4 text-center">
+                          <p class="text-sm text-white/60 mb-4">Ce stream n'a pas encore de clé générée.</p>
+                          <button @click="handleRegenerateStream(stream)" class="btn-primary w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-400 hover:to-yellow-400">
+                            <Icon name="fluent:flash-24-filled" class="w-5 h-5" />
+                            Générer (api.video)
+                          </button>
+                        </div>
+                        
+                        <!-- API.video RTMP Info -->
+                        <div v-if="stream.apiVideoLiveStreamId" class="glass-card rounded-xl p-4 space-y-3">
+                          <div class="flex items-center justify-between mb-2">
+                             <span class="text-sm font-bold text-white flex items-center gap-2"><Icon name="fluent:camera-dome-24-regular" class="w-4 h-4"/> Config. Mevo (RTMP)</span>
+                          </div>
+                          <div>
+                            <label class="block text-xs font-medium text-white/50 mb-1">URL du serveur</label>
+                            <div class="flex items-center gap-2">
+                              <input type="text" readonly value="rtmp://broadcast.api.video/s" class="input-modern w-full text-xs font-mono py-1.5 px-3 opacity-70" />
+                              <button @click="copyToClipboard('rtmp://broadcast.api.video/s')" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="Copier">
+                                <Icon name="fluent:copy-24-regular" class="w-4 h-4 text-white" />
+                              </button>
+                            </div>
+                          </div>
+                          <div>
+                            <label class="block text-xs font-medium text-white/50 mb-1">Clé de stream</label>
+                            <div class="flex items-center gap-2">
+                              <input type="text" readonly :value="stream.streamKey" class="input-modern w-full text-xs font-mono py-1.5 px-3 opacity-70" />
+                              <button @click="copyToClipboard(stream.streamKey || '')" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="Copier">
+                                <Icon name="fluent:copy-24-regular" class="w-4 h-4 text-white" />
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <!-- VOD & Timeshift options -->
+                          <div class="pt-2 border-t border-white/5 mt-2 space-y-3">
+                            <div class="flex items-center justify-between">
+                              <div>
+                                <span class="text-sm font-medium text-white block">Activer la VOD (Record)</span>
+                                <span class="text-[10px] text-white/40 block">Enregistrer automatiquement ce live</span>
+                              </div>
+                              <label class="toggle-switch-large scale-75 origin-right">
+                                <input type="checkbox" v-model="stream.record" @change="updateStreamUrl(stream)" class="sr-only peer" />
+                                <div class="toggle-bg"></div>
+                              </label>
+                            </div>
+                            <div class="flex items-center justify-between">
+                              <div>
+                                <span class="text-sm font-medium text-white block">Activer le Timeshift</span>
+                                <span class="text-[10px] text-white/40 block">Autoriser le retour en arrière (DVR)</span>
+                              </div>
+                              <label class="toggle-switch-large scale-75 origin-right">
+                                <input type="checkbox" v-model="stream.timeshift" @change="updateStreamUrl(stream)" class="sr-only peer" />
+                                <div class="toggle-bg"></div>
+                              </label>
+                            </div>
+                          </div>
+
+                          <button @click="handleRegenerateStream(stream)" class="w-full mt-2 py-2 text-xs font-bold text-orange-300 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <Icon name="fluent:arrow-sync-24-regular" class="w-4 h-4" />
+                            Régénérer / Redémarrer
+                          </button>
+                        </div>
+                        
+                        <!-- Live Toggle -->
+                        <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+                          <span class="text-sm font-medium">{{ t('admin.streamLiveToggle') }}</span>
+                          <label class="toggle-switch-large">
+                            <input type="checkbox" v-model="stream.isLive" @change="updateStreamUrl(stream)" class="sr-only peer" />
+                            <div class="toggle-bg"></div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+
+              <!-- Autres Streams -->
+              <div v-if="otherStreams.length > 0">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shadow-lg border border-white/10">
+                    <Icon name="fluent:video-person-24-filled" class="w-5 h-5 text-white/60" />
+                  </div>
+                  <h3 class="text-xl font-bold text-white/60">Autres Streams</h3>
+                </div>
+                
+                <div class="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                  <article v-for="stream in otherStreams" :key="stream._id" class="stream-card">
+                    <div class="p-5 sm:p-6">
+                      <!-- Header -->
+                      <div class="flex items-start justify-between mb-6">
+                        <div>
+                          <h3 class="font-bold text-xl mb-2">{{ stream.name || t('admin.stream') }}</h3>
+                          <span class="inline-flex items-center gap-2 text-sm px-3 py-1 rounded-lg bg-white/10 text-white/60">
+                            <Icon name="fluent:location-24-regular" class="w-4 h-4" />
+                            {{ stream.location }}
+                          </span>
+                        </div>
+                        <div
+                          class="px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2"
+                          :class="stream.isLive ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-white/10 text-white/50'"
+                        >
+                          <span v-if="stream.isLive" class="relative flex h-2.5 w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-400"></span>
+                          </span>
+                          <span>{{ stream.isLive ? 'LIVE' : 'OFFLINE' }}</span>
+                        </div>
+                      </div>
+                      
+                      <!-- Form -->
+                      <div class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label class="block text-sm font-medium text-white/60 mb-2">Nom du flux</label>
+                            <input v-model="stream.name" class="input-modern w-full" placeholder="Ex: Finales" />
+                          </div>
+                          <div>
+                            <label class="block text-sm font-medium text-white/60 mb-2">
+                              Caméra (Admin uniquement)
+                            </label>
+                            <input v-model="stream.cameraName" class="input-modern w-full" placeholder="Ex: OBS Régie" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label class="block text-sm font-medium text-white/60 mb-2">
+                            Stream URL (YouTube/Vimeo/API.Video)
+                          </label>
+                          <input
+                            v-model="stream.url"
+                            class="input-modern w-full"
+                            placeholder="https://embed.api.video/..."
+                          />
+                        </div>
+                        
+                        <!-- Live Toggle -->
+                        <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+                          <span class="text-sm font-medium">{{ t('admin.streamLiveToggle') }}</span>
+                          <label class="toggle-switch-large">
+                            <input type="checkbox" v-model="stream.isLive" @change="updateStreamUrl(stream)" class="sr-only peer" />
+                            <div class="toggle-bg"></div>
+                          </label>
+                        </div>
+                        
+                        <button
+                          @click="updateStreamUrl(stream)"
+                          class="w-full btn-primary"
+                        >
+                          <Icon name="fluent:save-24-regular" class="w-5 h-5" />
+                          {{ t('admin.updateStreamBtn') }}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -8,10 +8,10 @@ const { timeLeftFull } = usePartyCountdown()
 definePageMeta({ header: false, footer: false })
 
 const galleryImages = [
-  '/img/afterparty-1.png',
-  '/img/afterparty-2.png',
-  '/img/afterparty-3.png',
-  '/img/afterparty-4.png'
+  'livestreamapp/afterparty/afterparty-1',
+  'livestreamapp/afterparty/afterparty-2',
+  'livestreamapp/afterparty/afterparty-3',
+  'livestreamapp/afterparty/afterparty-4'
 ]
 
 const highlights = computed(() => [

@@ -40,6 +40,14 @@ export default defineNuxtConfig({
     }
   },
 
+  // Configuration Nuxt Image
+  image: {
+    provider: 'cloudinary',
+    cloudinary: {
+      baseURL: process.env.CLOUDINARY_BASE_URL || 'https://res.cloudinary.com/demo/image/upload/' // Remplacer demo par le cloud name plus tard
+    }
+  },
+
   nitro: {
     rollupConfig: {
       external: ['@nuxt/nitro-server/dist/runtime/utils/cache-driver.js']
@@ -230,6 +238,12 @@ export default defineNuxtConfig({
       firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
       firebaseMeasurementId: process.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    }
+  },
+
+  devtools: { enabled: false }
+})
+SE_MEASUREMENT_ID,
     }
   },
 

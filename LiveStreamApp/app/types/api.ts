@@ -40,6 +40,10 @@ export interface Stream {
   currentPassage?: string | Passage;
   apiVideoLiveStreamId?: string;
   streamKey?: string;
+  liveStartedAt?: string | Date;
+  cameraName?: string;
+  record?: boolean;
+  timeshift?: boolean;
 }
 
 export interface EnrichedGroup {

@@ -8,6 +8,10 @@ export interface IStream extends Document {
   currentPassage?: Types.ObjectId;
   apiVideoLiveStreamId?: string;
   streamKey?: string;
+  liveStartedAt?: Date;
+  cameraName?: string;
+  record?: boolean;
+  timeshift?: boolean;
 }
 
 const StreamSchema = new Schema<IStream>(
@@ -19,6 +23,10 @@ const StreamSchema = new Schema<IStream>(
     currentPassage: { type: Schema.Types.ObjectId, ref: 'Passage' },
     apiVideoLiveStreamId: { type: String },
     streamKey: { type: String },
+    liveStartedAt: { type: Date },
+    cameraName: { type: String },
+    record: { type: Boolean, default: true },
+    timeshift: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

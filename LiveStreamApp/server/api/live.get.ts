@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
         .sort({ startTime: 1 })
         .lean(),
       StreamModel.find({ isLive: true })
+        .select('-cameraName') // Exclude admin-only fields
         // OPTIMIZATION: Select only necessary fields to reduce payload size (avoids large history arrays)
         .populate({
           path: 'currentPassage',

@@ -44,7 +44,7 @@ const stats = computed(() => [
   <div class="glass-panel overflow-hidden flex flex-col">
     <div class="relative h-48 overflow-hidden flex-shrink-0">
       <ImageWithFallback
-        :src="group.logo || '/img/group-fallback.png'"
+        :src="group.logo || 'livestreamapp/groups/group-fallback'"
         :alt="group.name"
         class="w-full h-full object-cover"
       />

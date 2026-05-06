@@ -238,9 +238,9 @@ export default defineEventHandler(async (event) => {
 
     // 4. STREAMS
     const definedCameras = [
-        { loc: "Iles 1", name: "Iles 1", url: "https://www.youtube.com/embed/jfKfPfyJRdk" },
-        { loc: "Iles 2", name: "Iles 2", url: "https://www.youtube.com/embed/36YnV9STBqc?si=ns2_QOjchVwyyqUL" },
-        { loc: "LM 1", name: "Léon-Michaud 1", url: "https://www.youtube.com/embed/mKCieTImjvU?si=mCOGyTE4VSpU8WVV" }
+        { loc: "Iles 1", name: "Iles 1" },
+        { loc: "Iles 2", name: "Iles 2" },
+        { loc: "LM 1", name: "Léon-Michaud 1" }
     ];
 
     const streamsData = [];
@@ -251,9 +251,9 @@ export default defineEventHandler(async (event) => {
         
         streamsData.push({
             name: cam.name,
-            url: cam.url, 
+            url: "", 
             location: cam.loc,
-            isLive: true,
+            isLive: false,
             currentPassage: liveP ? liveP._id : null
         });
     }

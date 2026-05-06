@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
 
     // Populate currentPassage with group and apparatus to provide more details
     const streams = await StreamModel.find(filter)
+      .select('-cameraName') // Exclude admin-only fields
       // OPTIMIZATION: Select only necessary fields to reduce payload size (avoids large history arrays)
       .populate({
         path: 'currentPassage',

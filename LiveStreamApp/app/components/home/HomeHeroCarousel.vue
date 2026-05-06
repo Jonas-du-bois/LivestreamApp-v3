@@ -56,7 +56,7 @@ const ssrSlides = computed(() => [
     type: 'afterparty',
     title: 'AFTER PARTY',
     subtitle: t('afterparty.themeValue') || 'Thème: Le Cirque',
-    image: '/img/hero-1.png',
+    image: 'livestreamapp/hero/hero-1', // Cloudinary public_id
     to: '/afterparty',
     badge: { label: 'Soon', variant: 'violet', pulse: true, showDot: false }
   },
@@ -65,7 +65,7 @@ const ssrSlides = computed(() => [
     type: 'food',
     title: t('food.title'),
     subtitle: t('food.subtitle'),
-    image: '/img/hero-2.png',
+    image: 'livestreamapp/hero/hero-2',
     to: '/food',
     badge: { label: t('common.open'), variant: 'green', showDot: true, pulse: false }
   }
@@ -83,7 +83,7 @@ const dynamicSlides = computed(() => {
         return (stream.currentPassage as Passage)._id === p._id
       })
 
-      const heroImage = getStreamThumbnailUrl(s?.url, '/img/hero-fallback.png')
+      const heroImage = getStreamThumbnailUrl(s?.url, 'livestreamapp/hero/hero-fallback')
 
       items.push({
         id: `live-${p._id}`,
@@ -128,7 +128,7 @@ const dynamicSlides = computed(() => {
       type: 'result',
       title: lastResult.group?.name || 'Résultat',
       subtitle: `${lastResult.score} pts • ${t('results.title')}`,
-      image: '/img/hero-3.png',
+      image: 'livestreamapp/hero/hero-3',
       to: '/results',
       badge: {
         label: t('nav.results'),
@@ -142,7 +142,7 @@ const dynamicSlides = computed(() => {
     type: 'afterparty',
     title: 'AFTER PARTY',
     subtitle: t('afterparty.themeValue') || 'Thème: Le Cirque',
-    image: '/img/hero-4.png',
+    image: 'livestreamapp/hero/hero-4',
     to: '/afterparty',
     badge: {
       label: 'Soon',
@@ -156,7 +156,7 @@ const dynamicSlides = computed(() => {
     type: 'food',
     title: t('food.title'),
     subtitle: t('food.subtitle'),
-    image: '/img/hero-5.png',
+    image: 'livestreamapp/hero/hero-5',
     to: '/food',
     badge: {
       label: t('common.open'),

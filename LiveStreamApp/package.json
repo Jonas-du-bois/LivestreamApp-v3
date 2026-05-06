@@ -29,6 +29,7 @@
     "@nuxtjs/i18n": "^10.2.1",
     "@vueuse/core": "^14.2.1",
     "chart.js": "^4.5.1",
+    "cloudinary": "^2.10.0",
     "firebase": "^12.9.0",
     "firebase-admin": "^10.1.0",
     "h3-zod": "^0.5.3",

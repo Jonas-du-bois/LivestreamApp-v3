@@ -35,10 +35,13 @@ const handleError = () => {
       />
     </div>
   </div>
-  <img 
+  <NuxtImg 
     v-else
-    :src="src" 
+    :src="src || ''" 
     :alt="alt" 
     @error="handleError"
+    :provider="src?.startsWith('http') || src?.startsWith('data:') || src?.startsWith('/') ? 'none' : 'cloudinary'"
+    format="webp"
+    quality="80"
   />
 </template>

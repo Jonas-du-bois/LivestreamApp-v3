@@ -23,7 +23,7 @@ export const AdminService = {
     })
   },
 
-  updateStream(payload: { streamId: string; type?: string; url?: string; isLive?: boolean; currentPassageId?: string | null }) {
+  updateStream(payload: { streamId: string; type?: string; url?: string; isLive?: boolean; currentPassageId?: string | null; name?: string; cameraName?: string; record?: boolean; timeshift?: boolean; }) {
     return apiClient<void>('/admin/stream', {
       method: 'PUT',
       body: payload
@@ -34,6 +34,18 @@ export const AdminService = {
     return apiClient<{ ok: boolean; stream: any }>('/admin/stream', {
       method: 'POST',
       body: payload
+    })
+  },
+
+  regenerateStream(streamId: string) {
+    return apiClient<{ ok: boolean; stream: any }>(`/admin/streams/${streamId}/regenerate`, {
+      method: 'POST'
+    })
+  },
+
+  getStreamMetrics(streamId: string) {
+    return apiClient<{ ok: boolean; metrics: { viewers: number } }>(`/admin/streams/${streamId}/metrics`, {
+      method: 'GET'
     })
   },
 
@@ -60,6 +72,22 @@ export const AdminService = {
   migrateRounds() {
     return apiClient<{ success: boolean; message: string }>('/admin/migrate-rounds', {
       method: 'POST'
+    })
+  },
+
+  getCloudinarySignature(params: { folder?: string; public_id?: string }) {
+    const query = new URLSearchParams()
+    if (params.folder) query.append('folder', params.folder)
+    if (params.public_id) query.append('public_id', params.public_id)
+    return apiClient<any>(`/admin/cloudinary/signature?${query.toString()}`, {
+      method: 'GET'
+    })
+  },
+
+  updateGroupLogo(groupId: string, logoUrl: string) {
+    return apiClient<{ ok: boolean; logo: string }>(`/admin/groups/${groupId}/logo`, {
+      method: 'PUT',
+      body: { logoUrl }
     })
   }
 }
