@@ -38,6 +38,8 @@ export interface Stream {
   location?: string;
   isLive?: boolean;
   currentPassage?: string | Passage;
+  apiVideoLiveStreamId?: string;
+  streamKey?: string;
 }
 
 export interface EnrichedGroup {

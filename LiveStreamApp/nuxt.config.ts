@@ -217,6 +217,8 @@ export default defineNuxtConfig({
     flickrAlbumId: process.env.FLICKR_ALBUM_ID,
     /** ID utilisateur Flickr du photographe officiel */
     flickrUserId: process.env.FLICKR_USER_ID,
+    /** API.Video API Key pour provisionner les lives dynamiquement */
+    apiVideoKey: process.env.API_VIDEO_KEY,
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       socketUrl: process.env.NUXT_PUBLIC_SOCKET_URL || '',

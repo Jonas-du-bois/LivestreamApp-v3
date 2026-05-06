@@ -55,7 +55,7 @@ const ssrSlides = computed(() => [
     id: 'afterparty',
     type: 'afterparty',
     title: 'AFTER PARTY',
-    subtitle: t('afterparty.themeValue') || 'Thème: Bad Taste',
+    subtitle: t('afterparty.themeValue') || 'Thème: Le Cirque',
     image: '/img/hero-1.png',
     to: '/afterparty',
     badge: { label: 'Soon', variant: 'violet', pulse: true, showDot: false }
@@ -141,7 +141,7 @@ const dynamicSlides = computed(() => {
     id: 'afterparty',
     type: 'afterparty',
     title: 'AFTER PARTY',
-    subtitle: t('afterparty.themeValue') || 'Thème: Bad Taste',
+    subtitle: t('afterparty.themeValue') || 'Thème: Le Cirque',
     image: '/img/hero-4.png',
     to: '/afterparty',
     badge: {

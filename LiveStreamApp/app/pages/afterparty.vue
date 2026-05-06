@@ -40,49 +40,44 @@ const highlights = computed(() => [
 
 const drinkMenu = computed(() => [
   {
-    category: t('afterparty.categories.beers'),
+    category: 'Bières & Pichets',
     icon: 'fluent:drink-beer-24-filled',
     drinks: [
-      { name: t('afterparty.drinks.beerSmall'), price: '5' },
-      { name: t('afterparty.drinks.beerLarge'), price: '7' },
-      { name: t('afterparty.drinks.beerBottle'), price: '6' }
+      { name: 'Bière / Panaché (3 dl)', price: '4.50' },
+      { name: 'Bière / Panaché (pichet)', price: '20' }
     ]
   },
   {
-    category: t('afterparty.categories.cocktails'),
+    category: 'Cocktails & Apéritifs',
     icon: 'fluent:drink-margarita-24-regular',
     drinks: [
-      { name: 'Mojito', price: '12' },
-      { name: 'Gin Tonic', price: '11' },
-      { name: 'Vodka Red Bull', price: '13' },
-      { name: 'Tequila Sunrise', price: '12' }
+      { name: 'Cocktail funambule', price: '7' },
+      { name: 'Martini + mélange', price: '7' },
+      { name: 'Suze + mélange', price: '7' }
     ]
   },
   {
-    category: t('afterparty.categories.wines'),
-    icon: 'fluent:drink-wine-24-filled',
-    drinks: [
-      { name: t('afterparty.drinks.whiteWine'), price: '5' },
-      { name: t('afterparty.drinks.redWine'), price: '5' },
-      { name: 'Spritz', price: '10' }
-    ]
-  },
-  {
-    category: t('afterparty.categories.softs'),
-    icon: 'fluent:drink-bottle-24-regular',
-    drinks: [
-      { name: 'Coca-Cola', price: '4' },
-      { name: 'Ice Tea', price: '4' },
-      { name: t('afterparty.drinks.water'), price: '3' },
-      { name: 'Red Bull', price: '5' }
-    ]
-  },
-  {
-    category: t('afterparty.categories.shots'),
+    category: 'Long Drinks',
     icon: 'fluent:beaker-24-regular',
     drinks: [
-      { name: t('afterparty.drinks.vodkaShot'), price: '4' },
-      { name: t('afterparty.drinks.tequilaShot'), price: '4' }
+      { name: 'Rhum + mélange', price: '10' },
+      { name: 'Vodka + mélange', price: '10' },
+      { name: 'Gin + mélange', price: '10' }
+    ]
+  },
+  {
+    category: 'Sans alcool',
+    icon: 'fluent:drink-bottle-24-regular',
+    drinks: [
+      { name: 'Minérales (5 dl)', price: '4' },
+      { name: 'Maté (3 dl)', price: '4' }
+    ]
+  },
+  {
+    category: 'Nourriture',
+    icon: 'fluent:food-24-regular',
+    drinks: [
+      { name: 'Sandwich / Pâté', price: '5' }
     ]
   }
 ])
@@ -242,7 +237,7 @@ const drinkMenu = computed(() => [
                       <Icon name="fluent:drink-bottle-24-regular" class="text-amber-400" size="28" />
                       <h2 class="circus-menu-title">{{ t('afterparty.drinksTitle') }}</h2>
                     </div>
-                    <p class="circus-menu-sub">{{ t('afterparty.drinksSubtitle') }}</p>
+                    <p class="circus-menu-sub">{{ t('afterparty.drinksSubtitle') }} • Consignes : +2.- (Verres) / +5.- (Pichets)</p>
                   </div>
                   <div class="circus-payment-badge">
                     <span>{{ t('afterparty.paymentMethods') }}</span>

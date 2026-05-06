@@ -30,6 +30,13 @@ export const AdminService = {
     })
   },
 
+  createStream(payload: { name?: string; location?: string; type: 'custom' | 'apivideo'; url?: string }) {
+    return apiClient<{ ok: boolean; stream: any }>('/admin/stream', {
+      method: 'POST',
+      body: payload
+    })
+  },
+
   seedDatabase() {
     return apiClient<{ success: boolean; summary?: any; error?: string }>('/admin/seed', {
       method: 'POST'

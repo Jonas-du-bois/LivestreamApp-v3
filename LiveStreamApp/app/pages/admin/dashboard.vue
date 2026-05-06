@@ -122,6 +122,41 @@ const handleMigrateRounds = async () => {
 const passages = shallowRef<PassageEnriched[]>([])
 const streams = shallowRef<Stream[]>([])
 
+// ===== Add Stream State =====
+const showAddStreamModal = ref(false)
+const newStreamData = ref({ name: '', location: '', type: 'custom', url: '' })
+const isCreatingStream = ref(false)
+
+const handleCreateStream = async () => {
+  if (!newStreamData.value.name || !newStreamData.value.location) {
+    alert('Veuillez remplir le nom et la salle.')
+    return
+  }
+  isCreatingStream.value = true
+  try {
+    const res = await AdminService.createStream(newStreamData.value as any)
+    if (res.ok) {
+      // Append the new stream to the local list so it shows immediately
+      streams.value = [...streams.value, res.stream]
+      showAddStreamModal.value = false
+      newStreamData.value = { name: '', location: '', type: 'custom', url: '' }
+    }
+  } catch (err: any) {
+    console.error('Failed to create stream:', err)
+    alert('Erreur lors de la création: ' + (err.data?.statusMessage || err.message))
+  } finally {
+    isCreatingStream.value = false
+  }
+}
+
+const copyToClipboard = (text: string) => {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copié dans le presse-papier !')
+    })
+  }
+}
+
 // ===== Filtering Composable =====
 const filterOptions = computed<PassageFilterOptions>(() => ({
   searchQuery: debouncedSearchQuery.value,
@@ -1169,6 +1204,53 @@ const hasActiveFilters = computed(() => {
           
           <!-- Streams View -->
           <div v-if="activeView === 'streams'">
+            
+            <!-- Header & Add Stream Button -->
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-2xl font-bold text-white">Gestion des Streams</h2>
+              <button @click="showAddStreamModal = true" class="btn-primary py-2 px-4 rounded-xl text-sm font-bold flex items-center gap-2">
+                <Icon name="fluent:add-24-regular" class="w-5 h-5" />
+                Ajouter un Stream
+              </button>
+            </div>
+
+            <!-- Add Stream Modal -->
+            <div v-if="showAddStreamModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <div class="bg-gray-900 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+                <h3 class="text-xl font-bold text-white mb-4">Nouveau Stream</h3>
+                <button @click="showAddStreamModal = false" class="absolute top-4 right-4 text-white/50 hover:text-white">
+                  <Icon name="fluent:dismiss-24-regular" class="w-6 h-6" />
+                </button>
+
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-white/60 mb-2">Nom du Stream</label>
+                    <input v-model="newStreamData.name" placeholder="ex: Mevo Cam 1" class="input-modern w-full" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-white/60 mb-2">Salle (Location)</label>
+                    <input v-model="newStreamData.location" placeholder="ex: Iles 1" class="input-modern w-full" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-white/60 mb-2">Source / Type</label>
+                    <select v-model="newStreamData.type" class="input-modern w-full">
+                      <option value="apivideo">API.video (RTMP Mevo)</option>
+                      <option value="custom">Lien Externe (YouTube, Vimeo)</option>
+                    </select>
+                  </div>
+                  <div v-if="newStreamData.type === 'custom'">
+                    <label class="block text-sm font-medium text-white/60 mb-2">Lien (Optionnel)</label>
+                    <input v-model="newStreamData.url" placeholder="https://..." class="input-modern w-full" />
+                  </div>
+
+                  <button @click="handleCreateStream" :disabled="isCreatingStream" class="w-full btn-primary mt-4 flex justify-center items-center gap-2">
+                    <Icon v-if="isCreatingStream" name="svg-spinners:ring-resize" class="w-5 h-5" />
+                    Créer le Stream
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div v-if="isStreamsLoading" class="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
               <article v-for="n in 6" :key="`stream-skeleton-${n}`" class="skeleton-card">
                 <div class="p-5 sm:p-6 space-y-5">
@@ -1223,13 +1305,38 @@ const hasActiveFilters = computed(() => {
                   <div class="space-y-5">
                     <div>
                       <label class="block text-sm font-medium text-white/60 mb-2">
-                        {{ t('admin.youtubeStreamUrl') }}
+                        Stream URL (YouTube/Vimeo/API.Video)
                       </label>
                       <input
                         v-model="stream.url"
                         class="input-modern w-full"
-                        placeholder="https://youtube.com/..."
+                        placeholder="https://embed.api.video/..."
                       />
+                    </div>
+                    
+                    <!-- API.video RTMP Info -->
+                    <div v-if="stream.apiVideoLiveStreamId" class="glass-card rounded-xl p-4 space-y-3">
+                      <div class="flex items-center justify-between mb-2">
+                         <span class="text-sm font-bold text-white flex items-center gap-2"><Icon name="fluent:camera-dome-24-regular" class="w-4 h-4"/> Config. Mevo (RTMP)</span>
+                      </div>
+                      <div>
+                        <label class="block text-xs font-medium text-white/50 mb-1">URL du serveur RTMP</label>
+                        <div class="flex items-center gap-2">
+                          <input type="text" readonly value="rtmp://broadcast.api.video/s" class="input-modern w-full text-xs font-mono py-1.5 px-3 opacity-70" />
+                          <button @click="copyToClipboard('rtmp://broadcast.api.video/s')" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="Copier">
+                            <Icon name="fluent:copy-24-regular" class="w-4 h-4 text-white" />
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <label class="block text-xs font-medium text-white/50 mb-1">Clé de stream</label>
+                        <div class="flex items-center gap-2">
+                          <input type="text" readonly :value="stream.streamKey" class="input-modern w-full text-xs font-mono py-1.5 px-3 opacity-70" />
+                          <button @click="copyToClipboard(stream.streamKey || '')" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" title="Copier">
+                            <Icon name="fluent:copy-24-regular" class="w-4 h-4 text-white" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                     
                     <!-- Live Toggle -->

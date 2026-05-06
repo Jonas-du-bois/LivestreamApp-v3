@@ -14,6 +14,7 @@
     "mobile": "npm run generate:mobile && npm run cap:sync"
   },
   "dependencies": {
+    "@api.video/nodejs-client": "^2.6.8",
     "@capacitor-community/firebase-analytics": "^7.0.1",
     "@capacitor/android": "^8.0.2",
     "@capacitor/cli": "^8.0.2",
@@ -29,11 +30,11 @@
     "@vueuse/core": "^14.2.1",
     "chart.js": "^4.5.1",
     "firebase": "^12.9.0",
-    "firebase-admin": "^13.6.1",
+    "firebase-admin": "^10.1.0",
     "h3-zod": "^0.5.3",
     "leaflet": "^1.9.4",
     "mongoose": "^9.1.5",
-    "nitro": "^3.0.1-alpha.2",
+    "nitro": "^3.0.260429-beta",
     "nuxt": "^4.3.0",
     "pinia-plugin-persistedstate": "^4.7.1",
     "socket.io": "^4.8.3",
