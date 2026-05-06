@@ -1434,7 +1434,7 @@ const hasActiveFilters = computed(() => {
                     v-model="selectedGroupForLogo"
                     class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all appearance-none"
                   >
-                    <option value="" disabled>Choisir un groupe...</option>
+                    <option value="fallback">Image générique par défaut (Tous les groupes)</option>
                     <!-- Unique groups from passages -->
                     <option 
                       v-for="group in Array.from(new Set(passages.filter(p => p.group).map(p => JSON.stringify({id: p.group!._id, name: p.group!.name})))).map(g => JSON.parse(g as string)).sort((a,b) => a.name.localeCompare(b.name))" 
@@ -1443,6 +1443,50 @@ const hasActiveFilters = computed(() => {
                     >
                       {{ group.name }}
                     </option>
+                  </select>
+                </div>
+
+                <!-- Hero Selection -->
+                <div v-if="mediaUploadType === 'hero'" class="space-y-2">
+                  <label class="text-sm font-medium text-white/60 ml-1">Emplacement Accueil (Hero) <span class="text-red-400">*</span></label>
+                  <select 
+                    v-model="selectedHeroImage"
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all appearance-none"
+                  >
+                    <option value="hero-1">Slide 1 : Afterparty (Par défaut)</option>
+                    <option value="hero-2">Slide 2 : Nourriture (Par défaut)</option>
+                    <option value="hero-3">Slide 3 : Dernier Résultat</option>
+                    <option value="hero-fallback">Slide 4 : Stream en direct (Si pas d'image YouTube)</option>
+                    <option value="hero-5">Slide 5 : Nourriture (Dynamique)</option>
+                  </select>
+                </div>
+
+                <!-- Food Selection -->
+                <div v-if="mediaUploadType === 'food'" class="space-y-2">
+                  <label class="text-sm font-medium text-white/60 ml-1">Restaurant / Stand <span class="text-red-400">*</span></label>
+                  <select 
+                    v-model="selectedFoodSpot"
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all appearance-none"
+                  >
+                    <option value="food-1">1. Cantine (Plats Chauds)</option>
+                    <option value="food-2">2. Burger (Snack)</option>
+                    <option value="food-3">3. Raclette</option>
+                    <option value="food-4">4. Bar (Boissons)</option>
+                  </select>
+                </div>
+
+                <!-- Afterparty Selection -->
+                <div v-if="mediaUploadType === 'afterparty'" class="space-y-2">
+                  <label class="text-sm font-medium text-white/60 ml-1">Image Afterparty <span class="text-red-400">*</span></label>
+                  <select 
+                    v-model="selectedAfterpartyImage"
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all appearance-none"
+                  >
+                    <option value="hero-4">Bannière sur l'Accueil (Slide 4)</option>
+                    <option value="afterparty-1">Page Afterparty : Galerie (Image 1)</option>
+                    <option value="afterparty-2">Page Afterparty : Galerie (Image 2)</option>
+                    <option value="afterparty-3">Page Afterparty : Galerie (Image 3)</option>
+                    <option value="afterparty-4">Page Afterparty : Galerie (Image 4)</option>
                   </select>
                 </div>
 
