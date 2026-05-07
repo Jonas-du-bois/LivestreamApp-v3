@@ -56,7 +56,7 @@ export const AdminService = {
   },
 
   generateFinals(payload: { 
-    finalType: 'WITH_HAND' | 'WITHOUT_HAND';
+    finalType: string;
     qualifiersCount: number; 
     startTime: string; 
     intervalMinutes: number; 

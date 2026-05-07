@@ -27,7 +27,7 @@ const isGeneratingFinals = ref(false)
 const isHeaderCollapsed = ref(false)
 
 // Finals Generation State
-type FinalsGenerationType = 'WITH_HAND' | 'WITHOUT_HAND'
+type FinalsGenerationType = string
 
 interface FinalsTypeOption {
   value: FinalsGenerationType
@@ -45,20 +45,39 @@ interface FinalsCandidate {
   sourceName: string
 }
 
-const finalsTypeOptions: FinalsTypeOption[] = [
-  {
-    value: 'WITH_HAND',
-    label: 'Finale gymnastique avec engin à main',
-    sourceCodes: ['avec-engin-12x12', 'avec-engin-12x14', 'avec-engin-12x18'],
-    sourceLabel: 'Surfaces avec engin à main (12x12, 12x14, 12x18)'
-  },
-  {
-    value: 'WITHOUT_HAND',
-    label: 'Finale gymnastique sans engin à main',
-    sourceCodes: ['sans-engin-12x12', 'sans-engin-12x14', 'sans-engin-12x18'],
-    sourceLabel: 'Surfaces sans engin à main (12x12, 12x14, 12x18)'
-  }
-]
+const finalsTypeOptions = computed<FinalsTypeOption[]>(() => {
+  const baseOptions: FinalsTypeOption[] = [
+    {
+      value: 'WITH_HAND',
+      label: 'Finale gymnastique avec engin à main',
+      sourceCodes: ['avec-engin-12x12', 'avec-engin-12x14', 'avec-engin-12x18'],
+      sourceLabel: 'Surfaces avec engin à main (12x12, 12x14, 12x18)'
+    },
+    {
+      value: 'WITHOUT_HAND',
+      label: 'Finale gymnastique sans engin à main',
+      sourceCodes: ['sans-engin-12x12', 'sans-engin-12x14', 'sans-engin-12x18'],
+      sourceLabel: 'Surfaces sans engin à main (12x12, 12x14, 12x18)'
+    }
+  ]
+
+  const excludedCodes = new Set([
+    'avec-engin-12x12', 'avec-engin-12x14', 'avec-engin-12x18',
+    'sans-engin-12x12', 'sans-engin-12x14', 'sans-engin-12x18',
+    'GYAE', 'GYSE' // Exclude the generated finals target codes too if they appear
+  ])
+
+  const dynamicOptions: FinalsTypeOption[] = availableApparatus.value
+    .filter(app => !excludedCodes.has(app.code))
+    .map(app => ({
+      value: app._id,
+      label: `Finale ${translateApparatus(app.code, app.name)}`,
+      sourceCodes: [app.code],
+      sourceLabel: translateApparatus(app.code, app.name)
+    }))
+
+  return [...baseOptions, ...dynamicOptions]
+})
 
 const finalsForm = ref({
   finalType: 'WITH_HAND' as FinalsGenerationType,
@@ -227,10 +246,10 @@ const availableDays = computed(() => {
 
 const availableApparatus = computed(() => {
   // Use passages.value directly (PassageEnriched[])
-  const seen = new Map<string, { code: string; name: string }>()
+  const seen = new Map<string, { _id: string; code: string; name: string }>()
   for (const p of passages.value) {
     if (p.apparatus?.code && !seen.has(p.apparatus.code)) {
-      seen.set(p.apparatus.code, { code: p.apparatus.code, name: p.apparatus.name })
+      seen.set(p.apparatus.code, { _id: p.apparatus._id, code: p.apparatus.code, name: p.apparatus.name })
     }
   }
   return Array.from(seen.values()).sort((a, b) => {
@@ -249,7 +268,7 @@ const availableCategories = computed(() => {
 })
 
 const selectedFinalTypeConfig = computed(() =>
-  finalsTypeOptions.find((option) => option.value === finalsForm.value.finalType) || null
+  finalsTypeOptions.value.find((option: FinalsTypeOption) => option.value === finalsForm.value.finalType) || null
 )
 
 const finalsCandidates = computed<FinalsCandidate[]>(() => {
