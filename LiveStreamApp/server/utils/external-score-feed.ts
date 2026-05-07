@@ -46,6 +46,7 @@ export interface ExternalScoreEntry {
   timeSlot: string;
   score: number;
   category: 'ACTIFS' | 'JEUNESSE_A' | 'JEUNESSE_B' | 'UNKNOWN';
+  apparatusHints: string[];
 }
 
 const normalizeWhitespace = (value: string) => value.replace(/\s+/g, ' ').trim();
@@ -95,6 +96,33 @@ const normalizeCategory = (value?: string): ExternalScoreEntry['category'] => {
   return CATEGORY_MAP[normalized] || 'UNKNOWN';
 };
 
+const normalizeDiscipline = (value?: string) => normalizeWhitespace(fixEncoding(value || ''));
+
+const resolveApparatusHints = (disciplineRaw?: string) => {
+  const discipline = normalizeDiscipline(disciplineRaw);
+  if (!discipline) return [] as string[];
+
+  const directMap: Record<string, string[]> = {
+    '12x12 m': ['sans-engin-12x12', 'avec-engin-12x12'],
+    '12x12m': ['sans-engin-12x12', 'avec-engin-12x12'],
+    '12x18 m': ['sans-engin-12x18', 'avec-engin-12x18'],
+    '12x18m': ['sans-engin-12x18', 'avec-engin-12x18'],
+    '12x24 m': ['sans-engin-12x14', 'avec-engin-12x14'],
+    '12x24m': ['sans-engin-12x14', 'avec-engin-12x14'],
+    '12x14 m': ['sans-engin-12x14', 'avec-engin-12x14'],
+    '12x14m': ['sans-engin-12x14', 'avec-engin-12x14'],
+    'Anneaux balançants': ['AB'],
+    "Combinaison d'engins": ['CE'],
+    'Barre asymétrique scolaires': ['BAS'],
+    'Barre fixe': ['BF'],
+    'Barres parallèles': ['BP'],
+    Saut: ['ST', 'SA'],
+    Sol: ['SO', 'SS']
+  };
+
+  return directMap[discipline] || [];
+};
+
 export const normalizeLookupValue = (value: string) => canonicalize(value);
 
 export const timeSlotToMinutes = (timeSlot: string) => {
@@ -140,7 +168,8 @@ export const parseExternalScoreFeed = (payload: unknown): ExternalScoreEntry[] =
         location,
         timeSlot,
         score,
-        category: normalizeCategory(row.Categorie)
+        category: normalizeCategory(row.Categorie),
+        apparatusHints: resolveApparatusHints(row.Discipline)
       } as ExternalScoreEntry;
     })
     .filter((item): item is ExternalScoreEntry => Boolean(item));

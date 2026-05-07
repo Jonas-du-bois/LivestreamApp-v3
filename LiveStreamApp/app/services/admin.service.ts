@@ -89,5 +89,25 @@ export const AdminService = {
       method: 'PUT',
       body: { logoUrl }
     })
+  },
+
+  syncExternalScores(dryRun = true) {
+    return apiClient<{
+      ok: boolean;
+      dryRun: boolean;
+      feedUrl: string;
+      result: {
+        rowsWithScore: number;
+        updated: number;
+        unchanged: number;
+        unmatched: number;
+        ambiguous: number;
+        unmatchedSamples: Array<Record<string, any>>;
+        ambiguousSamples: Array<Record<string, any>>;
+      };
+    }>('/admin/external-scores/sync', {
+      method: 'POST',
+      body: { dryRun }
+    })
   }
 }

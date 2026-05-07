@@ -83,6 +83,8 @@ FLICKR_USER_ID=
 EXTERNAL_SCORES_FEED_URL=
 ```
 
+> Après modification d'une variable d'environnement sur Render, redémarrer/redeploy le service pour que `runtimeConfig` recharge la nouvelle valeur.
+
 ### Lancement en développement
 
 ```bash
