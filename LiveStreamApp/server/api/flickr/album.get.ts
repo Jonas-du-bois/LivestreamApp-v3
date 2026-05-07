@@ -1,4 +1,5 @@
 import { FLICKR_CACHE_MAX_AGE } from '../../utils/timings'
+import { createFlickrApiError, createFlickrNetworkError } from '../../utils/flickr'
 
 interface FlickrRawPhoto {
   id: string
@@ -57,14 +58,15 @@ export default defineCachedEventHandler(async (_event) => {
 
   console.log('[flickr] Fetching album', albumId)
 
-  const response: Record<string, any> = await $fetch(url)
+  let response: Record<string, any>
+  try {
+    response = await $fetch(url)
+  } catch (error) {
+    throw createFlickrNetworkError(error, 'album')
+  }
 
   if (response?.stat !== 'ok') {
-    throw createError({
-      statusCode: 502,
-      statusMessage: 'Flickr API Error',
-      message: response?.message ?? 'Erreur inconnue depuis l\'API Flickr'
-    })
+    throw createFlickrApiError(response, 'album')
   }
 
   const rawPhotos: FlickrRawPhoto[] = response.photoset?.photo ?? []

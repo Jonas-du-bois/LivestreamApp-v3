@@ -3,6 +3,8 @@
  * Proxy vers flickr.photos.getSizes – retourne les URLs de toutes les tailles
  * disponibles pour une photo, y compris l'originale.
  */
+import { createFlickrApiError, createFlickrNetworkError } from '../../../../utils/flickr'
+
 export default defineEventHandler(async (event) => {
   const photoId = getRouterParam(event, 'id')
 
@@ -31,14 +33,15 @@ export default defineEventHandler(async (event) => {
 
   const url = `https://www.flickr.com/services/rest/?${params.toString()}`
 
-  const response: Record<string, any> = await $fetch(url)
+  let response: Record<string, any>
+  try {
+    response = await $fetch(url)
+  } catch (error) {
+    throw createFlickrNetworkError(error, 'photoSizes')
+  }
 
   if (response?.stat !== 'ok') {
-    throw createError({
-      statusCode: 502,
-      statusMessage: 'Flickr API Error',
-      message: response?.message ?? 'Erreur inconnue depuis l\'API Flickr'
-    })
+    throw createFlickrApiError(response, 'photoSizes')
   }
 
   const sizes: Array<{

@@ -9,8 +9,8 @@ export const usePartyCountdown = () => {
   const PARTY_TIMESTAMP = PARTY_DATE.getTime()
 
   // Timer indépendant de useNow car le countdown nécessite une précision à la seconde
-  const now = ref(Date.now())
-  let timerInterval: ReturnType<typeof setInterval>
+  const now = ref<number | null>(null)
+  let timerInterval: ReturnType<typeof setInterval> | null = null
 
   onMounted(() => {
     now.value = Date.now()
@@ -33,6 +33,7 @@ export const usePartyCountdown = () => {
 
   // Avec secondes (pour la page afterparty)
   const timeLeftFull = computed(() => {
+    if (now.value === null) return ''
     const diff = PARTY_TIMESTAMP - now.value
     if (diff <= 0) return t('afterparty.countdownNow')
     const { d, h, m, s } = decompose(diff)
@@ -41,6 +42,7 @@ export const usePartyCountdown = () => {
 
   // Sans secondes (pour le carousel d'accueil)
   const timeLeftShort = computed(() => {
+    if (now.value === null) return ''
     const diff = PARTY_TIMESTAMP - now.value
     if (diff <= 0) return t('afterparty.countdownNow')
     const { d, h, m } = decompose(diff)

@@ -290,7 +290,9 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
             class="absolute inset-[10%] rounded-2xl premium-skeleton-surface premium-skeleton-shimmer"
           />
 
-          <NuxtImg format="webp" loading="lazy"             v-if="displayUrl"
+          <img
+            v-if="displayUrl"
+            loading="lazy"
             :src="displayUrl"
             :alt="title || 'Photo'"
             class="max-w-full max-h-full object-contain select-none
@@ -299,6 +301,7 @@ const imageTransform = computed(() => `scale(${scale.value}) translate(${transla
             :style="{ transform: imageTransform }"
             draggable="false"
             @load="imgLoaded = true"
+            @error="imgLoaded = true"
           />
         </div>
 

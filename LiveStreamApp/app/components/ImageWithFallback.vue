@@ -8,11 +8,20 @@ interface Props {
   alt?: string
 }
 
+defineOptions({
+  inheritAttrs: false
+})
+
 const props = defineProps<Props>()
 const src = toRef(props, 'src')
 const alt = toRef(props, 'alt')
 
 const didError = ref(false)
+
+const isDirectSrc = computed(() => {
+  const value = src.value || ''
+  return value.startsWith('http') || value.startsWith('data:') || value.startsWith('/')
+})
 
 // Image de remplacement au format base64 pour éviter une requête réseau supplémentaire en cas d'erreur.
 const ERROR_IMG_SRC = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODgiIGhlaWdodD0iODgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBvcGFjaXR5PSIuMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzLjciPjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjU2IiByeD0iNiIvPjxwYXRoIGQ9Im0xNiA1OCAxNi0xOCAzMiAzMiIvPjxjaXJjbGUgY3g9IjUzIiBjeT0iMzUiIHI9IjciLz48L3N2Zz4KCg=='
@@ -25,6 +34,7 @@ const handleError = () => {
 <template>
   <div 
     v-if="didError" 
+    v-bind="$attrs"
     class="inline-block bg-gray-100 text-center align-middle"
   >
     <div class="flex items-center justify-center w-full h-full">
@@ -35,12 +45,21 @@ const handleError = () => {
       />
     </div>
   </div>
+  <img
+    v-else-if="isDirectSrc"
+    v-bind="$attrs"
+    :src="src || ''"
+    :alt="alt"
+    loading="lazy"
+    decoding="async"
+    @error="handleError"
+  />
   <NuxtImg 
     v-else
+    v-bind="$attrs"
     :src="src || ''" 
     :alt="alt" 
     @error="handleError"
-    :provider="src?.startsWith('http') || src?.startsWith('data:') || src?.startsWith('/') ? 'none' : 'cloudinary'"
     format="webp"
     quality="80"
   />

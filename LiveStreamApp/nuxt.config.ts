@@ -1,5 +1,9 @@
 // nuxt.config.ts
 const isMobile = process.env.NUXT_SSR === 'false'
+const cloudinaryBaseURL = process.env.CLOUDINARY_BASE_URL
+  || (process.env.CLOUDINARY_CLOUD_NAME
+    ? `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/`
+    : 'https://res.cloudinary.com/demo/image/upload/')
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-02-02',
@@ -44,7 +48,7 @@ export default defineNuxtConfig({
   image: {
     provider: 'cloudinary',
     cloudinary: {
-      baseURL: process.env.CLOUDINARY_BASE_URL || 'https://res.cloudinary.com/demo/image/upload/' // Remplacer demo par le cloud name plus tard
+      baseURL: cloudinaryBaseURL
     }
   },
 
@@ -217,6 +221,10 @@ export default defineNuxtConfig({
     adminPassword: process.env.NUXT_ADMIN_PASSWORD,
     mongodbUri: process.env.MONGODB_URI,
     vapidPrivateKey: process.env.NUXT_VAPID_PRIVATE_KEY,
+    /** Configuration Cloudinary (serveur uniquement pour signer les uploads admin) */
+    cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+    cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
     /** JSON stringifié du Service Account Firebase (pour FCM côté serveur) */
     firebaseServiceAccount: process.env.FIREBASE_SERVICE_ACCOUNT,
     /** Clé API Flickr (serveur uniquement – ne jamais exposer côté client) */

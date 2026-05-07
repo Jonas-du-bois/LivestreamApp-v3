@@ -11,7 +11,17 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
   if (!config.cloudinaryCloudName || !config.cloudinaryApiKey || !config.cloudinaryApiSecret) {
-    throw createError({ statusCode: 500, statusMessage: 'Cloudinary configuration is missing.' });
+    const missing = [
+      !config.cloudinaryCloudName && 'CLOUDINARY_CLOUD_NAME',
+      !config.cloudinaryApiKey && 'CLOUDINARY_API_KEY',
+      !config.cloudinaryApiSecret && 'CLOUDINARY_API_SECRET'
+    ].filter(Boolean);
+
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Cloudinary configuration is missing.',
+      message: `Variables Cloudinary manquantes côté serveur: ${missing.join(', ')}.`
+    });
   }
 
   const query = await useValidatedQuery(event, querySchema);

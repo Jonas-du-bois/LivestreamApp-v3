@@ -67,6 +67,12 @@ NUXT_PUBLIC_FIREBASE_APP_ID=
 NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 FIREBASE_SERVICE_ACCOUNT=          # JSON stringifié du Service Account (serveur uniquement)
 
+# ── Uploads Cloudinary ────────────────────────────────────────────
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+CLOUDINARY_BASE_URL=               # Optionnel: https://res.cloudinary.com/<cloud_name>/image/upload/
+
 # ── Photos Flickr ─────────────────────────────────────────────────
 FLICKR_API_KEY=
 FLICKR_ALBUM_ID=

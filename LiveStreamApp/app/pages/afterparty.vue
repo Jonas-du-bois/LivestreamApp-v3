@@ -14,6 +14,8 @@ const galleryImages = [
   'livestreamapp/afterparty/afterparty-4'
 ]
 
+const repeatedGalleryImages = [...galleryImages, ...galleryImages]
+
 const highlights = computed(() => [
   {
     icon: 'fluent:clock-alarm-24-filled',
@@ -67,7 +69,7 @@ const drinkMenu = computed(() => [
   },
   {
     category: 'Sans alcool',
-    icon: 'fluent:drink-bottle-24-regular',
+    icon: 'fluent:drink-bottle-20-regular',
     drinks: [
       { name: 'Minérales (5 dl)', price: '4' },
       { name: 'Maté (3 dl)', price: '4' }
@@ -198,7 +200,7 @@ const drinkMenu = computed(() => [
             <div class="gallery-curtain-right"></div>
             <div class="flex gap-4 animate-scroll whitespace-nowrap px-4">
               <div
-                v-for="(img, i) in [...galleryImages, ...galleryImages]"
+                v-for="(img, i) in repeatedGalleryImages"
                 :key="i"
                 class="inline-block h-48 w-72 shrink-0 rounded-none overflow-hidden border-2 border-amber-400/50 shadow-xl relative group circus-gallery-item"
               >
@@ -234,7 +236,7 @@ const drinkMenu = computed(() => [
                 <div class="flex items-center justify-between">
                   <div>
                     <div class="flex items-center gap-3 mb-1">
-                      <Icon name="fluent:drink-bottle-24-regular" class="text-amber-400" size="28" />
+                      <Icon name="fluent:drink-bottle-20-regular" class="text-amber-400" size="28" />
                       <h2 class="circus-menu-title">{{ t('afterparty.drinksTitle') }}</h2>
                     </div>
                     <p class="circus-menu-sub">{{ t('afterparty.drinksSubtitle') }} • Consignes : +2.- (Verres) / +5.- (Pichets)</p>

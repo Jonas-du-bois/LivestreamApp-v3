@@ -442,10 +442,43 @@ const getStreamForPassage = (passage: PassageEnriched) => {
 // ===== Media Management =====
 const mediaUploadType = ref<'groupLogo' | 'hero' | 'food' | 'afterparty'>('groupLogo')
 const selectedGroupForLogo = ref<string>('')
+const selectedHeroImage = ref('hero-1')
+const selectedFoodSpot = ref('food-1')
+const selectedAfterpartyImage = ref('afterparty-1')
 const isUploading = ref(false)
 const uploadProgress = ref(0)
 const uploadMessage = ref<{ type: 'error' | 'success', text: string } | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
+
+const getMediaUploadTarget = () => {
+  if (mediaUploadType.value === 'groupLogo') {
+    if (!selectedGroupForLogo.value) return null
+    return {
+      folder: 'livestreamapp/groupLogo',
+      public_id: `logo_${selectedGroupForLogo.value}`
+    }
+  }
+
+  if (mediaUploadType.value === 'hero') {
+    return {
+      folder: 'livestreamapp/hero',
+      public_id: selectedHeroImage.value
+    }
+  }
+
+  if (mediaUploadType.value === 'food') {
+    return {
+      folder: 'livestreamapp/food',
+      public_id: selectedFoodSpot.value
+    }
+  }
+
+  const afterpartyPublicId = selectedAfterpartyImage.value
+  return {
+    folder: afterpartyPublicId.startsWith('hero-') ? 'livestreamapp/hero' : 'livestreamapp/afterparty',
+    public_id: afterpartyPublicId
+  }
+}
 
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -463,19 +496,15 @@ const handleFileUpload = async (event: Event) => {
 
   try {
     // 1. Get Signature
-    let folder = `livestreamapp/${mediaUploadType.value}`
-    let public_id = undefined
+    const uploadTarget = getMediaUploadTarget()
 
-    // Optionally set specific public IDs if needed to overwrite, e.g., hero-1
-    if (mediaUploadType.value === 'groupLogo') {
-      public_id = `logo_${selectedGroupForLogo.value}`
-    } else {
-      // Just keep original name for others
-      public_id = file.name.split('.')[0]
+    if (!uploadTarget?.public_id) {
+      uploadMessage.value = { type: 'error', text: 'Veuillez sélectionner un emplacement pour cette image.' }
+      return
     }
 
     uploadProgress.value = 30
-    const sigRes = await AdminService.getCloudinarySignature({ folder, public_id })
+    const sigRes = await AdminService.getCloudinarySignature(uploadTarget)
     
     // 2. Upload to Cloudinary
     uploadProgress.value = 50
@@ -506,7 +535,7 @@ const handleFileUpload = async (event: Event) => {
       await AdminService.updateGroupLogo(selectedGroupForLogo.value, cloudData.public_id)
       uploadMessage.value = { type: 'success', text: 'Logo du groupe mis à jour avec succès !' }
     } else {
-      uploadMessage.value = { type: 'success', text: `Image uplaodée avec succès ! URL (ou ID): ${cloudData.public_id}` }
+      uploadMessage.value = { type: 'success', text: `Image uploadée avec succès : ${cloudData.public_id}` }
     }
     
     uploadProgress.value = 100
