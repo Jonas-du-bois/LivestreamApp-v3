@@ -24,8 +24,8 @@
       :aria-label="t('food.title')"
       class="mb-8 px-4"
     />
-    
-    <div class=" mb-8">
+
+    <div class="mb-8">
       <UiInfoTile
         variant="feature"
         icon-shape="circle"
@@ -41,7 +41,7 @@
     <TransitionGroup
       name="list"
       tag="div"
-      class=" grid grid-cols-1 md:grid-cols-2 gap-6"
+      class="grid grid-cols-1 md:grid-cols-2 gap-6"
     >
       <UiMediaCard
         v-for="(spot, index) in filteredSpots"
@@ -92,7 +92,11 @@
               {{ t('food.onTheMenu') }}
             </h4>
             <ul class="space-y-3">
-              <li v-for="(item, idx) in spot.menu" :key="idx" class="flex items-end justify-between text-sm group/item">
+              <li
+                v-for="(item, idx) in spot.menu"
+                :key="idx"
+                class="flex items-end justify-between text-sm group/item"
+              >
                 <span class="text-white/90 font-medium relative pr-2 z-10">{{ item.item }}</span>
                 <span class="flex-grow border-b border-dashed border-white/10 mb-1 mx-1"></span>
                 <span class="text-emerald-300 font-bold pl-2 z-10">{{ item.price }}</span>
@@ -117,106 +121,153 @@
 
 const { t } = useI18n()
 
-// --- Configuration ---
-const activeCategory = ref('all');
+const activeCategory = ref('all')
 
 const categories = computed(() => [
-  { id: 'all', label: t('food.all') },
-  { id: 'hot', label: t('food.hotMeals') },
+  { id: 'all',   label: t('food.all') },
+  { id: 'hot',   label: t('food.hotMeals') },
   { id: 'snack', label: t('food.snacks') },
   { id: 'drink', label: t('food.drinks') },
-]);
+])
 
-// --- Données ---
 const foodSpots = computed(() => [
+  // ── PLATS CHAUDS ──────────────────────────────────────────────────────────
   {
     id: 1,
     category: 'hot',
-    name: t('food.spots.cantine.name'),
-    type: t('food.spots.cantine.type'),
-    description: t('food.spots.cantine.description'),
-    icon: "fluent:food-24-filled",
+    name: 'Cantine',
+    type: 'Restauration',
+    description: 'Le point central de la restauration : plats chauds, snacks et boissons pour recharger les batteries.',
+    icon: 'fluent:food-24-filled',
     isOpen: true,
-    image: "/img/food-1.png",
+    image: 'livestreamapp/food/food-1',
     menu: [
-      { item: t('food.menu.steakFrites'), price: "18.-" },
-      { item: t('food.menu.pasta'), price: "14.-" },
-      { item: t('food.menu.salad'), price: "8.-" }
-    ]
+      { item: 'Saucisse + Frites + Salade', price: '16.-' },
+      { item: 'Salade Composée',            price: '12.-' },
+      { item: 'Chicken Nuggets',            price: '8.-'  },
+      { item: 'Frites',                     price: '8.-'  },
+      { item: 'Hot-Dog',                    price: '5.-'  },
+      { item: 'Sandwich',                   price: '5.-'  },
+      { item: 'Croissant',                  price: '3.-'  },
+    ],
   },
   {
     id: 2,
-    category: 'snack',
-    name: t('food.spots.burger.name'),
-    type: t('food.spots.burger.type'),
-    description: t('food.spots.burger.description'),
-    icon: "fluent:food-24-filled",
+    category: 'hot',
+    name: 'Sawasdee',
+    type: 'Food Truck Thaï',
+    description: 'Saveurs thaïlandaises authentiques : currys parfumés, pad thaï et entrées asiatiques.',
+    icon: 'fluent:bowl-salad-24-filled',
     isOpen: true,
-    image: "/img/food-2.png",
+    image: 'livestreamapp/food/food-2',
     menu: [
-      { item: t('food.menu.classicBurger'), price: "15.-" },
-      { item: t('food.menu.vaudoisBurger'), price: "17.-" },
-      { item: t('food.menu.fries'), price: "6.-" }
-    ]
+      { item: 'Rouleaux de printemps (2 pcs)', price: '8.-'  },
+      { item: 'Beignets de crevette (4 pcs)',  price: '8.-'  },
+      { item: 'Poulet curry rouge/vert + riz', price: '18.-' },
+      { item: 'Poulet aigre-doux + riz',       price: '18.-' },
+      { item: 'Pad Thai crevettes',            price: '20.-' },
+      { item: 'Pad Thai légumes',              price: '18.-' },
+    ],
   },
   {
     id: 3,
     category: 'hot',
-    name: t('food.spots.raclette.name'),
-    type: t('food.spots.raclette.type'),
-    description: t('food.spots.raclette.description'),
-    icon: "fluent:food-toast-24-filled",
-    isOpen: true,
-    image: "livestreamapp/food/food-3",
+    name: 'Nomad',
+    type: 'Food Truck',
+    description: 'Notre dernier food truck de l\'édition — le menu arrive bientôt. Stay tuned !',
+    icon: 'fluent:vehicle-truck-24-filled',
+    isOpen: false,
+    image: 'livestreamapp/food/food-3',
     menu: [
-      { item: t('food.menu.raclettePortion'), price: "7.-" },
-      { item: t('food.menu.valaisanBoard'), price: "16.-" },
-      { item: t('food.menu.hotTea'), price: "4.-" }
-    ]
+      { item: 'Menu à venir…', price: '–' },
+    ],
   },
+
+  // ── SNACKS ────────────────────────────────────────────────────────────────
   {
     id: 4,
-    category: 'drink',
-    name: t('food.spots.bar.name'),
-    type: t('food.spots.bar.type'),
-    description: t('food.spots.bar.description'),
-    icon: "fluent:drink-beer-24-filled",
+    category: 'snack',
+    name: 'Pizza au Feu de Bois',
+    type: 'Pizzeria',
+    description: 'Pizzas artisanales cuites au feu de bois avec des garnitures généreuses.',
+    icon: 'fluent:food-pizza-24-filled',
     isOpen: true,
-    image: "/img/food-4.png",
+    image: 'livestreamapp/food/food-4',
     menu: [
-      { item: t('food.menu.beer'), price: "5.-" },
-      { item: t('food.menu.water'), price: "4.-" },
-      { item: t('food.menu.coffee'), price: "3.50" }
-    ]
-  }
-]);
+      { item: 'Sèches au lard',     price: 'CHF 15.-' },
+      { item: 'Margherita',         price: 'CHF 15.-' },
+      { item: 'Jambon',             price: 'CHF 16.-' },
+      { item: 'Jambon-Champignons', price: 'CHF 16.-' },
+      { item: 'Chorizo',            price: 'CHF 16.-' },
+      { item: 'Campagnarde',        price: 'CHF 18.-' },
+    ],
+  },
 
-// --- Computed ---
+  // ── BOISSONS ──────────────────────────────────────────────────────────────
+  {
+    id: 5,
+    category: 'drink',
+    name: 'Stand Bière',
+    type: 'Bar',
+    description: 'Bières pression fraîches et panachés pour se rafraîchir entre deux épreuves.',
+    icon: 'fluent:drink-beer-24-filled',
+    isOpen: true,
+    image: 'livestreamapp/food/food-5',
+    menu: [
+      { item: 'Bière pression (verre)',  price: '6.50' },
+      { item: 'Bière pression (pichet)', price: '25.-' },
+      { item: 'Panaché (verre)',         price: '6.50' },
+      { item: 'Panaché (pichet)',        price: '25.-' },
+    ],
+  },
+  {
+    id: 6,
+    category: 'drink',
+    name: 'Isles',
+    type: 'Bar',
+    description: 'Boissons chaudes et fraîches, vins et petite restauration légère.',
+    icon: 'fluent:drink-coffee-24-filled',
+    isOpen: true,
+    image: 'livestreamapp/food/food-6',
+    menu: [
+      { item: 'Café / Thé',                    price: '5.-'  },
+      { item: 'Soft (Coca, Nestea, Focus…)',    price: '4.-'  },
+      { item: 'Somersby',                      price: '7.-'  },
+      { item: 'Vin Blanc / Rosé / Rouge (5dl)', price: '17.-' },
+    ],
+  },
+  {
+    id: 7,
+    category: 'drink',
+    name: 'Léon-Michaud',
+    type: 'Bar',
+    description: 'Bar avec bières pression, vins, softs et petite restauration.',
+    icon: 'fluent:drink-beer-24-filled',
+    isOpen: true,
+    image: 'livestreamapp/food/food-7',
+    menu: [
+      { item: 'Bière pression (verre)',         price: '6.50' },
+      { item: 'Bière pression (pichet)',        price: '25.-' },
+      { item: 'Somersby',                      price: '7.-'  },
+      { item: 'Vin Blanc / Rosé / Rouge (5dl)', price: '17.-' },
+      { item: 'Café / Thé',                    price: '5.-'  },
+    ],
+  },
+])
+
 const filteredSpots = computed(() => {
-  if (activeCategory.value === 'all') return foodSpots.value;
-  return foodSpots.value.filter(spot => spot.category === activeCategory.value);
-});
+  if (activeCategory.value === 'all') return foodSpots.value
+  return foodSpots.value.filter(spot => spot.category === activeCategory.value)
+})
 </script>
 
 <style scoped>
-/* Hide scrollbar */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 @keyframes cascade-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .premium-cascade-item {

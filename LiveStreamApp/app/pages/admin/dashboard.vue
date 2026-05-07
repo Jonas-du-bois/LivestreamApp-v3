@@ -1497,10 +1497,13 @@ const hasActiveFilters = computed(() => {
                     v-model="selectedFoodSpot"
                     class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all appearance-none"
                   >
-                    <option value="food-1">1. Cantine (Plats Chauds)</option>
-                    <option value="food-2">2. Burger (Snack)</option>
-                    <option value="food-3">3. Raclette</option>
-                    <option value="food-4">4. Bar (Boissons)</option>
+                    <option value="food-1">1. Cantine</option>
+                    <option value="food-2">2. Sawasdee</option>
+                    <option value="food-3">3. Nomad</option>
+                    <option value="food-4">4. Pizza au Feu de Bois</option>
+                    <option value="food-5">5. Stand Bière</option>
+                    <option value="food-6">6. Isles</option>
+                    <option value="food-7">7. Léon-Michaud</option>
                   </select>
                 </div>
 
