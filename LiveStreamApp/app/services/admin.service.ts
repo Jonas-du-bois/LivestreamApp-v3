@@ -56,12 +56,13 @@ export const AdminService = {
   },
 
   generateFinals(payload: { 
-    apparatusId: string; 
-    category?: string; 
+    finalType: 'WITH_HAND' | 'WITHOUT_HAND';
     qualifiersCount: number; 
     startTime: string; 
     intervalMinutes: number; 
-    location?: string 
+    location?: string;
+    customOrderGroupIds?: string[];
+    replaceExisting?: boolean;
   }) {
     return apiClient<{ success: boolean; message: string; data?: any }>('/admin/finals-generate', {
       method: 'POST',

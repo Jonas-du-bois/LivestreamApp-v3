@@ -71,15 +71,15 @@
       "unknown": "Unbekannt"
     },
     "humor": {
-      "sunny": "Sunnäcreme parat, d'Sitzplätz brätet schneller als es Gipfeli.",
-      "partly_cloudy": "Halb Sunne, halb Wolke – de Himmel isch au am Z'ögern.",
-      "cloudy": "Wolke im Vollbetrieb. D'Sunne het hüt Homeoffice.",
-      "rain": "Räge-Modus: wer trocken bliibt, kriegt Bonuspünkt.",
-      "snow": "Schnee-Alarm: hübsch, aber rutschig.",
-      "thunder": "Gwätter am Himmel: dröhnt lauter als d'Fans.",
-      "fog": "Nebel: Sichtkontakt nur no mit em eigene Team.",
-      "windy": "Stürmisch: Frisur freestyle, Haarspray het frei.",
-      "unknown": "De Himmel spielt Mystery-Box."
+      "sunny": "Sunnig und schön: hüt glänzt mer sogar ohni Extrapünkt für d'Strahlkraft.",
+      "partly_cloudy": "Halb Sunne, halb Wolke – genau wie e Jury, wo no am Rechne isch.",
+      "cloudy": "Wolke überall, aber i de Vereinsgym macht s'Team immer sis eigets Flutlicht.",
+      "rain": "Liechte Räge: Bändli atmet dur, Frisur hält – Läbe isch guet.",
+      "snow": "Schnee-Stimmig: warm iilaufe, sauber lande, cool bliibe.",
+      "thunder": "Gwätter i de Luft – sogar de Donner probt hüt im Takt.",
+      "fog": "Nebel da, Sicht weg: zum Glück lauft Synchronität nöd über d'Sicht, sondern über d'Üebig.",
+      "windy": "Starker Wind: Härtetest für Fahne, Dutt und Teamnärve.",
+      "unknown": "Wätter-Überraschig: mir nähmed's wie bi ere neue Choreo – locker und präzis."
     }
   },
   "schedule": {
@@ -224,12 +224,25 @@
     "competition": "Wettkampf",
     "food": "Esse",
     "info": "Infos",
+    "party": "Party",
+    "services": "Service",
+    "medical": "Sanität",
     "pois": {
-      "mainEntrance": "Hauptiigang",
-      "hallA": "Wettkampf-Halle A",
-      "hallB": "Wettkampf-Halle B",
-      "foodCourt": "Food Court",
-      "restrooms": "WC"
+      "beerBar": "Bierbar",
+      "iles1": "Isles 1",
+      "iles2": "Isles 2",
+      "buvetteDesIles": "Buvette des Isles",
+      "afterParty": "After Party",
+      "toilets": "WC",
+      "restrooms": "WC",
+      "cantine": "Kantine",
+      "returnConsignes": "Rückgab vo de Depot",
+      "foodTrucks": "Food Trucks",
+      "leonMichaud1": "Léon Michaud 1",
+      "buvetteLeonMichaud": "Buvette Léon Michaud",
+      "parkingMacaron": "Parking für Jury",
+      "samaritainIles": "Samariter (Isles)",
+      "samaritainLeon": "Samariter (Léon Michaud)"
     }
   },
   "notifications": {

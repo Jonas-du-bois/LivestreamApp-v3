@@ -72,15 +72,15 @@
       "unknown": "Indéterminé"
     },
     "humor": {
-      "sunny": "Crème solaire conseillée, les gradins vont cuire plus vite qu'un croissant.",
-      "partly_cloudy": "Mi-ombre, mi-soleil : le ciel hésite comme un juge.",
-      "cloudy": "Nuages en mode bouchon. Le soleil est au ralenti.",
-      "rain": "Parapluie de rigueur, sinon c'est rinçage gratuit.",
-      "snow": "Neige au programme : les sauts deviennent du patinage artistique.",
-      "thunder": "Orage à l'horizon : ça va gronder plus fort que les supporters.",
-      "fog": "Brouillard : on voit moins bien que la note d'un juge distrait.",
-      "windy": "Vent fort : coiffure freestyle garantie.",
-      "unknown": "Le ciel fait son mystère. On improvise."
+      "sunny": "Grand soleil : parfait pour briller sans même sortir le salto arrière.",
+      "partly_cloudy": "Un rayon, un nuage : l'ambiance exacte d'un jury avant la dernière note.",
+      "cloudy": "Ciel couvert, mais pas d'inquiétude : en gym de société, c'est l'équipe qui met la lumière.",
+      "rain": "Petite pluie fine : les rubans respirent, les chignons tiennent, tout va bien.",
+      "snow": "Ambiance flocons : on garde les pointes chaudes et les réceptions propres.",
+      "thunder": "Orage annoncé : même le tonnerre révise son rythme pour suivre la musique.",
+      "fog": "Brouillard léger : aujourd'hui, on compte sur la mémoire d'équipe plus que sur la ligne d'horizon.",
+      "windy": "Vent fort : test officiel des laques, des drapeaux et du mental collectif.",
+      "unknown": "Météo surprise : comme un enchaînement inédit, on sourit et on s'adapte."
     }
   },
   "schedule": {
@@ -226,13 +226,25 @@
     "competition": "Concours",
     "food": "Food",
     "info": "Infos",
+    "party": "Fête",
+    "services": "Services",
+    "medical": "Secours",
     "pois": {
-      "parking": "Parking",
-      "leonMichaud": "Léon Michaud",
-      "isle": "Salle des Isles",
-      "foodCourt": "Food Court",
+      "beerBar": "Bar à bière",
+      "iles1": "Iles 1",
+      "iles2": "Iles 2",
+      "buvetteDesIles": "Buvette des Iles",
+      "afterParty": "After Party",
+      "toilets": "Toilette",
       "restrooms": "WC",
-      "afterParty": "After Party"
+      "cantine": "Cantine",
+      "returnConsignes": "Retour des consignes",
+      "foodTrucks": "Food trucks",
+      "leonMichaud1": "Léon Michaud 1",
+      "buvetteLeonMichaud": "Buvette Léon Michaud",
+      "parkingMacaron": "Parking juges",
+      "samaritainIles": "Samaritain (Iles)",
+      "samaritainLeon": "Samaritain (Léon Michaud)"
     }
   },
   "notifications": {

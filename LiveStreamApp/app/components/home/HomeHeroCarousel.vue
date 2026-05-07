@@ -47,13 +47,12 @@ const displayCountdown = computed(() =>
 
 const currentIndex = ref(0)
 const rotationInterval = ref<ReturnType<typeof setInterval> | null>(null)
-const SLIDE_DURATION = 15000 
+const SLIDE_DURATION = 15000
+const SWIPE_THRESHOLD = 48
 const HERO_IMAGES = {
   afterpartyMain: 'livestreamapp/hero/hero-1',
   foodMain: 'livestreamapp/hero/hero-2',
   results: 'livestreamapp/hero/hero-3',
-  afterpartyBanner: 'livestreamapp/hero/hero-4',
-  foodDynamic: 'livestreamapp/hero/hero-5',
   liveFallback: 'livestreamapp/hero/hero-fallback'
 } as const
 
@@ -153,11 +152,15 @@ const dynamicSlides = computed(() => {
 
   if (latestResult.value) {
     const lastResult = latestResult.value
+    const resultApparatus = translateApparatus(
+      lastResult.apparatus?.code,
+      lastResult.apparatus?.name || lastResult.apparatus?.code || t('common.unknown')
+    )
     items.push({
       id: `result-${lastResult._id}`,
       type: 'result',
       title: lastResult.group?.name || 'Résultat',
-      subtitle: `${typeof lastResult.score === 'number' ? lastResult.score.toFixed(2) : '--'} pts • ${t('results.title')}`,
+      subtitle: `${typeof lastResult.score === 'number' ? lastResult.score.toFixed(2) : '--'} pts • ${resultApparatus}`,
       image: HERO_IMAGES.results,
       to: '/results',
       badge: {
@@ -195,34 +198,6 @@ const dynamicSlides = computed(() => {
     }
   })
 
-  items.push({
-    id: 'afterparty-banner',
-    type: 'afterparty',
-    title: t('afterparty.title') || 'After Party',
-    subtitle: t('afterparty.subtitle') || '',
-    image: HERO_IMAGES.afterpartyBanner,
-    to: '/afterparty',
-    badge: {
-      label: 'Soon',
-      variant: 'violet',
-      pulse: true
-    }
-  })
-
-  items.push({
-    id: 'food-dynamic',
-    type: 'food',
-    title: t('food.title'),
-    subtitle: t('food.subtitle'),
-    image: HERO_IMAGES.foodDynamic,
-    to: '/food',
-    badge: {
-      label: t('common.open'),
-      variant: 'green',
-      showDot: true
-    }
-  })
-
   return items
 })
 
@@ -248,9 +223,70 @@ const stopRotation = () => {
   }
 }
 
+const goToPrevious = () => {
+  if (!slides.value.length) return
+  currentIndex.value = (currentIndex.value - 1 + slides.value.length) % slides.value.length
+  startRotation()
+}
+
+const goToNext = () => {
+  if (!slides.value.length) return
+  currentIndex.value = (currentIndex.value + 1) % slides.value.length
+  startRotation()
+}
+
 const manualChange = (index: number) => {
   currentIndex.value = index
   startRotation() 
+}
+
+const touchStart = ref<{ x: number; y: number } | null>(null)
+const touchEnd = ref<{ x: number; y: number } | null>(null)
+const justSwiped = ref(false)
+
+const resetTouch = () => {
+  touchStart.value = null
+  touchEnd.value = null
+}
+
+const handleTouchStart = (event: TouchEvent) => {
+  if (event.touches.length !== 1) return
+  const touch = event.touches[0]
+  touchStart.value = { x: touch.clientX, y: touch.clientY }
+  touchEnd.value = null
+}
+
+const handleTouchMove = (event: TouchEvent) => {
+  if (!touchStart.value || event.touches.length !== 1) return
+  const touch = event.touches[0]
+  touchEnd.value = { x: touch.clientX, y: touch.clientY }
+}
+
+const handleTouchEnd = () => {
+  if (!touchStart.value || !touchEnd.value) {
+    resetTouch()
+    return
+  }
+
+  const deltaX = touchEnd.value.x - touchStart.value.x
+  const deltaY = touchEnd.value.y - touchStart.value.y
+  const isHorizontalSwipe = Math.abs(deltaX) >= SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * 1.2
+
+  if (isHorizontalSwipe) {
+    if (deltaX > 0) goToPrevious()
+    else goToNext()
+
+    justSwiped.value = true
+    setTimeout(() => {
+      justSwiped.value = false
+    }, 300)
+  }
+
+  resetTouch()
+}
+
+const handleTouchCancel = () => {
+  resetTouch()
 }
 
 onMounted(() => {
@@ -273,6 +309,7 @@ watch(() => slides.value.length, (newLen) => {
 })
 
 const handleHeroClick = () => {
+  if (justSwiped.value) return
   if (currentSlide.value?.to) {
     router.push(currentSlide.value.to)
   }
@@ -280,7 +317,13 @@ const handleHeroClick = () => {
 </script>
 
 <template>
-  <div class="relative w-full h-64 sm:h-80 overflow-hidden rounded-3xl shadow-2xl group border border-white/10">
+  <div
+    class="relative w-full h-64 sm:h-80 overflow-hidden rounded-3xl shadow-2xl group border border-white/10 bg-[#0B1120]"
+    @touchstart.passive="handleTouchStart"
+    @touchmove.passive="handleTouchMove"
+    @touchend="handleTouchEnd"
+    @touchcancel="handleTouchCancel"
+  >
     <TransitionGroup 
       name="hero-slide" 
       tag="div" 
@@ -290,7 +333,7 @@ const handleHeroClick = () => {
         v-for="(slide, index) in slides" 
         v-show="currentIndex === index"
         :key="slide.id"
-        class="absolute inset-0 w-full h-full"
+        class="absolute inset-0 w-full h-full overflow-hidden rounded-3xl"
         :class="{ 'photo-zoom': slide.type === 'photo' }"
       >
         <UiMediaCard
@@ -300,7 +343,7 @@ const handleHeroClick = () => {
           image-height="h-full"
           gradient="gradient-overlay"
           :interactive="false"
-          class="h-full !border-0 !rounded-none"
+          class="h-full !border-0 !rounded-3xl overflow-hidden"
           @click="handleHeroClick"
         >
           <template #image-top>
@@ -369,7 +412,7 @@ const handleHeroClick = () => {
     <!-- Couche invisible permettant de rendre toute la carte cliquable puisque le contenu est désactivé pour éviter les conflits d'interaction -->
     <button 
       type="button"
-      class="absolute inset-0 z-20 w-full h-full cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400 focus-visible:outline-none"
+      class="absolute inset-0 z-20 w-full h-full cursor-pointer rounded-3xl focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400 focus-visible:outline-none"
       @click="handleHeroClick"
       :aria-label="currentSlide?.title"
     />

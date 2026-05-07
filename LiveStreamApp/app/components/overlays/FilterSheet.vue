@@ -12,11 +12,10 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { t } = useI18n()
-// ⚠️ DEAD CODE : const { locale } = useI18n()
-const { translateApparatus, translateCategory } = useTranslatedData()
+const { t, locale } = useI18n()
+const { translateApparatus } = useTranslatedData()
 
-// Récupère les métadonnées (agrès, catégories, salles) préparées et partagées par la page schedule.vue
+// Récupère les métadonnées (agrès, salles) préparées et partagées par la page schedule.vue
 const meta = useState<any>('scheduleMeta')
 const availableApparatus = computed(() => {
   const apps = meta.value?.availableApparatus || []
@@ -26,14 +25,12 @@ const availableApparatus = computed(() => {
     return nameA.localeCompare(nameB)
   })
 })
-const availableCategories = computed(() => meta.value?.availableCategories || [])
 const availableLocations = computed(() => meta.value?.availableLocations || [])
 
 const filtersStore = useScheduleFilters()
 
 // État local des filtres. 
 // L'utilisation de useState() garantit la persistance de la saisie en cours de l'utilisateur même si le composant est démonté/remonté durant l'édition.
-const selectedDivision = useState<string[]>('filter-sheet-division', () => [])
 const selectedSalle = useState<string[]>('filter-sheet-salle', () => [])
 const selectedApparatus = useState<string[]>('filter-sheet-apparatus', () => [])
 const selectedHidePast = useState<boolean>('filter-sheet-hide-past', () => false)
@@ -41,7 +38,6 @@ const selectedHidePast = useState<boolean>('filter-sheet-hide-past', () => false
 // Synchronise l'état local avec l'état global du store à l'ouverture de la modale.
 watch(() => props.isOpen, (isOpen) => {
   if (isOpen) {
-    selectedDivision.value = [...filtersStore.value.division]
     selectedSalle.value = [...filtersStore.value.salle]
     selectedApparatus.value = [...filtersStore.value.apparatus]
     selectedHidePast.value = filtersStore.value.hidePast
@@ -49,10 +45,8 @@ watch(() => props.isOpen, (isOpen) => {
 })
 
 // Fonction générique pour ajouter ou retirer une valeur d'un tableau de filtre.
-const toggleSelection = (value: string, arrayName: 'division' | 'salle' | 'apparatus') => {
-  const array = arrayName === 'division' ? selectedDivision
-              : arrayName === 'salle' ? selectedSalle
-              : selectedApparatus
+const toggleSelection = (value: string, arrayName: 'salle' | 'apparatus') => {
+  const array = arrayName === 'salle' ? selectedSalle : selectedApparatus
 
   const index = array.value.indexOf(value)
   if (index > -1) {
@@ -63,7 +57,6 @@ const toggleSelection = (value: string, arrayName: 'division' | 'salle' | 'appar
 }
 
 const clearFilters = () => {
-  selectedDivision.value = []
   selectedSalle.value = []
   selectedApparatus.value = []
   selectedHidePast.value = false
@@ -71,7 +64,6 @@ const clearFilters = () => {
 
 // Applique les filtres locaux au store global et ferme la modale.
 const applyFilters = () => {
-  filtersStore.value.division = [...selectedDivision.value]
   filtersStore.value.salle = [...selectedSalle.value]
   filtersStore.value.apparatus = [...selectedApparatus.value]
   filtersStore.value.hidePast = selectedHidePast.value
@@ -156,24 +148,6 @@ onUnmounted(() => {
                 :aria-pressed="selectedApparatus.includes(app.name || app)"
               >
                 {{ translateApparatus(app.code, app.name) || app }}
-              </button>
-            </div>
-          </div>
-
-          <div v-if="availableCategories.length > 0">
-            <h3 class="text-white font-bold mb-3">{{ t('filters.division') }}</h3>
-            <div class="grid grid-cols-2 gap-2">
-              <button
-                v-for="division in availableCategories"
-                :key="`${division}-${locale}`"
-                @click="toggleSelection(division, 'division')"
-                class="py-3 px-4 rounded-lg text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none"
-                :class="selectedDivision.includes(division)
-                  ? 'bg-cyan-400 text-[#0B1120] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120]'
-                  : 'glass-card text-white/80'"
-                :aria-pressed="selectedDivision.includes(division)"
-              >
-                {{ translateCategory(division) }}
               </button>
             </div>
           </div>

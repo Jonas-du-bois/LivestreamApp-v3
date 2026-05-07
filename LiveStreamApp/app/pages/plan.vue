@@ -28,12 +28,20 @@ const transitionTimeout2 = ref<ReturnType<typeof setTimeout> | null>(null);
 
 // Liste des POIs (Points d'Intérêt)
 const pointsOfInterest = computed(() => [
-  { name: t('plan.pois.parking'), lat: 46.77151290029007, lng: 6.635177597178094, type: "info", icon: "fluent:vehicle-car-parking-24-regular" },
-  { name: t('plan.pois.isle'), lat: 46.772334227855715, lng: 6.634323537615062, type: "gym", icon: "fluent:trophy-24-regular" },
-  { name: t('plan.pois.leonMichaud'), lat: 46.77444599060295, lng: 6.63552351286276, type: "gym", icon: "fluent:trophy-24-regular" },
-  { name: t('plan.pois.foodCourt'), lat: 46.77193320812667, lng: 6.634768482804293, type: "food", icon: "fluent:food-pizza-24-regular" },
-  { name: t('plan.pois.afterParty'), lat: 46.77219666028513, lng: 6.634955252445288, type: "info", icon: "fluent:drink-beer-24-regular" },
-  { name: t('plan.pois.restrooms'), lat: 46.77235046701481, lng: 6.63564229775863, type: "wc", icon: "fluent:drop-24-regular" },
+  { name: t('plan.pois.beerBar'), lat: 46.77215526567976, lng: 6.634982082876975, type: "food", icon: "fluent:drink-beer-24-regular" },
+  { name: t('plan.pois.iles1'), lat: 46.7723699365691, lng: 6.6343187691876615, type: "competition", icon: "fluent:trophy-24-regular" },
+  { name: t('plan.pois.iles2'), lat: 46.7721278077136, lng: 6.63452651028816, type: "competition", icon: "fluent:trophy-24-regular" },
+  { name: t('plan.pois.buvetteDesIles'), lat: 46.77207663601202, lng: 6.634619447096279, type: "food", icon: "fluent:drink-beer-24-regular" },
+  { name: t('plan.pois.afterParty'), lat: 46.77226509740448, lng: 6.634947459360225, type: "party", icon: "fluent:drink-beer-24-regular" },
+  { name: t('plan.pois.toilets'), lat: 46.77247976785602, lng: 6.635370230722647, type: "wc", icon: "fluent:drop-24-regular" },
+  { name: t('plan.pois.cantine'), lat: 46.77196430771606, lng: 6.6349292364566725, type: "food", icon: "fluent:food-24-regular" },
+  { name: t('plan.pois.returnConsignes'), lat: 46.772059162736916, lng: 6.63477251948612, type: "service", icon: "fluent:arrow-sync-24-regular" },
+  { name: t('plan.pois.foodTrucks'), lat: 46.771959315341924, lng: 6.634739718259726, type: "food", icon: "fluent:food-pizza-24-regular" },
+  { name: t('plan.pois.leonMichaud1'), lat: 46.77456933137738, lng: 6.635543269133628, type: "competition", icon: "fluent:trophy-24-regular" },
+  { name: t('plan.pois.buvetteLeonMichaud'), lat: 46.77465196585002, lng: 6.635852349778349, type: "food", icon: "fluent:drink-beer-24-regular" },
+  { name: t('plan.pois.parkingMacaron'), lat: 46.771439186497894, lng: 6.635166441030161, type: "service", icon: "fluent:vehicle-car-parking-24-regular" },
+  { name: t('plan.pois.samaritainIles'), lat: 46.772373751326235, lng: 6.634075151493507, type: "medical", icon: "fluent:heart-24-regular" },
+  { name: t('plan.pois.samaritainLeon'), lat: 46.77448319646483, lng: 6.635245036078503, type: "medical", icon: "fluent:heart-24-regular" },
 ]);
 
 // Fonction pour basculer le style de carte
@@ -195,15 +203,29 @@ onMounted(async () => {
           <div class="w-px h-4 bg-white/20 shrink-0"></div>
 
           <div class="flex items-center gap-2 shrink-0">
-            <div class="w-3 h-3 rounded-full bg-slate-500 shadow-[0_0_8px_rgba(100,116,139,0.6)]"></div>
-            <span class="text-xs font-bold text-white uppercase tracking-wide">{{ t('plan.info') }}</span>
+            <div class="w-3 h-3 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.6)]"></div>
+            <span class="text-xs font-bold text-white uppercase tracking-wide">{{ t('plan.party') }}</span>
+          </div>
+
+          <div class="w-px h-4 bg-white/20 shrink-0"></div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <div class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+            <span class="text-xs font-bold text-white uppercase tracking-wide">{{ t('plan.services') }}</span>
+          </div>
+
+          <div class="w-px h-4 bg-white/20 shrink-0"></div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <div class="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"></div>
+            <span class="text-xs font-bold text-white uppercase tracking-wide">{{ t('plan.medical') }}</span>
           </div>
 
           <div class="w-px h-4 bg-white/20 shrink-0"></div>
 
           <div class="flex items-center gap-2 shrink-0">
             <div class="w-3 h-3 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
-            <span class="text-xs font-bold text-white uppercase tracking-wide">{{ t('plan.pois.restrooms') }}</span>
+            <span class="text-xs font-bold text-white uppercase tracking-wide">{{ t('plan.pois.toilets') }}</span>
           </div>
 
         </div>
@@ -248,9 +270,11 @@ onMounted(async () => {
 }
 
 /* Couleurs des pins selon le type */
-.pin-content.type-gym { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.pin-content.type-competition { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
 .pin-content.type-food { background: linear-gradient(135deg, #f97316, #c2410c); }
-.pin-content.type-info { background: linear-gradient(135deg, #64748b, #334155); }
+.pin-content.type-party { background: linear-gradient(135deg, #a855f7, #7e22ce); }
+.pin-content.type-service { background: linear-gradient(135deg, #10b981, #047857); }
+.pin-content.type-medical { background: linear-gradient(135deg, #f43f5e, #be123c); }
 .pin-content.type-wc { background: linear-gradient(135deg, #06b6d4, #0e7490); }
 
 /* Animation au survol */
@@ -313,9 +337,11 @@ onMounted(async () => {
   flex-shrink: 0;
   font-size: 14px;
 }
-.popup-header.type-gym { background: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+.popup-header.type-competition { background: rgba(59, 130, 246, 0.3); color: #60a5fa; }
 .popup-header.type-food { background: rgba(249, 115, 22, 0.3); color: #fb923c; }
-.popup-header.type-info { background: rgba(148, 163, 184, 0.3); color: #cbd5e1; }
+.popup-header.type-party { background: rgba(168, 85, 247, 0.3); color: #d8b4fe; }
+.popup-header.type-service { background: rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+.popup-header.type-medical { background: rgba(244, 63, 94, 0.3); color: #fda4af; }
 .popup-header.type-wc { background: rgba(6, 182, 212, 0.3); color: #22d3ee; }
 
 /* Titre */

@@ -36,7 +36,6 @@ const apiParams = computed(() => {
   return {
     day: selectedDay.value || undefined, // Ne pas envoyer '' comme jour
     apparatus,
-    division: filtersStore.value.division.length ? filtersStore.value.division.join(',') : undefined,
     salle: filtersStore.value.salle.length ? filtersStore.value.salle.join(',') : undefined
   }
 })
@@ -210,7 +209,6 @@ const filteredSchedule = computed(() => {
 
 const clearScheduleFilters = () => {
   selectedFilter.value = t('common.all')
-  filtersStore.value.division = []
   filtersStore.value.salle = []
   filtersStore.value.apparatus = []
   filtersStore.value.hidePast = false

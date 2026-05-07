@@ -27,15 +27,49 @@ const isGeneratingFinals = ref(false)
 const isHeaderCollapsed = ref(false)
 
 // Finals Generation State
+type FinalsGenerationType = 'WITH_HAND' | 'WITHOUT_HAND'
+
+interface FinalsTypeOption {
+  value: FinalsGenerationType
+  label: string
+  sourceCodes: string[]
+  sourceLabel: string
+}
+
+interface FinalsCandidate {
+  groupId: string
+  groupName: string
+  societyName: string
+  score: number
+  sourceCode: string
+  sourceName: string
+}
+
+const finalsTypeOptions: FinalsTypeOption[] = [
+  {
+    value: 'WITH_HAND',
+    label: 'Finale gymnastique avec engin à main',
+    sourceCodes: ['avec-engin-12x12', 'avec-engin-12x14', 'avec-engin-12x18'],
+    sourceLabel: 'Surfaces avec engin à main (12x12, 12x14, 12x18)'
+  },
+  {
+    value: 'WITHOUT_HAND',
+    label: 'Finale gymnastique sans engin à main',
+    sourceCodes: ['sans-engin-12x12', 'sans-engin-12x14', 'sans-engin-12x18'],
+    sourceLabel: 'Surfaces sans engin à main (12x12, 12x14, 12x18)'
+  }
+]
+
 const finalsForm = ref({
-  apparatusId: '',
-  category: '',
+  finalType: 'WITH_HAND' as FinalsGenerationType,
   qualifiersCount: 3,
   startTime: '',
   intervalMinutes: 8,
-  location: ''
+  location: '',
+  replaceExisting: false
 })
 const finalsResult = ref<{ success: boolean; message: string } | null>(null)
+const customFinalOrderGroupIds = ref<string[]>([])
 const searchQuery = ref('')
 const debouncedSearchQuery = ref('')
 const searchCategory = ref<'all' | 'group' | 'apparatus' | 'location'>('all')
@@ -80,8 +114,13 @@ const handleForceRefresh = () => {
 }
 
 const handleGenerateFinals = async () => {
-  if (!finalsForm.value.apparatusId || !finalsForm.value.startTime) {
-    finalsResult.value = { success: false, message: 'Veuillez remplir les champs obligatoires (Engin et Heure).' }
+  if (!finalsForm.value.finalType || !finalsForm.value.startTime) {
+    finalsResult.value = { success: false, message: 'Veuillez remplir les champs obligatoires (Type de finale et Heure).' }
+    return
+  }
+
+  if (orderedFinalCandidates.value.length === 0) {
+    finalsResult.value = { success: false, message: 'Aucun qualifié disponible avec des notes publiées pour ce type de finale.' }
     return
   }
 
@@ -91,7 +130,7 @@ const handleGenerateFinals = async () => {
   try {
     const res = await AdminService.generateFinals({
       ...finalsForm.value,
-      // Pass the date string directly or format it if needed
+      customOrderGroupIds: orderedFinalCandidates.value.map((candidate) => candidate.groupId)
     })
     
     if (res.success) {
@@ -208,6 +247,90 @@ const availableLocations = computed(() => {
 const availableCategories = computed(() => {
   return scheduleData.value?.meta?.availableCategories || []
 })
+
+const selectedFinalTypeConfig = computed(() =>
+  finalsTypeOptions.find((option) => option.value === finalsForm.value.finalType) || null
+)
+
+const finalsCandidates = computed<FinalsCandidate[]>(() => {
+  const selectedType = selectedFinalTypeConfig.value
+  if (!selectedType) return []
+
+  const candidatesByGroup = new Map<string, FinalsCandidate>()
+
+  for (const passage of passages.value) {
+    if (
+      passage.round !== 'QUALIFIER' ||
+      !passage.isPublished ||
+      passage.score === null ||
+      passage.score === undefined
+    ) continue
+
+    const apparatusCode = passage.apparatus?.code
+    if (!apparatusCode || !selectedType.sourceCodes.includes(apparatusCode)) continue
+
+    const groupId = passage.group?._id
+    if (!groupId) continue
+
+    const groupName = passage.group?.name || 'Groupe inconnu'
+    const societyName = groupName.split(':')[0]?.trim() || groupName
+    const score = Number(passage.score)
+    if (!Number.isFinite(score)) continue
+
+    const existing = candidatesByGroup.get(groupId)
+    if (!existing || score > existing.score) {
+      candidatesByGroup.set(groupId, {
+        groupId,
+        groupName,
+        societyName,
+        score,
+        sourceCode: apparatusCode,
+        sourceName: passage.apparatus?.name || apparatusCode
+      })
+    }
+  }
+
+  return Array.from(candidatesByGroup.values())
+    .sort((a, b) => b.score - a.score)
+    .slice(0, Math.max(1, finalsForm.value.qualifiersCount))
+})
+
+const defaultFinalOrderGroupIds = computed(() =>
+  finalsCandidates.value
+    .slice()
+    .reverse()
+    .map((candidate) => candidate.groupId)
+)
+
+watch(defaultFinalOrderGroupIds, (nextOrder) => {
+  customFinalOrderGroupIds.value = [...nextOrder]
+}, { immediate: true })
+
+const orderedFinalCandidates = computed<FinalsCandidate[]>(() => {
+  const candidatesMap = new Map(finalsCandidates.value.map((candidate) => [candidate.groupId, candidate]))
+  const orderedIds = customFinalOrderGroupIds.value.filter((groupId) => candidatesMap.has(groupId))
+  const missingIds = finalsCandidates.value
+    .map((candidate) => candidate.groupId)
+    .filter((groupId) => !orderedIds.includes(groupId))
+
+  return [...orderedIds, ...missingIds]
+    .map((groupId) => candidatesMap.get(groupId))
+    .filter((candidate): candidate is FinalsCandidate => Boolean(candidate))
+})
+
+const moveFinalCandidate = (index: number, direction: -1 | 1) => {
+  const nextIndex = index + direction
+  if (index < 0 || nextIndex < 0 || nextIndex >= customFinalOrderGroupIds.value.length) return
+  const nextOrder = [...customFinalOrderGroupIds.value]
+  const [item] = nextOrder.splice(index, 1)
+  if (!item) return
+  nextOrder.splice(nextIndex, 0, item)
+  customFinalOrderGroupIds.value = nextOrder
+}
+
+const resetFinalOrder = () => {
+  customFinalOrderGroupIds.value = [...defaultFinalOrderGroupIds.value]
+}
 
 // ===== Watchers =====
 watch(scheduleData, (data) => {
@@ -1299,34 +1422,15 @@ const hasActiveFilters = computed(() => {
               <div class="space-y-6">
                 <!-- Form Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <!-- Apparatus -->
-                  <div class="space-y-2">
-                    <label class="text-sm font-medium text-white/60 ml-1">Engin <span class="text-red-400">*</span></label>
+                  <!-- Type de Finale -->
+                  <div class="space-y-2 md:col-span-2">
+                    <label class="text-sm font-medium text-white/60 ml-1">Type de finale <span class="text-red-400">*</span></label>
                     <select 
-                      v-model="finalsForm.apparatusId"
+                      v-model="finalsForm.finalType"
                       class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all appearance-none"
                     >
-                      <option value="" disabled selected>Sélectionner un engin</option>
-                      <option 
-                        v-for="app in availableApparatus" 
-                        :key="app.code" 
-                        :value="passages.find(p => p.apparatus.code === app.code)?.apparatus._id"
-                      >
-                        {{ translateApparatus(app.code, app.name) }}
-                      </option>
-                    </select>
-                  </div>
-
-                  <!-- Category -->
-                  <div class="space-y-2">
-                    <label class="text-sm font-medium text-white/60 ml-1">Catégorie (Optionnel)</label>
-                    <select 
-                      v-model="finalsForm.category"
-                      class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all appearance-none"
-                    >
-                      <option value="">Toutes les catégories</option>
-                      <option v-for="cat in availableCategories" :key="cat" :value="cat">
-                        {{ translateCategory(cat) }}
+                      <option v-for="option in finalsTypeOptions" :key="option.value" :value="option.value">
+                        {{ option.label }}
                       </option>
                     </select>
                   </div>
@@ -1378,6 +1482,34 @@ const hasActiveFilters = computed(() => {
                       placeholder="Ex: Salle Principale"
                       class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all"
                     />
+                  </div>
+                </div>
+
+                <!-- Ordre de Passage (Custom Order UI) -->
+                <div v-if="orderedFinalCandidates.length > 0" class="mt-8 space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-lg font-bold text-white">Ordre de passage (Finalistes)</h3>
+                      <p class="text-xs text-white/40 mt-1">L'ordre par défaut est du score le plus bas au plus élevé. Vous pouvez le modifier si un conflit survient (ex: une société fait plusieurs finales).</p>
+                    </div>
+                    <button @click="resetFinalOrder" class="text-xs text-orange-400 hover:text-orange-300 font-medium px-3 py-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 transition-colors">
+                      Réinitialiser l'ordre
+                    </button>
+                  </div>
+                  <div class="space-y-2">
+                    <div v-for="(candidate, index) in orderedFinalCandidates" :key="candidate.groupId" class="flex items-center gap-3 bg-white/5 border border-white/10 p-3 rounded-2xl">
+                      <div class="flex flex-col gap-1">
+                        <button @click="moveFinalCandidate(index, -1)" :disabled="index === 0" class="p-1 hover:bg-white/10 rounded-lg text-white/40 disabled:opacity-30 disabled:cursor-not-allowed"><Icon name="fluent:chevron-up-24-regular" /></button>
+                        <button @click="moveFinalCandidate(index, 1)" :disabled="index === orderedFinalCandidates.length - 1" class="p-1 hover:bg-white/10 rounded-lg text-white/40 disabled:opacity-30 disabled:cursor-not-allowed"><Icon name="fluent:chevron-down-24-regular" /></button>
+                      </div>
+                      <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/60 font-bold text-sm shrink-0">
+                        {{ index + 1 }}
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-bold text-white truncate">{{ candidate.societyName }}</div>
+                        <div class="text-xs text-white/40 truncate">Qualifié en {{ candidate.sourceName }} avec le score de <span class="text-orange-400 font-medium">{{ candidate.score }}</span></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -1515,7 +1647,6 @@ const hasActiveFilters = computed(() => {
                     <option value="hero-2">Slide 2 : Nourriture (Par défaut)</option>
                     <option value="hero-3">Slide 3 : Dernier Résultat</option>
                     <option value="hero-fallback">Slide 4 : Stream en direct (Si pas d'image YouTube)</option>
-                    <option value="hero-5">Slide 5 : Nourriture (Dynamique)</option>
                   </select>
                 </div>
 

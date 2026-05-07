@@ -71,15 +71,15 @@
       "unknown": "Indeterminato"
     },
     "humor": {
-      "sunny": "Crema solare consigliata, le gradinate cuoceranno più velocemente di un croissant.",
-      "partly_cloudy": "Mezza ombra, mezzo sole: il cielo esita come un giudice.",
-      "cloudy": "Nuvole in modalità ingorgo. Il sole è al rallentatore.",
-      "rain": "Ombrello d'obbligo, altrimenti è risciacquo gratuito.",
-      "snow": "Neve in programma: i salti diventano pattinaggio artistico.",
-      "thunder": "Temporale all'orizzonte: tuonerà più forte dei tifosi.",
-      "fog": "Nebbia: si vede meno bene del voto di un giudice distratto.",
-      "windy": "Vento forte: acconciatura freestyle garantita.",
-      "unknown": "Il cielo fa il suo mistero. Improvvisiamo."
+      "sunny": "Sole pieno: oggi si brilla anche senza aggiungere un salto in più.",
+      "partly_cloudy": "Sole e nuvole: esattamente l'umore di una giuria prima dell'ultimo voto.",
+      "cloudy": "Cielo coperto, ma nella ginnastica di società la luce la porta sempre la squadra.",
+      "rain": "Pioggerellina leggera: nastri felici, chignon stabili, missione compiuta.",
+      "snow": "Atmosfera da neve: riscaldamento serio e atterraggi puliti.",
+      "thunder": "Temporale in arrivo: persino il tuono prova a stare a tempo con la musica.",
+      "fog": "Nebbia morbida: oggi ci si orienta con il ritmo del gruppo più che con l'orizzonte.",
+      "windy": "Vento forte: test ufficiale per bandiere, forcine e sangue freddo.",
+      "unknown": "Meteo a sorpresa: come una coreografia nuova, sorriso e adattamento."
     }
   },
   "schedule": {
@@ -219,16 +219,30 @@
   },
   "plan": {
     "back": "Indietro",
+    "showMap": "Mostra mappa",
+    "showSatellite": "Mostra satellite",
     "competition": "Gara",
     "food": "Cibo",
     "info": "Info",
+    "party": "Festa",
+    "services": "Servizi",
+    "medical": "Primo soccorso",
     "pois": {
-      "parking": "Parcheggio",
-      "leonMichaud": "Léon Michaud",
-      "isle": "Sala des Isles",
-      "foodCourt": "Area Ristoro",
+      "beerBar": "Bar alla birra",
+      "iles1": "Iles 1",
+      "iles2": "Iles 2",
+      "buvetteDesIles": "Buvette des Iles",
+      "afterParty": "After Party",
+      "toilets": "Toilette",
       "restrooms": "WC",
-      "afterParty": "After Party"
+      "cantine": "Cantina",
+      "returnConsignes": "Ritorno cauzioni",
+      "foodTrucks": "Food trucks",
+      "leonMichaud1": "Léon Michaud 1",
+      "buvetteLeonMichaud": "Buvette Léon Michaud",
+      "parkingMacaron": "Parcheggio giuria",
+      "samaritainIles": "Samaritani (Iles)",
+      "samaritainLeon": "Samaritani (Léon Michaud)"
     }
   },
   "notifications": {
