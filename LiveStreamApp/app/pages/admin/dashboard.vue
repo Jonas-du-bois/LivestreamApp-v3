@@ -748,11 +748,11 @@ const handleRegenerateStream = async (stream: Stream) => {
   }
 }
 
-const nowTimer = useNow()
+const { now: nowTimer } = useNow()
 const getEstimatedCost = (stream: Stream) => {
   if (!stream.isLive || !stream.liveStartedAt) return "0.00"
   const start = new Date(stream.liveStartedAt).getTime()
-  const current = nowTimer.value.getTime()
+  const current = nowTimer.value
   const mins = Math.max(0, Math.floor((current - start) / 60000))
   const viewers = streamMetrics.value[stream._id!]?.viewers || 0
   const rateCHF = 0.00135 // ~ $0.0015 USD to CHF
@@ -762,7 +762,7 @@ const getEstimatedCost = (stream: Stream) => {
 const getLiveDuration = (stream: Stream) => {
   if (!stream.isLive || !stream.liveStartedAt) return "0m"
   const start = new Date(stream.liveStartedAt).getTime()
-  const current = nowTimer.value.getTime()
+  const current = nowTimer.value
   const mins = Math.max(0, Math.floor((current - start) / 60000))
   if (mins < 60) return `${mins}m`
   const hrs = Math.floor(mins / 60)
