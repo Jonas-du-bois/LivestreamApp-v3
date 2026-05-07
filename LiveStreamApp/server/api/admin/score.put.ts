@@ -1,11 +1,7 @@
 import { Server as IOServer } from 'socket.io';
 import { z } from 'zod';
 import { useSafeValidatedBody } from 'h3-zod';
-import PassageModel from '../../models/Passage';
-import GroupModel from '../../models/Group';
-import ApparatusModel from '../../models/Apparatus';
-import SubscriptionModel from '../../models/Subscription';
-import webPush from 'web-push';
+import { updatePassageScore } from '../../utils/score-update';
 
 const schema = z.object({
   passageId: z.string(),
@@ -29,140 +25,21 @@ export default defineEventHandler(async (event) => {
   const { passageId, score } = result.data;
 
   try {
-    // Use explicit $set to avoid object merging issues
-    const updated = await PassageModel.findByIdAndUpdate(
-      passageId,
-      {
-        $set: {
-          score: typeof score === 'string' ? parseFloat(score) : score,
-          isPublished: true,
-        }
-      },
-      { new: true }
-    ).populate('group').populate('apparatus').exec();
-
-    if (!updated) throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
-
-    // Fetch the updated group's category
-    const groupData = updated.group as any;
-    const groupCategory = groupData?.subCategory || groupData?.category || 'Sans catégorie';
-
-    // Compute rank among published passages (per apparatus, round, AND category/subCategory)
-    const rankPipeline: any[] = [
-      {
-        $match: {
-          isPublished: true,
-          apparatus: updated.apparatus._id,
-          round: updated.round
-        }
-      },
-      {
-        $lookup: {
-          from: 'groups',
-          localField: 'group',
-          foreignField: '_id',
-          as: 'groupInfo'
-        }
-      },
-      { $unwind: '$groupInfo' },
-      {
-        $addFields: {
-          effectiveCategory: { $ifNull: ['$groupInfo.subCategory', '$groupInfo.category'] }
-        }
-      },
-      {
-        $match: {
-          effectiveCategory: groupCategory
-        }
-      },
-      { $sort: { score: -1 } },
-      { $project: { _id: 1 } }
-    ];
-
-    const finished = await PassageModel.aggregate(rankPipeline);
-
-    const rank = finished.findIndex((f: any) => f._id.toString() === updated._id.toString()) + 1;
-
-    const payload = {
-      passageId: updated._id.toString(),
-      score: updated.score,
-      rank,
-      status: updated.status,
-      round: updated.round,
-      group: updated.group,
-      apparatus: updated.apparatus,
-      startTime: updated.startTime,
-      endTime: updated.endTime,
-      location: updated.location,
-      groupName: (updated.group as any)?.name,
-      apparatusCode: (updated.apparatus as any)?.code,
-    };
-
-    // Emit to room
     const io = ((event.node.res as any)?.socket?.server as any)?.io || (globalThis as any).io as IOServer | undefined;
+    const updateResult = await updatePassageScore({
+      passageId,
+      score,
+      io,
+      invalidateCache: true,
+      source: 'admin:score'
+    });
 
-    if (io) {
-      io.to('live-scores').emit('score-update', payload);
-      console.log('[score] Emitted score-update to live-scores room');
-    } else {
-      console.warn('[score] io instance not found, skipping emit');
-      // Still proceed; DB has been updated
-    }
-
-    // Send push notifications to subscribers who favorited this passage
-    try {
-      const config = useRuntimeConfig();
-      if (config.vapidPrivateKey && config.public.vapidPublicKey) {
-        // Find subscribers who have this passage in favorites
-        const subscriptions = await SubscriptionModel.find({
-          favorites: passageId
-        });
-
-        if (subscriptions.length > 0) {
-          const groupName = (updated.group as any)?.name || 'Groupe';
-          const apparatusName = (updated.apparatus as any)?.name || '';
-          
-          const pushPayload = JSON.stringify({
-            title: '🎯 Résultat disponible !',
-            body: `${groupName} - ${apparatusName}: ${updated.score?.toFixed(2)} pts (${rank}${rank === 1 ? 'er' : 'ème'})`,
-            icon: '/icons/logo_livestreamappv3-192.png',
-            url: '/results'
-          });
-
-          const notifications = subscriptions.map(sub => {
-            return webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, pushPayload)
-              .catch(err => {
-                if (err.statusCode === 410 || err.statusCode === 404) {
-                  console.log(`[score] Removing expired subscription ${sub._id}`);
-                  return SubscriptionModel.findByIdAndDelete(sub._id);
-                }
-                console.error('[score] Error sending push:', err);
-              });
-          });
-
-          Promise.all(notifications).catch(e => console.error('[score] Push Background Error:', e));
-          console.log(`[score] Sent ${subscriptions.length} push notifications for score update`);
-        }
-      }
-    } catch (pushErr) {
-      console.error('[score] Push notification error (non-blocking):', pushErr);
-      // Don't fail the request if push fails
-    }
-
-    // Invalidate Nitro server-side cache
-    try {
-      const cacheStorage = useStorage('cache')
-      const allCacheKeys = await cacheStorage.getKeys()
-      if (allCacheKeys.length > 0) {
-        await Promise.all(allCacheKeys.map(key => cacheStorage.removeItem(key)))
-        console.log(`[admin:score] Cleared ${allCacheKeys.length} Nitro cache entries`)
-      }
-    } catch (cacheErr) {
-      console.warn('[admin:score] Could not clear Nitro cache:', cacheErr)
-    }
-
+    const payload = updateResult.payload || { passageId, score, unchanged: true };
     return { ok: true, payload };
   } catch (err) {
+    if ((err as any)?.statusCode) {
+      throw err;
+    }
     console.error('[score] error', err);
     throw createError({ statusCode: 500, statusMessage: 'Failed to update score' });
   }

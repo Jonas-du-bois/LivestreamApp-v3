@@ -77,6 +77,10 @@ CLOUDINARY_BASE_URL=               # Optionnel: https://res.cloudinary.com/<clou
 FLICKR_API_KEY=
 FLICKR_ALBUM_ID=
 FLICKR_USER_ID=
+
+# ── Sync automatique des notes externes ───────────────────────────
+# Flux JSON externe interrogé toutes les minutes par le scheduler backend
+EXTERNAL_SCORES_FEED_URL=
 ```
 
 ### Lancement en développement

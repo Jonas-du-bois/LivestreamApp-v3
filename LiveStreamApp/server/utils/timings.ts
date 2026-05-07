@@ -26,3 +26,6 @@ export const FLICKR_CACHE_MAX_AGE = 30 // 30 secondes
 // ─── Scheduler ──────────────────────────────────────────────────────
 /** How often the scheduler checks for status transitions (ms) */
 export const SCHEDULER_INTERVAL = 30_000
+
+/** How often external scores are fetched and synced (ms) */
+export const EXTERNAL_SCORES_SYNC_INTERVAL = 60_000

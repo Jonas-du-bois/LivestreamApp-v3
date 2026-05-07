@@ -1,15 +1,19 @@
 import { z } from 'zod';
 import { useSafeValidatedBody } from 'h3-zod';
 import GroupModel from '../../../../models/Group';
+import { Types } from 'mongoose';
 
 const schema = z.object({
-  logoUrl: z.string().url().or(z.literal(''))
+  logoUrl: z.string().trim().min(1).or(z.literal(''))
 });
 
 export default defineEventHandler(async (event) => {
   const groupId = getRouterParam(event, 'id');
   if (!groupId) {
     throw createError({ statusCode: 400, statusMessage: 'Group ID is required' });
+  }
+  if (!Types.ObjectId.isValid(groupId)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid group ID' });
   }
 
   const result = await useSafeValidatedBody(event, schema);
@@ -28,6 +32,9 @@ export default defineEventHandler(async (event) => {
 
     return { ok: true, logo: group.logo };
   } catch (err: any) {
+    if (err?.statusCode) {
+      throw err;
+    }
     console.error('[group logo] update error', err);
     throw createError({ statusCode: 500, statusMessage: 'Failed to update group logo' });
   }

@@ -1,3 +1,18 @@
+<script setup lang="ts">
+const CLOUDINARY_SPLASH_LOGO = 'livestreamapp/branding/splash-logo'
+const LOCAL_SPLASH_FALLBACK = '/icons/logo_livestreamappv3-192.png'
+
+const splashLogoSrc = ref(CLOUDINARY_SPLASH_LOGO)
+const didSwitchToFallback = ref(false)
+
+const handleSplashLogoError = () => {
+  if (!didSwitchToFallback.value) {
+    splashLogoSrc.value = LOCAL_SPLASH_FALLBACK
+    didSwitchToFallback.value = true
+  }
+}
+</script>
+
 <template>
   <div
     class="splash-screen"
@@ -15,13 +30,14 @@
         <!-- On utilise un chargement eager pour l'image du splash screen car c'est le premier élément visible -->
         <NuxtImg
           format="webp"
-          src="/icons/logo_livestreamappv3-192.png"
+          :src="splashLogoSrc"
           alt=""
           width="96"
           height="96"
           class="splash-screen__logo"
           loading="eager"
           decoding="async"
+          @error="handleSplashLogoError"
         />
       </div>
 

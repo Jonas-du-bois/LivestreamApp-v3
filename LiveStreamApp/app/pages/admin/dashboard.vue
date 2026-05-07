@@ -440,7 +440,7 @@ const getStreamForPassage = (passage: PassageEnriched) => {
 }
 
 // ===== Media Management =====
-const mediaUploadType = ref<'groupLogo' | 'hero' | 'food' | 'afterparty'>('groupLogo')
+const mediaUploadType = ref<'groupLogo' | 'hero' | 'food' | 'afterparty' | 'splashLogo'>('groupLogo')
 const selectedGroupForLogo = ref<string>('')
 const selectedHeroImage = ref('hero-1')
 const selectedFoodSpot = ref('food-1')
@@ -453,6 +453,12 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 const getMediaUploadTarget = () => {
   if (mediaUploadType.value === 'groupLogo') {
     if (!selectedGroupForLogo.value) return null
+    if (selectedGroupForLogo.value === 'fallback') {
+      return {
+        folder: 'livestreamapp/groups',
+        public_id: 'group-fallback'
+      }
+    }
     return {
       folder: 'livestreamapp/groupLogo',
       public_id: `logo_${selectedGroupForLogo.value}`
@@ -470,6 +476,13 @@ const getMediaUploadTarget = () => {
     return {
       folder: 'livestreamapp/food',
       public_id: selectedFoodSpot.value
+    }
+  }
+
+  if (mediaUploadType.value === 'splashLogo') {
+    return {
+      folder: 'livestreamapp/branding',
+      public_id: 'splash-logo'
     }
   }
 
@@ -531,9 +544,15 @@ const handleFileUpload = async (event: Event) => {
 
     // 3. Save to DB if group logo
     if (mediaUploadType.value === 'groupLogo') {
-      // Store the public_id so NuxtImg can optimize it natively
-      await AdminService.updateGroupLogo(selectedGroupForLogo.value, cloudData.public_id)
-      uploadMessage.value = { type: 'success', text: 'Logo du groupe mis à jour avec succès !' }
+      if (selectedGroupForLogo.value === 'fallback') {
+        uploadMessage.value = { type: 'success', text: 'Image générique des groupes mise à jour avec succès !' }
+      } else {
+        // Store the public_id so NuxtImg can optimize it natively
+        await AdminService.updateGroupLogo(selectedGroupForLogo.value, cloudData.public_id)
+        uploadMessage.value = { type: 'success', text: 'Logo du groupe mis à jour avec succès !' }
+      }
+    } else if (mediaUploadType.value === 'splashLogo') {
+      uploadMessage.value = { type: 'success', text: 'Logo du splashscreen mis à jour avec succès !' }
     } else {
       uploadMessage.value = { type: 'success', text: `Image uploadée avec succès : ${cloudData.public_id}` }
     }
@@ -1421,7 +1440,7 @@ const hasActiveFilters = computed(() => {
 
               <div class="space-y-8">
                 <!-- Type Selection -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                   <button 
                     @click="mediaUploadType = 'groupLogo'"
                     class="p-4 rounded-2xl border transition-all text-center flex flex-col items-center justify-center gap-2"
@@ -1453,6 +1472,14 @@ const hasActiveFilters = computed(() => {
                   >
                     <Icon name="fluent:drink-beer-24-regular" class="w-6 h-6" />
                     <span class="text-sm font-medium">Afterparty</span>
+                  </button>
+                  <button 
+                    @click="mediaUploadType = 'splashLogo'"
+                    class="p-4 rounded-2xl border transition-all text-center flex flex-col items-center justify-center gap-2"
+                    :class="mediaUploadType === 'splashLogo' ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'"
+                  >
+                    <Icon name="fluent:phone-24-regular" class="w-6 h-6" />
+                    <span class="text-sm font-medium">Splashscreen</span>
                   </button>
                 </div>
 
@@ -1520,6 +1547,11 @@ const hasActiveFilters = computed(() => {
                     <option value="afterparty-3">Page Afterparty : Galerie (Image 3)</option>
                     <option value="afterparty-4">Page Afterparty : Galerie (Image 4)</option>
                   </select>
+                </div>
+
+                <div v-if="mediaUploadType === 'splashLogo'" class="space-y-2">
+                  <label class="text-sm font-medium text-white/60 ml-1">Logo Splashscreen</label>
+                  <p class="text-xs text-white/45 ml-1">Ce logo sera affiché sur la page de chargement de l'app.</p>
                 </div>
 
                 <!-- Upload Area -->

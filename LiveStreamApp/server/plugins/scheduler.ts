@@ -1,6 +1,15 @@
 import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime';
-import { SCHEDULER_INTERVAL } from '../utils/timings';
+import { EXTERNAL_SCORES_SYNC_INTERVAL, SCHEDULER_INTERVAL } from '../utils/timings';
 import { updateScheduleMetadata } from '../utils/schedule-helpers';
+import {
+  buildExternalLookupKey,
+  fetchExternalScoreFeed,
+  getZurichTimeSlot,
+  normalizeLookupValue,
+  timeSlotToMinutes,
+  type ExternalScoreEntry
+} from '../utils/external-score-feed';
+import { invalidateServerCache, updatePassageScore } from '../utils/score-update';
 
 import webPush from 'web-push';
 import admin from 'firebase-admin';
@@ -97,6 +106,177 @@ export default defineNitroPlugin((nitroApp) => {
   } else {
     console.warn('[Scheduler] FIREBASE_SERVICE_ACCOUNT not set - FCM disabled (native push won\'t work)');
   }
+
+  const externalScoresFeedUrl = String(config.externalScoresFeedUrl || '').trim();
+  if (externalScoresFeedUrl) {
+    console.log('[Scheduler] External scores sync enabled');
+  } else {
+    console.warn('[Scheduler] EXTERNAL_SCORES_FEED_URL not set - external score sync disabled');
+  }
+
+  const isCategoryCompatible = (externalCategory: ExternalScoreEntry['category'], passage: any) => {
+    if (externalCategory === 'UNKNOWN') return true;
+    const group = passage.group as any;
+    const category = String(group?.category || '').toUpperCase();
+    const subCategory = String(group?.subCategory || '').toUpperCase();
+
+    if (externalCategory === 'ACTIFS') {
+      return category === 'ACTIFS' || subCategory === 'ACTIFS';
+    }
+
+    return subCategory === externalCategory;
+  };
+
+  const runExternalScoresSync = async (now: Date, storage: ReturnType<typeof useStorage>) => {
+    if (!externalScoresFeedUrl) return;
+
+    const syncLockKey = 'external-scores-sync:last-run';
+    const lastSync = (await storage.getItem(syncLockKey)) as number | null;
+    if (lastSync && now.getTime() - lastSync < EXTERNAL_SCORES_SYNC_INTERVAL - 500) {
+      return;
+    }
+    await storage.setItem(syncLockKey, now.getTime());
+
+    let scoredRows: ExternalScoreEntry[] = [];
+    try {
+      scoredRows = await fetchExternalScoreFeed(externalScoresFeedUrl);
+    } catch (err) {
+      console.error('[Scheduler:ExternalScores] Failed to fetch external feed:', err);
+      return;
+    }
+
+    if (scoredRows.length === 0) return;
+
+    const targetLocations = Array.from(new Set(scoredRows.map((row) => row.location))).filter(Boolean);
+    const passages = await PassageModel.find({ location: { $in: targetLocations } })
+      .select('group apparatus startTime location score isPublished')
+      .populate('group', 'name category subCategory')
+      .populate('apparatus', 'code')
+      .lean();
+
+    const passageIndex = new Map<string, any[]>();
+    const passageByGroup = new Map<string, any[]>();
+    const passageByGroupAndLocation = new Map<string, any[]>();
+    passages.forEach((passage: any) => {
+      const groupName = (passage.group as any)?.name;
+      if (!groupName || !passage.location || !passage.startTime) return;
+      const slot = getZurichTimeSlot(passage.startTime);
+      const slotMinutes = timeSlotToMinutes(slot);
+      const key = buildExternalLookupKey(groupName, passage.location, slot);
+      if (!passageIndex.has(key)) passageIndex.set(key, []);
+      const indexedPassage = { ...passage, slotMinutes };
+      passageIndex.get(key)!.push(indexedPassage);
+
+      const groupKey = normalizeLookupValue(groupName);
+      if (!passageByGroup.has(groupKey)) passageByGroup.set(groupKey, []);
+      passageByGroup.get(groupKey)!.push(indexedPassage);
+
+      const groupLocationKey = `${groupKey}|${normalizeLookupValue(passage.location)}`;
+      if (!passageByGroupAndLocation.has(groupLocationKey)) passageByGroupAndLocation.set(groupLocationKey, []);
+      passageByGroupAndLocation.get(groupLocationKey)!.push(indexedPassage);
+    });
+
+    const io = (globalThis as any).io;
+    let updatedCount = 0;
+    let unchangedCount = 0;
+    let unmatchedCount = 0;
+    let ambiguousCount = 0;
+
+    for (const row of scoredRows) {
+      const key = buildExternalLookupKey(row.groupName, row.location, row.timeSlot);
+      const exactCandidates = (passageIndex.get(key) || []).filter((candidate) =>
+        isCategoryCompatible(row.category, candidate)
+      );
+      let candidates = exactCandidates;
+
+      if (candidates.length === 0) {
+        const rowMinutes = timeSlotToMinutes(row.timeSlot);
+        const groupKey = normalizeLookupValue(row.groupName);
+        const groupLocationKey = `${groupKey}|${normalizeLookupValue(row.location)}`;
+
+        if (rowMinutes !== null) {
+          const nearByLocation = (passageByGroupAndLocation.get(groupLocationKey) || [])
+            .filter((candidate) => isCategoryCompatible(row.category, candidate))
+            .filter((candidate: any) => typeof candidate.slotMinutes === 'number' && Math.abs(candidate.slotMinutes - rowMinutes) <= 10);
+          if (nearByLocation.length === 1) {
+            candidates = nearByLocation;
+          } else if (nearByLocation.length > 1) {
+            candidates = nearByLocation;
+          } else {
+            const nearByGroup = (passageByGroup.get(groupKey) || [])
+              .filter((candidate) => isCategoryCompatible(row.category, candidate))
+              .filter((candidate: any) => typeof candidate.slotMinutes === 'number' && Math.abs(candidate.slotMinutes - rowMinutes) <= 5);
+            if (nearByGroup.length > 0) {
+              candidates = nearByGroup;
+            }
+          }
+        }
+
+        if (candidates.length === 0) {
+          const sameGroupLocation = (passageByGroupAndLocation.get(groupLocationKey) || [])
+            .filter((candidate) => isCategoryCompatible(row.category, candidate));
+          if (sameGroupLocation.length === 1) {
+            candidates = sameGroupLocation;
+          } else if (sameGroupLocation.length > 1) {
+            candidates = sameGroupLocation;
+          } else {
+            const sameGroup = (passageByGroup.get(groupKey) || [])
+              .filter((candidate) => isCategoryCompatible(row.category, candidate));
+            if (sameGroup.length > 0) {
+              candidates = sameGroup;
+            }
+          }
+        }
+      }
+
+      if (candidates.length === 0) {
+        unmatchedCount++;
+        continue;
+      }
+
+      if (candidates.length > 1) {
+        ambiguousCount++;
+        console.warn(
+          `[Scheduler:ExternalScores] Ambiguous mapping for "${row.groupName}" at ${row.location} ${row.timeSlot} (${candidates.length} candidates)`
+        );
+        continue;
+      }
+
+      const passage = candidates[0];
+      try {
+        const result = await updatePassageScore({
+          passageId: passage._id.toString(),
+          score: row.score,
+          io,
+          invalidateCache: false,
+          source: 'scheduler:external-scores'
+        });
+
+        if (result.changed) {
+          updatedCount++;
+          passage.score = row.score;
+          passage.isPublished = true;
+        } else {
+          unchangedCount++;
+        }
+      } catch (err: any) {
+        console.error(
+          `[Scheduler:ExternalScores] Failed to update score for "${row.groupName}" at ${row.location} ${row.timeSlot}:`,
+          err?.message || err
+        );
+      }
+    }
+
+    if (updatedCount > 0) {
+      await invalidateServerCache('scheduler:external-scores');
+    }
+
+    if (updatedCount > 0 || ambiguousCount > 0 || unmatchedCount > 0) {
+      console.log(
+        `[Scheduler:ExternalScores] rows=${scoredRows.length} updated=${updatedCount} unchanged=${unchangedCount} unmatched=${unmatchedCount} ambiguous=${ambiguousCount}`
+      );
+    }
+  };
 
   console.log('[Scheduler] Starting scheduler for status updates...');
   
@@ -241,6 +421,9 @@ export default defineNitroPlugin((nitroApp) => {
           console.log('[Scheduler] Emitted schedule-update and stream-update to rooms');
         }
       }
+
+      // --- 2. EXTERNAL SCORES SYNC (every minute) ---
+      await runExternalScoresSync(now, storage);
 
       // --- 2. NOTIFICATIONS LOGIC (web push + fcm natif) ---
       if (!webPushEnabled && !fcmMessaging) return;

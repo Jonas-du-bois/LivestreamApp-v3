@@ -235,6 +235,8 @@ export default defineNuxtConfig({
     flickrUserId: process.env.FLICKR_USER_ID,
     /** API.Video API Key pour provisionner les lives dynamiquement */
     apiVideoKey: process.env.API_VIDEO_KEY,
+    /** URL du flux externe de résultats (JSON) synchronisé automatiquement par le scheduler */
+    externalScoresFeedUrl: process.env.EXTERNAL_SCORES_FEED_URL,
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       socketUrl: process.env.NUXT_PUBLIC_SOCKET_URL || '',
