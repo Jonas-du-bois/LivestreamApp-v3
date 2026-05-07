@@ -206,7 +206,7 @@ const cantonDisplay = computed(() => {
         <template v-else-if="details">
             <div class="relative h-52 overflow-hidden flex-shrink-0">
               <ImageWithFallback
-                :src="details.info.logo || '/img/group-fallback.png'"
+                :src="details.info.logo || 'livestreamapp/groups/group-fallback'"
                 :alt="details.info.name"
                 class="w-full h-full object-cover"
               />

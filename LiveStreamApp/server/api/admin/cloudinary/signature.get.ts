@@ -33,7 +33,12 @@ export default defineEventHandler(async (event) => {
   };
 
   if (query.folder) paramsToSign.folder = query.folder;
-  if (query.public_id) paramsToSign.public_id = query.public_id;
+  if (query.public_id) {
+    paramsToSign.public_id = query.public_id;
+    // Ensure overwrite is reflected quickly on CDN (avoid stale cached hero images).
+    paramsToSign.overwrite = 'true';
+    paramsToSign.invalidate = 'true';
+  }
 
   const signature = cloudinary.utils.api_sign_request(
     paramsToSign,

@@ -528,6 +528,8 @@ const handleFileUpload = async (event: Event) => {
     formData.append('signature', sigRes.signature)
     if (sigRes.folder) formData.append('folder', sigRes.folder)
     if (sigRes.public_id) formData.append('public_id', sigRes.public_id)
+    if (sigRes.overwrite !== undefined) formData.append('overwrite', String(sigRes.overwrite))
+    if (sigRes.invalidate !== undefined) formData.append('invalidate', String(sigRes.invalidate))
 
     const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${sigRes.cloudName}/image/upload`, {
       method: 'POST',

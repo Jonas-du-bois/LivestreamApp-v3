@@ -48,6 +48,14 @@ const displayCountdown = computed(() =>
 const currentIndex = ref(0)
 const rotationInterval = ref<ReturnType<typeof setInterval> | null>(null)
 const SLIDE_DURATION = 15000 
+const HERO_IMAGES = {
+  afterpartyMain: 'livestreamapp/hero/hero-1',
+  foodMain: 'livestreamapp/hero/hero-2',
+  results: 'livestreamapp/hero/hero-3',
+  afterpartyBanner: 'livestreamapp/hero/hero-4',
+  foodDynamic: 'livestreamapp/hero/hero-5',
+  liveFallback: 'livestreamapp/hero/hero-fallback'
+} as const
 
 // Slides statiques utilisées pour garantir une correspondance exacte entre le serveur (SSR) et le premier rendu client.
 const ssrSlides = computed(() => [
@@ -56,7 +64,7 @@ const ssrSlides = computed(() => [
     type: 'afterparty',
     title: 'AFTER PARTY',
     subtitle: t('afterparty.themeValue') || 'Thème: Le Cirque',
-    image: 'livestreamapp/hero/hero-1', // Cloudinary public_id
+    image: HERO_IMAGES.afterpartyMain,
     to: '/afterparty',
     badge: { label: 'Soon', variant: 'violet', pulse: true, showDot: false }
   },
@@ -65,11 +73,34 @@ const ssrSlides = computed(() => [
     type: 'food',
     title: t('food.title'),
     subtitle: t('food.subtitle'),
-    image: 'livestreamapp/hero/hero-2',
+    image: HERO_IMAGES.foodMain,
     to: '/food',
     badge: { label: t('common.open'), variant: 'green', showDot: true, pulse: false }
   }
 ])
+
+const latestResult = computed<any | null>(() => {
+  const raw = resultsResp.value as any
+  const candidates: any[] = []
+
+  if (Array.isArray(raw)) {
+    candidates.push(...raw)
+  } else if (raw?.data && typeof raw.data === 'object') {
+    for (const entries of Object.values(raw.data)) {
+      if (Array.isArray(entries)) candidates.push(...entries)
+    }
+  }
+
+  if (candidates.length === 0) return null
+
+  return candidates
+    .filter((entry) => entry && typeof entry === 'object' && typeof entry.score === 'number')
+    .sort((a, b) => {
+      const aTime = new Date(a.endTime || a.startTime || 0).getTime()
+      const bTime = new Date(b.endTime || b.startTime || 0).getTime()
+      return bTime - aTime
+    })[0] || null
+})
 
 // Construit dynamiquement les slides en fonction de l'actualité de l'événement (Live, Photos, Résultats).
 const dynamicSlides = computed(() => {
@@ -83,7 +114,7 @@ const dynamicSlides = computed(() => {
         return (stream.currentPassage as Passage)._id === p._id
       })
 
-      const heroImage = getStreamThumbnailUrl(s?.url, 'livestreamapp/hero/hero-fallback')
+      const heroImage = getStreamThumbnailUrl(s?.url, HERO_IMAGES.liveFallback)
 
       items.push({
         id: `live-${p._id}`,
@@ -120,15 +151,14 @@ const dynamicSlides = computed(() => {
     })
   }
 
-  const results = resultsResp.value
-  if (Array.isArray(results) && results.length > 0) {
-    const lastResult = results[0]
+  if (latestResult.value) {
+    const lastResult = latestResult.value
     items.push({
       id: `result-${lastResult._id}`,
       type: 'result',
       title: lastResult.group?.name || 'Résultat',
-      subtitle: `${lastResult.score} pts • ${t('results.title')}`,
-      image: 'livestreamapp/hero/hero-3',
+      subtitle: `${typeof lastResult.score === 'number' ? lastResult.score.toFixed(2) : '--'} pts • ${t('results.title')}`,
+      image: HERO_IMAGES.results,
       to: '/results',
       badge: {
         label: t('nav.results'),
@@ -138,11 +168,11 @@ const dynamicSlides = computed(() => {
   }
 
   items.push({
-    id: 'afterparty',
+    id: 'afterparty-main',
     type: 'afterparty',
     title: 'AFTER PARTY',
     subtitle: t('afterparty.themeValue') || 'Thème: Le Cirque',
-    image: 'livestreamapp/hero/hero-4',
+    image: HERO_IMAGES.afterpartyMain,
     to: '/afterparty',
     badge: {
       label: 'Soon',
@@ -152,11 +182,39 @@ const dynamicSlides = computed(() => {
   })
 
   items.push({
-    id: 'food',
+    id: 'food-main',
     type: 'food',
     title: t('food.title'),
     subtitle: t('food.subtitle'),
-    image: 'livestreamapp/hero/hero-5',
+    image: HERO_IMAGES.foodMain,
+    to: '/food',
+    badge: {
+      label: t('common.open'),
+      variant: 'green',
+      showDot: true
+    }
+  })
+
+  items.push({
+    id: 'afterparty-banner',
+    type: 'afterparty',
+    title: t('afterparty.title') || 'After Party',
+    subtitle: t('afterparty.subtitle') || '',
+    image: HERO_IMAGES.afterpartyBanner,
+    to: '/afterparty',
+    badge: {
+      label: 'Soon',
+      variant: 'violet',
+      pulse: true
+    }
+  })
+
+  items.push({
+    id: 'food-dynamic',
+    type: 'food',
+    title: t('food.title'),
+    subtitle: t('food.subtitle'),
+    image: HERO_IMAGES.foodDynamic,
     to: '/food',
     badge: {
       label: t('common.open'),

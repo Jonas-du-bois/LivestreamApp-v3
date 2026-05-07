@@ -11,6 +11,7 @@ const { t } = useI18n()
 const { translateApparatus, formatLocalizedTime } = useTranslatedData()
 
 const formatTime = (iso: string) => formatLocalizedTime(iso)
+const hasScore = (score?: number) => typeof score === 'number' && Number.isFinite(score)
 
 // Détermine l'état du passage pour adapter le label affiché.
 const statusLabel = computed(() => {
@@ -55,9 +56,12 @@ const statusLabel = computed(() => {
           </div>
         </div>
 
-        <div v-if="item.status === 'FINISHED'" class="text-right flex-shrink-0">
+        <div v-if="hasScore(item.score)" class="text-right flex-shrink-0">
           <div class="text-2xl font-bold text-cyan-400 leading-none">
-            {{ typeof item.score === 'number' ? item.score.toFixed(2) : '0.00' }}
+            {{ item.score.toFixed(2) }}
+          </div>
+          <div v-if="item.status !== 'FINISHED'" class="mt-1 text-[11px] text-white/45 font-medium uppercase tracking-wide">
+            {{ statusLabel }}
           </div>
         </div>
         <div v-else-if="item.status === 'LIVE'" class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/20 animate-pulse flex-shrink-0">
