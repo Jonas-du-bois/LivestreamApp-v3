@@ -121,6 +121,33 @@ const streamUrl = computed(() => stream.value?.url)
 const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl.value?.includes('vimeo') || streamUrl.value?.includes('api.video') || streamUrl.value?.includes('kick'))
 const currentApparatus = computed(() => currentPassage.value?.apparatus || null)
 
+const iframeUrl = computed(() => {
+  if (!streamUrl.value) return null
+  let url = streamUrl.value
+
+  if (url.includes('kick.com')) {
+    // Convert regular kick link to player link if necessary
+    if (!url.includes('player.kick.com')) {
+      const match = url.match(/kick\.com\/([a-zA-Z0-9_-]+)/)
+      if (match && match[1]) {
+        url = `https://player.kick.com/${match[1]}`
+      }
+    }
+    
+    // Add recommended parameters for Kick
+    try {
+      const urlObj = new URL(url)
+      if (!urlObj.searchParams.has('autoplay')) urlObj.searchParams.set('autoplay', 'true')
+      if (!urlObj.searchParams.has('muted')) urlObj.searchParams.set('muted', 'false')
+      return urlObj.toString()
+    } catch (e) {
+      return url
+    }
+  }
+  
+  return url
+})
+
 const { open: openGroupDetails } = useGroupDetails()
 
 // Detect iframe load failures (e.g., blocked by extensions) and show fallback
@@ -244,11 +271,12 @@ useAutoRefresh(handleRefresh, STREAM_AUTO_REFRESH)
         >
           <div class="aspect-video rounded-2xl overflow-hidden bg-black relative">
             <iframe
-              v-if="isEmbed && streamUrl"
-              :src="streamUrl"
+              v-if="isEmbed && iframeUrl"
+              :src="iframeUrl"
               :title="stream?.name || t('stream.liveStreams')"
               class="w-full h-full"
               frameborder="0"
+              scrolling="no"
               @load="onIframeLoad"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
