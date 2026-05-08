@@ -28,7 +28,8 @@ export const createAdminSession = async (): Promise<string> => {
 export const verifyAdminSession = async (token: string): Promise<boolean> => {
   try {
     const hashedToken = hashToken(token);
-    const session = await SessionModel.findOne({ 
+    // BOLT: Optimize by using exists() instead of findOne() to avoid fetching the full document
+    const session = await SessionModel.exists({
       token: hashedToken,
       expiresAt: { $gt: new Date() } 
     });
