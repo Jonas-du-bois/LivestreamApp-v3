@@ -19,20 +19,22 @@ interface FlickrRawPhoto {
 /**
  * GET /api/flickr/album
  * Proxy sécurisé vers l'API Flickr REST.
- * Nécessite FLICKR_API_KEY, FLICKR_ALBUM_ID et FLICKR_USER_ID dans .env
+ * Nécessite FLICKR_API_KEY, FLICKR_ALBUM_ID_SATURDAY, FLICKR_ALBUM_ID_SUNDAY et FLICKR_USER_ID dans .env
  */
-export default defineCachedEventHandler(async (_event) => {
+export default defineCachedEventHandler(async (event) => {
   const config = useRuntimeConfig()
+  const query = getQuery(event)
+  const day = query.day as string
 
   const apiKey = config.flickrApiKey as string
-  const albumId = config.flickrAlbumId as string
+  const albumId = day === 'dimanche' ? (config.flickrAlbumIdSunday as string) : (config.flickrAlbumIdSaturday as string)
   const userId = config.flickrUserId as string
 
   if (!apiKey || !albumId) {
     throw createError({
       statusCode: 503,
       statusMessage: 'Flickr not configured',
-      message: 'Les variables FLICKR_API_KEY et FLICKR_ALBUM_ID sont manquantes.'
+      message: `Les variables FLICKR_API_KEY et l'ID de l'album pour ${day || 'samedi'} sont manquantes.`
     })
   }
 
@@ -96,5 +98,8 @@ export default defineCachedEventHandler(async (_event) => {
   maxAge: FLICKR_CACHE_MAX_AGE,
   swr: true,
   name: 'flickr-album',
-  getKey: () => 'album'
+  getKey: (event) => {
+    const query = getQuery(event)
+    return `album-${query.day || 'samedi'}`
+  }
 })

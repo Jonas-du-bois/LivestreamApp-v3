@@ -35,7 +35,7 @@ const pointsOfInterest = computed(() => [
   { name: t('plan.pois.afterParty'), lat: 46.77226509740448, lng: 6.634947459360225, type: "party", icon: "fluent:drink-beer-24-regular" },
   { name: t('plan.pois.toilets'), lat: 46.77247976785602, lng: 6.635370230722647, type: "wc", icon: "fluent:drop-24-regular" },
   { name: t('plan.pois.cantine'), lat: 46.77196430771606, lng: 6.6349292364566725, type: "food", icon: "fluent:food-24-regular" },
-  { name: t('plan.pois.returnConsignes'), lat: 46.772059162736916, lng: 6.63477251948612, type: "service", icon: "fluent:arrow-sync-24-regular" },
+  { name: t('plan.pois.returnConsignes'), lat: 46.771917586419185, lng: 6.635034506184355, type: "service", icon: "fluent:arrow-sync-24-regular" },
   { name: t('plan.pois.foodTrucks'), lat: 46.771959315341924, lng: 6.634739718259726, type: "food", icon: "fluent:food-pizza-24-regular" },
   { name: t('plan.pois.leonMichaud1'), lat: 46.77456933137738, lng: 6.635543269133628, type: "competition", icon: "fluent:trophy-24-regular" },
   { name: t('plan.pois.buvetteLeonMichaud'), lat: 46.77465196585002, lng: 6.635852349778349, type: "food", icon: "fluent:drink-beer-24-regular" },

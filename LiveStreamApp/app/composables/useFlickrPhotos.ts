@@ -8,15 +8,22 @@ import { FlickrService } from '~/services/flickr.service'
  * - Détecte les nouvelles photos entre deux polls
  * - Refresh automatique au retour de visibilité
  */
-export function useFlickrPhotos() {
+export function useFlickrPhotos(day: Ref<string>) {
   // IDs connus au premier chargement (pas signalés comme "nouveaux")
   const knownIds = ref(new Set<string>())
   // IDs arrivés après l'init (pour notifier l'utilisateur)
   const newPhotoIds = ref(new Set<string>())
   const isInitialized = ref(false)
 
+  // Réinitialiser les états lors du changement de jour
+  watch(day, () => {
+    knownIds.value = new Set<string>()
+    newPhotoIds.value = new Set<string>()
+    isInitialized.value = false
+  })
+
   // Fetch réactif
-  const { data, pending, error, refresh } = FlickrService.getAlbum()
+  const { data, pending, error, refresh } = FlickrService.getAlbum(day)
 
   watch(data, (newData) => {
     if (!newData?.photos?.length) return

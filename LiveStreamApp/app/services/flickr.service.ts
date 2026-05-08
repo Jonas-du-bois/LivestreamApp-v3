@@ -1,3 +1,4 @@
+import { type MaybeRef, toValue } from 'vue'
 import type { FlickrAlbumResponse } from '~/types/flickr'
 
 /**
@@ -12,9 +13,13 @@ export const FlickrService = {
    * `getCachedData: () => undefined` désactive le cache Nuxt côté client
    * pour obtenir les dernières données à chaque refresh de polling.
    */
-  getAlbum() {
+  getAlbum(day?: MaybeRef<string>) {
     return useFetch<FlickrAlbumResponse>('/api/flickr/album', {
-      key: 'flickr-album',
+      key: computed(() => `flickr-album-${toValue(day) ?? 'all'}`).value,
+      query: computed(() => {
+        const val = toValue(day)
+        return val ? { day: val } : {}
+      }),
       getCachedData: () => undefined
     })
   }

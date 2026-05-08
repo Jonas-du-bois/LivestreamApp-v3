@@ -5,7 +5,7 @@ const eventInfo = {
   name: 'Coupe des Bains - 39e edition',
   location: 'Yverdon-les-Bains',
   dates: 'Samedi 9 mai et dimanche 10 mai 2026',
-  venues: 'Centre sportif des Isles et salle Leon-Michaud'
+  venues: 'Centre sportif des Isles et salle Léon-Michaud'
 }
 
 const weekendOrganization = [
@@ -16,47 +16,39 @@ const weekendOrganization = [
   },
   {
     day: 'Dimanche 10 mai 2026',
-    title: 'Concours jeunesse et mixte',
+    title: 'Concours jeunesse',
     details: 'Categories jeunesse A/B confirmees, et volet mixte a confirmer selon horaires officiels.'
   }
 ]
 
 const parkingInfo = [
   {
-    label: 'Prix du parking',
-    value: 'A completer (tarification communale, places blanches).'
-  },
-  {
-    label: 'Acces parking',
-    value: 'Consulter le plan officiel pour les zones recommandees et le cheminement a pied.'
+    label: 'Accès parking',
+    value: 'Attention, le parking devant la salle des Isles sera resérvé aux officiels et aux juges'
   },
   {
     label: 'Conseil',
-    value: 'Prevoir une marge pour se garer et rejoindre les salles avant le passage.'
+    value: 'Prevoir une marge pour se garer et rejoindre les salles avant le passage. Car le parking devant la salle des Isles sera resérvé aux officiels et aux juges'
   }
 ]
 
 const samaritansInfo = [
   {
     label: 'Poste samaritain',
-    value: 'A completer (emplacement exact sur site).'
-  },
-  {
-    label: 'Acces samaritains',
-    value: 'A completer (point de rendez-vous / signaletique / procedure).'
+    value: 'Il y a deux postes de secours sur le site: un au centre sportif des Isles et un a la salle Leon-Michaud.'
   },
   {
     label: 'Urgence',
-    value: 'En cas de besoin, s adresser au staff de salle ou au speaker pour orientation immediate.'
+    value: 'En cas de besoin, s\'adresser au staff de salle ou au speaker pour orientation immediate.'
   }
 ]
 
 const importantInfo = [
-  'Entree spectateurs: a completer selon la communication officielle.',
+  'Les horaires sur l\'application sont indicatifs et peuvent être sujets à des modifications de dernière minute (retard ou avance).',
   'Restauration sur place pendant le week-end.',
-  'Presence de deux sites de competition (Les Isles / Leon-Michaud).',
-  'Suivre les horaires officiels pour les passages et mises a jour.',
-  'Verifier les annonces de derniere minute (organisation, acces, meteo).'
+  'Présence de deux sites de competition (Les Isles / Leon-Michaud).',
+  'Suivre les horaires officiels pour les passages et mises à jour.',
+  'Vérifier les annonces de dernière minute (organisation, accès, météo).'
 ]
 
 const usefulLinks = [

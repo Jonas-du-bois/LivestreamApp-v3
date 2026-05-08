@@ -9,10 +9,10 @@
 
 // ─── Nitro SWR cache (seconds) ─────────────────────────────────────
 /** /api/schedule – fresh data duration (s) */
-export const SCHEDULE_CACHE_MAX_AGE = 5
+export const SCHEDULE_CACHE_MAX_AGE = 120
 
 /** /api/schedule – serve stale while revalidating (s) */
-export const SCHEDULE_CACHE_STALE_MAX_AGE = 5
+export const SCHEDULE_CACHE_STALE_MAX_AGE = 120
 
 /** /api/results – fresh data duration (s) */
 export const RESULTS_CACHE_MAX_AGE = 10
@@ -21,7 +21,7 @@ export const RESULTS_CACHE_MAX_AGE = 10
 export const WEATHER_CACHE_MAX_AGE = 60 * 15 // 15 minutes
 
 /** /api/flickr/album – cache court pour recevoir les nouvelles photos quasi en temps réel (s) */
-export const FLICKR_CACHE_MAX_AGE = 30 // 30 secondes
+export const FLICKR_CACHE_MAX_AGE = 60 // 60 secondes
 
 // ─── Scheduler ──────────────────────────────────────────────────────
 /** How often the scheduler checks for status transitions (ms) */

@@ -229,8 +229,10 @@ export default defineNuxtConfig({
     firebaseServiceAccount: process.env.FIREBASE_SERVICE_ACCOUNT,
     /** Clé API Flickr (serveur uniquement – ne jamais exposer côté client) */
     flickrApiKey: process.env.FLICKR_API_KEY,
-    /** ID de l'album Flickr (photoset_id) pour les photos de la compétition */
-    flickrAlbumId: process.env.FLICKR_ALBUM_ID,
+    /** ID de l'album Flickr pour le samedi */
+    flickrAlbumIdSaturday: process.env.FLICKR_ALBUM_ID_SATURDAY,
+    /** ID de l'album Flickr pour le dimanche */
+    flickrAlbumIdSunday: process.env.FLICKR_ALBUM_ID_SUNDAY,
     /** ID utilisateur Flickr du photographe officiel */
     flickrUserId: process.env.FLICKR_USER_ID,
     /** API.Video API Key pour provisionner les lives dynamiquement */

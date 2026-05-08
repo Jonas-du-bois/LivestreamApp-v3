@@ -10,6 +10,9 @@ useSeoMeta({
   description: () => t('photos.subtitle')
 })
 
+// ─── Sélection du jour ───────────────────────────────────────────────────────
+const selectedDay = ref('samedi')
+
 // ─── Données Flickr ──────────────────────────────────────────────────────────
 const {
   photos,
@@ -21,7 +24,7 @@ const {
   newPhotoIds,
   newPhotoCount,
   clearNewPhotos
-} = useFlickrPhotos()
+} = useFlickrPhotos(selectedDay)
 
 // ─── Lightbox ────────────────────────────────────────────────────────────────
 const lightboxIndex = ref<number | null>(null)
@@ -98,6 +101,14 @@ const handleNewPhotosBanner = () => {
         </Transition>
       </template>
     </UiPageHeader>
+
+    <!-- ─── Day Switcher ──────────────────────────────────────────────────── -->
+    <div class="px-4 mb-4">
+      <UiDaySwitcher
+        v-model="selectedDay"
+        :days="['samedi', 'dimanche']"
+      />
+    </div>
 
     <!-- ─── Compteur de photos ────────────────────────────────────────────── -->
     <Transition name="fade">

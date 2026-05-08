@@ -20,17 +20,24 @@
 
 ## ✨ Fonctionnalités
 
-- 📊 **Scores en Direct** — mise à jour instantanée via WebSockets + polling de secours
-- 🎥 **Streaming** — intégration de flux vidéo (YouTube / embed) par salle
-- 📅 **Programme** — calendrier complet des passages avec filtres (agrès, jour, division, salle)
-- ❤️ **Favoris** — suivi personnalisé de groupes avec compte à rebours
-- 🔔 **Notifications Push** — alertes natives (FCM) et web (VAPID) pour les favoris
-- 🏅 **Résultats & Classements** — tableaux de scores avec graphiques d'historique
-- 📱 **App-First** — PWA installable + applications natives Android/iOS
-- 🗺️ **Plan Interactif** — localisation des sites de compétition
-- 📸 **Photos** — galerie officielle via l'API Flickr
-- 🛠️ **Dashboard Admin** — interface sécurisée pour la saisie des scores, gestion des streams et des passages
-- 🌐 **Multilingue** — détection automatique de la langue du navigateur
+### 👤 Expérience Utilisateur (Frontend)
+- 📊 **Tableau de bord (Home)** — Ticker "En ce moment", carrousel d'actualités et accès rapide aux fonctionnalités
+- 📅 **Programme Intelligent** — Vue journalière avec filtres (agrès, lieu), statuts en temps réel (LIVE, NEXT, FINISHED)
+- ❤️ **Favoris & Notifications** — Suivi personnalisé avec compte à rebours et alertes push natives/web (FCM/VAPID) pour les scores et le début des passages
+- 🏅 **Résultats Dynamiques** — Classements en temps réel par catégorie, mise en avant du podium et séparation intelligente des Qualifications et des Finales
+- 🎥 **Streaming Interactif** — Intégration api.video avec affichage dynamique du contexte (groupe et agrès actuels)
+- 📸 **Live Photo Feed** — Synchronisation en temps réel avec l'API Flickr officielle et visionneuse plein écran
+- 🗺️ **Informations Pratiques** — Plan interactif des lieux, menu de restauration (statut ouvert/fermé) et météo locale en temps réel
+- 🥳 **Expérience Afterparty** — Page thématique avec compte à rebours, galerie défilante et menu des boissons
+- 📱 **App-First** — PWA installable + applications natives fluides pour Android et iOS via Capacitor
+- 🌐 **Multilingue** — Détection automatique et prise en charge complète du Français, de l'Allemand et de l'Italien
+
+### 🛠️ Espace Administrateur (Backend/Dashboard)
+- 🎛️ **Centre de Commandes Unifié** — Contrôle en temps réel du statut de la compétition et saisie des scores (synchro multi-admins via Socket.io)
+- 📡 **Orchestration Avancée des Streams** — Création automatique de lives api.video, gestion des clés RTMP et suivi des coûts/spectateurs en direct
+- 🏆 **Génération Automatique de Finales** — Création en un clic des passages de finale basés sur les qualifications, avec interface de tri visuel drag-and-drop (Haut/Bas) pour résoudre les conflits d'horaires
+- 🤖 **Moteur de Synchronisation (External Scores)** — Système heuristique pour l'ingestion automatique de notes depuis un flux de chronométrage externe
+- 🖼️ **Gestionnaire de Médias Centralisé** — Interface d'upload pour la gestion des logos de groupes, bannières et assets de la PWA vers Cloudinary
 
 ## 🛠️ Installation
 
