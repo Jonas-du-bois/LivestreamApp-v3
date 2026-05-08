@@ -394,7 +394,6 @@
     "updateStreamBtn": "Stream aktualisiere",
     "sendAllNotifications": "Alli sände"
   },
-
   "historyLineChart": {
     "best": "Bester",
     "average": "Durchschnitt",
@@ -402,7 +401,6 @@
     "edition": "Ausgab",
     "note": "Note: {score}"
   },
-
   "apparatus": {
     "SS": "Bode",
     "BA": "Barren",
@@ -424,7 +422,6 @@
     "avec-engin-12x14": "Mit Grät 12x14 m",
     "avec-engin-12x18": "Mit Grät 12x18 m"
   },
-
   "days": {
     "lundi": "Mäntig",
     "mardi": "Ziischtig",
@@ -434,25 +431,21 @@
     "samedi": "Samschtig",
     "dimanche": "Sunntig"
   },
-
   "categories": {
     "ACTIFS": "Aktive",
     "MIXTE": "Gemischt",
     "JEUNESSE_A": "Jugend A (-16 J.)",
     "JEUNESSE_B": "Jugend B (-12 J.)"
   },
-
   "status": {
     "scheduled": "Planiert",
     "live": "Live",
     "finished": "Fertig"
   },
-
   "language": {
     "fr": "Français",
     "de": "Deutsch"
   },
-
   "photos": {
     "title": "Fotos",
     "subtitle": "Offizielle Live-Fotos vom Wettkampf",
@@ -475,5 +468,74 @@
     "zoomHint": "Zwüschet oder mid em Mausrad zoome",
     "prevPhoto": "Vorherigs Foto",
     "nextPhoto": "Nächstes Foto"
+  },
+  "infos": {
+    "title": "Wettbewerbsinfos",
+    "event": {
+      "name": "Coupe des Bains - 39. Ausgabe",
+      "location": "Yverdon-les-Bains",
+      "dates": "Samstag, 9. Mai und Sonntag, 10. Mai 2026",
+      "venues": "Sportzentrum Les Isles und Halle Léon-Michaud"
+    },
+    "sections": {
+      "organization": "Wochenendorganisation",
+      "parking": "Zufahrt und Parkplatz",
+      "samaritans": "Samariter und Erste Hilfe",
+      "important": "Wichtige Infos",
+      "links": "Nützliche Links"
+    },
+    "organization": [
+      {
+        "day": "Samstag, 9. Mai 2026",
+        "title": "Wettkampf Aktive",
+        "details": "Qualifikationsrunde und dann Finals je nach Anzahl der Gruppen."
+      },
+      {
+        "day": "Sonntag, 10. Mai 2026",
+        "title": "Wettkampf Jugend",
+        "details": "Jugendkategorien A/B bestätigt, gemischter Teil wird gemäß offiziellem Zeitplan bestätigt."
+      }
+    ],
+    "parking": [
+      {
+        "label": "Parkplatzzufahrt",
+        "value": "Achtung, der Parkplatz vor der Halle Les Isles ist für Funktionäre und Wertungsrichter reserviert."
+      },
+      {
+        "label": "Tipp",
+        "value": "Planen Sie genügend Zeit ein, um zu parken und die Hallen vor dem Auftritt zu erreichen, da der Parkplatz vor der Halle Les Isles reserviert ist."
+      }
+    ],
+    "samaritans": [
+      {
+        "label": "Samariterposten",
+        "value": "Es gibt zwei Erste-Hilfe-Posten auf dem Gelände: einen im Sportzentrum Les Isles und einen in der Halle Léon-Michaud."
+      },
+      {
+        "label": "Notfall",
+        "value": "Wenden Sie sich im Bedarfsfall an das Hallenpersonal oder den Speaker für sofortige Hilfe."
+      }
+    ],
+    "important": [
+      "Die Zeiten in der App sind Richtwerte und können kurzfristigen Änderungen (Verzögerung oder Vorverlegung) unterliegen.",
+      "Verpflegung vor Ort während des Wochenendes.",
+      "Zwei Wettkampfstandorte vorhanden (Les Isles / Léon-Michaud).",
+      "Beachten Sie die offiziellen Zeitpläne für Durchgänge und Updates.",
+      "Prüfen Sie kurzfristige Ankündigungen (Organisation, Zugang, Wetter)."
+    ],
+    "links": [
+      {
+        "label": "Offizielle Website Coupe des Bains"
+      },
+      {
+        "label": "Wettkampfprogramm"
+      },
+      {
+        "label": "Anfahrtsplan / Parken"
+      },
+      {
+        "label": "Vorschriften 2026 (PDF)"
+      }
+    ]
   }
 }

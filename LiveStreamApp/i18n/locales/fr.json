@@ -396,7 +396,6 @@
     "updateStreamBtn": "Mettre à jour le stream",
     "sendAllNotifications": "Tout envoyer"
   },
-
   "historyLineChart": {
     "best": "Meilleur",
     "average": "Moyenne",
@@ -404,7 +403,6 @@
     "edition": "Édition",
     "note": "Note : {score}"
   },
-
   "apparatus": {
     "SS": "Sol",
     "BA": "Barres Parallèles",
@@ -426,7 +424,6 @@
     "avec-engin-12x14": "Avec engin 12x14 m",
     "avec-engin-12x18": "Avec engin 12x18 m"
   },
-
   "days": {
     "lundi": "Lundi",
     "mardi": "Mardi",
@@ -436,25 +433,21 @@
     "samedi": "Samedi",
     "dimanche": "Dimanche"
   },
-
   "categories": {
     "ACTIFS": "Actifs",
     "MIXTE": "Mixte",
     "JEUNESSE_A": "Jeunesse A (-16 ans)",
     "JEUNESSE_B": "Jeunesse B (-12 ans)"
   },
-
   "status": {
     "scheduled": "Planifié",
     "live": "En direct",
     "finished": "Terminé"
   },
-
   "language": {
     "fr": "Français",
     "de": "Deutsch"
   },
-
   "photos": {
     "title": "Photos",
     "subtitle": "Photos officielles en direct de la compétition",
@@ -477,5 +470,74 @@
     "zoomHint": "Pincez ou utilisez la molette pour zoomer",
     "prevPhoto": "Photo précédente",
     "nextPhoto": "Photo suivante"
+  },
+  "infos": {
+    "title": "Infos concours",
+    "event": {
+      "name": "Coupe des Bains - 39e édition",
+      "location": "Yverdon-les-Bains",
+      "dates": "Samedi 9 mai et dimanche 10 mai 2026",
+      "venues": "Centre sportif des Isles et salle Léon-Michaud"
+    },
+    "sections": {
+      "organization": "Organisation du week-end",
+      "parking": "Accès et parking",
+      "samaritans": "Samaritains et premiers secours",
+      "important": "Infos importantes",
+      "links": "Liens utiles"
+    },
+    "organization": [
+      {
+        "day": "Samedi 9 mai 2026",
+        "title": "Concours actifs-actives",
+        "details": "Tour qualificatif puis finales selon le nombre de groupes."
+      },
+      {
+        "day": "Dimanche 10 mai 2026",
+        "title": "Concours jeunesse",
+        "details": "Catégories jeunesse A/B confirmées, et volet mixte à confirmer selon horaires officiels."
+      }
+    ],
+    "parking": [
+      {
+        "label": "Accès parking",
+        "value": "Attention, le parking devant la salle des Isles sera réservé aux officiels et aux juges."
+      },
+      {
+        "label": "Conseil",
+        "value": "Prévoir une marge pour se garer et rejoindre les salles avant le passage, car le parking devant la salle des Isles sera réservé."
+      }
+    ],
+    "samaritans": [
+      {
+        "label": "Poste samaritain",
+        "value": "Il y a deux postes de secours sur le site : un au centre sportif des Isles et un à la salle Léon-Michaud."
+      },
+      {
+        "label": "Urgence",
+        "value": "En cas de besoin, s'adresser au staff de salle ou au speaker pour orientation immédiate."
+      }
+    ],
+    "important": [
+      "Les horaires sur l'application sont indicatifs et peuvent être sujets à des modifications de dernière minute (retard ou avance).",
+      "Restauration sur place pendant le week-end.",
+      "Présence de deux sites de compétition (Les Isles / Léon-Michaud).",
+      "Suivre les horaires officiels pour les passages et mises à jour.",
+      "Vérifier les annonces de dernière minute (organisation, accès, météo)."
+    ],
+    "links": [
+      {
+        "label": "Site officiel Coupe des Bains"
+      },
+      {
+        "label": "Programme compétition"
+      },
+      {
+        "label": "Plan d'accès / Parking"
+      },
+      {
+        "label": "Prescriptions 2026 (PDF)"
+      }
+    ]
   }
 }
