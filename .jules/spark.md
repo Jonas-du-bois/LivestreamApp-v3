@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2024-05-08 - Tactile Refresh Button with Loading States
+**Learning:** When adding tactile micro-interactions (like a pull-to-refresh style spinning icon) to a generic `UiButton`, using the component's built-in `:loading` or `icon` props replaces the icon entirely with a generic spinner, destroying the custom interaction.
+**Action:** Instead, remove the generic `:loading` and `icon` props, pass `:disabled="loadingState"` to prevent multi-clicks, add the `group` class to the button, and place a custom `<Icon>` in the default slot. Apply `transition-transform duration-300 group-active:rotate-180` for the touch feedback, and reactively bind `:class="{ 'animate-spin': loadingState }"` to the icon so the animation continues while loading.
