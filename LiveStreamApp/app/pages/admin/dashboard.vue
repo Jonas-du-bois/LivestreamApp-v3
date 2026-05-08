@@ -1959,6 +1959,26 @@ const hasActiveFilters = computed(() => {
                             <div class="toggle-bg"></div>
                           </label>
                         </div>
+                        
+                        <!-- Custom Stream URL (Kick, YouTube, etc.) -->
+                        <div class="pt-2 border-t border-white/5 space-y-3">
+                          <label class="block text-sm font-medium text-white/60">
+                            Lien personnalisé (Kick, YouTube...)
+                            <span class="block text-[10px] text-white/40 font-normal mt-0.5">Surcharge la configuration api.video</span>
+                          </label>
+                          <input
+                            v-model="stream.url"
+                            class="input-modern w-full"
+                            placeholder="https://player.kick.com/..."
+                          />
+                          <button
+                            @click="updateStreamUrl(stream)"
+                            class="w-full btn-primary py-2 text-sm"
+                          >
+                            <Icon name="fluent:save-24-regular" class="w-4 h-4 mr-2" />
+                            Enregistrer le lien
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </article>

@@ -118,7 +118,7 @@ if (stream.value && !stream.value.isLive) {
 
 // Computeds for safe access
 const streamUrl = computed(() => stream.value?.url)
-const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl.value?.includes('vimeo') || streamUrl.value?.includes('api.video'))
+const isEmbed = computed(() => streamUrl.value?.includes('youtube') || streamUrl.value?.includes('vimeo') || streamUrl.value?.includes('api.video') || streamUrl.value?.includes('kick'))
 const currentApparatus = computed(() => currentPassage.value?.apparatus || null)
 
 const { open: openGroupDetails } = useGroupDetails()
