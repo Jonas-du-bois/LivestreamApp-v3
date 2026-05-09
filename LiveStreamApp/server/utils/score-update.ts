@@ -71,9 +71,10 @@ const sendFavoriteScorePushNotifications = async (updated: PopulatedPassage, ran
   const config = useRuntimeConfig();
   if (!config.vapidPrivateKey || !config.public.vapidPublicKey) return;
 
+  // BOLT: Optimize memory overhead by using .lean() for read-only queries
   const subscriptions = await SubscriptionModel.find({
     favorites: updated._id.toString()
-  });
+  }).lean();
   if (subscriptions.length === 0) return;
 
   const groupName = (updated.group as any)?.name || 'Groupe';
@@ -86,19 +87,28 @@ const sendFavoriteScorePushNotifications = async (updated: PopulatedPassage, ran
     url: '/results'
   });
 
+  // BOLT: Optimize DB operations by collecting expired IDs to use a single deleteMany operation instead of O(N) findByIdAndDelete
+  const expiredSubscriptionIds: string[] = [];
+
   const notifications = subscriptions.map((sub) =>
-    webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys as any }, pushPayload).catch((err) => {
+    webPush.sendNotification({ endpoint: sub.endpoint as string, keys: sub.keys as any }, pushPayload).catch((err) => {
       if (err.statusCode === 410 || err.statusCode === 404) {
-        return SubscriptionModel.findByIdAndDelete(sub._id);
+        expiredSubscriptionIds.push(sub._id.toString());
+        return null;
       }
       console.error('[score] Error sending push:', err);
       return null;
     })
   );
 
-  Promise.all(notifications).catch((err) => {
+  try {
+    await Promise.all(notifications);
+    if (expiredSubscriptionIds.length > 0) {
+      await SubscriptionModel.deleteMany({ _id: { $in: expiredSubscriptionIds } });
+    }
+  } catch (err) {
     console.error('[score] Push background error:', err);
-  });
+  }
 };
 
 export const invalidateServerCache = async (scope = 'score-update') => {
