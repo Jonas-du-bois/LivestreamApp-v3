@@ -86,17 +86,29 @@ const sendFavoriteScorePushNotifications = async (updated: PopulatedPassage, ran
     url: '/results'
   });
 
+  const expiredIds: any[] = [];
+
   const notifications = subscriptions.map((sub) =>
     webPush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys as any }, pushPayload).catch((err) => {
       if (err.statusCode === 410 || err.statusCode === 404) {
-        return SubscriptionModel.findByIdAndDelete(sub._id);
+        expiredIds.push(sub._id);
+      } else {
+        console.error('[score] Error sending push:', err);
       }
-      console.error('[score] Error sending push:', err);
       return null;
     })
   );
 
-  Promise.all(notifications).catch((err) => {
+  Promise.all(notifications).then(async () => {
+    if (expiredIds.length > 0) {
+      try {
+        await SubscriptionModel.deleteMany({ _id: { $in: expiredIds } });
+        console.log(`[score] Removed ${expiredIds.length} expired subscriptions`);
+      } catch (dbErr) {
+        console.error('[score] Error removing expired subscriptions:', dbErr);
+      }
+    }
+  }).catch((err) => {
     console.error('[score] Push background error:', err);
   });
 };
