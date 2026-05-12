@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-05-12 - Custom tactile micro-interactions on generic components
+**Learning:** When applying custom tactile micro-interactions to generic components like UiButton, using built-in :loading or icon props may force a generic spinner that overrides the custom animation.
+**Action:** Remove generic props, manually bind :disabled to the loading state to preserve safety, apply the Tailwind 'group' class and tactile utilities (e.g. active:scale-95) to the parent, and use 'group-active' utilities (e.g. group-active:rotate-180, duration-200) on an explicitly inserted <Icon> element inside the default slot. Also ensure loading animation is reactively bound (e.g. :class="{ 'animate-spin': pending }").
