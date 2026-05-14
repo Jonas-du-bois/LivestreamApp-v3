@@ -577,8 +577,21 @@ const reseedDatabase = async () => {
   }
 }
 
+// ⚡ Optimize O(N) template lookup to O(1) hash map
+// The streams list is small, but getStreamForPassage is called 5 times per rendered passage
+const streamsByLocation = computed<Record<string, Stream>>(() => {
+  const map: Record<string, Stream> = {}
+  for (const s of streams.value) {
+    if (s.location && !map[s.location]) {
+      map[s.location] = s
+    }
+  }
+  return map
+})
+
 const getStreamForPassage = (passage: PassageEnriched) => {
-  return streams.value.find(s => s.location === passage.location)
+  if (!passage.location) return undefined
+  return streamsByLocation.value[passage.location]
 }
 
 // ===== Media Management =====

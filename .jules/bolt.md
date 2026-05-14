@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-04-10 - Optimizing Template Lookups with O(1) Hash Maps
+**Learning:** Frequently called $O(N)$ lookups in Vue templates (like using `.find()` inside a v-for loop or a method called by the template) cause significant CPU overhead and degrade rendering performance. This is especially true when rendering large lists (like passages), creating a potential $O(P \times S)$ bottleneck.
+**Action:** Replace $O(N)$ `.find()` lookups with an $O(1)$ computed `Record<string, T>` keyed by the lookup property. Ensure the loop only assigns the first match found for each key to maintain `.find()` behavior parity.
