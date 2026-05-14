@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2024-03-25 - Animation tactile des boutons de rafraîchissement
+**Learning:** L'ajout d'une rotation fluide (`group-active:rotate-180` avec `duration-500`) sur l'icône des boutons d'action (comme rafraîchir ou réinitialiser) combinée à un effet d'enfoncement (`active:scale-95`) offre un retour visuel instantané très satisfaisant qui compense visuellement le temps de chargement ou d'action.
+**Action:** Utiliser la classe `group` sur le parent et `group-active` sur les icônes enfants pour créer des micro-interactions synchronisées sans JS additionnel.
