@@ -85,7 +85,16 @@ const handleWheel = (e: WheelEvent) => {
   }
 }
 
+let dragStartX = 0
+let dragStartY = 0
+let isDragging = false
 let lastTap = 0
+let initialPinchDistance = 0
+let initialScale = 1
+let dragTimeout: ReturnType<typeof setTimeout> | null = null
+let onMoveHandler: ((ev: MouseEvent) => void) | null = null
+let onUpHandler: (() => void) | null = null
+
 const handleDoubleTap = () => {
   if (isZoomed.value) {
     resetZoom()
@@ -108,9 +117,6 @@ const handleClick = (e: MouseEvent) => {
 }
 
 // ─── Gestion des gestes tactiles ────────────────────────────────────────────
-
-let initialPinchDistance = 0
-let initialScale = 1
 
 const handleTouchStart = (e: TouchEvent) => {
   if (e.touches.length === 2) {
@@ -148,10 +154,6 @@ const handleTouchEnd = (e: TouchEvent) => {
 
 // ─── Drag à la souris (Desktop) ─────────────────────────────────────────────
 
-let dragStartX = 0
-let dragStartY = 0
-let isDragging = false
-
 const handleMouseDown = (e: MouseEvent) => {
   if (!isZoomed.value) return
   e.preventDefault()
@@ -159,22 +161,32 @@ const handleMouseDown = (e: MouseEvent) => {
   dragStartX = e.clientX - translateX.value
   dragStartY = e.clientY - translateY.value
 
-  const onMove = (ev: MouseEvent) => {
+  if (dragTimeout) clearTimeout(dragTimeout)
+
+  onMoveHandler = (ev: MouseEvent) => {
     isDragging = true
     translateX.value = ev.clientX - dragStartX
     translateY.value = ev.clientY - dragStartY
   }
   
-  const onUp = () => {
-    document.removeEventListener('mousemove', onMove)
-    document.removeEventListener('mouseup', onUp)
+  onUpHandler = () => {
+    if (onMoveHandler) document.removeEventListener('mousemove', onMoveHandler)
+    if (onUpHandler) document.removeEventListener('mouseup', onUpHandler)
+    onMoveHandler = null
+    onUpHandler = null
     // Petit délai pour éviter qu'un "mouseup" ne soit immédiatement compté comme un "click" (qui réinitialiserait le zoom).
-    setTimeout(() => { isDragging = false }, 50)
+    dragTimeout = setTimeout(() => { isDragging = false }, 50)
   }
   
-  document.addEventListener('mousemove', onMove)
-  document.addEventListener('mouseup', onUp)
+  document.addEventListener('mousemove', onMoveHandler)
+  document.addEventListener('mouseup', onUpHandler)
 }
+
+onBeforeUnmount(() => {
+  if (dragTimeout) clearTimeout(dragTimeout)
+  if (onMoveHandler) document.removeEventListener('mousemove', onMoveHandler)
+  if (onUpHandler) document.removeEventListener('mouseup', onUpHandler)
+})
 
 // ─── Utilitaires ────────────────────────────────────────────────────────────
 
@@ -204,7 +216,7 @@ const downloadPhoto = async () => {
     a.download = filename
     a.click()
     URL.revokeObjectURL(blobUrl)
-  } catch {
+  } catch (e: unknown) {
     window.open(url, '_blank')
   } finally {
     isDownloading.value = false

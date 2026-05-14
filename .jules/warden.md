@@ -55,3 +55,16 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Photos Components Security & Memory Leaks Fixes
+
+- **Target:** `app/components/photos/PhotoFullscreen.vue`, `app/components/photos/PhotosLightbox.vue`
+- **Risks Mitigated:**
+    - **Memory Leaks:** Missing cleanups for `setTimeout` and dynamically added `document.addEventListener` events inside mouse drag logic which could persist after unmount. Module-level variables tracking instance state causing bugs across navigation.
+    - **SSR Safety:** Missing `import.meta.client` guards around `document` and `window` accesses in `onMounted` and `onUnmounted` could cause server-side crashes during rendering.
+    - **Weak Typing:** Implicit `any` in `catch` blocks for fetch errors.
+- **Solution:**
+    - Moved module-level variables (`dragStartX`, `dragStartY`, `isDragging`, `lastTap`, `initialPinchDistance`, `initialScale`, etc.) into the `setup` scope in `PhotoFullscreen.vue` to scope state per component instance.
+    - Added `clearTimeout` in `onBeforeUnmount` for the mouse drag delay and ensured `mousemove`/`mouseup` listeners are tracked and explicitly removed if unmounted during a drag.
+    - Guarded all `document.addEventListener` and `document.removeEventListener` calls with `import.meta.client`.
+    - Typed `$fetch` errors as `unknown` in `catch` blocks.

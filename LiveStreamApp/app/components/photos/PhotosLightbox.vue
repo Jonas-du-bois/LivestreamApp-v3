@@ -95,14 +95,18 @@ const downloadPhoto = async () => {
     const response = await fetch(url)
     const blob = await response.blob()
     const blobUrl = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = blobUrl
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(blobUrl)
-  } catch {
+    if (import.meta.client) {
+      const a = document.createElement('a')
+      a.href = blobUrl
+      a.download = filename
+      a.click()
+      URL.revokeObjectURL(blobUrl)
+    }
+  } catch (e: unknown) {
     // Solution de secours si la requête cross-origin échoue
-    window.open(url, '_blank')
+    if (import.meta.client) {
+      window.open(url, '_blank')
+    }
   } finally {
     isDownloading.value = false
   }
@@ -155,7 +159,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
-  if (import.meta.client) document.body.style.overflow = ''
+  document.body.style.overflow = ''
 })
 </script>
 
