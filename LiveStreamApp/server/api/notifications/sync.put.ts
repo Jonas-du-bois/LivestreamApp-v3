@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Validate input using Zod schema to prevent DoS and injection
-  const { endpoint, favorites } = await readValidatedBody(event, (body) => SyncFavoritesSchema.parse(body));
+  const { endpoint, favorites } = await readValidatedBody(event, (body) => SyncFavoritesSchema.parseAsync(body));
 
   try {
     // Only update favorites for an existing subscription
