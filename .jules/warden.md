@@ -1,5 +1,15 @@
 # Warden's Refactoring Journal
 
+## 2026-02-21: Home Hero Carousel Strict Typing & Auto-Imports Cleanup
+
+- **Target:** `app/components/home/HomeHeroCarousel.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced implicit `any` array usage (`const items: any[] = []`) with a strict `CarouselSlide` interface to prevent runtime errors when building carousel slides dynamically.
+    - **Code Noise / Fragility:** Removed explicit and unused Vue imports (`useI18n`, `useNow`) that are auto-imported by Nuxt, and cleaned up commented dead code.
+- **Solution:**
+    - Created `CarouselSlide` interface for strict slide structures.
+    - Cleaned up imports and removed unused code blocks.
+
 ## 2026-02-21: Streams and Plan Strict Typing & Auto-Imports Cleanup
 
 - **Target:** `app/pages/stream/index.vue`, `app/pages/stream/[id].vue`, `app/pages/plan.vue`
