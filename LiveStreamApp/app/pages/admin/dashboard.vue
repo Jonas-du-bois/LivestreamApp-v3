@@ -577,8 +577,19 @@ const reseedDatabase = async () => {
   }
 }
 
+// BOLT: Optimize O(N) lookup in render loop with O(1) computed map
+const streamsByLocation = computed<Record<string, Stream>>(() => {
+  const map: Record<string, Stream> = {}
+  for (const stream of streams.value) {
+    if (stream.location && !map[stream.location]) {
+      map[stream.location] = stream
+    }
+  }
+  return map
+})
+
 const getStreamForPassage = (passage: PassageEnriched) => {
-  return streams.value.find(s => s.location === passage.location)
+  return passage.location ? streamsByLocation.value[passage.location] : undefined
 }
 
 // ===== Media Management =====
