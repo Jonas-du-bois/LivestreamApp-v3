@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2026-05-15 - Tactile Feedback on Refresh Buttons
+**Learning:** When replacing a generic loading prop with a custom animated icon, the animation must be reactively bound to the loading state rather than only animating on touch events.
+**Action:** Apply the Tailwind `group` class to the parent button, insert the animated `<Icon>` into the default slot, use `group-active:rotate-180` for the touch interaction, and conditionally apply `animate-spin` based on the loading state.
