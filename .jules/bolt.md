@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2024-05-16 - Admin Dashboard Render Optimization
+**Learning:** Re-evaluating `Array.prototype.find()` on every loop iteration inside Vue `v-for` directives scales poorly (O(N^2) complexity), especially for frequent UI updates (e.g., sockets updates). In Nuxt/Vue, mapping reference arrays into computed index maps (`Record<string, T>`) provides `O(1)` constant-time lookups and prevents massive CPU blocking on render cycles.
+**Action:** Before utilizing `.find()` or `.filter()` inside templates or repeated loop calls, always construct a `computed` object map to pre-index the collection by the necessary key.
