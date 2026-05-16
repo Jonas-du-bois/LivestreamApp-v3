@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2024-05-18 - Micro-interactions tactiles synchronisées
+**Learning:** Pour créer une interaction tactile fluide sans JS complexe (ex: un bouton qui s'enfonce pendant que son icône tourne), il vaut mieux éviter les props génériques (`icon="..."`) et déclarer explicitement le composant `<Icon>` à l'intérieur. Cela permet de combiner `active:scale-95` sur le parent avec `group-active:rotate-180` sur l'enfant.
+**Action:** Toujours privilégier les classes Tailwind `group` et `group-active` pour synchroniser les animations parent/enfant afin de respecter la contrainte de 300ms max et de garder le code concis.
