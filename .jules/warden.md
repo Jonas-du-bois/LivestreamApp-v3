@@ -55,3 +55,14 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-05-09: Strict Typing & Memory Leak Fix in Weather Component
+
+- **Target:** `app/types/api.ts`, `app/services/public.service.ts`, `app/pages/weather.vue`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced implicit `any` usage in `fetchWeather` and `getWeather` with strict `WeatherResponse` type to prevent runtime data manipulation errors and ensure type safety.
+    - **Memory Leaks:** 1 uncleaned `setTimeout` timer (`refreshTimer`) could have caused state updates on unmounted component.
+- **Solution:**
+    - Created `WeatherResponse`, `WeatherRawData` and `WeatherCurrentResponse` in `app/types/api.ts` for strict typing.
+    - Updated `app/services/public.service.ts` to return typed responses for the weather.
+    - Implemented strict timer management with `clearTimeout` in `onUnmounted` inside `app/pages/weather.vue`.
