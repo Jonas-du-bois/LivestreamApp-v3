@@ -1,4 +1,4 @@
-import { normalize } from 'node:path';
+import { posix } from 'node:path';
 
 export default defineEventHandler(async (event) => {
   // Security: Normalize path to prevent bypass (e.g. //api/admin) and handle query params
@@ -10,10 +10,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Bad Request: Malformed URI' });
   }
 
-  // Fix: Resolve . and .. segments using node:path.normalize
-  // Replace backslashes with forward slashes for cross-platform consistency
-  // Also ensure multiple slashes are collapsed (normalize usually handles this on POSIX but good to be safe)
-  const normalizedPath = normalize(path).replace(/\\/g, '/');
+  // Fix: Resolve . and .. segments using node:path.posix.normalize
+  // Replace backslashes with forward slashes first for cross-platform consistency
+  // Also ensure multiple slashes are collapsed and jail .. to root.
+  const normalizedPath = '/' + posix.normalize(path.replace(/\\/g, '/')).replace(/^\/+/, '');
 
   // Define protected zones (exclude login endpoint)
   // Security: Use strict equality check to prevent bypass (e.g. /api/admin/users/login)
