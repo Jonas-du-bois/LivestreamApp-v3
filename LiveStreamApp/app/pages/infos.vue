@@ -87,7 +87,7 @@ const usefulLinks = computed(() => {
             <article
               v-for="item in weekendOrganization"
               :key="item.day"
-              class="glass-card p-4 border border-white/10"
+              class="glass-card p-4 border border-white/10 transition-all duration-200 active:scale-[0.98] active:bg-white/5 active:border-white/20"
             >
               <p class="text-emerald-300 text-xs font-bold uppercase tracking-[0.18em] mb-1">{{ item.day }}</p>
               <h4 class="text-white font-bold mb-1">{{ item.title }}</h4>
@@ -147,10 +147,10 @@ const usefulLinks = computed(() => {
               :href="link.href"
               target="_blank"
               rel="noopener noreferrer"
-              class="glass-card app-focus-ring p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 active:bg-white/15 active:scale-[0.98] group"
+              class="glass-card app-focus-ring p-4 flex items-center justify-between gap-3 transition-all duration-200 hover:bg-white/10 hover:shadow-emerald-500/10 active:bg-white/15 active:scale-95 active:border-emerald-500/30 group"
             >
               <span class="text-white text-sm font-medium transition-colors duration-200 group-hover:text-emerald-200 group-active:text-emerald-100">{{ link.label }}</span>
-              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-emerald-300 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:scale-90" />
+              <Icon name="fluent:open-24-regular" class="w-5 h-5 text-emerald-300 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:rotate-12 group-active:text-emerald-400" />
             </a>
           </div>
         </section>
