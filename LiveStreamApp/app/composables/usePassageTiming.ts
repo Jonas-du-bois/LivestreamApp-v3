@@ -26,15 +26,22 @@ export const usePassageTiming = (
   const timeEnrichedPassages = computed<PassageTimeEnriched[]>(() => {
     if (!passages.value) return []
 
+    // BOLT: Reuse a single Date instance to avoid costly allocations inside the map loop.
+    // Also extracting timestamps safely with getTime() instead of multiple Date instantiations.
+    const scratchDate = new Date()
+
     return passages.value.map(p => {
-      const dStart = new Date(p.startTime)
-      const dEnd = new Date(p.endTime)
-      const dayStart = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate()).getTime()
+      const startTime = new Date(p.startTime).getTime()
+      const endTime = new Date(p.endTime).getTime()
+
+      scratchDate.setTime(startTime)
+      scratchDate.setHours(0, 0, 0, 0)
+      const dayStart = scratchDate.getTime()
 
       return {
         ...p,
-        _startTime: dStart.getTime(),
-        _endTime: dEnd.getTime(),
+        _startTime: startTime,
+        _endTime: endTime,
         _dayStart: dayStart
       }
     })
