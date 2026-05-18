@@ -25,3 +25,6 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+## 2026-05-18 - Optimize Date processing in reactive lists
+**Learning:** Instantiating new `Date` objects and calling `toLocaleDateString` inside high-frequency loops (like array maps inside reactive computed properties) causes massive CPU spikes and memory allocations.
+**Action:** Always reuse a single `Date` instance with `setTime()` and `setHours()` to calculate relative dates, and cache `Intl.DateTimeFormat` instances outside the loop for formatting.
