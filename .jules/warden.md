@@ -55,3 +55,11 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2024-03-22 - Strict Typing for API Composables
+
+- **Target:** `app/composables/useApiClient.ts`, `app/composables/useFirstLoad.ts`
+- **Risks Mitigated:**
+    - **Weak Typing:** Weak typing in core API client and first load composables could lead to runtime errors when passing invalid request options or handling error payloads. The use of `any` bypasses TypeScript strictness.
+- **Solution:**
+    - Replaced `any` types with strict `Parameters<typeof $fetch>[1]`, `Parameters<typeof useFetch>[1]`, and generic `<T>` types in `useApiClient.ts` and `useFirstLoad.ts`. Explicitly typed error catches and removed manual `Ref` import.
