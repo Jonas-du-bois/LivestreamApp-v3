@@ -234,11 +234,8 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         })
       }
 
-      // Trigger reactivity by creating a new object reference
-      resultsMap.value = {
-        ...resultsMap.value,
-        [key]: updatedList
-      }
+      // Trigger reactivity with direct assignment to avoid recreating all proxies
+      resultsMap.value[key] = updatedList
 
       // Trigger Flash Effect
       nextTick(() => {
@@ -297,11 +294,8 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         })
       }
 
-      // Trigger reactivity
-      resultsMap.value = {
-        ...resultsMap.value,
-        [code]: updatedList
-      }
+      // Trigger reactivity with direct assignment to avoid recreating all proxies
+      resultsMap.value[code] = updatedList
 
       // Flash effect for new entry
       nextTick(() => {
@@ -336,10 +330,7 @@ const handleStatusUpdate = (data: ScoreUpdatePayload) => {
         return { ...p, status: data.status }
       })
       
-      resultsMap.value = {
-        ...resultsMap.value,
-        [key]: updatedList
-      }
+      resultsMap.value[key] = updatedList
       break
     }
   }
