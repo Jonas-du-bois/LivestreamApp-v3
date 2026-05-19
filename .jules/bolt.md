@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-05-18 - Vue 3 Dictionary Reactivity Optimization
+**Learning:** In Vue 3, `ref` containing objects/dictionaries are deeply reactive. Using the object spread operator (`obj.value = { ...obj.value, [key]: newval }`) to trigger updates for a single key forces Vue to tear down and recreate reactive proxies for *every* key in the dictionary. This causes unnecessary memory allocation and GC pressure, especially for high-frequency real-time updates.
+**Action:** Perform direct property assignment (`obj.value[key] = newval`) to update specific keys in a reactive dictionary without destroying the surrounding proxy structure.
