@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+
 /**
  * ResultCard
  * Carte d'affichage d'un résultat (utilisée pour le podium ou la liste complète du classement).
@@ -54,13 +56,27 @@ const handleClick = () => {
     emit('click:group', props.passage.group._id, props.passage.apparatus?.code)
   }
 }
+
+const isFlashing = ref(false)
+let flashTimeout: ReturnType<typeof setTimeout> | null = null
+
+// ✨ Spark: Effet "Nouveau Score" (Flash vert et léger scale-up)
+watch(() => props.passage.score, (newVal, oldVal) => {
+  if (newVal !== oldVal && oldVal !== undefined) {
+    isFlashing.value = true
+    if (flashTimeout) clearTimeout(flashTimeout)
+    flashTimeout = setTimeout(() => {
+      isFlashing.value = false
+    }, 300) // Spark constraint: < 300ms
+  }
+})
 </script>
 
 <template>
   <UiGlassCard
     :interactive="interactive"
     class="rounded-2xl transition-all duration-300"
-    :class="getBorderClass(passage.rank)"
+    :class="[getBorderClass(passage.rank), { 'score-flash': isFlashing }]"
     @click="handleClick"
     :id="`result-${passage._id}`"
   >
@@ -98,28 +114,29 @@ const handleClick = () => {
 
 <style scoped>
 :global(.score-flash) {
-  animation: premium-pop 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: score-flash-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
-  overflow: hidden;
   z-index: 10;
 }
 
-:global(.score-flash::after) {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  transform: skewX(-20deg);
-  animation: shine-sweep 1.5s ease-out;
-  pointer-events: none;
+@keyframes score-flash-pop {
+  0% {
+    transform: scale(1);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  30% {
+    transform: scale(1.03);
+    background-color: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.8);
+    box-shadow: 0 8px 25px -5px rgba(16, 185, 129, 0.4);
+  }
+  100% {
+    transform: scale(1);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: none;
+  }
 }
 
 @keyframes premium-pop {
