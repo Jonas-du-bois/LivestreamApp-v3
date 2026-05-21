@@ -46,36 +46,48 @@ export const useTranslatedData = () => {
     return 'fr-CH'
   }
 
+  // Cache formatters to avoid memory allocation and CPU spikes
+  const dateFormatter = computed(() => new Intl.DateTimeFormat(getLocaleCode(), {
+    weekday: 'long',
+    day: 'numeric',
+    timeZone: 'Europe/Zurich'
+  }))
+
+  const timeFormatter = computed(() => new Intl.DateTimeFormat(getLocaleCode(), {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Zurich'
+  }))
+
+  const dateTimeFormatter = computed(() => new Intl.DateTimeFormat(getLocaleCode(), {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+    timeZone: 'Europe/Zurich'
+  }))
+
   /** Formate une date selon la locale Suisse courante */
   const formatLocalizedDate = (dateInput: string | number | Date, options?: Intl.DateTimeFormatOptions): string => {
-    const defaultOptions: Intl.DateTimeFormatOptions = {
-      weekday: 'long',
-      day: 'numeric'
+    const timestamp = typeof dateInput === 'string' ? Date.parse(dateInput) : (dateInput as any).getTime ? (dateInput as any).getTime() : new Date(dateInput).getTime()
+    if (options) {
+      // Fallback for custom options
+      return new Intl.DateTimeFormat(getLocaleCode(), {
+        ...options,
+        timeZone: 'Europe/Zurich'
+      }).format(timestamp)
     }
-    
-    const finalOptions: Intl.DateTimeFormatOptions = {
-      ...(options || defaultOptions),
-      timeZone: 'Europe/Zurich'
-    }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+    return dateFormatter.value.format(timestamp)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */
   const formatLocalizedTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
-      hour: '2-digit', 
-      minute: '2-digit',
-      timeZone: 'Europe/Zurich'
-    })
+    const timestamp = typeof dateInput === 'string' ? Date.parse(dateInput) : (dateInput as any).getTime ? (dateInput as any).getTime() : new Date(dateInput).getTime()
+    return timeFormatter.value.format(timestamp)
   }
 
   /** Formate une date + heure complète selon la locale Suisse courante */
   const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleString(getLocaleCode(), {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-      timeZone: 'Europe/Zurich'
-    })
+    const timestamp = typeof dateInput === 'string' ? Date.parse(dateInput) : (dateInput as any).getTime ? (dateInput as any).getTime() : new Date(dateInput).getTime()
+    return dateTimeFormatter.value.format(timestamp)
   }
 
   return {

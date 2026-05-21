@@ -21,20 +21,28 @@ export const usePassageTiming = (
   const { t } = useI18n()
   const { now: nowTimestamp } = useNow()
 
+  // Pre-allocate dates outside the map loop to avoid allocations on each iteration
+  const dStart = new Date()
+
   // Enrichissement avec timestamps pré-calculés (mémoisé)
   // ⚠️ DEAD CODE : timeEnrichedPassages n'est consommé par aucun composant externe
   const timeEnrichedPassages = computed<PassageTimeEnriched[]>(() => {
     if (!passages.value) return []
 
     return passages.value.map(p => {
-      const dStart = new Date(p.startTime)
-      const dEnd = new Date(p.endTime)
+      // p.startTime is likely a Date object or string. Using Date.parse or directly using getTime()
+      // Since it could be a Date object or a string, we check type. But `new Date(string)` is slow.
+      // Date.parse is faster for strings. If it's a Date, we can just call getTime().
+      const startTimestamp = typeof p.startTime === 'string' ? Date.parse(p.startTime) : (p.startTime as any).getTime ? (p.startTime as any).getTime() : new Date(p.startTime).getTime()
+      const endTimestamp = typeof p.endTime === 'string' ? Date.parse(p.endTime) : (p.endTime as any).getTime ? (p.endTime as any).getTime() : new Date(p.endTime).getTime()
+
+      dStart.setTime(startTimestamp)
       const dayStart = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate()).getTime()
 
       return {
         ...p,
-        _startTime: dStart.getTime(),
-        _endTime: dEnd.getTime(),
+        _startTime: startTimestamp,
+        _endTime: endTimestamp,
         _dayStart: dayStart
       }
     })
