@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2024-05-24 - Pull-to-Refresh Visuel
+**Learning:** L'utilisation du spinner générique (via `:loading` et `icon`) casse l'immersion tactile en masquant l'icône de base immédiatement et en forçant une taille générique.
+**Action:** Préférer utiliser un `<Icon>` imbriqué dans le slot par défaut avec `:class="{ 'animate-spin': isRefreshing, 'group-active:rotate-180': !isRefreshing }"` pour simuler un vrai retour de force et un délai perçu plus doux (max duration-300).
