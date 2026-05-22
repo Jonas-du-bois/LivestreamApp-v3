@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-05-22 - Cached Intl.DateTimeFormat for frontend filters
+**Learning:** Inside reactive computed properties that map over large arrays, instantiating `Intl.DateTimeFormat` and calling `toLocaleDateString()` on every iteration creates massive garbage collection pressure and CPU spikes.
+**Action:** Cache the `Intl.DateTimeFormat` instance outside the mapping loop and extract timestamps efficiently without unconditionally calling `new Date()` to dramatically reduce object allocation.
