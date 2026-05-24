@@ -28,12 +28,13 @@ export const createAdminSession = async (): Promise<string> => {
 export const verifyAdminSession = async (token: string): Promise<boolean> => {
   try {
     const hashedToken = hashToken(token);
-    const session = await SessionModel.findOne({ 
+    // BOLT: Optimize memory and DB time by using .exists() instead of fetching full document
+    const sessionExists = await SessionModel.exists({
       token: hashedToken,
       expiresAt: { $gt: new Date() } 
     });
     
-    return !!session;
+    return !!sessionExists;
   } catch (error) {
     console.error('[Session] Verification error:', error);
     return false;
