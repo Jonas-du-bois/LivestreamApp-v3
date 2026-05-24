@@ -20,11 +20,15 @@ export default defineEventHandler(async (event) => {
       populate: [
         {
           path: 'group',
-          model: GroupModel
+          model: GroupModel,
+          // BOLT: Optimize projection to avoid loading large arrays (history) in memory
+          select: 'name category canton logo'
         },
         {
           path: 'apparatus',
-          model: ApparatusModel
+          model: ApparatusModel,
+          // BOLT: Optimize projection to strictly fetch needed fields
+          select: 'name code icon'
         }
       ]
     })
