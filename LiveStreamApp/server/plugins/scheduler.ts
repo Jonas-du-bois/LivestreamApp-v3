@@ -203,7 +203,7 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToFinish = await PassageModel.find({
         status: 'LIVE',
         endTime: { $lte: now }
-      }).lean();
+      }).select('_id location').lean();
 
       if (passagesToFinish.length > 0) {
         await PassageModel.updateMany(
@@ -216,7 +216,7 @@ export default defineNitroPlugin((nitroApp) => {
         // BOLT: Parallelize stream cleanup
         const finishUpdates = passagesToFinish.map(async (passage) => {
           if (passage.location) {
-            const anotherLive = await PassageModel.findOne({
+            const anotherLive = await PassageModel.exists({
               location: passage.location,
               status: 'LIVE',
               _id: { $ne: passage._id }
