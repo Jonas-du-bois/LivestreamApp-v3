@@ -577,8 +577,19 @@ const reseedDatabase = async () => {
   }
 }
 
+// ⚡ Bolt: Optimize O(N) template array lookups during list rendering
+const streamsByLocation = computed<Record<string, Stream>>(() => {
+  const map: Record<string, Stream> = {}
+  for (const s of streams.value) {
+    if (s.location && !map[s.location]) {
+      map[s.location] = s
+    }
+  }
+  return map
+})
+
 const getStreamForPassage = (passage: PassageEnriched) => {
-  return streams.value.find(s => s.location === passage.location)
+  return passage.location ? streamsByLocation.value[passage.location] : undefined
 }
 
 // ===== Media Management =====
