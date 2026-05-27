@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2026-05-27 - Animation de chargement personnalisée
+**Apprentissage:** Lors du remplacement de la propriété générique `:loading` par une animation personnalisée (`<Icon>` qui tourne), il est crucial d'ajouter `:disabled` au composant `UiButton` pour empêcher les clics multiples et préserver la sécurité de l'interaction. L'utilisation de `:class="{ 'animate-spin': loading, 'active:rotate-180': !loading }"` permet d'offrir un feedback tactile immédiat avant même que l'état de chargement ne soit actif.
