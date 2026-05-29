@@ -216,7 +216,8 @@ export default defineNitroPlugin((nitroApp) => {
         // BOLT: Parallelize stream cleanup
         const finishUpdates = passagesToFinish.map(async (passage) => {
           if (passage.location) {
-            const anotherLive = await PassageModel.findOne({
+            // BOLT: Replaced .findOne() with .exists() for simple existence check
+            const anotherLive = await PassageModel.exists({
               location: passage.location,
               status: 'LIVE',
               _id: { $ne: passage._id }
