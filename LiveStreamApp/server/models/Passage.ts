@@ -51,6 +51,10 @@ PassageSchema.index({ apparatus: 1, startTime: 1 });
 PassageSchema.index({ location: 1, startTime: 1 });
 PassageSchema.index({ group: 1, startTime: 1 });
 
+// BOLT: Compound indexes for high-frequency scheduler polling
+PassageSchema.index({ status: 1, startTime: 1 });
+PassageSchema.index({ status: 1, endTime: 1 });
+
 const PassageModel: Model<IPassage> = (mongoose.models.Passage as Model<IPassage>) || mongoose.model<IPassage>('Passage', PassageSchema);
 
 export default PassageModel;
