@@ -392,15 +392,15 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
             <div class="glass-card p-1 rounded-full flex gap-1 border border-white/5 bg-white/5">
               <button
                 @click="selectedRound = 'QUALIFIER'"
-                class="px-4 py-1.5 rounded-full text-xs font-bold transition-all"
-                :class="selectedRound === 'QUALIFIER' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/60'"
+                class="px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-95"
+                :class="selectedRound === 'QUALIFIER' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/60 active:bg-white/5'"
               >
                 Qualifications
               </button>
               <button
                 @click="selectedRound = 'FINAL'"
-                class="px-4 py-1.5 rounded-full text-xs font-bold transition-all"
-                :class="selectedRound === 'FINAL' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/20' : 'text-white/40 hover:text-white/60'"
+                class="px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-95"
+                :class="selectedRound === 'FINAL' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/20' : 'text-white/40 hover:text-white/60 active:bg-white/5'"
               >
                 Finales
               </button>
