@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-05-31 - Vue 3 Proxy Reactivity and Intl Caching
+**Learning:** In Vue 3, `ref` dictionaries do not require expensive object spread operations (`value = { ...value, [key]: val }`) to trigger reactivity. Using direct property assignment (`value[key] = val`) avoids tearing down and recreating proxy objects, reducing CPU overhead and GC pressure. Additionally, repeatedly calling `Date.prototype.toLocaleDateString()` inside loops implicitly recreates formatting instances.
+**Action:** Always use direct property assignment on deep reactive objects in Vue 3 unless immutability is strictly required by an external library. Always cache `Intl.DateTimeFormat` instances outside of frequently called functions or loops and use `Date.parse()` to evaluate timestamp strings efficiently.

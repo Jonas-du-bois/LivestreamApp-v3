@@ -37,11 +37,13 @@ const DAY_ALL = 'Tout'
 
 const normalizeDayKey = (day?: string | null) => (day || '').toLowerCase().trim()
 
+const dateFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+
 const getDayFromStartTime = (startTime?: string) => {
   if (!startTime) return undefined
-  const parsed = new Date(startTime)
-  if (Number.isNaN(parsed.getTime())) return undefined
-  return parsed.toLocaleDateString('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+  const timestamp = typeof startTime === 'string' ? Date.parse(startTime) : startTime
+  if (Number.isNaN(timestamp)) return undefined
+  return dateFormatter.format(timestamp)
 }
 
 const mergeAvailableDays = (incomingDay?: string) => {
@@ -234,11 +236,8 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         })
       }
 
-      // Trigger reactivity by creating a new object reference
-      resultsMap.value = {
-        ...resultsMap.value,
-        [key]: updatedList
-      }
+      // Trigger reactivity by directly updating the specific key
+      resultsMap.value[key] = updatedList
 
       // Trigger Flash Effect
       nextTick(() => {
@@ -297,11 +296,8 @@ const handleScoreUpdate = (data: ScoreUpdatePayload) => {
         })
       }
 
-      // Trigger reactivity
-      resultsMap.value = {
-        ...resultsMap.value,
-        [code]: updatedList
-      }
+      // Trigger reactivity by directly updating the specific key
+      resultsMap.value[code] = updatedList
 
       // Flash effect for new entry
       nextTick(() => {
@@ -336,10 +332,7 @@ const handleStatusUpdate = (data: ScoreUpdatePayload) => {
         return { ...p, status: data.status }
       })
       
-      resultsMap.value = {
-        ...resultsMap.value,
-        [key]: updatedList
-      }
+      resultsMap.value[key] = updatedList
       break
     }
   }
