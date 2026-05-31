@@ -727,7 +727,7 @@ const fetchMetrics = async () => {
       try {
         const res = await AdminService.getStreamMetrics(s._id)
         if (res.ok) {
-          streamMetrics.value = { ...streamMetrics.value, [s._id]: res.metrics }
+          streamMetrics.value[s._id] = res.metrics
         }
       } catch(e) {
         console.error('[Dashboard] Failed to fetch metrics', e)
