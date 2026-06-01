@@ -25,3 +25,6 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+## 2026-06-01 - Optimize Mongoose background queries
+**Learning:** In high-frequency scheduled tasks (like `setInterval`), querying Mongoose with `findOne` to check for existence causes full Document instantiation, resulting in unnecessary memory allocation. Furthermore, polling queries using `$lte` on dates without appropriate compound indexes cause excessive collection scans.
+**Action:** Always replace `.findOne()` with `.exists()` for simple existence checks to avoid fetching full documents. For high-frequency schedulers polling date thresholds (e.g., `$lte`), always add compound indexes (e.g., `{ status: 1, timeField: 1 }`) to the schema to prevent full collection scans.
