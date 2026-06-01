@@ -161,18 +161,21 @@ const usefulLinks = computed(() => {
             icon="fluent:calendar-24-regular"
             label="Programme"
             size="sm"
+            class="active:scale-[0.98] transition-transform duration-200"
           />
           <UiInfoTile
             to="/plan"
             icon="fluent:location-24-regular"
             label="Plan"
             size="sm"
+            class="active:scale-[0.98] transition-transform duration-200"
           />
           <UiInfoTile
             to="/food"
             icon="fluent:food-24-regular"
             label="Restauration"
             size="sm"
+            class="active:scale-[0.98] transition-transform duration-200"
           />
         </section>
       </div>
