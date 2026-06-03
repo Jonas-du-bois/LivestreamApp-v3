@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-06-03 - Optimize Nitro cache invalidation
+**Learning:** When clearing all entries from a Nitro `useStorage` cache (like unstorage), using `await cacheStorage.clear()` is more efficient than fetching all keys and mapping over them with `Promise.all` and `removeItem`. The loop creates unnecessary overhead and potential main thread spikes.
+**Action:** Always prefer the built-in `clear()` method when invalidating the entire cache storage instance.

@@ -106,7 +106,10 @@ export const invalidateServerCache = async (scope = 'score-update') => {
     const cacheStorage = useStorage('cache');
     const allCacheKeys = await cacheStorage.getKeys();
     if (allCacheKeys.length > 0) {
-      await Promise.all(allCacheKeys.map((key) => cacheStorage.removeItem(key)));
+      // BOLT OPTIMIZATION: Use clear() instead of mapping over keys to remove them individually.
+      // IMPACT: Eliminates unnecessary array mapping overhead and reduces main thread spikes
+      // when clearing large caches.
+      await cacheStorage.clear();
       console.log(`[${scope}] Cleared ${allCacheKeys.length} Nitro cache entries`);
     }
   } catch (cacheErr) {
