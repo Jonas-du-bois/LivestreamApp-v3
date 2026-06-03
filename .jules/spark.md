@@ -11,3 +11,5 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-06-03 - Custom tactile interactions for generic components
+J'ai remarqué que l'utilisation des props `:loading` ou `icon` natives des composants génériques (comme `UiButton`) force l'utilisation de spinners par défaut qui masquent ou écrasent les animations personnalisées. Pour implémenter un retour tactile satisfaisant sans casser la logique de chargement, il faut insérer une `<Icon>` animée avec `group-active:rotate-180` directement dans le slot par défaut, ajouter la classe `group` au bouton parent, et gérer l'état avec `:disabled="pending"` plutôt que `:loading="pending"`.
