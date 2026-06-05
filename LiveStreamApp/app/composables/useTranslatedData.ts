@@ -1,3 +1,25 @@
+const formattersCache = new Map<string, Intl.DateTimeFormat>()
+
+const getFormatter = (locale: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat => {
+  const cacheKey = `${locale}-${JSON.stringify(options)}`
+  let formatter = formattersCache.get(cacheKey)
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, options)
+    formattersCache.set(cacheKey, formatter)
+  }
+  return formatter
+}
+
+const extractTimestamp = (val: string | number | Date): number => {
+  return typeof val === 'number'
+    ? val
+    : typeof val === 'string'
+      ? Date.parse(val)
+      : typeof (val as Date).getTime === 'function'
+        ? (val as Date).getTime()
+        : new Date(val).getTime()
+}
+
 /**
  * Traduction des données dynamiques (engins, jours, catégories)
  * et formatage des dates/heures selon la locale Suisse courante.
@@ -57,25 +79,36 @@ export const useTranslatedData = () => {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+    const formatter = getFormatter(getLocaleCode(), finalOptions)
+    const timestamp = extractTimestamp(dateInput)
+    if (Number.isNaN(timestamp)) return 'Invalid Date'
+    return formatter.format(timestamp)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */
   const formatLocalizedTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
+    const finalOptions: Intl.DateTimeFormatOptions = {
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'Europe/Zurich'
-    })
+    }
+    const formatter = getFormatter(getLocaleCode(), finalOptions)
+    const timestamp = extractTimestamp(dateInput)
+    if (Number.isNaN(timestamp)) return 'Invalid Date'
+    return formatter.format(timestamp)
   }
 
   /** Formate une date + heure complète selon la locale Suisse courante */
   const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleString(getLocaleCode(), {
+    const finalOptions: Intl.DateTimeFormatOptions = {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Europe/Zurich'
-    })
+    }
+    const formatter = getFormatter(getLocaleCode(), finalOptions)
+    const timestamp = extractTimestamp(dateInput)
+    if (Number.isNaN(timestamp)) return 'Invalid Date'
+    return formatter.format(timestamp)
   }
 
   return {
