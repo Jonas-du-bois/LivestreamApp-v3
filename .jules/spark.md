@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-06-07 - Feedback Tactile sur Onglets (Segmented Controls)
+**Learning:** Les contrôles segmentés natifs ou les onglets de navigation sans retour tactile semblent lents sur mobile.
+**Action:** Toujours ajouter `active:scale-95` (et `duration-200`) sur les boutons d'onglets pour renforcer le sentiment de réactivité instantanée à la pression du doigt.
