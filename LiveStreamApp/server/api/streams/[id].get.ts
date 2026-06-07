@@ -14,20 +14,23 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    // OPTIMIZATION: Select only necessary fields to reduce payload size and memory overhead
     const stream = await StreamModel.findById(id).populate({
       path: 'currentPassage',
       model: PassageModel,
       populate: [
         {
           path: 'group',
-          model: GroupModel
+          model: GroupModel,
+          select: 'name category canton logo'
         },
         {
           path: 'apparatus',
-          model: ApparatusModel
+          model: ApparatusModel,
+          select: 'name code icon'
         }
       ]
-    })
+    }).lean()
 
     if (!stream) {
       throw createError({
