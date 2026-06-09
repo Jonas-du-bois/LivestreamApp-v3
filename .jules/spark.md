@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-06-09 - Feedback tactile sur les sélecteurs de tabulations
+**Learning:** J'ai remarqué que les sélecteurs "Qualifications / Finales" dans l'application manquaient de "jus" (feedback visuel immédiat) lors du tapotement sur mobile.
+**Action:** Il est important d'ajouter systématiquement `active:scale-95` et `transition-all duration-200` aux sélecteurs (onglets, boutons de type tab) pour améliorer le ressenti de réactivité sur écran tactile.
