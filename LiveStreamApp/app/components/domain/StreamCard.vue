@@ -41,8 +41,8 @@ const hasCurrentGroup = computed(() => {
   <component
     :is="isLive ? NuxtLinkComp : 'div'"
     :to="isLive ? `/stream/${stream.id}` : undefined"
-    class="glass-card overflow-hidden block transition-colors group"
-    :class="{ 'cursor-pointer hover:border-cyan-400/50': isLive, 'cursor-not-allowed opacity-60': !isLive }"
+    class="glass-card overflow-hidden block transition-all duration-300 group"
+    :class="{ 'cursor-pointer hover:border-cyan-400/50 active:scale-[0.98]': isLive, 'cursor-not-allowed opacity-60': !isLive }"
   >
     <div class="relative aspect-video">
       <ImageWithFallback
@@ -73,7 +73,7 @@ const hasCurrentGroup = computed(() => {
       <!-- Indique clairement à l'utilisateur que l'élément est cliquable et déclenche une vidéo -->
       <div v-if="isLive" class="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div
-          class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
+          class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105 group-active:scale-95"
         >
           <Icon name="fluent:play-24-filled" class="w-7 h-7 text-white ml-0.5" />
         </div>
