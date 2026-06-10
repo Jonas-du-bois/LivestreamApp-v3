@@ -42,6 +42,9 @@ const PassageSchema = new Schema<IPassage>(
 // Compound indexes for frequent queries
 PassageSchema.index({ status: 1, isPublished: 1, round: 1 });
 PassageSchema.index({ apparatus: 1, status: 1, isPublished: 1, round: 1 });
+// BOLT: Indexes for the high-frequency scheduler polling passages to promote based on start/end time
+PassageSchema.index({ status: 1, startTime: 1 });
+PassageSchema.index({ status: 1, endTime: 1 });
 // Optimizations for score sorting and rank calculation
 PassageSchema.index({ isPublished: 1, round: 1, score: -1 });
 PassageSchema.index({ apparatus: 1, isPublished: 1, round: 1, score: -1 });
