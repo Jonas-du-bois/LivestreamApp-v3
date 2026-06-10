@@ -1,3 +1,24 @@
+// Singleton cache outside the composable to prevent re-initialization
+const formattersCache = new Map<string, Intl.DateTimeFormat>()
+
+function getFormatter(locale: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const key = `${locale}-${JSON.stringify(options)}`
+  let formatter = formattersCache.get(key)
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, options)
+    formattersCache.set(key, formatter)
+  }
+  return formatter
+}
+
+function safeGetTime(dateInput: string | number | Date): number {
+  return typeof dateInput === 'string'
+    ? Date.parse(dateInput)
+    : (dateInput as Date).getTime
+      ? (dateInput as Date).getTime()
+      : Number(dateInput)
+}
+
 /**
  * Traduction des données dynamiques (engins, jours, catégories)
  * et formatage des dates/heures selon la locale Suisse courante.
@@ -57,25 +78,35 @@ export const useTranslatedData = () => {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+
+    const ts = safeGetTime(dateInput)
+    if (Number.isNaN(ts)) return 'Invalid Date'
+
+    return getFormatter(getLocaleCode(), finalOptions).format(ts)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */
   const formatLocalizedTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
+    const ts = safeGetTime(dateInput)
+    if (Number.isNaN(ts)) return 'Invalid Date'
+
+    return getFormatter(getLocaleCode(), {
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'Europe/Zurich'
-    })
+    }).format(ts)
   }
 
   /** Formate une date + heure complète selon la locale Suisse courante */
   const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleString(getLocaleCode(), {
+    const ts = safeGetTime(dateInput)
+    if (Number.isNaN(ts)) return 'Invalid Date'
+
+    return getFormatter(getLocaleCode(), {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Europe/Zurich'
-    })
+    }).format(ts)
   }
 
   return {
