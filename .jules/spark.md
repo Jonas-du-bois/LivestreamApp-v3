@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-06-10 - Feedback tactile sur les cartes de stream live
+**Learning:** Les cartes affichant un lien vers un stream en direct doivent réagir physiquement au doigt, y compris l'icône à l'intérieur, pour offrir un feedback interactif optimal.
+**Action:** J'ai ajouté `active:scale-[0.98]` au conteneur principal de la carte et `group-active:scale-95` à l'icône de lecture pour LiveStreamApp/app/components/domain/StreamCard.vue.
