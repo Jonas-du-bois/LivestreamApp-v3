@@ -20,11 +20,13 @@ export default defineEventHandler(async (event) => {
       populate: [
         {
           path: 'group',
-          model: GroupModel
+          model: GroupModel,
+          select: 'name category canton logo subCategory'
         },
         {
           path: 'apparatus',
-          model: ApparatusModel
+          model: ApparatusModel,
+          select: 'name code icon'
         }
       ]
     })
