@@ -35,7 +35,7 @@ const resolvedAriaLabel = computed(() => props.ariaLabel || props.label)
     :to="props.to"
     :aria-label="resolvedAriaLabel"
     :style="accentStyle"
-    class="home-quick-action glass-card relative isolate h-full min-h-[132px] rounded-xl p-4 flex flex-col items-center justify-center text-center focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:outline-none"
+    class="home-quick-action group active:scale-95 glass-card relative isolate h-full min-h-[132px] rounded-xl p-4 flex flex-col items-center justify-center text-center focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:outline-none"
   >
     <div class="home-quick-action__sheen absolute inset-x-4 top-1 h-10 rounded-full pointer-events-none" aria-hidden="true" />
 
@@ -47,7 +47,7 @@ const resolvedAriaLabel = computed(() => props.ariaLabel || props.label)
     </span>
 
     <div class="home-quick-action__icon-wrap w-12 h-12 rounded-full flex items-center justify-center mb-3">
-      <Icon :name="props.icon" class="home-quick-action__icon w-6 h-6" />
+      <Icon :name="props.icon" class="home-quick-action__icon w-6 h-6 transition-transform duration-300 group-active:-rotate-12 group-active:scale-90" />
     </div>
 
     <span class="text-white/85 text-lg font-semibold leading-tight">{{ props.label }}</span>
@@ -88,10 +88,6 @@ const resolvedAriaLabel = computed(() => props.ariaLabel || props.label)
   opacity: 0.34;
 }
 
-.home-quick-action:active {
-  transform: scale(0.985);
-}
-
 .home-quick-action__sheen {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.33), rgba(255, 255, 255, 0));
   filter: blur(8px);
@@ -126,8 +122,7 @@ const resolvedAriaLabel = computed(() => props.ariaLabel || props.label)
     transition: none;
   }
 
-  .home-quick-action:hover,
-  .home-quick-action:active {
+  .home-quick-action:hover {
     transform: none;
   }
 }
