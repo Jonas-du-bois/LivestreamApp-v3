@@ -23,9 +23,9 @@ const isInteractive = computed(() => props.interactive ?? !!props.to)
 
 // Compose dynamiquement les classes CSS : applique des effets de survol uniquement si le composant est interactif.
 const cardClasses = computed(() => [
-  'glass-card ui-glass-card app-focus-ring transition-all duration-300 block',
+  'glass-card ui-glass-card app-focus-ring transition-all duration-300 block active:scale-[0.98] active:bg-white/5',
   props.padding,
-  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer active:scale-[0.97]' : '',
+  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer' : '',
   props.class
 ])
 
