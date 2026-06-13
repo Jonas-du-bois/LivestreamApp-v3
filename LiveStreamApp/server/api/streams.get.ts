@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
       .populate({
         path: 'currentPassage',
         populate: [
-          { path: 'group', select: 'name category' },
+          { path: 'group', select: 'name category subCategory canton logo' },
           { path: 'apparatus', select: 'name code icon' }
         ]
       })
