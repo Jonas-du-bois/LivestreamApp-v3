@@ -11,3 +11,8 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2023-10-27 - Custom Animated Refresh Icons
+
+**Learning:** When replacing a generic loading prop (like `:loading="pending"`) with a custom animated icon (e.g., a spinning sync icon) in a `UiButton`, it's important to reactively bind the spin animation to the component's `pending` state (using `:class="{ 'animate-spin': pending }"`) in addition to the touch interaction (`group-active:rotate-180`). This ensures the UI properly reflects the background process during network requests.
+
+**Action:** For future interactions involving a fetch state, remove the `loading` prop from the wrapper button if you are manually handling the icon, and apply both `group-active` transitions and conditional `animate-spin` classes to the inner `<Icon>` component.
