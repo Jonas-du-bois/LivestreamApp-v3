@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-06-15 - Tactile Feedback Optimization
+**Learning:** For optimal micro-interactions on touch devices, tactile feedback like `active:scale-[0.98]` combined with subtle color transitions makes UI components feel responsive. Be careful not to apply global animations to generic components (like `IconButton`) if the animation is only meant for a specific contextual action (like a refresh sync rotation), as this creates app-wide visual bugs.
+**Action:** Use `active:scale-[0.98]` and `active:bg-white/5` for subtle color transitions and press feedback on GlassCards to simulate finger pressure.
