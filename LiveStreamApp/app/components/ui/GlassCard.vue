@@ -25,7 +25,7 @@ const isInteractive = computed(() => props.interactive ?? !!props.to)
 const cardClasses = computed(() => [
   'glass-card ui-glass-card app-focus-ring transition-all duration-300 block',
   props.padding,
-  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer active:scale-[0.97]' : '',
+  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer active:scale-[0.97]' : 'active:scale-[0.98] active:bg-white/5 transition-colors',
   props.class
 ])
 
