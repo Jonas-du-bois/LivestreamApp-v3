@@ -264,11 +264,9 @@ export default defineEventHandler(async (event) => {
     // Invalidate Nitro server-side cache
     try {
       const cacheStorage = useStorage('cache')
-      const allCacheKeys = await cacheStorage.getKeys()
-      if (allCacheKeys.length > 0) {
-        await Promise.all(allCacheKeys.map(key => cacheStorage.removeItem(key)))
-        console.log(`[seed] Cleared ${allCacheKeys.length} Nitro cache entries`)
-      }
+      // BOLT: Optimize cache clear (avoids main thread spikes from getKeys and Promise.all mapping)
+      await cacheStorage.clear()
+      console.log(`[seed] Cleared Nitro cache entries`)
     } catch (cacheErr) {
       console.warn('[seed] Could not clear Nitro cache:', cacheErr)
     }

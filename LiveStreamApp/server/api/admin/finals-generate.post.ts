@@ -235,11 +235,9 @@ export default defineEventHandler(async (event) => {
 
     try {
       const cacheStorage = useStorage('cache')
-      const allCacheKeys = await cacheStorage.getKeys()
-      if (allCacheKeys.length > 0) {
-        await Promise.all(allCacheKeys.map(key => cacheStorage.removeItem(key)))
-        console.log(`[admin:finals] Cleared ${allCacheKeys.length} Nitro cache entries`)
-      }
+      // BOLT: Optimize cache clear (avoids main thread spikes from getKeys and Promise.all mapping)
+      await cacheStorage.clear()
+      console.log(`[admin:finals] Cleared Nitro cache entries`)
     } catch (cacheErr) {
       console.warn('[admin:finals] Could not clear Nitro cache:', cacheErr)
     }
