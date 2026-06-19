@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-06-19 - Feedback tactile sur les cartes de Stream
+**Learning:** Les cartes statiques de stream (bien que cliquables) manquent de feedback de pression physique, les rendant "plates" sur mobile. L'application d'effets `active:scale-[0.98]` combinés au changement de couleur d'arrière plan donne une sensation d'enfoncement satisfaisante.
+**Action:** Toujours s'assurer que les composants cliquables en forme de carte intègrent un feedback sur l'état `active` (`scale` et variation `bg`), et propager cet effet aux éléments enfants pertinents via `group-active:` (comme l'icône de lecture et la miniature).
