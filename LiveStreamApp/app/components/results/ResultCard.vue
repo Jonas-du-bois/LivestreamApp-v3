@@ -127,17 +127,17 @@ const handleClick = () => {
     transform: scale(1);
     border-color: rgba(255, 255, 255, 0.15);
     background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 0 rgba(34, 211, 238, 0);
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
   }
   10% {
-    transform: scale(1.02);
-    border-color: rgba(34, 211, 238, 0.8);
-    background-color: rgba(34, 211, 238, 0.15);
-    box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.5);
+    transform: scale(1.05);
+    border-color: rgba(34, 197, 94, 0.8);
+    background-color: rgba(34, 197, 94, 0.15);
+    box-shadow: 0 10px 30px -10px rgba(34, 197, 94, 0.5);
   }
   80% {
-    border-color: rgba(34, 211, 238, 0.4);
-    background-color: rgba(34, 211, 238, 0.05);
+    border-color: rgba(34, 197, 94, 0.4);
+    background-color: rgba(34, 197, 94, 0.05);
   }
   100% {
     transform: scale(1);

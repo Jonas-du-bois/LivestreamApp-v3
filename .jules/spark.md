@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2024-05-15 - L'Effet "Nouveau Score"
+**Apprentissage:** Lors de l'arrivée d'un nouveau score via Socket.io (`score-update`), l'animation `score-flash` sur les cartes de résultats (`ResultCard.vue`) était un peu trop subtile et reprenait la couleur cyan principale.
+**Action:** J'ai modifié les keyframes `@keyframes premium-pop` pour utiliser une couleur de flash verte (`rgba(34, 197, 94)`) au lieu de cyan, ce qui s'aligne mieux avec la notion d'une validation positive de score, et j'ai augmenté le "scale" de l'animation de `1.02` à `1.05` pour rendre l'interaction plus perceptible visuellement.
