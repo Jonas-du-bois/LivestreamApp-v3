@@ -59,3 +59,9 @@ La liste statique "Liens utiles" dans la page `/infos` utilisait de simples ancr
 **Apprentissages (LiveStreamApp) :**
 - Les listes statiques, même simples (comme des liens sortants), bénéficient énormément de la classe `group` couplée aux états `active:`. Cela transforme un lien web classique en un véritable bouton d'application native, sans ajouter la moindre complexité Javascript.
 - Utiliser de minuscules translations (ex: `0.5` = `2px` via Tailwind) suffit à donner une direction à une interaction. Un lien sortant doit pointer "vers l'extérieur".
+
+## 2024-03-20 - Feedback tactile sur les boutons de rafraîchissement
+
+**Learning:** L'ajout d'une rotation fluide (`transition-transform duration-500 group-active:rotate-180`) sur les icônes de rafraîchissement, visible dès le toucher (avant le déclenchement complet du loader côté state), renforce l'immédiateté et l'aspect organique (pull-to-refresh) de l'interface sans aucun layout shift.
+
+**Action:** Utiliser la classe `group` sur un composant bouton parent (comme `UiButton`) et cibler des balises SVG `<Icon>` internes avec `group-active` pour animer indépendamment les parties de l'UI.
