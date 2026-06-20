@@ -152,7 +152,7 @@ const openNotifications = () => { isNotificationsOpen.value = true }
             <button 
               v-if="route.path === '/'"
               @click="toggleLocale"
-              class="ios26-bubble ios26-bubble-interactive h-14 px-3 gap-1.5"
+              class="ios26-bubble ios26-bubble-interactive app-focus-ring app-focus-ring-secondary h-14 px-3 gap-1.5"
               aria-label="Changer de langue"
             >
               <span class="text-white text-sm font-semibold uppercase">{{ locale.toUpperCase() }}</span>
