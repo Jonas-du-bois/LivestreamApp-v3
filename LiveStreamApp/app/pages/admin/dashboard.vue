@@ -578,7 +578,7 @@ const reseedDatabase = async () => {
 }
 
 const getStreamForPassage = (passage: PassageEnriched) => {
-  return streams.value.find(s => s.location === passage.location)
+  return matchPassageToStream(passage, streams.value)
 }
 
 // ===== Media Management =====

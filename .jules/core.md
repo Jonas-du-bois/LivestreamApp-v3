@@ -96,3 +96,15 @@
   - Refactored `usePassageTiming.ts` and `GroupDetailsModal.vue` to utilize this function.
 - **Outcome:** Removed ~20 lines of duplicate conditionals. Guaranteed consistent dynamic passage state logic across the whole application.
 \n## 2026-03-06: Date Formatting Logic Extraction\n\n- **Logic Extracted:** Duplicated and inconsistent date/time formatting logic (especially `localeCode` mapping and `Europe/Zurich` timezone enforcement) from components and composables.\n- **Destination:** `app/composables/useTranslatedData.ts`\n- **Changes:**\n  - Added `getLocaleCode()` to centralize logic mapping Vue-i18n locales ('de', 'it', 'fr') to Swiss locales ('de-CH', 'it-CH', 'fr-CH').\n  - Updated `formatLocalizedDate` and `formatLocalizedTime` to accept `Date` or numbers directly instead of requiring string inputs, avoiding redundant `.toISOString()` conversions.\n  - Added `formatLocalizedDateTime` to properly handle full datetime displays.\n  - Refactored `PhotosLightbox.vue`, `PhotosGridItem.vue`, `weather.vue`, and `photos.vue` to use these centralized methods.\n- **Outcome:** Eliminated scattered `toLocaleDateString` and `toLocaleString` calls in components. Ensured consistent application of the `Europe/Zurich` timezone and Swiss locales across all UI elements.
+
+## 2026-03-06: Stream/Passage Linkage Logic Extraction
+
+- **Logic Extracted:** Duplicated, inconsistent ad-hoc logic for linking a `Stream` to a `Passage` (and vice-versa) based on `currentPassage` ID and/or `location` properties. This was scattered across `app/pages/index.vue`, `app/pages/stream/index.vue`, `app/pages/stream/[id].vue`, and `app/pages/admin/dashboard.vue`.
+- **Destination:** `app/utils/stream.ts`
+- **Changes:**
+  - Added pure utility functions `matchStreamToPassage(stream, passages)` and `matchPassageToStream(passage, streams)` to `app/utils/stream.ts`.
+  - Refactored `happeningNow` in `index.vue` to use `matchPassageToStream`.
+  - Refactored `mapStreamToDisplay` in `stream/index.vue` to use `matchStreamToPassage`, eliminating a local `livePassagesByLocation` map.
+  - Refactored `currentPassage` computed in `stream/[id].vue` to use `matchStreamToPassage`.
+  - Refactored `getStreamForPassage` in `admin/dashboard.vue` to use `matchPassageToStream`.
+- **Outcome:** Unified the priority matching algorithm (`currentPassage` ID first, then fallback to `location`). Removed ~25 lines of duplicate/inconsistent code and ensured a single source of truth for linking stream and schedule data.

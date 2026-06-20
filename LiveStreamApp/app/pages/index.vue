@@ -33,12 +33,8 @@ const { data: liveResp, pending: livePending, refresh: refreshLive } = await Pub
 
 const happeningNow = computed<HappeningNowItem[]>(() => {
   return (liveResp.value?.passages || []).map((p: PassageEnriched) => {
-    // Find stream for this passage
-    const stream = (liveResp.value?.streams || []).find((s: Stream) => {
-      if (!s.currentPassage) return false
-      if (typeof s.currentPassage === 'string') return s.currentPassage === p._id
-      return (s.currentPassage as Passage)._id === p._id
-    })
+    // Find stream for this passage using central utility
+    const stream = matchPassageToStream(p, liveResp.value?.streams || [])
 
     return {
       id: p.group?._id,
