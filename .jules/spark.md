@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2024-04-01 - Synchronized Micro-interactions on Icons
+**Learning:** To implement synchronized tactile micro-interactions on buttons without JavaScript (like a scaling button with a spinning refresh icon), we can rely purely on Tailwind.
+**Action:** Apply the Tailwind `group` class and `active:scale-95` to the parent element, and use `group-active` utilities (e.g., `group-active:rotate-180`, `duration-200`) on the explicit child `<Icon>` element to respect the strict < 300ms animation constraint.
