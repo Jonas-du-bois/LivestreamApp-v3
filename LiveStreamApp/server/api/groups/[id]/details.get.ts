@@ -17,13 +17,18 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 1. Fetch Group Info
-    const group = await GroupModel.findById(groupId).lean()
+    const group = await GroupModel.findById(groupId)
+      // BOLT: Optimize memory usage and DB payload by strictly selecting required fields (avoids large history arrays)
+      .select('_id name canton category logo description')
+      .lean()
     if (!group) {
       throw createError({ statusCode: 404, message: 'Group not found' })
     }
 
     // 2. Fetch Timeline (Passages)
     const passages = await PassageModel.find({ group: groupId })
+      // BOLT: Optimize memory usage and DB payload by strictly selecting required fields
+      .select('_id apparatus startTime endTime status round score location')
       .populate('apparatus', 'name icon code')
       .sort({ startTime: 1 })
       .lean()
