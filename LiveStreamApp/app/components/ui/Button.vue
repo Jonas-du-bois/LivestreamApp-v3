@@ -56,13 +56,29 @@ const sizeClasses = computed(() => {
 const roundedClasses = computed(() => `rounded-${props.rounded}`)
 
 const commonClasses = computed(() => [
-  'ui-button app-focus-ring relative isolate overflow-hidden inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
+  'ui-button group app-focus-ring relative isolate overflow-hidden inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
   variantClasses.value,
   sizeClasses.value,
   roundedClasses.value,
   props.block ? 'w-full' : '',
   props.loading ? 'cursor-wait' : ''
 ])
+
+const iconInteractionClasses = computed(() => {
+  if (!props.icon) return ''
+  const isSpinIcon = props.icon.includes('sync') || props.icon.includes('clockwise') || props.icon.includes('reset') || props.icon.includes('refresh')
+  return isSpinIcon
+    ? 'transition-transform duration-500 group-active:rotate-180'
+    : 'transition-transform duration-300 group-active:-rotate-12 group-active:scale-90'
+})
+
+const iconRightInteractionClasses = computed(() => {
+  if (!props.iconRight) return ''
+  const isSpinIcon = props.iconRight.includes('sync') || props.iconRight.includes('clockwise') || props.iconRight.includes('reset') || props.iconRight.includes('refresh')
+  return isSpinIcon
+    ? 'transition-transform duration-500 group-active:rotate-180'
+    : 'transition-transform duration-300 group-active:translate-x-1 group-active:scale-95'
+})
 </script>
 
 <template>
@@ -86,6 +102,7 @@ const commonClasses = computed(() => [
       v-else-if="icon"
       :name="icon"
       :size="size === 'sm' ? '16' : '20'"
+      :class="iconInteractionClasses"
     />
 
     <slot />
@@ -94,6 +111,7 @@ const commonClasses = computed(() => [
       v-if="iconRight && !loading"
       :name="iconRight"
       :size="size === 'sm' ? '16' : '20'"
+      :class="iconRightInteractionClasses"
     />
   </component>
 </template>
