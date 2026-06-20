@@ -28,6 +28,8 @@ export default defineEventHandler(async (event) => {
         }
       ]
     })
+    // BOLT: Optimize memory usage by returning plain JS objects instead of heavy Mongoose documents for read-only endpoint
+    .lean()
 
     if (!stream) {
       throw createError({
