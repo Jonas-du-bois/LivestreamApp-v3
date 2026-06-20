@@ -27,14 +27,19 @@ watch(() => props.active, (newVal) => {
 const handleClick = (event: MouseEvent) => {
   emit('click', event)
 }
+
+const fallbackLabel = computed(() => {
+  return props.label || (props.active ? 'Retirer des favoris' : 'Ajouter aux favoris')
+})
 </script>
 
 <template>
   <button
     type="button"
-    class="relative p-2 rounded-full flex-shrink-0 transition-all duration-300 ease-out active:scale-75 focus-visible:ring-2 focus-visible:ring-cyan-400 outline-none group"
+    class="relative p-2 rounded-full flex-shrink-0 transition-all duration-300 ease-out active:scale-75 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none group"
     :class="{ 'scale-125': isAnimating }"
-    :aria-label="label"
+    :aria-label="fallbackLabel"
+    :aria-pressed="active"
     @click="handleClick"
   >
     <Icon
