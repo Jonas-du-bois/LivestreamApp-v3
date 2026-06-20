@@ -18,48 +18,29 @@ interface StreamDisplay {
   currentApparatusCode?: string
 }
 
-// Use refs for reactive data that updates in real-time
-const liveData = ref<{ passages: PassageEnriched[]; streams: Stream[] } | null>(null)
-const allStreamsData = ref<Stream[] | null>(null)
-const loading = ref(true)
-const hasLoadedOnce = ref(false)
-
-// Fetch functions using PublicService for real-time updates
-const fetchLive = async () => {
-  try {
-    liveData.value = await PublicService.fetchLive()
-    console.log('[stream/index] Live data fetched:', liveData.value?.streams?.length, 'streams')
-  } catch (err) {
-    console.error('[stream/index] Error fetching live:', err)
-  }
-}
-
-const fetchStreams = async () => {
-  try {
-    allStreamsData.value = await PublicService.fetchStreams()
-    console.log('[stream/index] All streams fetched:', allStreamsData.value?.length)
-  } catch (err) {
-    console.error('[stream/index] Error fetching streams:', err)
-  }
-}
-
-// Initial fetch
-onMounted(async () => {
-  try {
-    await Promise.all([fetchLive(), fetchStreams()])
-  } finally {
-    loading.value = false
-    hasLoadedOnce.value = true
-  }
+// Fetch data using useAsyncData for better SSR hydration
+const { data, pending, refresh, error } = await useAsyncData('streams-index', async () => {
+  const [liveResp, streamsResp] = await Promise.all([
+    PublicService.fetchLive(),
+    PublicService.fetchStreams()
+  ])
+  return { liveData: liveResp, allStreamsData: streamsResp }
+}, {
+  lazy: false,
+  server: true
 })
 
-const showSkeleton = computed(() => loading.value && !hasLoadedOnce.value)
+if (error.value) {
+  console.error('[stream/index] Error fetching data:', error.value)
+}
+
+const { hasLoadedOnce, showSkeleton } = useFirstLoad(pending, data)
 
 // Build a map of live passages by LOCATION for quick lookup
 const livePassagesByLocation = computed(() => {
   const map = new Map<string, PassageEnriched>()
-  if (liveData.value?.passages) {
-    liveData.value.passages.forEach((p: PassageEnriched) => {
+  if (data.value?.liveData?.passages) {
+    data.value.liveData.passages.forEach((p: PassageEnriched) => {
       if (p.location) {
         map.set(p.location, p)
       }
@@ -72,7 +53,7 @@ const livePassagesByLocation = computed(() => {
 const handleRefresh = async () => {
   console.log('[stream/index] 🔄 Handling refresh event...')
   try {
-    await Promise.all([fetchLive(), fetchStreams()])
+    await refresh()
     console.log('[stream/index] ✅ Data refreshed successfully')
   } catch (err) {
     console.error('[stream/index] ❌ Error refreshing data:', err)
@@ -91,18 +72,18 @@ useAutoRefresh(handleRefresh, STREAM_AUTO_REFRESH)
 
 // Get live streams from liveData
 const liveStreams = computed<StreamDisplay[]>(() => {
-  if (!liveData.value?.streams) return []
+  if (!data.value?.liveData?.streams) return []
   
-  return liveData.value.streams
+  return data.value.liveData.streams
     .filter((s: Stream) => s.isLive)
     .map((s: Stream) => mapStreamToDisplay(s, livePassagesByLocation.value))
 })
 
 // Get offline streams from allStreamsData
 const offlineStreams = computed<StreamDisplay[]>(() => {
-  if (!allStreamsData.value) return []
+  if (!data.value?.allStreamsData) return []
   
-  return allStreamsData.value
+  return data.value.allStreamsData
     .filter((s: Stream) => !s.isLive)
     .map((s: Stream) => mapStreamToDisplay(s, livePassagesByLocation.value))
 })

@@ -55,3 +55,7 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21 - 🛡️ Warden: Sécurisation de app/pages/stream/index.vue
+**Learning:** Toujours utiliser `useAsyncData` ou `useFetch` au lieu d'appels API manuels dans `onMounted` pour bénéficier du SSR et éviter les cascades côté client.
+**Action:** Refactorisé `stream/index.vue` pour utiliser `useAsyncData` avec `Promise.all` et `useFirstLoad`.
