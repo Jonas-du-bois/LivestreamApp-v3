@@ -164,7 +164,7 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToGoLive = await PassageModel.find({
         status: 'SCHEDULED',
         startTime: { $lte: now }
-      }).populate('group', 'name').populate('apparatus', 'name code').lean();
+      }).select('_id location').lean();
 
       if (passagesToGoLive.length > 0) {
         await PassageModel.updateMany(
@@ -183,6 +183,7 @@ export default defineNitroPlugin((nitroApp) => {
               { new: true }
             ).populate({
               path: 'currentPassage',
+              select: '-history',
               // BOLT: Optimize memory usage by only selecting necessary fields for streams
               populate: [{ path: 'group', select: 'name' }, { path: 'apparatus', select: 'name code' }]
             });
@@ -203,7 +204,7 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToFinish = await PassageModel.find({
         status: 'LIVE',
         endTime: { $lte: now }
-      }).lean();
+      }).select('_id location').lean();
 
       if (passagesToFinish.length > 0) {
         await PassageModel.updateMany(

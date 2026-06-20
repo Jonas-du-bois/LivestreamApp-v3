@@ -25,3 +25,11 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2024-05-18 - Redundant Populates in Background Tasks
+**Learning:** Blindly copying frontend-serving API queries (like `.populate('group').populate('apparatus')`) into backend background tasks (like `scheduler.ts` interval checks) causes severe N+1-like performance issues, as these redundant populate lookups execute constantly (e.g., every 60s) even though only the document `_id` is actually used by the scheduled job logic. Additionally, populating `currentPassage` on streams without strict `.select()` fetches the entire `history` array unnecessarily.
+**Action:** When writing background schedulers or data processors, strictly trace what fields are consumed by the function logic and use `.select('_id location')` to aggressively limit memory allocation and database I/O. Never reuse UI-oriented populate chains in automated jobs.
+
+## 2024-05-18 - Exclusionary vs Inclusive Projection in Populate
+**Learning:** When trying to prevent fetching large unused arrays (like `history`) in `.populate()` calls that supply data to an API response, using an inclusive projection (e.g., `select: 'group apparatus'`) is highly risky and often causes functional regressions by silently stripping other primitive fields (like `status`, `score`, `startTime`) that the frontend relies on.
+**Action:** Always prefer exclusionary projection (e.g., `select: '-history'`) when optimizing nested `.populate()` responses for APIs, unless you have meticulously verified every single field the client UI consumes from that nested object.
