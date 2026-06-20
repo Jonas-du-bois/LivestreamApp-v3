@@ -55,3 +55,13 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: Network Requests Strict Typing & Auto-Imports Cleanup
+
+- **Target:** `app/composables/useApiClient.ts`
+- **Risks Mitigated:**
+    - **Weak Typing:** Replaced pervasive `any` usage in `getAuthHeaders`, `apiClient`, and `useApiClient` with strict network request option types (`HeadersInit`, `Parameters<typeof $fetch>`, `Parameters<typeof useFetch>`) and explicitly casted error catches to `unknown` and `Error`.
+    - **Code Noise / Fragility:** Removed explicit Nuxt 4 auto-imports (Vue primitives like `getCurrentInstance`) according to best practices.
+- **Solution:**
+    - Refactored `useApiClient` to use strict types and removed explicit Vue imports.
+    - Added the rule: "Toujours utiliser des types stricts pour les options de requêtes réseau (`Parameters<typeof useFetch>`, `Parameters<typeof $fetch>`) et proscrire `any`."
