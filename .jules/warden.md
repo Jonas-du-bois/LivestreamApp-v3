@@ -55,3 +55,11 @@
     - Updated `EnrichedGroup` in `app/types/api.ts` to include `canton` and `logo`.
     - Updated `server/api/schedule.get.ts` to return these fields.
     - Refactored `SearchOverlay.vue` to use correct types and remove casts.
+
+## 2026-02-21: NetworkToast Timeout Memory Leak Fix
+
+- **Target:** `app/components/ui/NetworkToast.vue`
+- **Risks Mitigated:**
+    - **Memory Leaks:** `setTimeout` associated with `poorTimeout` was not cleared when the component unmounted. This could lead to memory leaks and attempting to mutate state on a destroyed component.
+- **Solution:**
+    - Added an `onUnmounted` lifecycle hook that explicitly calls `clearTimeout(poorTimeout)` to ensure the timeout is safely cleared before component destruction.

@@ -22,6 +22,10 @@ watch(status, (newStatus) => {
   }
 })
 
+onUnmounted(() => {
+  if (poorTimeout) clearTimeout(poorTimeout)
+})
+
 // Détermine si le toast doit être affiché selon l'état actuel et le délai d'avertissement.
 const isVisible = computed(() => {
   return status.value === 'offline' || (status.value === 'poor' && showPoorWarning.value)
