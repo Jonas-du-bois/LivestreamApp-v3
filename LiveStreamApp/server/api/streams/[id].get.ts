@@ -17,17 +17,20 @@ export default defineEventHandler(async (event) => {
     const stream = await StreamModel.findById(id).populate({
       path: 'currentPassage',
       model: PassageModel,
+      select: 'startTime endTime location status score group apparatus monitors',
       populate: [
         {
           path: 'group',
-          model: GroupModel
+          model: GroupModel,
+          select: 'name category canton logo description gymnastsCount'
         },
         {
           path: 'apparatus',
-          model: ApparatusModel
+          model: ApparatusModel,
+          select: 'name code icon'
         }
       ]
-    })
+    }).lean()
 
     if (!stream) {
       throw createError({
