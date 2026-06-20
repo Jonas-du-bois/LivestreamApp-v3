@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-06-20 - Feedback tactile sur le sélecteur de round
+**Learning:** Les sélecteurs segmentés ("Qualifications" / "Finales") natifs doivent fournir un retour visuel lors des interactions tactiles pour ne pas paraître lents sur mobile.
+**Action:** Toujours ajouter des classes `active:scale-95` et `duration-200` accompagnées de transitions de couleurs subtiles (comme `active:bg-white/5`) aux boutons de navigation segmentés.
