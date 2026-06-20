@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## Pull-to-Refresh Tactile Feedback (weather.vue)
+- **Learning:** To provide tactile feedback on a refresh button without JavaScript, using `class="group"` on the parent `<UiButton>` and `group-active:rotate-180` with `duration-500` on the child `<Icon>` creates a highly satisfying and responsive interaction that feels premium and natively interactive.
