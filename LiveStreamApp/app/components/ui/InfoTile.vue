@@ -61,7 +61,7 @@ const accentStyle = computed(() => {
     :to="to"
     class="glass-card ui-info-tile relative isolate overflow-hidden p-4 flex items-center gap-4 transition-all"
     :class="[
-      to ? 'ui-info-tile--interactive app-focus-ring hover:bg-white/15 active:scale-[0.98] cursor-pointer' : '',
+      to ? 'ui-info-tile--interactive app-focus-ring hover:bg-white/15 active:scale-[0.98] cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none' : '',
       size === 'lg' ? 'p-5' : 'p-4'
     ]"
     :style="accentStyle"

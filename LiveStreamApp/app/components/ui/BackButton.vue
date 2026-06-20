@@ -40,7 +40,7 @@ const handleClick = (event: MouseEvent) => {
 }
 
 const commonClasses = computed(() => [
-  'ui-back-button app-focus-ring inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 active:scale-95 text-white shadow-lg group',
+  'ui-back-button app-focus-ring inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 active:scale-95 text-white shadow-lg group focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B1120] outline-none',
   props.glass ? 'glass-panel ui-back-button--glass border border-white/10' : 'ui-back-button--plain'
 ])
 </script>
