@@ -234,12 +234,10 @@ export default defineEventHandler(async (event) => {
     const inserted = await PassageModel.insertMany(finalPassages);
 
     try {
+      // ⚡ Bolt: Use native clear() instead of O(N) getKeys/removeItem mapping to avoid main thread blocking
       const cacheStorage = useStorage('cache')
-      const allCacheKeys = await cacheStorage.getKeys()
-      if (allCacheKeys.length > 0) {
-        await Promise.all(allCacheKeys.map(key => cacheStorage.removeItem(key)))
-        console.log(`[admin:finals] Cleared ${allCacheKeys.length} Nitro cache entries`)
-      }
+      await cacheStorage.clear()
+      console.log(`[admin:finals] Cleared all Nitro cache entries`)
     } catch (cacheErr) {
       console.warn('[admin:finals] Could not clear Nitro cache:', cacheErr)
     }
