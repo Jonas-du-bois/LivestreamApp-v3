@@ -4,6 +4,9 @@ import type { PassageSearchable } from '~/types/ui'
 
 const normalize = (value: string | null | undefined) => (value ?? '').toString().toLowerCase()
 
+// ⚡ Bolt: Cache formatter outside loop to avoid per-iteration allocation
+const cachedDayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long' })
+
 /** Enrichit un passage avec des clés de recherche pré-normalisées */
 export const enrichPassage = (p: PassageEnriched): PassageSearchable => {
   const groupName = p.group?.name ?? ''
@@ -13,9 +16,20 @@ export const enrichPassage = (p: PassageEnriched): PassageSearchable => {
   const category = p.group?.category ?? ''
   
   // Jour fr-FR car le filtrage UI utilise les noms de jours en français
-  const dayKey = p.startTime
-    ? new Date(p.startTime).toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase()
-    : ''
+  let dayKey = ''
+  if (p.startTime) {
+    // ⚡ Bolt: Fast timestamp parsing without new Date() allocation
+    const time = typeof p.startTime === 'string'
+      ? Date.parse(p.startTime)
+      // @ts-ignore - Handle if it's already a Date object
+      : p.startTime.getTime ? p.startTime.getTime()
+      : new Date(p.startTime).getTime()
+
+    // ⚡ Bolt: Prevent RangeError if timestamp is invalid
+    if (!Number.isNaN(time)) {
+      dayKey = cachedDayFormatter.format(time).toLowerCase()
+    }
+  }
 
   return {
     ...p,
