@@ -2,6 +2,10 @@
  * Traduction des données dynamiques (engins, jours, catégories)
  * et formatage des dates/heures selon la locale Suisse courante.
  */
+
+// Cache global pour optimiser les performances lors du formatage répété
+const intlCache = new Map<string, Intl.DateTimeFormat>()
+
 export const useTranslatedData = () => {
   const { t, locale } = useI18n()
 
@@ -46,6 +50,18 @@ export const useTranslatedData = () => {
     return 'fr-CH'
   }
 
+  const getCachedFormatter = (localeCode: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat => {
+    const key = `${localeCode}-${JSON.stringify(options)}`
+    if (!intlCache.has(key)) {
+      intlCache.set(key, new Intl.DateTimeFormat(localeCode, options))
+    }
+    return intlCache.get(key)!
+  }
+
+  const getSafeTimestamp = (val: string | number | Date): number => {
+    return typeof val === 'string' ? Date.parse(val) : (val as any).getTime ? (val as Date).getTime() : new Date(val).getTime()
+  }
+
   /** Formate une date selon la locale Suisse courante */
   const formatLocalizedDate = (dateInput: string | number | Date, options?: Intl.DateTimeFormatOptions): string => {
     const defaultOptions: Intl.DateTimeFormatOptions = {
@@ -57,25 +73,34 @@ export const useTranslatedData = () => {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+    const ts = getSafeTimestamp(dateInput)
+    if (Number.isNaN(ts)) return 'Invalid Date'
+    const formatter = getCachedFormatter(getLocaleCode(), finalOptions)
+    return formatter.format(ts)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */
   const formatLocalizedTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
+    const ts = getSafeTimestamp(dateInput)
+    if (Number.isNaN(ts)) return 'Invalid Date'
+    const formatter = getCachedFormatter(getLocaleCode(), {
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'Europe/Zurich'
     })
+    return formatter.format(ts)
   }
 
   /** Formate une date + heure complète selon la locale Suisse courante */
   const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleString(getLocaleCode(), {
+    const ts = getSafeTimestamp(dateInput)
+    if (Number.isNaN(ts)) return 'Invalid Date'
+    const formatter = getCachedFormatter(getLocaleCode(), {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Europe/Zurich'
     })
+    return formatter.format(ts)
   }
 
   return {
