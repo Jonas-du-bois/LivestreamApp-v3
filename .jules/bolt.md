@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-06-27 - Cached Intl.DateTimeFormat for loops
+**Learning:** Using `toLocaleDateString()` inside list rendering creates severe GC and CPU overhead by instantiating formatters repeatedly. Also, Nuxt composables re-evaluate, so true singletons must be cached in the module scope outside the exported function. Formatting with `NaN` will throw a fatal RangeError.
+**Action:** Use a module-scoped `Map` to cache `Intl.DateTimeFormat` instances, serialize the locale and options as keys, extract timestamps using `typeof val === 'string' ? Date.parse(val) : val.getTime ? val.getTime() : new Date(val).getTime()` to bypass object allocation, and guard against `Number.isNaN` before calling `.format(ts)`.
