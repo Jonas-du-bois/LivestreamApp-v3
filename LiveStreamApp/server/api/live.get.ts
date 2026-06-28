@@ -6,6 +6,9 @@ export default defineEventHandler(async (event) => {
     // Fetch live passages and streams in parallel
     const [livePassages, liveStreams] = await Promise.all([
       PassageModel.find({ status: 'LIVE' })
+        // ⚡ BOLT OPTIMIZATION: Explictly projecting base model fields prevents fetching unbounded
+        // arrays (like history or monitors) into memory, significantly reducing allocation overhead.
+        .select('group apparatus startTime endTime location status score')
         // OPTIMIZATION: Select only necessary fields to reduce payload size
         .populate('group', 'name category')
         .populate('apparatus', 'name code icon')
