@@ -87,7 +87,7 @@ const usefulLinks = computed(() => {
             <article
               v-for="item in weekendOrganization"
               :key="item.day"
-              class="glass-card p-4 border border-white/10"
+              class="glass-card p-4 border border-white/10 transition-all duration-200 active:scale-[0.98] active:bg-white/5"
             >
               <p class="text-emerald-300 text-xs font-bold uppercase tracking-[0.18em] mb-1">{{ item.day }}</p>
               <h4 class="text-white font-bold mb-1">{{ item.title }}</h4>
@@ -98,7 +98,7 @@ const usefulLinks = computed(() => {
 
         <section class="space-y-3">
           <UiSectionTitle>{{ t('infos.sections.parking') }}</UiSectionTitle>
-          <UiGlassCard class="space-y-3" padding="p-4">
+          <UiGlassCard class="space-y-3" padding="p-4" interactive>
             <div
               v-for="line in parkingInfo"
               :key="line.label"
@@ -112,7 +112,7 @@ const usefulLinks = computed(() => {
 
         <section class="space-y-3">
           <UiSectionTitle>{{ t('infos.sections.samaritans') }}</UiSectionTitle>
-          <UiGlassCard class="space-y-3" padding="p-4">
+          <UiGlassCard class="space-y-3" padding="p-4" interactive>
             <div
               v-for="line in samaritansInfo"
               :key="line.label"
@@ -126,7 +126,7 @@ const usefulLinks = computed(() => {
 
         <section class="space-y-3">
           <UiSectionTitle>{{ t('infos.sections.important') }}</UiSectionTitle>
-          <UiGlassCard class="space-y-2" padding="p-4">
+          <UiGlassCard class="space-y-2" padding="p-4" interactive>
             <p
               v-for="line in importantInfo"
               :key="line"
