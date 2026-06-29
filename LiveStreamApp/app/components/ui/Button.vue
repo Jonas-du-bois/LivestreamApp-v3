@@ -72,7 +72,7 @@ const commonClasses = computed(() => [
     :type="to ? undefined : type"
     :disabled="disabled || loading"
     :aria-busy="loading"
-    :class="commonClasses"
+    :class="[commonClasses, 'group']"
     @click="emit('click', $event)"
   >
     <Icon
@@ -86,6 +86,7 @@ const commonClasses = computed(() => [
       v-else-if="icon"
       :name="icon"
       :size="size === 'sm' ? '16' : '20'"
+      :class="[icon.includes('sync') || icon.includes('refresh') ? 'transition-transform duration-300 group-active:rotate-180' : '']"
     />
 
     <slot />
