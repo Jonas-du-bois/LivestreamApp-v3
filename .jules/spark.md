@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-07-01 - Rotation tactile contextuelle (Boutons de Refresh)
+
+**Learning:** Appliquer systématiquement une rotation au toucher (`active:rotate-180`) sur tous les boutons à icône crée une expérience déroutante pour les icônes statiques de navigation (comme "retour" ou "fermer").
+**Action:** Toujours rendre la classe `group-active:rotate-180` conditionnelle dans les composants génériques (`UiButton`, `UiIconButton`) en vérifiant si l'icône correspond sémantiquement à une action d'actualisation (ex: "sync", "clockwise", "refresh").
