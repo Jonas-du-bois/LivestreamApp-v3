@@ -24,16 +24,7 @@ export default defineCachedEventHandler(async (event) => {
   const salleFilter = validatedQuery.salle;
 
   try {
-    // Load pre-computed metadata
     const storage = useStorage('cache');
-    const cachedMeta = await storage.getItem('schedule:metadata') as any || {};
-    
-    const availableApparatus = cachedMeta.availableApparatus || [];
-    const availableCategories = cachedMeta.availableCategories || [];
-    const availableLocations = cachedMeta.availableLocations || [];
-    const availableDays = cachedMeta.availableDays || [];
-    const dayAggregation = cachedMeta.dayAggregation || [];
-
     let apparatusIdsPromise: Promise<any> | null = null;
     if (apparatusFilter && apparatusFilter !== 'Tout') {
       const rawNames = Array.isArray(apparatusFilter) ? apparatusFilter : [apparatusFilter];
@@ -52,10 +43,19 @@ export default defineCachedEventHandler(async (event) => {
       }
     }
 
-    const [apparatusIdsResult, groupIdsResult] = await Promise.all([
+    // ⚡ Bolt: Fetch cached metadata concurrently with DB filter queries to reduce overall latency
+    const [cachedMetaRaw, apparatusIdsResult, groupIdsResult] = await Promise.all([
+      storage.getItem('schedule:metadata'),
       apparatusIdsPromise,
       groupIdsPromise
     ]);
+
+    const cachedMeta = cachedMetaRaw as any || {};
+    const availableApparatus = cachedMeta.availableApparatus || [];
+    const availableCategories = cachedMeta.availableCategories || [];
+    const availableLocations = cachedMeta.availableLocations || [];
+    const availableDays = cachedMeta.availableDays || [];
+    const dayAggregation = cachedMeta.dayAggregation || [];
 
     // Process Day Map
     const dayMap = new Map<string, string[]>(); // Map 'samedi' -> ['2023-10-14']
