@@ -63,7 +63,7 @@ const usefulLinks = computed(() => {
 
     <Transition name="premium-swap" appear>
       <div class="space-y-6">
-        <UiGlassCard class="relative overflow-hidden" padding="p-5">
+        <UiGlassCard class="relative overflow-hidden" padding="p-5" interactive>
           <div class="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-emerald-500/20 blur-2xl" />
           <div class="relative">
             <p class="text-emerald-300 text-xs uppercase tracking-[0.2em] font-bold mb-2">{{ t('infos.title') }}</p>
@@ -84,21 +84,22 @@ const usefulLinks = computed(() => {
         <section class="space-y-3">
           <UiSectionTitle>{{ t('infos.sections.organization') }}</UiSectionTitle>
           <div class="grid grid-cols-1 gap-3">
-            <article
+            <UiGlassCard
               v-for="item in weekendOrganization"
               :key="item.day"
-              class="glass-card p-4 border border-white/10"
+              padding="p-4"
+              interactive
             >
               <p class="text-emerald-300 text-xs font-bold uppercase tracking-[0.18em] mb-1">{{ item.day }}</p>
               <h4 class="text-white font-bold mb-1">{{ item.title }}</h4>
               <p class="text-white/70 text-sm">{{ item.details }}</p>
-            </article>
+            </UiGlassCard>
           </div>
         </section>
 
         <section class="space-y-3">
           <UiSectionTitle>{{ t('infos.sections.parking') }}</UiSectionTitle>
-          <UiGlassCard class="space-y-3" padding="p-4">
+          <UiGlassCard class="space-y-3" padding="p-4" interactive>
             <div
               v-for="line in parkingInfo"
               :key="line.label"
@@ -112,7 +113,7 @@ const usefulLinks = computed(() => {
 
         <section class="space-y-3">
           <UiSectionTitle>{{ t('infos.sections.samaritans') }}</UiSectionTitle>
-          <UiGlassCard class="space-y-3" padding="p-4">
+          <UiGlassCard class="space-y-3" padding="p-4" interactive>
             <div
               v-for="line in samaritansInfo"
               :key="line.label"
@@ -126,7 +127,7 @@ const usefulLinks = computed(() => {
 
         <section class="space-y-3">
           <UiSectionTitle>{{ t('infos.sections.important') }}</UiSectionTitle>
-          <UiGlassCard class="space-y-2" padding="p-4">
+          <UiGlassCard class="space-y-2" padding="p-4" interactive>
             <p
               v-for="line in importantInfo"
               :key="line"
