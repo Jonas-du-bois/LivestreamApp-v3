@@ -17,13 +17,18 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 1. Fetch Group Info
-    const group = await GroupModel.findById(groupId).lean()
+    // ⚡ Bolt Optimization: Add explicit .select() to avoid fetching unbounded arrays (history/monitors) into memory
+    const group = await GroupModel.findById(groupId)
+      .select('name canton category logo description')
+      .lean()
     if (!group) {
       throw createError({ statusCode: 404, message: 'Group not found' })
     }
 
     // 2. Fetch Timeline (Passages)
+    // ⚡ Bolt Optimization: Explicit .select() on find() limits main thread memory allocation and database I/O overhead
     const passages = await PassageModel.find({ group: groupId })
+      .select('apparatus startTime endTime status round score location')
       .populate('apparatus', 'name icon code')
       .sort({ startTime: 1 })
       .lean()
