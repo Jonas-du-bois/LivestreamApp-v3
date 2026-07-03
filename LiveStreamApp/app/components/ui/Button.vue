@@ -55,8 +55,10 @@ const sizeClasses = computed(() => {
 
 const roundedClasses = computed(() => `rounded-${props.rounded}`)
 
+const isRefreshIcon = computed(() => props.icon?.includes('sync') || props.icon?.includes('refresh') || props.icon?.includes('clockwise'))
+
 const commonClasses = computed(() => [
-  'ui-button app-focus-ring relative isolate overflow-hidden inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
+  'ui-button app-focus-ring group relative isolate overflow-hidden inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
   variantClasses.value,
   sizeClasses.value,
   roundedClasses.value,
@@ -86,6 +88,8 @@ const commonClasses = computed(() => [
       v-else-if="icon"
       :name="icon"
       :size="size === 'sm' ? '16' : '20'"
+      class="transition-transform duration-500"
+      :class="isRefreshIcon ? 'group-active:rotate-180' : ''"
     />
 
     <slot />
