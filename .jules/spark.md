@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-07-03 - Tactile Feedback for Refresh Icons
+**Learning:** Using the `group` class on a button and conditionally applying `group-active:rotate-180` on child icons based on their name provides satisfying directional tactile feedback without breaking static icon interactions.
+**Action:** Apply contextual directional animations selectively so they only trigger for appropriate actions (like sync/refresh).
