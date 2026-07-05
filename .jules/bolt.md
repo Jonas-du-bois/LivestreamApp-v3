@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2025-02-18 - Explicit Projection on Root Queries
+**Learning:** Relying solely on `populate()` field selection is insufficient for heavily relational models like `Group` and `Passage` when queried via `find()` or `findById()`. If explicit `.select()` is not applied to the root query, Mongoose fetches the entire document into memory, causing severe overhead from large arrays like `history` or `monitors`.
+**Action:** Always apply an explicit `.select()` projection directly on `find()` and `findById()` calls to whitelist only the required fields before calling `lean()` or `exec()`.
