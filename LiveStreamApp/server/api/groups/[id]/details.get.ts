@@ -23,7 +23,9 @@ export default defineEventHandler(async (event) => {
     }
 
     // 2. Fetch Timeline (Passages)
+    // BOLT: Optimize memory usage and DB payload by strictly selecting required fields, avoiding unbounded arrays like history or monitors.
     const passages = await PassageModel.find({ group: groupId })
+      .select('apparatus startTime endTime status round score location')
       .populate('apparatus', 'name icon code')
       .sort({ startTime: 1 })
       .lean()
