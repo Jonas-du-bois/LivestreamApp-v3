@@ -17,13 +17,19 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 1. Fetch Group Info
-    const group = await GroupModel.findById(groupId).lean()
+    // ⚡ Bolt: Use exclusive field projection to safely drop heavy arrays without breaking the API contract
+    const group = await GroupModel.findById(groupId)
+      .select('-history -monitors')
+      .lean()
+
     if (!group) {
       throw createError({ statusCode: 404, message: 'Group not found' })
     }
 
     // 2. Fetch Timeline (Passages)
+    // ⚡ Bolt: Exclude heavy arrays from root passage documents to minimize memory usage
     const passages = await PassageModel.find({ group: groupId })
+      .select('-history -monitors')
       .populate('apparatus', 'name icon code')
       .sort({ startTime: 1 })
       .lean()
