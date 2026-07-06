@@ -11,3 +11,7 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+
+## 2026-07-06 - Feedback tactile sur les cartes Glass
+**Learning:** Le scale à 0.97 était un peu trop prononcé pour les grandes cartes, donnant un effet rebond excessif. L'ombre ne suivait pas bien l'enfoncement physique.
+**Action:** J'ai ajusté l'animation de pression à `active:scale-[0.98]` et réduit l'ombre portée (box-shadow de 16px à 8px) au moment du clic pour vraiment simuler l'enfoncement dans le fond, renforçant le côté "premium" et réactif au toucher sans Layout Shift.

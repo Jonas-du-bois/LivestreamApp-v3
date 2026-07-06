@@ -25,7 +25,7 @@ const isInteractive = computed(() => props.interactive ?? !!props.to)
 const cardClasses = computed(() => [
   'glass-card ui-glass-card app-focus-ring transition-all duration-300 block',
   props.padding,
-  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer active:scale-[0.97]' : '',
+  isInteractive.value ? 'ui-glass-card--interactive cursor-pointer active:scale-[0.98]' : '',
   props.class
 ])
 
@@ -83,9 +83,9 @@ const handleKeyDown = (event: KeyboardEvent) => {
 }
 
 .ui-glass-card--interactive:active {
-  border-color: rgb(var(--color-tertiary-rgb) / 0.36);
+  border-color: rgb(var(--color-tertiary-rgb) / 0.45);
   box-shadow:
-    0 16px 30px rgba(2, 6, 23, 0.2),
-    0 0 0 1px rgb(var(--color-tertiary-rgb) / 0.12);
+    0 8px 16px rgba(2, 6, 23, 0.3),
+    0 0 0 1px rgb(var(--color-tertiary-rgb) / 0.2);
 }
 </style>
