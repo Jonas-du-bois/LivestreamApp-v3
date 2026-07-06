@@ -25,3 +25,6 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+## 2026-07-06 - Optimize Intl.DateTimeFormat and Date Allocations
+**Learning:** In Nuxt/Vue, repeatedly instantiating `Intl.DateTimeFormat` or allocating new `Date` objects within frequently rendered lists causes significant CPU spikes and memory garbage collection pressure.
+**Action:** Always create a module-scoped singleton cache for `Intl.DateTimeFormat` instances and bypass new `Date` allocations by resolving `Date.now()` or numeric timestamps directly. Be cautious when using `Date.parse()` with cached formatters since `NaN` inputs throw a fatal `RangeError`.
