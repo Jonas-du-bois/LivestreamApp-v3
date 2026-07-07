@@ -38,7 +38,7 @@ const variantClasses = computed(() => {
 <template>
   <button
     type="button"
-    class="ui-icon-button app-focus-ring relative isolate overflow-hidden p-2 transition-all duration-200 active:scale-90 flex items-center justify-center"
+    class="ui-icon-button group app-focus-ring relative isolate overflow-hidden p-2 transition-all duration-200 active:scale-90 flex items-center justify-center"
     :class="[variantClasses, active ? 'ui-icon-button--active' : '', variant === 'bubble' ? 'rounded-full' : 'rounded-lg']"
     :aria-label="label"
     @click="$emit('click', $event)"
@@ -46,7 +46,7 @@ const variantClasses = computed(() => {
     <Icon 
       :name="icon" 
       :size="iconSize"
-      class="transition-transform"
+      :class="['transition-transform', icon?.includes('sync') || icon?.includes('clockwise') ? 'duration-500 group-active:rotate-180' : '']"
     />
     
     <span 
