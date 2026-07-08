@@ -6,6 +6,8 @@ export default defineEventHandler(async (event) => {
     // Fetch live passages and streams in parallel
     const [livePassages, liveStreams] = await Promise.all([
       PassageModel.find({ status: 'LIVE' })
+        // BOLT: Exclude heavy unbounded arrays to minimize memory overhead
+        .select('-history -monitors')
         // OPTIMIZATION: Select only necessary fields to reduce payload size
         .populate('group', 'name category')
         .populate('apparatus', 'name code icon')

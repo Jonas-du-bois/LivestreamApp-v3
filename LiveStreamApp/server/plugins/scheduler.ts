@@ -164,7 +164,12 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToGoLive = await PassageModel.find({
         status: 'SCHEDULED',
         startTime: { $lte: now }
-      }).populate('group', 'name').populate('apparatus', 'name code').lean();
+      })
+        // BOLT: Exclude heavy unbounded arrays to minimize memory overhead in high-frequency loop
+        .select('-history -monitors')
+        .populate('group', 'name')
+        .populate('apparatus', 'name code')
+        .lean();
 
       if (passagesToGoLive.length > 0) {
         await PassageModel.updateMany(
@@ -203,7 +208,10 @@ export default defineNitroPlugin((nitroApp) => {
       const passagesToFinish = await PassageModel.find({
         status: 'LIVE',
         endTime: { $lte: now }
-      }).lean();
+      })
+        // BOLT: Exclude heavy unbounded arrays to minimize memory overhead
+        .select('-history -monitors')
+        .lean();
 
       if (passagesToFinish.length > 0) {
         await PassageModel.updateMany(
@@ -316,7 +324,8 @@ export default defineNitroPlugin((nitroApp) => {
     };
 
     const passages = await PassageModel.find(query)
-      // BOLT: Optimize notifications by strictly selecting required fields
+      // BOLT: Optimize notifications by excluding unbounded arrays and strictly selecting required fields
+      .select('-history -monitors')
       .populate('group', 'name')
       .populate('apparatus', 'name code')
       .lean();
