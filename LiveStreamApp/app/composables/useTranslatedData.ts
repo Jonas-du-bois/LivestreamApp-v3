@@ -2,6 +2,23 @@
  * Traduction des données dynamiques (engins, jours, catégories)
  * et formatage des dates/heures selon la locale Suisse courante.
  */
+
+// ⚡ Bolt: Module-scoped singleton cache for formatters to prevent memory leaks and object re-allocations
+const formatterCache = new Map<string, Intl.DateTimeFormat>()
+
+const safelyFormatDate = (dateInput: string | number | Date, localeCode: string, options: Intl.DateTimeFormatOptions): string => {
+  const ts = typeof dateInput === 'string' ? Date.parse(dateInput) : (dateInput as any).getTime ? (dateInput as any).getTime() : new Date(dateInput).getTime()
+  if (Number.isNaN(ts)) return 'Invalid Date'
+
+  const cacheKey = `${localeCode}-${JSON.stringify(options)}`
+  let formatter = formatterCache.get(cacheKey)
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(localeCode, options)
+    formatterCache.set(cacheKey, formatter)
+  }
+  return formatter.format(ts)
+}
+
 export const useTranslatedData = () => {
   const { t, locale } = useI18n()
 
@@ -57,12 +74,12 @@ export const useTranslatedData = () => {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+    return safelyFormatDate(dateInput, getLocaleCode(), finalOptions)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */
   const formatLocalizedTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
+    return safelyFormatDate(dateInput, getLocaleCode(), {
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'Europe/Zurich'
@@ -71,7 +88,7 @@ export const useTranslatedData = () => {
 
   /** Formate une date + heure complète selon la locale Suisse courante */
   const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleString(getLocaleCode(), {
+    return safelyFormatDate(dateInput, getLocaleCode(), {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Europe/Zurich'
