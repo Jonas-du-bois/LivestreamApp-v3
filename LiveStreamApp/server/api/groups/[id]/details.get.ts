@@ -24,6 +24,8 @@ export default defineEventHandler(async (event) => {
 
     // 2. Fetch Timeline (Passages)
     const passages = await PassageModel.find({ group: groupId })
+      // BOLT: Optimize memory usage and payload size by dropping unbounded arrays like history/monitors
+      .select('-history -monitors')
       .populate('apparatus', 'name icon code')
       .sort({ startTime: 1 })
       .lean()
