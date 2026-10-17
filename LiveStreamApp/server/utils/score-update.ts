@@ -147,7 +147,11 @@ export const updatePassageScore = async ({
       }
     },
     { new: true }
-  ).populate('group').populate('apparatus').exec();
+  )
+  // BOLT: Optimize memory usage and payload size by selecting explicit fields and dropping unbounded arrays like history/monitors
+  .select('-history -monitors')
+  .populate('group', 'name category subCategory')
+  .populate('apparatus', 'name code').exec();
 
   if (!updated) {
     throw createError({ statusCode: 404, statusMessage: 'Passage not found' });
