@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-10-18 - Map Toggle Transition
+- **Learning:** Instead of relying on instant icon swaps in atomic components, wrapping an interactive button in a Vue `<Transition mode="out-in">` with a `key` bound to its state creates a highly satisfying tactile switch effect without modifying the global component.
+- **Action:** Use `<Transition name="rotate-scale" mode="out-in">` combined with a dynamic `:key` on toggle buttons for map/view switches.
