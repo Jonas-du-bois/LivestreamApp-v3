@@ -100,10 +100,13 @@ export async function updateScheduleMetadata() {
     // Process Day Map
     const availableDaysSet = new Set<string>();
     if (facets?.days) {
+      // ⚡ Bolt: Locally cache Intl.DateTimeFormat to avoid re-instantiation in loops
+      const dayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long' })
       facets.days.forEach((d: any) => {
         if (!d.sampleDate) return;
-        const date = new Date(d.sampleDate);
-        const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+        const time = new Date(d.sampleDate).getTime();
+        if (Number.isNaN(time)) return;
+        const dayName = dayFormatter.format(time);
         availableDaysSet.add(dayName);
       });
     }

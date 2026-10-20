@@ -57,13 +57,17 @@ export default defineCachedEventHandler(async (event) => {
       groupIdsPromise
     ]);
 
+    // ⚡ Bolt: Locally cache Intl.DateTimeFormat to avoid re-instantiation in loops
+    const dayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long' })
+
     // Process Day Map
     const dayMap = new Map<string, string[]>(); // Map 'samedi' -> ['2023-10-14']
 
     dayAggregation.forEach((d: any) => {
       if (!d.sampleDate) return;
-      const date = new Date(d.sampleDate);
-      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+      const time = new Date(d.sampleDate).getTime();
+      if (Number.isNaN(time)) return;
+      const dayName = dayFormatter.format(time);
       const key = dayName.toLowerCase();
 
       if (!dayMap.has(key)) {
