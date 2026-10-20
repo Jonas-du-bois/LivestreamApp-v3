@@ -2,6 +2,17 @@ import { type Ref } from 'vue'
 import type { PassageEnriched, PassageStatus } from '~/types/api'
 import type { PassageSearchable } from '~/types/ui'
 
+// ⚡ Bolt: Module-scoped cache for Intl.DateTimeFormat instances
+const formattersCache = new Map<string, Intl.DateTimeFormat>()
+
+const getCachedFormatter = (locale: string, options: Intl.DateTimeFormatOptions) => {
+  const key = `${locale}-${JSON.stringify(options)}`
+  if (!formattersCache.has(key)) {
+    formattersCache.set(key, new Intl.DateTimeFormat(locale, options))
+  }
+  return formattersCache.get(key)!
+}
+
 const normalize = (value: string | null | undefined) => (value ?? '').toString().toLowerCase()
 
 /** Enrichit un passage avec des clés de recherche pré-normalisées */
@@ -13,9 +24,14 @@ export const enrichPassage = (p: PassageEnriched): PassageSearchable => {
   const category = p.group?.category ?? ''
   
   // Jour fr-FR car le filtrage UI utilise les noms de jours en français
-  const dayKey = p.startTime
-    ? new Date(p.startTime).toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase()
-    : ''
+  let dayKey = ''
+  if (p.startTime) {
+    const time = new Date(p.startTime).getTime()
+    if (!Number.isNaN(time)) {
+      // ⚡ Bolt: Use cached formatter
+      dayKey = getCachedFormatter('fr-FR', { weekday: 'long' }).format(time).toLowerCase()
+    }
+  }
 
   return {
     ...p,

@@ -25,3 +25,6 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+## 2026-10-20 - Cached Intl.DateTimeFormat Instances
+**Learning:** Using `new Date().toLocaleDateString()` allocates a new `Intl.DateTimeFormat` instance every time it is called. This is a severe performance issue when formatting dates inside iterative loops or list renderings. Passing `NaN` to cached `Intl.DateTimeFormat.prototype.format()` throws a fatal `RangeError`.
+**Action:** Cache `Intl.DateTimeFormat` instances using a module-scoped `Map` keyed by locale and options. Always verify parsed timestamps with `Number.isNaN()` before formatting to avoid fatal errors.

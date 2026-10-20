@@ -37,11 +37,14 @@ const DAY_ALL = 'Tout'
 
 const normalizeDayKey = (day?: string | null) => (day || '').toLowerCase().trim()
 
+// ⚡ Bolt: Locally cache Intl.DateTimeFormat to avoid re-instantiation in loops
+const dayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+
 const getDayFromStartTime = (startTime?: string) => {
   if (!startTime) return undefined
-  const parsed = new Date(startTime)
-  if (Number.isNaN(parsed.getTime())) return undefined
-  return parsed.toLocaleDateString('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+  const parsedTime = new Date(startTime).getTime()
+  if (Number.isNaN(parsedTime)) return undefined
+  return dayFormatter.format(parsedTime)
 }
 
 const mergeAvailableDays = (incomingDay?: string) => {

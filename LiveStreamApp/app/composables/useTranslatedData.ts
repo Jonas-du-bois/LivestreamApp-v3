@@ -2,6 +2,17 @@
  * Traduction des données dynamiques (engins, jours, catégories)
  * et formatage des dates/heures selon la locale Suisse courante.
  */
+// ⚡ Bolt: Module-scoped cache for Intl.DateTimeFormat instances
+const formattersCache = new Map<string, Intl.DateTimeFormat>()
+
+const getCachedFormatter = (locale: string, options: Intl.DateTimeFormatOptions) => {
+  const key = `${locale}-${JSON.stringify(options)}`
+  if (!formattersCache.has(key)) {
+    formattersCache.set(key, new Intl.DateTimeFormat(locale, options))
+  }
+  return formattersCache.get(key)!
+}
+
 export const useTranslatedData = () => {
   const { t, locale } = useI18n()
 
@@ -57,7 +68,12 @@ export const useTranslatedData = () => {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+
+    const time = new Date(dateInput).getTime()
+    if (Number.isNaN(time)) return 'Invalid Date'
+
+    // ⚡ Bolt: Use cached formatter
+    return getCachedFormatter(getLocaleCode(), finalOptions).format(time)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */

@@ -801,9 +801,22 @@ const getStatusIcon = (status?: PassageStatus) => {
   }
 }
 
+// ⚡ Bolt: Module-scoped cache for Intl.DateTimeFormat instances
+const formattersCache = new Map<string, Intl.DateTimeFormat>()
+
+const getCachedFormatter = (loc: string, options: Intl.DateTimeFormatOptions) => {
+  const key = `${loc}-${JSON.stringify(options)}`
+  if (!formattersCache.has(key)) {
+    formattersCache.set(key, new Intl.DateTimeFormat(loc, options))
+  }
+  return formattersCache.get(key)!
+}
+
 const formatPassageDay = (date: Date | string) => {
-  const d = new Date(date)
-  return d.toLocaleDateString(locale.value, { weekday: 'short', timeZone: 'Europe/Zurich' }).toUpperCase().replace('.', '')
+  const time = new Date(date).getTime()
+  if (Number.isNaN(time)) return ''
+  // ⚡ Bolt: Use cached formatter
+  return getCachedFormatter(locale.value, { weekday: 'short', timeZone: 'Europe/Zurich' }).format(time).toUpperCase().replace('.', '')
 }
 
 const formatPassageTime = (date: Date | string) => {
