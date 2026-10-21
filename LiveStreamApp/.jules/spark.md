@@ -59,3 +59,7 @@ La liste statique "Liens utiles" dans la page `/infos` utilisait de simples ancr
 **Apprentissages (LiveStreamApp) :**
 - Les listes statiques, même simples (comme des liens sortants), bénéficient énormément de la classe `group` couplée aux états `active:`. Cela transforme un lien web classique en un véritable bouton d'application native, sans ajouter la moindre complexité Javascript.
 - Utiliser de minuscules translations (ex: `0.5` = `2px` via Tailwind) suffit à donner une direction à une interaction. Un lien sortant doit pointer "vers l'extérieur".
+
+## 2026-10-21 - Feedback tactile sur les cartes d'information statiques
+**Learning:** Même les blocs de contenu purement informatifs et statiques (comme les horaires ou les articles) peuvent paraître "morts" sur une interface tactile si aucun retour visuel n'est présent lors d'un appui accidentel ou intentionnel.
+**Action:** Ajouter systématiquement des micro-interactions légères (comme `active:scale-[0.98]` et un léger survol lumineux) sur les éléments de type "carte" (`<article>`, `<section>`), même non cliquables, pour renforcer l'aspect tactile et réactif ("jus") global de l'application mobile.
