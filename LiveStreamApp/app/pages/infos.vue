@@ -87,7 +87,7 @@ const usefulLinks = computed(() => {
             <article
               v-for="item in weekendOrganization"
               :key="item.day"
-              class="glass-card p-4 border border-white/10"
+              class="glass-card p-4 border border-white/10 transition-all duration-300 hover:bg-white/10 hover:border-emerald-500/30 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)] active:scale-[0.98] active:bg-white/15 cursor-default"
             >
               <p class="text-emerald-300 text-xs font-bold uppercase tracking-[0.18em] mb-1">{{ item.day }}</p>
               <h4 class="text-white font-bold mb-1">{{ item.title }}</h4>
