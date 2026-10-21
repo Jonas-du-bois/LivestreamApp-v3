@@ -12,10 +12,17 @@ export const enrichPassage = (p: PassageEnriched): PassageSearchable => {
   const location = p.location ?? ''
   const category = p.group?.category ?? ''
   
+  // Cache module-scoped pour éviter la recréation de l'instance
+  const frDayFormatter = (globalThis as any).__frDayFormatter || ((globalThis as any).__frDayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long' }))
+
   // Jour fr-FR car le filtrage UI utilise les noms de jours en français
-  const dayKey = p.startTime
-    ? new Date(p.startTime).toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase()
-    : ''
+  let dayKey = ''
+  if (p.startTime) {
+    const d = new Date(p.startTime)
+    if (!Number.isNaN(d.getTime())) {
+      dayKey = frDayFormatter.format(d).toLowerCase()
+    }
+  }
 
   return {
     ...p,

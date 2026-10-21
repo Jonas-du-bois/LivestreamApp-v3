@@ -801,9 +801,19 @@ const getStatusIcon = (status?: PassageStatus) => {
   }
 }
 
+const getAdminDayFormatter = (loc: string) => {
+  const key = `admin-day-${loc}`
+  const cache = (globalThis as any).__adminDayCache || ((globalThis as any).__adminDayCache = new Map())
+  if (!cache.has(key)) {
+    cache.set(key, new Intl.DateTimeFormat(loc, { weekday: 'short', timeZone: 'Europe/Zurich' }))
+  }
+  return cache.get(key)
+}
+
 const formatPassageDay = (date: Date | string) => {
   const d = new Date(date)
-  return d.toLocaleDateString(locale.value, { weekday: 'short', timeZone: 'Europe/Zurich' }).toUpperCase().replace('.', '')
+  if (Number.isNaN(d.getTime())) return ''
+  return getAdminDayFormatter(locale.value).format(d).toUpperCase().replace('.', '')
 }
 
 const formatPassageTime = (date: Date | string) => {
