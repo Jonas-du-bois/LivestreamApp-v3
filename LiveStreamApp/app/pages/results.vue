@@ -37,11 +37,13 @@ const DAY_ALL = 'Tout'
 
 const normalizeDayKey = (day?: string | null) => (day || '').toLowerCase().trim()
 
+const dayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+
 const getDayFromStartTime = (startTime?: string) => {
   if (!startTime) return undefined
   const parsed = new Date(startTime)
   if (Number.isNaN(parsed.getTime())) return undefined
-  return parsed.toLocaleDateString('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+  return dayFormatter.format(parsed)
 }
 
 const mergeAvailableDays = (incomingDay?: string) => {
