@@ -17,13 +17,16 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 1. Fetch Group Info
-    const group = await GroupModel.findById(groupId).lean()
+    // ⚡ Bolt: Exclude heavy unbounded arrays to optimize memory allocation and reduce DB I/O payload
+    const group = await GroupModel.findById(groupId).select('-history -monitors').lean()
     if (!group) {
       throw createError({ statusCode: 404, message: 'Group not found' })
     }
 
     // 2. Fetch Timeline (Passages)
+    // ⚡ Bolt: Exclude heavy unbounded arrays to optimize memory allocation and reduce DB I/O payload
     const passages = await PassageModel.find({ group: groupId })
+      .select('-history -monitors')
       .populate('apparatus', 'name icon code')
       .sort({ startTime: 1 })
       .lean()
