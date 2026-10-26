@@ -25,3 +25,7 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+
+## 2026-10-26 - Cached Intl.DateTimeFormat Initialization
+**Learning:** Repeatedly calling `toLocaleDateString`, `toLocaleTimeString`, and `toLocaleString` instantiates new `Intl.DateTimeFormat` instances every time, leading to significant memory allocations and performance degradation, especially inside frequently re-rendered Vue components.
+**Action:** When migrating from `toLocaleDateString` to `Intl.DateTimeFormat.prototype.format`, initialize a module-scoped `Map` keyed by a serialized string of locale and options to cache and reuse the formatters efficiently. Always verify the parsed date validity before formatting to prevent `RangeError`.
