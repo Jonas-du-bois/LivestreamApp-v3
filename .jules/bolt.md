@@ -25,3 +25,6 @@
 ## 2026-03-30 - Server-side projection for Mongoose populate queries
 **Learning:** Mongoose `populate()` will fetch the entire document from the database if no field selection is provided. `Group` and `Passage` documents have unbounded `history` arrays (past scores) and a `monitors` array. Fetching these large arrays on high-frequency loops (like the scheduler running every 30s) or list-heavy endpoints causes excessive memory usage, increased DB payload size, and slower serialization.
 **Action:** Mongoose `.populate()` calls on heavily relational models must include explicit field projections (e.g., `.populate('group', 'name')`) to strictly specify which fields should be returned.
+## 2026-10-28 - Adding .lean() to Mongoose GET queries
+**Learning:** In a Nuxt Nitro backend, forgetting to append `.lean()` on Mongoose `findById` or `find` queries for read-only endpoints causes unnecessary document hydration overhead.
+**Action:** Always append `.lean()` to GET queries to return plain JavaScript objects, reducing memory allocation and improving execution time.
