@@ -14,6 +14,8 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    // ⚡ Bolt: Added .lean() to bypass document hydration for this read-only endpoint,
+    // reducing memory allocation and improving execution time.
     const stream = await StreamModel.findById(id).populate({
       path: 'currentPassage',
       model: PassageModel,
@@ -27,7 +29,7 @@ export default defineEventHandler(async (event) => {
           model: ApparatusModel
         }
       ]
-    })
+    }).lean()
 
     if (!stream) {
       throw createError({
