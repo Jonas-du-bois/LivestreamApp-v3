@@ -104,11 +104,10 @@ const sendFavoriteScorePushNotifications = async (updated: PopulatedPassage, ran
 export const invalidateServerCache = async (scope = 'score-update') => {
   try {
     const cacheStorage = useStorage('cache');
-    const allCacheKeys = await cacheStorage.getKeys();
-    if (allCacheKeys.length > 0) {
-      await Promise.all(allCacheKeys.map((key) => cacheStorage.removeItem(key)));
-      console.log(`[${scope}] Cleared ${allCacheKeys.length} Nitro cache entries`);
-    }
+    // ⚡ BOLT: Replaced Promise.all(removeItem) with bulk clear() to prevent main thread blocking
+    // Impact: Avoids array iteration overhead and massive I/O spikes when clearing hundreds of cached schedule/results keys.
+    await cacheStorage.clear();
+    console.log(`[${scope}] Cleared Nitro cache entries`);
   } catch (cacheErr) {
     console.warn(`[${scope}] Could not clear Nitro cache:`, cacheErr);
   }
