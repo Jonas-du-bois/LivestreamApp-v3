@@ -59,3 +59,6 @@ La liste statique "Liens utiles" dans la page `/infos` utilisait de simples ancr
 **Apprentissages (LiveStreamApp) :**
 - Les listes statiques, même simples (comme des liens sortants), bénéficient énormément de la classe `group` couplée aux états `active:`. Cela transforme un lien web classique en un véritable bouton d'application native, sans ajouter la moindre complexité Javascript.
 - Utiliser de minuscules translations (ex: `0.5` = `2px` via Tailwind) suffit à donner une direction à une interaction. Un lien sortant doit pointer "vers l'extérieur".
+## 2026-10-31 - ✨ Spark: Pull-to-Refresh Visuel
+**Learning:** L'ajout d'une rotation sur les icônes de synchronisation améliore le feedback tactile. Il est crucial d'appliquer conditionnellement cette animation (uniquement pour les icônes contenant 'sync' ou 'clockwise') pour éviter des rotations inattendues sur des icônes statiques comme 'home' ou 'close'. L'utilisation de `group` sur le bouton parent et `group-active:rotate-180` sur l'icône permet une micro-interaction fluide.
+**Action:** Implémenté une rotation au toucher sur les icônes de rafraîchissement dans `UiButton` et `UiIconButton`.
