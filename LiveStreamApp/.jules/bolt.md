@@ -4,3 +4,6 @@
 ## 2024-05-19 - Bulk Database Operations in Nitro Background Jobs
 **Learning:** Performing multiple database mutations (e.g., `findByIdAndUpdate`, `findByIdAndDelete`) inside a `Promise.all()` loop within background tasks (like `setInterval` in Nitro plugins) causes significant N+1 query problems. This spams the database and can stall the connection pool.
 **Action:** Always collect target IDs during the loop execution into an array, and perform a single bulk operation (e.g., `updateMany`, `deleteMany`) after the loop concludes to optimize performance to O(1) DB calls.
+## 2026-10-31 - Optimize Intl.DateTimeFormat allocations in loops
+**Learning:** Calling `toLocaleDateString()` or `toLocaleTimeString()` inside a loop instantiates a new `Intl.DateTimeFormat` object under the hood for every iteration, which degrades performance and causes memory bloat. Also, `Intl.DateTimeFormat.prototype.format` throws a fatal `RangeError` if provided with `NaN` (e.g., when parsing an invalid date string), unlike `new Date()` which safely returns 'Invalid Date'.
+**Action:** Always cache `Intl.DateTimeFormat` instances using a module-scoped `Map` keyed by locale and options. Verify parsed timestamps with `Number.isNaN()` before passing them to the cached formatter to prevent fatal errors.

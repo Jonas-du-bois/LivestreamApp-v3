@@ -8,6 +8,7 @@ import {
   type ExternalScoreEntry
 } from './external-score-feed';
 import { invalidateServerCache, updatePassageScore } from './score-update';
+import { safeFormatDate } from './intl-cache';
 
 type IndexedPassage = any & { slotMinutes: number | null };
 
@@ -72,7 +73,7 @@ const buildPassageIndexes = (passages: IndexedPassage[]) => {
     const startTime = passage.startTime;
     if (!groupName || !location || !startTime) return;
 
-    const slot = new Date(startTime).toLocaleTimeString('fr-CH', {
+    const slot = safeFormatDate(startTime, 'fr-CH', {
       timeZone: 'Europe/Zurich',
       hour: '2-digit',
       minute: '2-digit',

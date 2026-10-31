@@ -4,6 +4,7 @@ import GroupModel from '../models/Group';
 import { SCHEDULE_CACHE_MAX_AGE, SCHEDULE_CACHE_STALE_MAX_AGE } from '../utils/timings';
 import { z } from 'zod';
 import { useValidatedQuery } from 'h3-zod';
+import { safeFormatDate } from '../utils/intl-cache';
 
 const schema = z.object({
   day: z.union([z.string(), z.array(z.string())]).optional().transform(v => Array.isArray(v) ? v[0] : v),
@@ -62,8 +63,7 @@ export default defineCachedEventHandler(async (event) => {
 
     dayAggregation.forEach((d: any) => {
       if (!d.sampleDate) return;
-      const date = new Date(d.sampleDate);
-      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+      const dayName = safeFormatDate(d.sampleDate, 'fr-FR', { weekday: 'long' });
       const key = dayName.toLowerCase();
 
       if (!dayMap.has(key)) {
