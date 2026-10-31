@@ -1,6 +1,7 @@
 import PassageModel from '../models/Passage';
 import ApparatusModel from '../models/Apparatus';
 import GroupModel from '../models/Group';
+import { safeFormatDate } from './intl-cache';
 
 export const getCachedAvailableDays = defineCachedFunction(async () => {
   return await PassageModel.aggregate([
@@ -102,8 +103,7 @@ export async function updateScheduleMetadata() {
     if (facets?.days) {
       facets.days.forEach((d: any) => {
         if (!d.sampleDate) return;
-        const date = new Date(d.sampleDate);
-        const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+        const dayName = safeFormatDate(d.sampleDate, 'fr-FR', { weekday: 'long' });
         availableDaysSet.add(dayName);
       });
     }

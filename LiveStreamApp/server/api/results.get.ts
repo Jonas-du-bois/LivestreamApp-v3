@@ -2,6 +2,7 @@ import PassageModel from '../models/Passage';
 import ApparatusModel from '../models/Apparatus';
 import GroupModel from '../models/Group';
 import { RESULTS_CACHE_MAX_AGE } from '../utils/timings';
+import { safeFormatDate } from '../utils/intl-cache';
 
 export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event);
@@ -22,8 +23,7 @@ export default defineCachedEventHandler(async (event) => {
 
     dayAggregation.forEach((d: any) => {
       if (!d.sampleDate) return;
-      const date = new Date(d.sampleDate);
-      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' });
+      const dayName = safeFormatDate(d.sampleDate, 'fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' });
       const key = dayName.toLowerCase();
       availableDaysSet.add(dayName);
       if (!dayMap.has(key)) dayMap.set(key, []);
