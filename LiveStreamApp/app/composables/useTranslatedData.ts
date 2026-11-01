@@ -47,6 +47,17 @@ export const useTranslatedData = () => {
   }
 
   /** Formate une date selon la locale Suisse courante */
+  // Cache for Intl.DateTimeFormat instances to prevent expensive recreations
+  const formatterCache = new Map<string, Intl.DateTimeFormat>()
+
+  const getCachedFormatter = (localeCode: string, options: Intl.DateTimeFormatOptions) => {
+    const cacheKey = `${localeCode}-${JSON.stringify(options)}`
+    if (!formatterCache.has(cacheKey)) {
+      formatterCache.set(cacheKey, new Intl.DateTimeFormat(localeCode, options))
+    }
+    return formatterCache.get(cacheKey)!
+  }
+
   const formatLocalizedDate = (dateInput: string | number | Date, options?: Intl.DateTimeFormatOptions): string => {
     const defaultOptions: Intl.DateTimeFormatOptions = {
       weekday: 'long',
@@ -57,25 +68,34 @@ export const useTranslatedData = () => {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+    const parsed = new Date(dateInput)
+    if (Number.isNaN(parsed.getTime())) return ''
+    const formatter = getCachedFormatter(getLocaleCode(), finalOptions)
+    return formatter.format(parsed)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */
   const formatLocalizedTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
+    const parsed = new Date(dateInput)
+    if (Number.isNaN(parsed.getTime())) return ''
+    const formatter = getCachedFormatter(getLocaleCode(), {
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'Europe/Zurich'
     })
+    return formatter.format(parsed)
   }
 
   /** Formate une date + heure complète selon la locale Suisse courante */
   const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleString(getLocaleCode(), {
+    const parsed = new Date(dateInput)
+    if (Number.isNaN(parsed.getTime())) return ''
+    const formatter = getCachedFormatter(getLocaleCode(), {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Europe/Zurich'
     })
+    return formatter.format(parsed)
   }
 
   return {

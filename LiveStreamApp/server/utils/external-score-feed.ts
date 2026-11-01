@@ -135,15 +135,17 @@ export const timeSlotToMinutes = (timeSlot: string) => {
   return hour * 60 + minute;
 };
 
+const zurichTimeFormatter = new Intl.DateTimeFormat('fr-CH', {
+  timeZone: 'Europe/Zurich',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23'
+});
+
 export const getZurichTimeSlot = (value: Date | string) => {
   const date = typeof value === 'string' ? new Date(value) : value;
-  const formatter = new Intl.DateTimeFormat('fr-CH', {
-    timeZone: 'Europe/Zurich',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23'
-  });
-  return formatter.format(date);
+  if (Number.isNaN(date.getTime())) return '';
+  return zurichTimeFormatter.format(date);
 };
 
 export const buildExternalLookupKey = (groupName: string, location: string, timeSlot: string) =>
