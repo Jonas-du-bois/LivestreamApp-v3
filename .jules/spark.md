@@ -11,3 +11,4 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+J'ai ajouté un retour tactile (active:scale-95 duration-200) sur les boutons de sélection de manche (Qualifications / Finales) dans `results.vue`. Cela permet d'améliorer le ressenti de réactivité sur les écrans tactiles, conformément aux attentes de l'application mobile.
