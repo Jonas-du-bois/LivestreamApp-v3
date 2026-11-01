@@ -801,9 +801,19 @@ const getStatusIcon = (status?: PassageStatus) => {
   }
 }
 
+// Memoized formatter for dashboard day display
+const dashboardDayFormatters = new Map<string, Intl.DateTimeFormat>()
+const getDashboardDayFormatter = (loc: string) => {
+  if (!dashboardDayFormatters.has(loc)) {
+    dashboardDayFormatters.set(loc, new Intl.DateTimeFormat(loc, { weekday: 'short', timeZone: 'Europe/Zurich' }))
+  }
+  return dashboardDayFormatters.get(loc)!
+}
+
 const formatPassageDay = (date: Date | string) => {
   const d = new Date(date)
-  return d.toLocaleDateString(locale.value, { weekday: 'short', timeZone: 'Europe/Zurich' }).toUpperCase().replace('.', '')
+  if (Number.isNaN(d.getTime())) return ''
+  return getDashboardDayFormatter(locale.value).format(d).toUpperCase().replace('.', '')
 }
 
 const formatPassageTime = (date: Date | string) => {
