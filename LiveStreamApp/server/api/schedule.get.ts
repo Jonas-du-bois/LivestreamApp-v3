@@ -60,10 +60,14 @@ export default defineCachedEventHandler(async (event) => {
     // Process Day Map
     const dayMap = new Map<string, string[]>(); // Map 'samedi' -> ['2023-10-14']
 
+    // ⚡ Bolt: Cache formatter outside the loop
+    const dayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long' });
+
     dayAggregation.forEach((d: any) => {
       if (!d.sampleDate) return;
       const date = new Date(d.sampleDate);
-      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
+      if (Number.isNaN(date.getTime())) return;
+      const dayName = dayFormatter.format(date);
       const key = dayName.toLowerCase();
 
       if (!dayMap.has(key)) {

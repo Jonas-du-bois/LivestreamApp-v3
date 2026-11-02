@@ -37,11 +37,14 @@ const DAY_ALL = 'Tout'
 
 const normalizeDayKey = (day?: string | null) => (day || '').toLowerCase().trim()
 
+// ⚡ Bolt: Cache formatter to prevent allocations during render loop
+const resultsDayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+
 const getDayFromStartTime = (startTime?: string) => {
   if (!startTime) return undefined
   const parsed = new Date(startTime)
   if (Number.isNaN(parsed.getTime())) return undefined
-  return parsed.toLocaleDateString('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' })
+  return resultsDayFormatter.format(parsed)
 }
 
 const mergeAvailableDays = (incomingDay?: string) => {

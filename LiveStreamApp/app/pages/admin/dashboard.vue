@@ -801,9 +801,17 @@ const getStatusIcon = (status?: PassageStatus) => {
   }
 }
 
+// ⚡ Bolt: Cache Intl.DateTimeFormat to avoid redundant allocations
+const adminDayFormatters = new Map<string, Intl.DateTimeFormat>()
+
 const formatPassageDay = (date: Date | string) => {
   const d = new Date(date)
-  return d.toLocaleDateString(locale.value, { weekday: 'short', timeZone: 'Europe/Zurich' }).toUpperCase().replace('.', '')
+  if (Number.isNaN(d.getTime())) return 'INVALID'
+
+  if (!adminDayFormatters.has(locale.value)) {
+    adminDayFormatters.set(locale.value, new Intl.DateTimeFormat(locale.value, { weekday: 'short', timeZone: 'Europe/Zurich' }))
+  }
+  return adminDayFormatters.get(locale.value)!.format(d).toUpperCase().replace('.', '')
 }
 
 const formatPassageTime = (date: Date | string) => {
