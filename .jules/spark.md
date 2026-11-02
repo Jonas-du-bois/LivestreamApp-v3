@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## 2026-11-02 - Map Toggle Transition
+
+J'ai remarqué que le bouton de bascule de la carte (map/satellite) dans `plan.vue` manquait de fluidité lors du changement d'icône. En encapsulant le composant `<UiIconBox>` dans un `<Transition mode="out-in">` avec une clé dynamique (`:key`), nous forçons Vue à re-rendre le composant et à déclencher la transition CSS `rotate-scale` existante. Cela donne un retour visuel instantané et premium sans bloquer l'interface. Il est crucial d'utiliser `mode="out-in"` pour éviter les superpositions d'icônes pendant la transition de moins de 300ms.
