@@ -20,10 +20,14 @@ export default defineCachedEventHandler(async (event) => {
     const dayMap = new Map<string, string[]>();
     const availableDaysSet = new Set<string>();
 
+    // ⚡ Bolt: Cache formatter outside loop
+    const dayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' });
+
     dayAggregation.forEach((d: any) => {
       if (!d.sampleDate) return;
       const date = new Date(d.sampleDate);
-      const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long', timeZone: 'Europe/Zurich' });
+      if (Number.isNaN(date.getTime())) return;
+      const dayName = dayFormatter.format(date);
       const key = dayName.toLowerCase();
       availableDaysSet.add(dayName);
       if (!dayMap.has(key)) dayMap.set(key, []);
