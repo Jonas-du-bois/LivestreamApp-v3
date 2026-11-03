@@ -2,6 +2,19 @@
  * Traduction des données dynamiques (engins, jours, catégories)
  * et formatage des dates/heures selon la locale Suisse courante.
  */
+// ⚡ Bolt: Cache module-scoped Intl.DateTimeFormat instances for performance
+const formatterCache = new Map<string, Intl.DateTimeFormat>()
+
+const getCachedFormatter = (locale: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat => {
+  const key = `${locale}-${JSON.stringify(options)}`
+  let formatter = formatterCache.get(key)
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, options)
+    formatterCache.set(key, formatter)
+  }
+  return formatter
+}
+
 export const useTranslatedData = () => {
   const { t, locale } = useI18n()
 
@@ -57,25 +70,32 @@ export const useTranslatedData = () => {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+
+    const timestamp = typeof dateInput === 'string' || typeof dateInput === 'number' ? new Date(dateInput).getTime() : dateInput.getTime()
+    if (Number.isNaN(timestamp)) return 'Invalid Date'
+    return getCachedFormatter(getLocaleCode(), finalOptions).format(timestamp)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */
   const formatLocalizedTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
+    const timestamp = typeof dateInput === 'string' || typeof dateInput === 'number' ? new Date(dateInput).getTime() : dateInput.getTime()
+    if (Number.isNaN(timestamp)) return 'Invalid Date'
+    return getCachedFormatter(getLocaleCode(), {
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'Europe/Zurich'
-    })
+    }).format(timestamp)
   }
 
   /** Formate une date + heure complète selon la locale Suisse courante */
   const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleString(getLocaleCode(), {
+    const timestamp = typeof dateInput === 'string' || typeof dateInput === 'number' ? new Date(dateInput).getTime() : dateInput.getTime()
+    if (Number.isNaN(timestamp)) return 'Invalid Date'
+    return getCachedFormatter(getLocaleCode(), {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Europe/Zurich'
-    })
+    }).format(timestamp)
   }
 
   return {
