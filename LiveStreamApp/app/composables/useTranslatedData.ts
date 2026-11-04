@@ -2,6 +2,18 @@
  * Traduction des données dynamiques (engins, jours, catégories)
  * et formatage des dates/heures selon la locale Suisse courante.
  */
+// BOLT: Optimize Date Formatting by caching Intl.DateTimeFormat instances globally.
+// Instantiating formatter options repeatedly (e.g. inside v-for loops) is expensive.
+const formattersCache = new Map<string, Intl.DateTimeFormat>()
+
+const getCachedFormatter = (localeCode: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat => {
+  const key = `${localeCode}-${JSON.stringify(options)}`
+  if (!formattersCache.has(key)) {
+    formattersCache.set(key, new Intl.DateTimeFormat(localeCode, options))
+  }
+  return formattersCache.get(key)!
+}
+
 export const useTranslatedData = () => {
   const { t, locale } = useI18n()
 
@@ -57,25 +69,36 @@ export const useTranslatedData = () => {
       ...(options || defaultOptions),
       timeZone: 'Europe/Zurich'
     }
-    return new Date(dateInput).toLocaleDateString(getLocaleCode(), finalOptions)
+    const localeCode = getLocaleCode()
+    const date = new Date(dateInput)
+    if (Number.isNaN(date.getTime())) return ''
+    return getCachedFormatter(localeCode, finalOptions).format(date)
   }
 
   /** Formate une heure (HH:MM) selon la locale Suisse courante */
   const formatLocalizedTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleTimeString(getLocaleCode(), {
+    const options: Intl.DateTimeFormatOptions = {
       hour: '2-digit', 
       minute: '2-digit',
       timeZone: 'Europe/Zurich'
-    })
+    }
+    const localeCode = getLocaleCode()
+    const date = new Date(dateInput)
+    if (Number.isNaN(date.getTime())) return ''
+    return getCachedFormatter(localeCode, options).format(date)
   }
 
   /** Formate une date + heure complète selon la locale Suisse courante */
   const formatLocalizedDateTime = (dateInput: string | number | Date): string => {
-    return new Date(dateInput).toLocaleString(getLocaleCode(), {
+    const options: Intl.DateTimeFormatOptions = {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
       timeZone: 'Europe/Zurich'
-    })
+    }
+    const localeCode = getLocaleCode()
+    const date = new Date(dateInput)
+    if (Number.isNaN(date.getTime())) return ''
+    return getCachedFormatter(localeCode, options).format(date)
   }
 
   return {
