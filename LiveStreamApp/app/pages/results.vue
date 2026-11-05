@@ -389,18 +389,26 @@ useSocketRoom(['live-scores', 'schedule-updates'], [
 
           <!-- Round Selector (only if finals are available and not on Sunday) -->
           <div v-if="(resultsResponse?.meta?.hasFinals || selectedRound === 'FINAL') && selectedDay?.toLowerCase() !== 'dimanche'" class="flex justify-center">
-            <div class="glass-card p-1 rounded-full flex gap-1 border border-white/5 bg-white/5">
+            <div class="glass-card p-1 rounded-full flex gap-1 border border-white/5 bg-white/5 relative">
+              <!-- Sliding background indicator -->
+              <div
+                class="absolute inset-y-1 rounded-full transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] pointer-events-none"
+                :class="selectedRound === 'QUALIFIER'
+                  ? 'bg-white/10 left-1 w-[calc(50%-2px)]'
+                  : 'bg-orange-500/20 border border-orange-500/20 left-[calc(50%+2px)] w-[calc(50%-4px)]'"
+                aria-hidden="true"
+              ></div>
               <button
                 @click="selectedRound = 'QUALIFIER'"
-                class="px-4 py-1.5 rounded-full text-xs font-bold transition-all"
-                :class="selectedRound === 'QUALIFIER' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/60'"
+                class="relative z-10 px-4 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 flex-1 text-center"
+                :class="selectedRound === 'QUALIFIER' ? 'text-white' : 'text-white/40 hover:text-white/60'"
               >
                 Qualifications
               </button>
               <button
                 @click="selectedRound = 'FINAL'"
-                class="px-4 py-1.5 rounded-full text-xs font-bold transition-all"
-                :class="selectedRound === 'FINAL' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/20' : 'text-white/40 hover:text-white/60'"
+                class="relative z-10 px-4 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 flex-1 text-center"
+                :class="selectedRound === 'FINAL' ? 'text-orange-300' : 'text-white/40 hover:text-white/60'"
               >
                 Finales
               </button>
