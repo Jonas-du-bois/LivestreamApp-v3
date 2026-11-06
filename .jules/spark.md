@@ -11,3 +11,6 @@
 - **Learning:** Using `backdrop-blur-xl` combined with a semi-transparent dark background (`bg-gray-900/30`) creates a much more premium feel than solid colors, especially for overlay cards.
 - **Interaction:** Adding `active:scale-[0.98]` to clickable cards provides immediate, satisfying feedback on touch devices without the need for complex ripple effects.
 - **Performance:** Staggering list items with a simple CSS animation delay (based on index) is performant and adds significant polish compared to all items appearing at once.
+## Pull-to-Refresh visuel
+- J'ai ajouté une interaction tactile fluide (rotation à 180 degrés) sur les icônes de rafraîchissement au clic pour améliorer le feedback de réactivité (Pull-to-Refresh visuel) sans ajouter de surcoût de performance ou de bibliothèques tierces, en utilisant Tailwind et la pseudo-classe 'group-active'.
+- Cette interaction est conditionnée dynamiquement via ':class' pour ne cibler que les icônes pertinentes (celles contenant 'sync', 'refresh', ou 'clockwise'), évitant des effets de bord inattendus sur d'autres boutons.
