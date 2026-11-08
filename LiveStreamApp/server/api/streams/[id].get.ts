@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    // BOLT: Return plain JS objects to bypass heavy document hydration
     const stream = await StreamModel.findById(id).populate({
       path: 'currentPassage',
       model: PassageModel,
@@ -27,7 +28,7 @@ export default defineEventHandler(async (event) => {
           model: ApparatusModel
         }
       ]
-    })
+    }).lean()
 
     if (!stream) {
       throw createError({
