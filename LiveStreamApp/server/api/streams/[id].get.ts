@@ -14,20 +14,26 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const stream = await StreamModel.findById(id).populate({
-      path: 'currentPassage',
-      model: PassageModel,
-      populate: [
-        {
-          path: 'group',
-          model: GroupModel
-        },
-        {
-          path: 'apparatus',
-          model: ApparatusModel
-        }
-      ]
-    })
+    const stream = await StreamModel.findById(id)
+      .select('-cameraName')
+      // BOLT: Use .lean() and explicit field projections to reduce memory allocation and skip hydrating heavy documents on read-only endpoints
+      .populate({
+        path: 'currentPassage',
+        model: PassageModel,
+        populate: [
+          {
+            path: 'group',
+            model: GroupModel,
+            select: 'name category canton logo'
+          },
+          {
+            path: 'apparatus',
+            model: ApparatusModel,
+            select: 'name code icon'
+          }
+        ]
+      })
+      .lean()
 
     if (!stream) {
       throw createError({
