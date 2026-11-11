@@ -28,6 +28,8 @@ export default defineEventHandler(async (event) => {
         }
       ]
     })
+    // BOLT: Return plain JS objects to bypass heavy document hydration
+    .lean()
 
     if (!stream) {
       throw createError({
